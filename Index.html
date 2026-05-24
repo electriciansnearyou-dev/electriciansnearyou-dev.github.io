@@ -1,192 +1,490 @@
+<!-- name=index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trusted Electricians Near You | 24/7 Emergency Electrical Services</title>
-  <meta name="description" content="Local certified electricians for emergency call-outs, rewires, EV charger installation, and domestic electrical services." />
+  <meta charset="UTF-8">
+  <title>Trusted Local Electricians Near You | Emergency & Domestic Electrical Services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="24/7 emergency and domestic electricians. NICEIC registered, insured, and highly rated. Serving Poole, Bournemouth, Dorset & more. Get a free quote!">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Trusted Local Electricians Near You">
+  <meta property="og:description" content="24/7 emergency and domestic electricians. NICEIC registered, insured, and highly rated. Serving Poole, Bournemouth, Dorset & more. Get a free quote!">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://electriciansnearyou-dev.github.io/Tester/">
+  <meta property="og:image" content="https://electriciansnearyou-dev.github.io/Tester/assets/og-image.jpg">
+  
+  <!-- LocalBusiness Schema -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Trusted Local Electricians Near You",
+      "description": "24/7 emergency and domestic electricians. NICEIC registered, insured, and highly rated.",
+      "image": "https://electriciansnearyou-dev.github.io/Tester/assets/og-image.jpg",
+      "telephone": "+441234567890",
+      "email": "info@electriciansnearyou.com",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Poole",
+        "addressRegion": "Dorset",
+        "addressCountry": "UK"
+      },
+      "areaServed": ["Poole", "Bournemouth", "Christchurch", "Wimborne", "Dorset"],
+      "openingHours": "Mo,Tu,We,Th,Fr,Sa,Su 07:00-22:00",
+      "url": "https://electriciansnearyou-dev.github.io/Tester/"
+    }
+  </script>
 
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-
-    .hero-gradient {
-      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-    }
-
-    .service-card:hover {
-      transform: translateY(-6px);
-    }
-
-    .floating-call {
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; }
+    .floating-call-btn {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 1.5rem; right: 1.5rem;
       z-index: 50;
     }
+    [x-cloak] { display: none !important; }
   </style>
 </head>
-<body class="bg-white text-slate-800">
+<body class="bg-white text-gray-900">
 
-  <!-- Navbar -->
-  <header class="sticky top-0 bg-white shadow-sm z-40">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <div>
-        <h1 class="text-2xl font-extrabold text-blue-700">Electricians Near You</h1>
-      </div>
+<!-- Sticky Nav -->
+<header class="sticky top-0 z-40 bg-white/80 backdrop-blur shadow">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="#" class="font-extrabold text-xl text-blue-700">ElectriciansNearYou</a>
+    <!-- Desktop Nav -->
+    <nav class="hidden md:flex space-x-6 font-semibold">
+      <a href="#services" class="hover:text-blue-700">Services</a>
+      <a href="#about" class="hover:text-blue-700">About</a>
+      <a href="#why" class="hover:text-blue-700">Why Choose Us</a>
+      <a href="#reviews" class="hover:text-blue-700">Reviews</a>
+      <a href="#areas" class="hover:text-blue-700">Coverage</a>
+      <a href="#contact" class="hover:text-blue-700">Contact</a>
+    </nav>
+    <!-- Mobile Nav -->
+    <div class="md:hidden">
+      <button id="menu-btn" aria-label="Open Menu" class="p-2">
+        <svg class="w-7 h-7 text-blue-900" fill="none" stroke="currentColor" stroke-width="2"
+          viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+          d="M4 6h16M4 12h16M4 18h16" /></svg>
+      </button>
+    </div>
+  </div>
+  <!-- Mobile Drawer (hidden by default) -->
+  <div id="mobile-nav" class="md:hidden fixed inset-0 bg-white bg-opacity-95 p-8 flex-col space-y-6 font-semibold text-lg hidden transition duration-300 z-50">
+    <button id="close-menu" aria-label="Close Menu" class="absolute top-6 right-6 p-2">
+      <svg class="w-8 h-8 text-blue-900" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+        d="M6 18L18 6M6 6l12 12" /></svg>
+    </button>
+    <a href="#services" onclick="closeMenu()">Services</a>
+    <a href="#about" onclick="closeMenu()">About</a>
+    <a href="#why" onclick="closeMenu()">Why Choose Us</a>
+    <a href="#reviews" onclick="closeMenu()">Reviews</a>
+    <a href="#areas" onclick="closeMenu()">Coverage</a>
+    <a href="#contact" onclick="closeMenu()">Contact</a>
+  </div>
+</header>
 
-      <nav class="hidden md:flex gap-8 font-medium">
-        <a href="#services" class="hover:text-blue-600">Services</a>
-        <a href="#about" class="hover:text-blue-600">About</a>
-        <a href="#reviews" class="hover:text-blue-600">Reviews</a>
-        <a href="#contact" class="hover:text-blue-600">Contact</a>
-      </nav>
+<!-- Sticky Quote CTA -->
+<a href="#contact" class="hidden sm:inline-block fixed bottom-8 left-7 z-40 bg-blue-700 hover:bg-blue-800 text-white font-bold px-6 py-3 rounded-full shadow-lg animate-bounce">Get Free Quote</a>
 
-      <a href="tel:+441234567890" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold transition">
+<!-- 1. Hero Section -->
+<section class="relative bg-gradient-to-br from-blue-900 via-blue-700 to-blue-600 text-white min-h-[80vh] flex items-center" style="background-image:url('https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=1500&q=60'); background-size:cover; background-position:center;">
+  <div class="absolute inset-0 bg-black/60"></div>
+  <div class="relative z-10 container mx-auto px-4 py-24 flex flex-col items-center text-center">
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 drop-shadow-lg">
+      Trusted Local Electricians Near You
+    </h1>
+    <p class="text-lg sm:text-xl mb-8 max-w-2xl mx-auto font-medium">
+      Emergency and domestic electrical experts – 24/7 fast response. NICEIC registered, fully insured, and highly recommended in your local area.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+      <a href="#contact" class="bg-white text-blue-700 hover:bg-blue-100 font-bold px-8 py-4 rounded-full shadow-md transition text-lg active:scale-95">Get Free Quote</a>
+      <a href="tel:+441234567890" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full shadow-md font-bold text-lg flex items-center gap-2 active:scale-95 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5.88a17 17 0 0014.12 14.12l1.65-4.47a2 2 0 012.1-1.22l3.04.34a2 2 0 012 2v3a2 2 0 01-2 2A19 19 0 013 7.88a2 2 0 012-2h3a2 2 0 012 2l-.34 3.04a2 2 0 01-1.22 2.1L3 19.12z"></path></svg>
         Call Now
       </a>
     </div>
-  </header>
+    <!-- Trust Badges -->
+    <div class="flex flex-col sm:flex-row gap-3 sm:gap-8 items-center justify-center my-2">
+      <span class="flex items-center gap-2 text-base font-semibold">
+        <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 00-1.414 0L9 11.586l-2.293-2.293A1 1 0 105.293 10.707l3 3a1 1 0 001.414 0l7-7a1 1 0 000-1.414z"/></svg>
+        NICEIC Registered
+      </span>
+      <span class="flex items-center gap-2 text-base font-semibold">
+        <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 00-1.414 0L9 11.586l-2.293-2.293A1 1 0 105.293 10.707l3 3a1 1 0 001.414 0l7-7a1 1 0 000-1.414z"/></svg>
+        24/7 Emergency Service
+      </span>
+      <span class="flex items-center gap-2 text-base font-semibold">
+        <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 00-1.414 0L9 11.586l-2.293-2.293A1 1 0 105.293 10.707l3 3a1 1 0 001.414 0l7-7a1 1 0 000-1.414z"/></svg>
+        Fully Insured
+      </span>
+    </div>
+  </div>
+</section>
 
-  <!-- Hero -->
-  <section class="hero-gradient text-white py-24">
-    <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
-      <div>
-        <p class="uppercase tracking-widest text-blue-200 mb-4 font-semibold">
-          24/7 Emergency Electrical Services
-        </p>
-
-        <h2 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
-          Trusted Local Electricians Near You
-        </h2>
-
-        <p class="text-lg text-slate-200 mb-8 max-w-xl">
-          Certified electricians for emergency call-outs, rewires, EV charger installation,
-          fuse board upgrades, lighting, and commercial electrical work.
-        </p>
-
-        <div class="flex flex-wrap gap-4">
-          <a href="#contact" class="bg-white text-blue-700 px-6 py-4 rounded-2xl font-bold hover:bg-slate-100 transition">
-            Get Free Quote
-          </a>
-
-          <a href="tel:+441234567890" class="border border-white px-6 py-4 rounded-2xl font-bold hover:bg-white hover:text-blue-700 transition">
-            Call Now
-          </a>
+<!-- 2. Services Section -->
+<section id="services" class="py-20 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-10">Our Electrical Services</h2>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <!-- Service Card Template (repeat for each service) -->
+      <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2 p-6 flex flex-col items-center text-center" data-sr>
+        <div class="bg-blue-50 text-blue-700 p-4 rounded-full mb-4">
+          <!-- Emergency Electricians Icon -->
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         </div>
-
-        <div class="flex flex-wrap gap-4 mt-10 text-sm font-medium">
-          <span class="bg-white/10 px-4 py-2 rounded-full">NICEIC Registered</span>
-          <span class="bg-white/10 px-4 py-2 rounded-full">Fully Insured</span>
-          <span class="bg-white/10 px-4 py-2 rounded-full">Rapid Response</span>
-        </div>
+        <h3 class="font-bold text-lg mb-2">Emergency Electricians</h3>
+        <p class="mb-4">Rapid 24/7 response for electrical emergencies in your home or business.</p>
+        <a href="#contact" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-full mt-auto shadow transition">Learn More</a>
       </div>
-
-      <div>
-        <img
-          src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=1200&auto=format&fit=crop"
-          alt="Electrician working"
-          class="rounded-3xl shadow-2xl"
-        />
+      <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2 p-6 flex flex-col items-center text-center" data-sr>
+        <div class="bg-blue-50 text-blue-700 p-4 rounded-full mb-4">
+          <!-- EV Charger Icon -->
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 16v-1a4 4 0 00-8 0v1"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="15" y1="13" x2="9" y2="13"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">EV Charger Installation</h3>
+        <p class="mb-4">Professional home and workplace EV charger supply and installation service.</p>
+        <a href="#contact" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-full mt-auto shadow transition">Learn More</a>
+      </div>
+      <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2 p-6 flex flex-col items-center text-center" data-sr>
+        <div class="bg-blue-50 text-blue-700 p-4 rounded-full mb-4">
+          <!-- Rewiring Icon -->
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 12h6"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">House Rewiring</h3>
+        <p class="mb-4">Full or partial rewiring by certified electricians for safety and compliance.</p>
+        <a href="#contact" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-full mt-auto shadow transition">Learn More</a>
+      </div>
+      <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2 p-6 flex flex-col items-center text-center" data-sr>
+        <div class="bg-blue-50 text-blue-700 p-4 rounded-full mb-4">
+          <!-- Fuse Board Icon -->
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M7 7V4a1 1 0 011-1h8a1 1 0 011 1v3"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Fuse Board Upgrades</h3>
+        <p class="mb-4">Upgrade old fuse boards for modern, safer consumer units and protection.</p>
+        <a href="#contact" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-full mt-auto shadow transition">Learn More</a>
+      </div>
+      <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2 p-6 flex flex-col items-center text-center" data-sr>
+        <div class="bg-blue-50 text-blue-700 p-4 rounded-full mb-4">
+          <!-- Lighting Icon -->
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v6m0 0a6 6 0 016 6v6a2 2 0 01-2 2h-8a2 2 0 01-2-2v-6a6 6 0 016-6z"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Lighting Installation</h3>
+        <p class="mb-4">Indoor & outdoor lighting design, supply, and installation specialists.</p>
+        <a href="#contact" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-full mt-auto shadow transition">Learn More</a>
+      </div>
+      <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2 p-6 flex flex-col items-center text-center" data-sr>
+        <div class="bg-blue-50 text-blue-700 p-4 rounded-full mb-4">
+          <!-- EICR Icon -->
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="13" x="3" y="7" rx="2"/><path d="M7 7V4a1 1 0 011-1h8a1 1 0 011 1v3"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">EICR Certificates</h3>
+        <p class="mb-4">Landlord, homeowner & commercial electrical safety checks and certifications.</p>
+        <a href="#contact" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-full mt-auto shadow transition">Learn More</a>
+      </div>
+      <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2 p-6 flex flex-col items-center text-center" data-sr>
+        <div class="bg-blue-50 text-blue-700 p-4 rounded-full mb-4">
+          <!-- Commercial Icon -->
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="6" rx="2"/><path d="M6 6V4a2 2 0 012-2h8a2 2 0 012 2v2"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Commercial Electrical Work</h3>
+        <p class="mb-4">Offices, shops, & industrial – trusted by local Dorset businesses.</p>
+        <a href="#contact" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-full mt-auto shadow transition">Learn More</a>
+      </div>
+      <div class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2 p-6 flex flex-col items-center text-center" data-sr>
+        <div class="bg-blue-50 text-blue-700 p-4 rounded-full mb-4">
+          <!-- Smart Home Icon -->
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12V7a1 1 0 011-1h2V4a1 1 0 011-1h6a1 1 0 011 1v2h2a1 1 0 011 1v5"/><path d="M4 12l8 8 8-8"/></svg>
+        </div>
+        <h3 class="font-bold text-lg mb-2">Smart Home Installations</h3>
+        <p class="mb-4">Automated lighting, security, and smart technology for convenience and safety.</p>
+        <a href="#contact" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold px-5 py-2 rounded-full mt-auto shadow transition">Learn More</a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Services -->
-  <section id="services" class="py-24 bg-slate-50">
-    <div class="max-w-7xl mx-auto px-6">
-
-      <div class="text-center mb-16">
-        <h2 class="text-4xl font-extrabold mb-4">Electrical Services</h2>
-        <p class="text-slate-600 max-w-2xl mx-auto">
-          Professional domestic and commercial electrical services with fast local response.
-        </p>
+<!-- 3. About Section (include animated stats counter) -->
+<section id="about" class="py-20">
+  <div class="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-16">
+    <div class="flex-1">
+      <h2 class="text-3xl font-bold mb-4">About Our Electricians</h2>
+      <p class="text-lg mb-8">
+        We are a team of certified local electricians dedicated to providing rapid, reliable, and premium-quality electrical services.
+        Whether it's a small domestic repair or a large commercial installation, our integrity, expertise, and customer-first approach set us apart.
+      </p>
+      <div class="grid grid-cols-2 gap-6 mb-4">
+        <div class="text-center bg-gray-50 p-6 rounded-xl shadow" data-sr>
+          <div class="text-blue-700 text-3xl font-extrabold" data-count="15">15+</div>
+          <div class="mt-2 text-gray-700 font-semibold">Years Experience</div>
+        </div>
+        <div class="text-center bg-gray-50 p-6 rounded-xl shadow" data-sr>
+          <div class="text-blue-700 text-3xl font-extrabold" data-count="2500">2500+</div>
+          <div class="mt-2 text-gray-700 font-semibold">Jobs Completed</div>
+        </div>
+        <div class="text-center bg-gray-50 p-6 rounded-xl shadow" data-sr>
+          <div class="text-blue-700 text-3xl font-extrabold flex items-center justify-center gap-1">
+            <span data-count="4.9">4.9</span>
+            <svg class="w-7 h-7 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.36 4.18a1 1 0 00.95.69h4.392c.969 0 1.371 1.24.588 1.81l-3.563 2.587a1 1 0 00-.364 1.118l1.36 4.181c.3.921-.755 1.688-1.541 1.118l-3.563-2.587a1 1 0 00-1.175 0l-3.563 2.587c-.786.57-1.841-.197-1.541-1.118l1.36-4.181a1 1 0 00-.364-1.118L2.06 9.607c-.783-.57-.38-1.81.588-1.81h4.392a1 1 0 00.95-.69l1.36-4.18z"/>
+            </svg>
+          </div>
+          <div class="mt-2 text-gray-700 font-semibold">Customer Rating</div>
+        </div>
+        <div class="text-center bg-gray-50 p-6 rounded-xl shadow" data-sr>
+          <div class="text-blue-700 text-3xl font-extrabold" data-count="6">6</div>
+          <div class="mt-2 text-gray-700 font-semibold">Team Members</div>
+        </div>
       </div>
+      <div class="mt-2 text-sm text-gray-500">Your safety and satisfaction are our top priorities.</div>
+    </div>
+    <div class="flex-1 flex justify-center" data-sr>
+      <img src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=facearea&w=750&h=750&q=80" alt="Local Electrician Team" class="rounded-2xl shadow-lg w-80 h-80 object-cover object-center">
+    </div>
+  </div>
+</section>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-
-        <div class="service-card bg-white p-8 rounded-3xl shadow-sm transition duration-300">
-          <div class="text-4xl mb-4">⚡</div>
-          <h3 class="text-xl font-bold mb-3">Emergency Electricians</h3>
-          <p class="text-slate-600 mb-5">
-            Fast same-day emergency electrical repairs and diagnostics.
-          </p>
-          <button class="text-blue-600 font-semibold">Learn More →</button>
-        </div>
-
-        <div class="service-card bg-white p-8 rounded-3xl shadow-sm transition duration-300">
-          <div class="text-4xl mb-4">🔋</div>
-          <h3 class="text-xl font-bold mb-3">EV Charger Installation</h3>
-          <p class="text-slate-600 mb-5">
-            Certified EV charging point installation for homes and businesses.
-          </p>
-          <button class="text-blue-600 font-semibold">Learn More →</button>
-        </div>
-
-        <div class="service-card bg-white p-8 rounded-3xl shadow-sm transition duration-300">
-          <div class="text-4xl mb-4">🏠</div>
-          <h3 class="text-xl font-bold mb-3">House Rewiring</h3>
-          <p class="text-slate-600 mb-5">
-            Full and partial rewires completed safely and efficiently.
-          </p>
-          <button class="text-blue-600 font-semibold">Learn More →</button>
-        </div>
-
-        <div class="service-card bg-white p-8 rounded-3xl shadow-sm transition duration-300">
-          <div class="text-4xl mb-4">💡</div>
-          <h3 class="text-xl font-bold mb-3">Lighting Installation</h3>
-          <p class="text-slate-600 mb-5">
-            LED lighting, garden lighting, and smart lighting upgrades.
-          </p>
-          <button class="text-blue-600 font-semibold">Learn More →</button>
-        </div>
-
+<!-- 4. Why Choose Us Section -->
+<section id="why" class="py-20 bg-blue-900 text-white">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-10">Why Choose Us?</h2>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div class="bg-blue-800 rounded-xl p-6 flex flex-col items-center text-center shadow group hover:bg-blue-700 transition" data-sr>
+        <svg class="w-9 h-9 mb-3 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1V9h2v3h1v4h1v2h-2v-2z"/></svg>
+        <h3 class="font-bold text-lg mb-2">Fast Response Times</h3>
+        <p>Local team ensures rapid attendance for all emergencies & bookings.</p>
+      </div>
+      <div class="bg-blue-800 rounded-xl p-6 flex flex-col items-center text-center shadow group hover:bg-blue-700 transition" data-sr>
+        <svg class="w-9 h-9 mb-3 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 16V8a4 4 0 00-8 0v8"/></svg>
+        <h3 class="font-bold text-lg mb-2">Certified Electricians</h3>
+        <p>NICEIC registered, City & Guilds qualified, and fully insured experts.</p>
+      </div>
+      <div class="bg-blue-800 rounded-xl p-6 flex flex-col items-center text-center shadow group hover:bg-blue-700 transition" data-sr>
+        <svg class="w-9 h-9 mb-3 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M7 7V4a1 1 0 011-1h8a1 1 0 011 1v3"/></svg>
+        <h3 class="font-bold text-lg mb-2">Transparent Pricing</h3>
+        <p>Clear, upfront pricing with no hidden fees. Free quotes for every job.</p>
+      </div>
+      <div class="bg-blue-800 rounded-xl p-6 flex flex-col items-center text-center shadow group hover:bg-blue-700 transition" data-sr>
+        <svg class="w-9 h-9 mb-3 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+        <h3 class="font-bold text-lg mb-2">Guaranteed Work</h3>
+        <p>All work comes with a satisfaction and workmanship guarantee.</p>
+      </div>
+      <div class="bg-blue-800 rounded-xl p-6 flex flex-col items-center text-center shadow group hover:bg-blue-700 transition" data-sr>
+        <svg class="w-9 h-9 mb-3 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0118 0"/></svg>
+        <h3 class="font-bold text-lg mb-2">Local Coverage</h3>
+        <p>Serving Poole, Bournemouth, Christchurch, Wimborne, Dorset and nearby areas.</p>
+      </div>
+      <div class="bg-blue-800 rounded-xl p-6 flex flex-col items-center text-center shadow group hover:bg-blue-700 transition" data-sr>
+        <svg class="w-9 h-9 mb-3 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M18.364 5.636a9 9 0 11-12.728 0"/></svg>
+        <h3 class="font-bold text-lg mb-2">Emergency Availability</h3>
+        <p>24/7 callouts available for emergencies, whenever you need us most.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Stats -->
-  <section class="py-20 bg-white">
-    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-8 text-center">
-
-      <div>
-        <div class="text-5xl font-extrabold text-blue-700 mb-2">15+</div>
-        <p class="text-slate-600">Years Experience</p>
+<!-- 5. Reviews/Testimonial Section -->
+<section id="reviews" class="py-20 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-10">What Our Customers Say</h2>
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Repeat testimonial cards as needed -->
+      <div class="bg-white rounded-xl shadow p-6 flex flex-col" data-sr>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-lg font-bold">Sarah W.</span>
+          <span class="flex items-center">
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+          </span>
+        </div>
+        <p class="italic mb-2">"Truly professional from start to finish! Arrived promptly and fixed my fuse board in no time. Highly recommend to anyone local!"</p>
+        <div class="text-sm text-gray-500 mt-auto">Poole</div>
       </div>
-
-      <div>
-        <div class="text-5xl font-extrabold text-blue-700 mb-2">5,000+</div>
-        <p class="text-slate-600">Jobs Completed</p>
+      <div class="bg-white rounded-xl shadow p-6 flex flex-col" data-sr>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-lg font-bold">James B.</span>
+          <span class="flex items-center">
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+          </span>
+        </div>
+        <p class="italic mb-2">"Very friendly and knowledgeable electricians. Helped me with a last-minute emergency. Prices were clear and fair."</p>
+        <div class="text-sm text-gray-500 mt-auto">Bournemouth</div>
       </div>
-
-      <div>
-        <div class="text-5xl font-extrabold text-blue-700 mb-2">4.9★</div>
-        <p class="text-slate-600">Average Rating</p>
+      <div class="bg-white rounded-xl shadow p-6 flex flex-col" data-sr>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-lg font-bold">Mohammed K.</span>
+          <span class="flex items-center">
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927l1.36 4.18"/></svg>
+          </span>
+        </div>
+        <p class="italic mb-2">"I am so grateful for the fast emergency callout. The team were brilliant and kept me informed every step!"</p>
+        <div class="text-sm text-gray-500 mt-auto">Christchurch</div>
       </div>
-
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Reviews -->
-  <section id="reviews" class="py-24 bg-slate-50">
-    <div class="max-w-7xl mx-auto px-6">
-
-      <div class="text-center mb-16">
-        <h2 class="text-4xl font-extrabold mb-4">Customer Reviews</h2>
+<!-- FAQ Section (Accordion) -->
+<section id="faq" class="py-16">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+    <div class="max-w-2xl mx-auto">
+      <div class="mb-4 border rounded-xl bg-gray-50" data-sr>
+        <button class="w-full py-4 px-6 flex justify-between items-center font-semibold text-lg faq-toggle">
+          Are your electricians qualified and insured?
+          <span class="faq-arrow transition-transform">&or;</span>
+        </button>
+        <div class="faq-content px-6 pb-4 hidden">
+          Yes—all our electricians are NICEIC registered, fully insured, and trained to the highest industry standards for your peace of mind!
+        </div>
       </div>
+      <div class="mb-4 border rounded-xl bg-gray-50" data-sr>
+        <button class="w-full py-4 px-6 flex justify-between items-center font-semibold text-lg faq-toggle">
+          How quickly can you respond to emergencies?
+          <span class="faq-arrow transition-transform">&or;</span>
+        </button>
+        <div class="faq-content px-6 pb-4 hidden">
+          We aim for a 60-minute average response time for local emergency callouts.
+        </div>
+      </div>
+      <div class="mb-4 border rounded-xl bg-gray-50" data-sr>
+        <button class="w-full py-4 px-6 flex justify-between items-center font-semibold text-lg faq-toggle">
+          Do you provide free quotes or estimates?
+          <span class="faq-arrow transition-transform">&or;</span>
+        </button>
+        <div class="faq-content px-6 pb-4 hidden">
+          Yes, we offer free, no-obligation quotes for all electrical work—just fill in the contact form or call us!
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-      <div class="grid md:grid-cols-3 gap-8">
+<!-- 6. Coverage Area Section -->
+<section id="areas" class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-8">Coverage Areas</h2>
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold shadow-sm">Poole</span>
+      <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold shadow-sm">Bournemouth</span>
+      <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold shadow-sm">Christchurch</span>
+      <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold shadow-sm">Wimborne</span>
+      <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold shadow-sm">Dorset</span>
+      <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold shadow-sm">Ferndown</span>
+      <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold shadow-sm">Ringwood</span>
+      <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-full font-semibold shadow-sm">Surrounding areas</span>
+    </div>
+  </div>
+</section>
 
-        <div class="bg-white p-8 rounded-3xl shadow-sm">
-          <div class="text-yellow-400 text-xl mb-4">★★★★★</div>
-          <p class="text-slate-600 mb-5">
-            Fantastic service. Arrived quickly and fixed our fuse board issue the same day.
-          </p>
-          <div class="font-bold">Sarah M.</div>
-          <div class="text-sm text-
+<!-- 7. Contact Section -->
+<section id="contact" class="py-20">
+  <div class="container mx-auto px-4">
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-10" data-sr>
+      <h2 class="text-3xl font-bold mb-4 text-center">Contact Us</h2>
+      <form id="contactForm" class="space-y-6" autocomplete="off">
+        <div class="flex flex-col sm:flex-row gap-4">
+          <input required type="text" name="name" placeholder="Name" class="flex-1 px-4 py-3 rounded-lg border focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-gray-50 font-medium">
+          <input required type="email" name="email" placeholder="Email" class="flex-1 px-4 py-3 rounded-lg border focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-gray-50 font-medium">
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <input required type="tel" name="phone" placeholder="Phone" class="flex-1 px-4 py-3 rounded-lg border focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-gray-50 font-medium">
+          <select name="service" required class="flex-1 px-4 py-3 rounded-lg border focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-gray-50 font-medium">
+            <option value="">Service Required</option>
+            <option>Emergency Electricians</option>
+            <option>EV Charger Installation</option>
+            <option>House Rewiring</option>
+            <option>Fuse Board Upgrades</option>
+            <option>Lighting Installation</option>
+            <option>EICR Certificates</option>
+            <option>Commercial Work</option>
+            <option>Smart Home Installations</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <textarea required name="message" rows="4" placeholder="Your Message" class="w-full px-4 py-3 rounded-lg border focus:border-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-gray-50 font-medium"></textarea>
+        <button type="submit" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-8 py-4 rounded-full shadow-lg w-full text-lg transition active:scale-95">
+          Send Message
+        </button>
+        <div id="formResponse" class="text-center mt-4 font-semibold"></div>
+      </form>
+      <div class="mt-8 space-y-1 text-center text-gray-700">
+        <div><b>Phone:</b> <a href="tel:+441234567890" class="text-blue-700 underline">01234 567890</a></div>
+        <div><b>Email:</b> <a href="mailto:info@electriciansnearyou.com" class="text-blue-700 underline">info@electriciansnearyou.com</a></div>
+        <div><b>Business Hours:</b> 7:00am – 10:00pm&nbsp;(Mon-Sun)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. Footer -->
+<footer class="bg-blue-900 text-white pt-12 pb-6 mt-12">
+  <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between gap-8">
+    <div>
+      <h3 class="font-bold text-xl mb-2">ElectriciansNearYou</h3>
+      <p class="text-sm text-blue-200">© 2026 ElectriciansNearYou. All rights reserved.</p>
+    </div>
+    <div>
+      <h4 class="font-semibold mb-2">Quick Links</h4>
+      <ul>
+        <li><a href="#services" class="hover:underline">Services</a></li>
+        <li><a href="#about" class="hover:underline">About</a></li>
+        <li><a href="#reviews" class="hover:underline">Reviews</a></li>
+        <li><a href="#contact" class="hover:underline">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-semibold mb-2">Legal</h4>
+      <ul>
+        <li><a href="#" class="hover:underline">Privacy Policy</a></li>
+        <li><a href="#" class="hover:underline">Terms &amp; Conditions</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-semibold mb-2">Follow Us</h4>
+      <div class="flex gap-3">
+        <!-- Dummy Social Icons -->
+        <a href="#" class="text-blue-200 hover:text-white" aria-label="Facebook">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8H7v4h2v12h5V12h3.642l.358-4H14V6c0-1.158.684-1.5 1.438-1.5H19V0h-2.64C12.005 0 11 2.025 11 4.606V8z"/></svg>
+        </a>
+        <a href="#" class="text-blue-200 hover:text-white" aria-label="X/Twitter">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.6a9.93 9.93 0 0 1-2.827.775A5.068 5.068 0 0 0 23.338 3.1c-.956.567-2.01.977-3.137 1.197A5.02 5.02 0 0 0 16.616.36C14.432.363 12.67 2.145 12.67 4.32c0 .336.037.666.11.98C8.435 5.118 4.473 3.1 1.726.397c-.367.629-.576 1.36-.576 2.141 0 1.478.753 2.781 1.897 3.541a5.07 5.07 0 0 1-2.285-.631v.064c0 2.064 1.467 3.788 3.417 4.181-.357.096-.729.147-1.115.147-.272 0-.535-.027-.791-.075.535 1.673 2.092 2.895 3.933 2.928A10.08 10.08 0 0 1 0 20.333c1.559.996 3.417 1.579 5.431 1.579 6.518 0 10.087-5.384 10.087-10.058 0-.153-.003-.306-.01-.457A7.08 7.08 0 0 0 24 4.6z"/></svg>
+        </a>
+        <a href="#" class="text-blue-200 hover:text-white" aria-label="Instagram">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="6"/><circle cx="12" cy="12" r="5"/><circle cx="17" cy="7" r="1"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Floating Call Button (mobile only) -->
+<a href="tel:+441234567890" class="floating-call-btn block sm:hidden bg-emerald-500 hover:bg-emerald-600 text-white rounded-full shadow-lg p-5">
+  <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2"
+    viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round"
+    d="M3 5.88a17 17 0 0014.12 14.12l1.65-4.47a2 2 0 012.1-1.22l3.04.34a2 2 0 012 2v3a2 2 0 01-2 2A19 19 0 013 7.88a2 2 0 012-2h3a2 2 0 012 2l-.34 3.04a2 2 0 01-1.22 2.1L3 19.12z"></path></svg>
+</a>
+
+<!-- Main script -->
+<script src="script.js"></script>
+</body>
+</html>
