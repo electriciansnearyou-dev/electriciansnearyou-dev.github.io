@@ -101,3 +101,59 @@ function animateCounter(el) {
   };
   requestAnimationFrame(step);
 }
+
+// Testimonial fader/slider with next/prev & auto-rotate
+document.addEventListener("DOMContentLoaded", function() {
+  const slides = document.querySelectorAll("#testimonial-slider .testimonial-slide");
+  const prevBtn = document.getElementById("prevTestimonial");
+  const nextBtn = document.getElementById("nextTestimonial");
+  let idx = 0, prevIdx = -1, autoSlide;
+  if (!slides.length) return;
+
+  function showSlide(newIdx) {
+    if (prevIdx >= 0 && slides[prevIdx]) {
+      slides[prevIdx].style.opacity = "0";
+      slides[prevIdx].classList.add("pointer-events-none");
+      slides[prevIdx].style.zIndex = "0";
+    }
+    slides[newIdx].style.opacity = "1";
+    slides[newIdx].classList.remove("pointer-events-none");
+    slides[newIdx].style.zIndex = "1";
+    prevIdx = newIdx;
+  }
+  function nextSlide() {
+    idx = (idx + 1) % slides.length;
+    showSlide(idx);
+  }
+  function prevSlide() {
+    idx = (idx - 1 + slides.length) % slides.length;
+    showSlide(idx);
+  }
+  showSlide(idx);
+
+  // Button navigation
+  if (prevBtn && nextBtn) {
+    prevBtn.onclick = () => { prevSlide(); resetAuto(); };
+    nextBtn.onclick = () => { nextSlide(); resetAuto(); };
+  }
+
+  // Keyboard navigation
+  window.addEventListener("keydown", (e) => {
+    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
+    if (e.key === "ArrowRight") { nextSlide(); resetAuto(); }
+    if (e.key === "ArrowLeft")  { prevSlide(); resetAuto(); }
+  });
+
+  // Auto rotate every 5s, pause/resume on manual interaction
+  function startAuto() {
+    autoSlide = setInterval(nextSlide, 5000);
+  }
+  function stopAuto() {
+    if (autoSlide) clearInterval(autoSlide);
+  }
+  function resetAuto() {
+    stopAuto();
+    startAuto();
+  }
+  startAuto();
+});
