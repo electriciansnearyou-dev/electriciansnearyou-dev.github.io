@@ -1054,25 +1054,36 @@
   </script>
 
   <script>
-  // SERVICE DROPDOWNS
-  document.querySelectorAll(".service-toggle").forEach((button) => {
 
-    button.addEventListener("click", () => {
+  const menuBtn = document.getElementById("menu-btn");
+  const mobileNav = document.getElementById("mobile-nav");
+  const closeMenuBtn = document.getElementById("close-menu");
+  const mobileLinks = document.querySelectorAll(".mobile-link");
 
-      const content = button.nextElementSibling;
+  // OPEN MENU
+  menuBtn.addEventListener("click", () => {
+    mobileNav.classList.remove("hidden");
+    mobileNav.classList.add("flex");
+  });
 
-      content.classList.toggle("hidden");
+  // CLOSE MENU BUTTON
+  closeMenuBtn.addEventListener("click", () => {
+    mobileNav.classList.add("hidden");
+    mobileNav.classList.remove("flex");
+  });
 
-      // Change button text
-      if (content.classList.contains("hidden")) {
-        button.textContent = "Learn More";
-      } else {
-        button.textContent = "Show Less";
-      }
+  // AUTO CLOSE WHEN LINK CLICKED
+  mobileLinks.forEach((link) => {
+
+    link.addEventListener("click", () => {
+
+      mobileNav.classList.add("hidden");
+      mobileNav.classList.remove("flex");
 
     });
 
   });
+
   </script>
 
 </body>
