@@ -1090,6 +1090,31 @@
   });
 
   </script>
+<script>
+  // SERVICE DROPDOWNS
+  const serviceButtons = document.querySelectorAll(".service-toggle");
 
+  serviceButtons.forEach((button) => {
+
+    button.addEventListener("click", () => {
+
+      const content =
+        button.nextElementSibling;
+
+      content.classList.toggle("hidden");
+
+      // OPTIONAL BUTTON TEXT CHANGE
+      if (content.classList.contains("hidden")) {
+        button.textContent = "Learn More";
+      } else {
+        button.textContent = "Show Less";
+      }
+
+    });
+
+  });
+</script>
+
+    
 </body>
 </html>
