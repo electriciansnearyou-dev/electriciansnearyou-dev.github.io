@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Emergency Electricians in Poole & Bournemouth | NICEIC Certified</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta
+    name="description"
+    content="24/7 emergency electricians in Poole, Bournemouth & Dorset. NICEIC registered, fully insured, highly rated domestic & commercial electrical services."
+  />
+
+  <link
+    rel="canonical"
+    href="https://electriciansnearyou-dev.github.io/Tester/"
+  />
+
+  <!-- Open Graph -->
+  <meta
+    property="og:title"
+    content="Emergency Electricians in Poole & Bournemouth"
+  />
+  <meta
+    property="og:description"
+    content="24/7 emergency and domestic electricians. NICEIC registered, insured, and highly rated."
+  />
+  <meta property="og:type" content="website" />
+  <meta
+    property="og:url"
+    content="https://electriciansnearyou-dev.github.io/Tester/"
+  />
+  <meta
+    property="og:image"
+    content="https://electriciansnearyou-dev.github.io/Tester/assets/og-image.jpg"
+  />
+
+  <!-- LocalBusiness Schema -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Electrician",
+      "name": "ElectriciansNearYou",
+      "description": "24/7 emergency and domestic electricians. NICEIC registered, insured, and highly rated.",
+      "image": "https://electriciansnearyou-dev.github.io/Tester/assets/og-image.jpg",
+      "telephone": "+447711261478",
+      "email": "electriciansnearyou@gmail.com",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Poole",
+        "addressRegion": "Dorset",
+        "addressCountry": "UK"
+      },
+      "areaServed": [
+        "Poole",
+        "Bournemouth",
+        "Christchurch",
+        "Wimborne",
+        "Ferndown",
+        "Ringwood",
+        "Dorset"
+      ],
+      "openingHours": "Mo,Tu,We,Th,Fr 07:00-18:00",
+      "url": "https://electriciansnearyou-dev.github.io/Tester/"
+    }
+  </script>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+    }
+
+    [x-cloak] {
+      display: none !important;
+    }
+
+    .floating-call-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 50;
+    }
+
+    .faq-arrow.rotate {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+
+<body class="bg-white text-gray-900">
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur shadow">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+
+      <a href="#" class="text-2xl font-extrabold text-blue-700">
+        ElectriciansNearYou
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex gap-6 font-semibold">
+        <a href="#services" class="hover:text-blue-700">Services</a>
+        <a href="#about" class="hover:text-blue-700">About</a>
+        <a href="#why" class="hover:text-blue-700">Why Us</a>
+        <a href="#reviews" class="hover:text-blue-700">Reviews</a>
+        <a href="#areas" class="hover:text-blue-700">Coverage</a>
+        <a href="#contact" class="hover:text-blue-700">Contact</a>
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="menu-btn"
+        class="md:hidden p-2"
+        aria-label="Open Menu"
+      >
+        <svg
+          class="w-7 h-7"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div
+      id="mobile-nav"
+      class="fixed inset-0 bg-white z-50 hidden flex-col p-8"
+    >
+
+      <div class="flex justify-end">
+        <button
+          id="close-menu"
+          class="p-2"
+          aria-label="Close Menu"
+        >
+          <svg
+            class="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-6 text-xl font-semibold mt-10">
+        <a href="#services" class="mobile-link">Services</a>
+        <a href="#about" class="mobile-link">About</a>
+        <a href="#why" class="mobile-link">Why Us</a>
+        <a href="#reviews" class="mobile-link">Reviews</a>
+        <a href="#areas" class="mobile-link">Coverage</a>
+        <a href="#contact" class="mobile-link">Contact</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- FLOATING CTA -->
+  <a
+    href="#contact"
+    class="hidden sm:block fixed left-6 bottom-8 z-40 bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-full font-bold shadow-lg animate-bounce"
+  >
+    Get Free Quote
+  </a>
+
+  <!-- HERO -->
+  <section
+    class="relative min-h-[85vh] flex items-center text-white"
+    style="
+      background-image: url('assets/20240412_212651.jpg');
+      background-size: cover;
+      background-position: center;
+    "
+  >
+
+    <div class="absolute inset-0 bg-black/65"></div>
+
+    <div class="relative z-10 container mx-auto px-4 py-24 text-center">
+
+      <div class="inline-block bg-red-600 px-5 py-2 rounded-full font-bold text-sm mb-6 animate-pulse">
+        24/7 Emergency Electrician Available Today
+      </div>
+
+      <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+        Trusted Emergency Electricians <br />
+        In Poole & Bournemouth
+      </h1>
+
+      <p class="text-lg md:text-xl max-w-3xl mx-auto mb-10">
+        NICEIC certified electricians providing emergency callouts,
+        rewiring, fuse board upgrades, EV charger installation,
+        EICR certificates and commercial electrical services across Dorset.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+
+        <a
+          href="#contact"
+          class="bg-white text-blue-700 hover:bg-gray-100 px-8 py-4 rounded-full font-bold text-lg shadow-lg transition"
+        >
+          Get Free Quote
+        </a>
+
+        <a
+          href="tel:07711261478"
+          class="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-full font-bold text-lg shadow-lg transition"
+        >
+          Call Now
+        </a>
+
+      </div>
+
+      <!-- Trust -->
+      <div class="flex flex-wrap justify-center gap-6 font-semibold">
+
+        <div class="flex items-center gap-2">
+          ✅ NICEIC Registered
+        </div>
+
+        <div class="flex items-center gap-2">
+          ✅ Fully Insured
+        </div>
+
+        <div class="flex items-center gap-2">
+          ✅ 24/7 Emergency Service
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" class="py-20 bg-gray-50">
+
+    <div class="container mx-auto px-4">
+
+      <h2 class="text-3xl font-bold text-center mb-12">
+        Our Electrical Services
+      </h2>
+
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+
+        <!-- Card -->
+        <div class="bg-white rounded-2xl p-6 shadow hover:shadow-xl transition">
+
+          <div class="text-4xl mb-4">⚡</div>
+
+          <h3 class="font-bold text-xl mb-3">
+            Emergency Electricians
+          </h3>
+
+          <p class="text-gray-600 mb-5">
+            Fast emergency electrical callouts across Dorset.
+          </p>
+
+          <a
+            href="#contact"
+            class="inline-block bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-full font-semibold"
+          >
+            Learn More
+          </a>
+
+        </div>
+
+        <!-- Card -->
+        <div class="bg-white rounded-2xl p-6 shadow hover:shadow-xl transition">
+
+          <div class="text-4xl mb-4">🔋</div>
+
+          <h3 class="font-bold text-xl mb-3">
+            EV Charger Installation
+          </h3>
+
+          <p class="text-gray-600 mb-5">
+            Professional EV charger supply & installation.
+          </p>
+
+          <a
+            href="#contact"
+            class="inline-block bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-full font-semibold"
+          >
+            Learn More
+          </a>
+
+        </div>
+
+        <!-- Card -->
+        <div class="bg-white rounded-2xl p-6 shadow hover:shadow-xl transition">
+
+          <div class="text-4xl mb-4">🏠</div>
+
+          <h3 class="font-bold text-xl mb-3">
+            House Rewiring
+          </h3>
+
+          <p class="text-gray-600 mb-5">
+            Full & partial rewiring for homes and properties.
+          </p>
+
+          <a
+            href="#contact"
+            class="inline-block bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-full font-semibold"
+          >
+            Learn More
+          </a>
+
+        </div>
+
+        <!-- Card -->
+        <div class="bg-white rounded-2xl p-6 shadow hover:shadow-xl transition">
+
+          <div class="text-4xl mb-4">🛡️</div>
+
+          <h3 class="font-bold text-xl mb-3">
+            Fuse Board Upgrades
+          </h3>
+
+          <p class="text-gray-600 mb-5">
+            Modern consumer unit upgrades for improved safety.
+          </p>
+
+          <a
+            href="#contact"
+            class="inline-block bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-full font-semibold"
+          >
+            Learn More
+          </a>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCAL SEO SECTION -->
+  <section class="py-20">
+
+    <div class="container mx-auto px-4 max-w-5xl">
+
+      <h2 class="text-3xl font-bold mb-8 text-center">
+        Local Electricians in Poole & Bournemouth
+      </h2>
+
+      <div class="space-y-5 text-lg text-gray-700 leading-relaxed">
+
+        <p>
+          We provide professional electrical services throughout Poole,
+          Bournemouth, Christchurch, Wimborne, Ferndown, Ringwood and
+          surrounding Dorset areas.
+        </p>
+
+        <p>
+          Whether you need emergency electrical repairs, EICR certificates,
+          fuse board upgrades, lighting installation or complete rewiring,
+          our NICEIC certified electricians deliver reliable workmanship
+          and fast response times.
+        </p>
+
+        <p>
+          We work with homeowners, landlords, letting agents and businesses
+          providing fully insured electrical services with transparent pricing
+          and guaranteed workmanship.
+        </p>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="py-20 bg-gray-50">
+
+    <div class="container mx-auto px-4 grid lg:grid-cols-2 gap-14 items-center">
+
+      <div>
+
+        <h2 class="text-3xl font-bold mb-6">
+          About Our Electricians
+        </h2>
+
+        <p class="text-lg text-gray-700 mb-8">
+          Our experienced local electricians provide safe,
+          reliable and high-quality electrical services
+          throughout Dorset.
+        </p>
+
+        <div class="grid grid-cols-2 gap-5">
+
+          <div class="bg-white p-6 rounded-xl shadow text-center">
+            <div class="text-4xl font-extrabold text-blue-700 mb-2">
+              18+
+            </div>
+            <div class="font-semibold">
+              Years Experience
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl shadow text-center">
+            <div class="text-4xl font-extrabold text-blue-700 mb-2">
+              200+
+            </div>
+            <div class="font-semibold">
+              Jobs Completed
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl shadow text-center">
+            <div class="text-4xl font-extrabold text-blue-700 mb-2">
+              5★
+            </div>
+            <div class="font-semibold">
+              Customer Rating
+            </div>
+          </div>
+
+          <div class="bg-white p-6 rounded-xl shadow text-center">
+            <div class="text-4xl font-extrabold text-blue-700 mb-2">
+              4
+            </div>
+            <div class="font-semibold">
+              Team Members
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div>
+
+        <img
+          loading="lazy"
+          src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=900&q=80"
+          alt="Professional local electrician team"
+          class="rounded-2xl shadow-xl"
+        />
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WHY US -->
+  <section id="why" class="py-20 bg-blue-900 text-white">
+
+    <div class="container mx-auto px-4">
+
+      <h2 class="text-3xl font-bold text-center mb-12">
+        Why Choose Us?
+      </h2>
+
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
+        <div class="bg-blue-800 p-8 rounded-2xl">
+          <h3 class="font-bold text-xl mb-3">
+            Fast Response Times
+          </h3>
+          <p>
+            Rapid emergency electrician response throughout Dorset.
+          </p>
+        </div>
+
+        <div class="bg-blue-800 p-8 rounded-2xl">
+          <h3 class="font-bold text-xl mb-3">
+            NICEIC Certified
+          </h3>
+          <p>
+            Fully qualified, insured and certified electricians.
+          </p>
+        </div>
+
+        <div class="bg-blue-800 p-8 rounded-2xl">
+          <h3 class="font-bold text-xl mb-3">
+            Transparent Pricing
+          </h3>
+          <p>
+            Honest pricing with free quotes and no hidden fees.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section id="reviews" class="py-20 bg-gray-50">
+
+    <div class="container mx-auto px-4">
+
+      <h2 class="text-3xl font-bold text-center mb-10">
+        Customer Reviews
+      </h2>
+
+      <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow overflow-hidden">
+
+        <iframe
+          src="https://widgets.sociablekit.com/google-reviews/iframe/25684459"
+          frameborder="0"
+          width="100%"
+          height="500"
+          loading="lazy"
+          title="Google Reviews"
+        ></iframe>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-20">
+
+    <div class="container mx-auto px-4 max-w-3xl">
+
+      <h2 class="text-3xl font-bold text-center mb-10">
+        Frequently Asked Questions
+      </h2>
+
+      <!-- FAQ Item -->
+      <div class="border rounded-xl mb-4 overflow-hidden">
+
+        <button
+          class="faq-toggle w-full px-6 py-5 flex justify-between items-center font-semibold text-left"
+          aria-expanded="false"
+        >
+          Are your electricians qualified and insured?
+
+          <span class="faq-arrow transition-transform duration-300">
+            ▼
+          </span>
+        </button>
+
+        <div class="faq-content hidden px-6 pb-5 text-gray-700">
+          Yes. All our electricians are NICEIC registered,
+          fully insured and trained to current UK regulations.
+        </div>
+
+      </div>
+
+      <!-- FAQ Item -->
+      <div class="border rounded-xl mb-4 overflow-hidden">
+
+        <button
+          class="faq-toggle w-full px-6 py-5 flex justify-between items-center font-semibold text-left"
+          aria-expanded="false"
+        >
+          How quickly can you respond to emergencies?
+
+          <span class="faq-arrow transition-transform duration-300">
+            ▼
+          </span>
+        </button>
+
+        <div class="faq-content hidden px-6 pb-5 text-gray-700">
+          We aim for rapid emergency response times throughout
+          Poole, Bournemouth and nearby Dorset areas.
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- COVERAGE -->
+  <section id="areas" class="py-20 bg-gray-50">
+
+    <div class="container mx-auto px-4">
+
+      <h2 class="text-3xl font-bold text-center mb-10">
+        Coverage Areas
+      </h2>
+
+      <div class="flex flex-wrap justify-center gap-3">
+
+        <span class="bg-blue-100 text-blue-700 px-5 py-2 rounded-full font-semibold">
+          Poole
+        </span>
+
+        <span class="bg-blue-100 text-blue-700 px-5 py-2 rounded-full font-semibold">
+          Bournemouth
+        </span>
+
+        <span class="bg-blue-100 text-blue-700 px-5 py-2 rounded-full font-semibold">
+          Christchurch
+        </span>
+
+        <span class="bg-blue-100 text-blue-700 px-5 py-2 rounded-full font-semibold">
+          Wimborne
+        </span>
+
+        <span class="bg-blue-100 text-blue-700 px-5 py-2 rounded-full font-semibold">
+          Ferndown
+        </span>
+
+        <span class="bg-blue-100 text-blue-700 px-5 py-2 rounded-full font-semibold">
+          Ringwood
+        </span>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="py-20">
+
+    <div class="container mx-auto px-4">
+
+      <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-10">
+
+        <h2 class="text-3xl font-bold text-center mb-10">
+          Contact Us
+        </h2>
+
+        <form
+          action="https://formspree.io/f/mlgvwwpv"
+          method="POST"
+          class="space-y-6"
+        >
+
+          <!-- Honeypot -->
+          <input
+            type="text"
+            name="_gotcha"
+            style="display:none"
+          />
+
+          <!-- Redirect -->
+          <input
+            type="hidden"
+            name="_next"
+            value="thankyou.html"
+          />
+
+          <div class="grid sm:grid-cols-2 gap-4">
+
+            <div>
+              <label for="name" class="sr-only">Name</label>
+
+              <input
+                id="name"
+                type="text"
+                name="name"
+                required
+                placeholder="Name"
+                class="w-full px-4 py-3 rounded-lg border bg-gray-50"
+              />
+            </div>
+
+            <div>
+              <label for="email" class="sr-only">Email</label>
+
+              <input
+                id="email"
+                type="email"
+                name="email"
+                required
+                placeholder="Email"
+                class="w-full px-4 py-3 rounded-lg border bg-gray-50"
+              />
+            </div>
+
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+
+            <div>
+              <label for="phone" class="sr-only">Phone</label>
+
+              <input
+                id="phone"
+                type="tel"
+                name="phone"
+                required
+                placeholder="Phone Number"
+                class="w-full px-4 py-3 rounded-lg border bg-gray-50"
+              />
+            </div>
+
+            <div>
+              <label for="service" class="sr-only">
+                Service Required
+              </label>
+
+              <select
+                id="service"
+                name="service"
+                required
+                class="w-full px-4 py-3 rounded-lg border bg-gray-50"
+              >
+                <option value="">Service Required</option>
+                <option>Emergency Electricians</option>
+                <option>EV Charger Installation</option>
+                <option>House Rewiring</option>
+                <option>Fuse Board Upgrades</option>
+                <option>EICR Certificates</option>
+                <option>Commercial Work</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div>
+            <label for="message" class="sr-only">
+              Message
+            </label>
+
+            <textarea
+              id="message"
+              name="message"
+              rows="5"
+              required
+              placeholder="Your Message"
+              class="w-full px-4 py-3 rounded-lg border bg-gray-50"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-blue-700 hover:bg-blue-800 text-white py-4 rounded-full font-bold text-lg"
+          >
+            Send Message
+          </button>
+
+        </form>
+
+        <!-- Contact Info -->
+        <div class="mt-10 text-center text-gray-700 space-y-2">
+
+          <div>
+            <strong>Jordan H:</strong>
+            <a
+              href="tel:07711261478"
+              class="text-blue-700 underline"
+            >
+              07711261478
+            </a>
+          </div>
+
+          <div>
+            <strong>Jordan M:</strong>
+            <a
+              href="tel:07907056422"
+              class="text-blue-700 underline"
+            >
+              07907056422
+            </a>
+          </div>
+
+          <div>
+            <strong>Email:</strong>
+            <a
+              href="mailto:electriciansnearyou@gmail.com"
+              class="text-blue-700 underline"
+            >
+              electriciansnearyou@gmail.com
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-blue-900 text-white py-12">
+
+    <div class="container mx-auto px-4 grid md:grid-cols-3 gap-10">
+
+      <div>
+        <h3 class="text-2xl font-bold mb-3">
+          ElectriciansNearYou
+        </h3>
+
+        <p class="text-blue-200">
+          Trusted local electricians across Dorset.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="font-bold mb-3">
+          Quick Links
+        </h4>
+
+        <div class="space-y-2">
+          <a href="#services" class="block hover:underline">Services</a>
+          <a href="#about" class="block hover:underline">About</a>
+          <a href="#contact" class="block hover:underline">Contact</a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="font-bold mb-3">
+          Legal
+        </h4>
+
+        <div class="space-y-2">
+          <a href="privacy-policy.html" class="block hover:underline">
+            Privacy Policy
+          </a>
+
+          <a href="terms.html" class="block hover:underline">
+            Terms & Conditions
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center text-blue-200 mt-10 text-sm">
+      © 2026 ElectriciansNearYou. All Rights Reserved.
+    </div>
+  </footer>
+
+  <!-- FLOATING PHONE -->
+  <a
+    href="tel:07711261478"
+    class="floating-call-btn sm:hidden bg-emerald-500 hover:bg-emerald-600 text-white p-5 rounded-full shadow-xl"
+    aria-label="Call Electrician"
+  >
+    📞
+  </a>
+
+  <!-- WHATSAPP -->
+  <a
+    href="https://wa.me/447711261478"
+    target="_blank"
+    rel="noopener"
+    class="fixed bottom-28 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-xl z-50"
+    aria-label="WhatsApp"
+  >
+    💬
+  </a>
+
+  <!-- SCRIPTS -->
+  <script>
+    // MOBILE MENU
+    const menuBtn = document.getElementById("menu-btn");
+    const closeBtn = document.getElementById("close-menu");
+    const mobileNav = document.getElementById("mobile-nav");
+
+    function openMenu() {
+      mobileNav.classList.remove("hidden");
+      mobileNav.classList.add("flex");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeMenu() {
+      mobileNav.classList.add("hidden");
+      mobileNav.classList.remove("flex");
+      document.body.style.overflow = "auto";
+    }
+
+    menuBtn.addEventListener("click", openMenu);
+    closeBtn.addEventListener("click", closeMenu);
+
+    document.querySelectorAll(".mobile-link").forEach((link) => {
+      link.addEventListener("click", closeMenu);
+    });
+
+    // FAQ
+    document.querySelectorAll(".faq-toggle").forEach((button) => {
+
+      button.addEventListener("click", () => {
+
+        const content = button.nextElementSibling;
+        const arrow = button.querySelector(".faq-arrow");
+
+        const expanded =
+          button.getAttribute("aria-expanded") === "true";
+
+        button.setAttribute(
+          "aria-expanded",
+          !expanded
+        );
+
+        content.classList.toggle("hidden");
+
+        arrow.classList.toggle("rotate");
+
+      });
+
+    });
+  </script>
+
+</body>
+</html>
