@@ -624,6 +624,26 @@ document.addEventListener("DOMContentLoaded", function () {
     startAuto();
   }
 
+// FAQ ACCORDION
+const faqButtons = document.querySelectorAll(".faq-toggle");
+
+faqButtons.forEach((button) => {
+
+  button.addEventListener("click", () => {
+
+    const content = button.nextElementSibling;
+    const arrow = button.querySelector(".faq-arrow");
+
+    // Toggle content
+    content.classList.toggle("hidden");
+
+    // Rotate arrow
+    arrow.classList.toggle("rotate-180");
+
+  });
+
+});
+  
 });
 </script>
 </body>
