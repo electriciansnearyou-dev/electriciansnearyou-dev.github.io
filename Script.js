@@ -1,6 +1,3 @@
-// name=script.js
-// Responsive menu, scroll reveal, stat counters, FAQ accordion, and basic form handler
-
 // Mobile Navigation Drawer
 const menuBtn = document.getElementById('menu-btn');
 const mobileNav = document.getElementById('mobile-nav');
@@ -14,7 +11,6 @@ function closeMenu() {
 if (closeMenuBtn) closeMenuBtn.onclick = closeMenu;
 
 // Scroll Reveal Animation
-// Minimal implementation, uses data-sr attribute on reveal elements
 function scrollReveal() {
   const revealEls = document.querySelectorAll('[data-sr]');
   const windowHeight = window.innerHeight;
@@ -58,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Contact Form (client only, just demo feedback)
+  // Basic Contact Form Feedback Demo
   const contactForm = document.getElementById('contactForm');
   const formResponse = document.getElementById('formResponse');
   if (contactForm && formResponse) {
@@ -102,23 +98,31 @@ function animateCounter(el) {
   requestAnimationFrame(step);
 }
 
-// Testimonial fader/slider with next/prev & auto-rotate
+// ==== TESTIMONIAL FADE SLIDER (Tailwind classes only) ====
 document.addEventListener("DOMContentLoaded", function() {
   const slides = document.querySelectorAll("#testimonial-slider .testimonial-slide");
   const prevBtn = document.getElementById("prevTestimonial");
   const nextBtn = document.getElementById("nextTestimonial");
-  let idx = 0, prevIdx = -1, autoSlide;
+  let idx = 0, prevIdx = 0, autoSlide;
   if (!slides.length) return;
 
-  function showSlide(newIdx) {
-    if (prevIdx >= 0 && slides[prevIdx]) {
-      slides[prevIdx].style.opacity = "0";
-      slides[prevIdx].classList.add("pointer-events-none");
-      slides[prevIdx].style.zIndex = "0";
+  // Initialize: all hidden except the first
+  slides.forEach((slide, i) => {
+    if (i === 0) {
+      slide.classList.add("opacity-100", "pointer-events-auto", "z-10");
+      slide.classList.remove("opacity-0", "pointer-events-none", "z-0");
+    } else {
+      slide.classList.add("opacity-0", "pointer-events-none", "z-0");
+      slide.classList.remove("opacity-100", "pointer-events-auto", "z-10");
     }
-    slides[newIdx].style.opacity = "1";
-    slides[newIdx].classList.remove("pointer-events-none");
-    slides[newIdx].style.zIndex = "1";
+  });
+
+  function showSlide(newIdx) {
+    slides[prevIdx].classList.remove("opacity-100", "pointer-events-auto", "z-10");
+    slides[prevIdx].classList.add("opacity-0", "pointer-events-none", "z-0");
+
+    slides[newIdx].classList.remove("opacity-0", "pointer-events-none", "z-0");
+    slides[newIdx].classList.add("opacity-100", "pointer-events-auto", "z-10");
     prevIdx = newIdx;
   }
   function nextSlide() {
@@ -129,6 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
     idx = (idx - 1 + slides.length) % slides.length;
     showSlide(idx);
   }
+  // Initial render (redundant, but safe)
   showSlide(idx);
 
   // Button navigation
