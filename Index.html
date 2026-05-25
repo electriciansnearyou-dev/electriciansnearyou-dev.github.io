@@ -510,7 +510,61 @@ viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5
     d="M3 5.88a17 17 0 0014.12 14.12l1.65-4.47a2 2 0 012.1-1.22l3.04.34a2 2 0 012 2v3a2 2 0 01-2 2A19 19 0 013 7.88a2 2 0 012-2h3a2 2 0 012 2l-.34 3.04a2 2 0 01-1.22 2.1L3 19.12z"></path></svg>
 </a>
 
+
 <!-- Main script -->
 <script src="script.js"></script>
+  <script>
+/* Testimonial Fade + Slider */
+document.addEventListener("DOMContentLoaded", function() {
+// ==== TESTIMONIAL SLIDER ====
+const slides = document.querySelectorAll("#testimonial-slider .testimonial-slide");
+const prevBtn = document.getElementById("prevTestimonial");
+const nextBtn = document.getElementById("nextTestimonial");
+let idx = 0, prevIdx = 0, autoSlide;
+if (!slides.length) return;
+
+// Initialize: all hidden except the first
+slides.forEach((slide, i) => {
+if (i === 0) {
+slide.classList.add("opacity-100", "pointer-events-auto", "z-10");
+slide.classList.remove("opacity-0", "pointer-events-none", "z-0");
+} else {
+slide.classList.add("opacity-0", "pointer-events-none", "z-0");
+slide.classList.remove("opacity-100", "pointer-events-auto", "z-10");
+}
+});
+
+function showSlide(newIdx) {
+slides[prevIdx].classList.remove("opacity-100", "pointer-events-auto", "z-10");
+slides[prevIdx].classList.add("opacity-0", "pointer-events-none", "z-0");
+slides[newIdx].classList.remove("opacity-0", "pointer-events-none", "z-0");
+slides[newIdx].classList.add("opacity-100", "pointer-events-auto", "z-10");
+prevIdx = newIdx;
+}
+function nextSlide() {
+idx = (idx + 1) % slides.length;
+showSlide(idx);
+}
+function prevSlide() {
+idx = (idx - 1 + slides.length) % slides.length;
+showSlide(idx);
+}
+showSlide(idx);
+if (prevBtn && nextBtn) {
+prevBtn.onclick = () => { prevSlide(); resetAuto(); };
+nextBtn.onclick = () => { nextSlide(); resetAuto(); };
+}
+window.addEventListener("keydown", (e) => {
+if (["INPUT","TEXTAREA"].includes(document.activeElement.tagName)) return;
+if (e.key === "ArrowRight") { nextSlide(); resetAuto(); }
+if (e.key === "ArrowLeft") { prevSlide(); resetAuto(); }
+});
+function startAuto() { autoSlide = setInterval(nextSlide, 5000); }
+function stopAuto() { if (autoSlide) clearInterval(autoSlide); }
+function resetAuto() { stopAuto(); startAuto(); }
+startAuto();
+
+/* -- rest of your page JS can go here (menu/nav/faq/stat-counter/optional) -- */
+});
 </body>
 </html>
