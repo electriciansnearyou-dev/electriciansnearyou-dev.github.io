@@ -162,3 +162,91 @@ document.addEventListener(
     "DOMContentLoaded",
     initialiseCalculator
 );
+
+/*==========================================================
+ PROPERTY CARD SELECTION
+==========================================================*/
+
+function selectProperty(value, button){
+
+    // Store answer
+    app.answers.property = value;
+
+    // Remove previous selection
+    document.querySelectorAll(".property-card").forEach(card=>{
+        card.classList.remove("selected");
+    });
+
+    // Highlight current selection
+    button.classList.add("selected");
+
+    // Update UI
+    updateSummary();
+    updateEstimate();
+
+    // Move progress to question 2
+    app.currentQuestion = 2;
+
+    updateProgress();
+
+    // Show Question 2
+    showQuestion(2);
+
+}
+
+
+/*==========================================================
+ SHOW QUESTION
+==========================================================*/
+
+function showQuestion(questionNumber){
+
+    // Hide every question
+    document.querySelectorAll(".question-card").forEach(card=>{
+
+        card.classList.add("hidden");
+
+    });
+
+    // Show selected question
+    const question =
+        document.getElementById("question"+questionNumber);
+
+    if(question){
+
+        question.classList.remove("hidden");
+
+        question.scrollIntoView({
+
+            behavior:"smooth",
+
+            block:"center"
+
+        });
+
+    }
+
+}
+
+
+/*==========================================================
+ PROPERTY EVENTS
+==========================================================*/
+
+document.querySelectorAll(".property-card")
+
+.forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+        selectProperty(
+
+            button.dataset.value,
+
+            button
+
+        );
+
+    });
+
+});
