@@ -796,3 +796,48 @@ transition:.4s;
 border-radius:50px;
 
 }
+
+
+/*=========================================
+ QUESTION ANIMATIONS
+=========================================*/
+
+.question-card{
+
+opacity:1;
+
+transform:translateY(0);
+
+transition:
+
+opacity .45s ease,
+
+transform .45s ease;
+
+}
+
+.question-card.hidden{
+
+display:none;
+
+opacity:0;
+
+transform:translateY(30px);
+
+}
+
+.property-card{
+
+cursor:pointer;
+
+}
+
+.property-card.selected{
+
+transform:translateY(-8px) scale(1.03);
+
+box-shadow:
+
+0 30px 60px rgba(14,77,146,.25);
+
+}
