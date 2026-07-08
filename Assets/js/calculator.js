@@ -30,42 +30,37 @@ let max = 900;
 
 /* PROPERTY */
 
-switch(estimate.property){
+const propertyPricing={
 
-case "Flat":
+flat:{
+name:"Flat",
+baseMin:650,
+baseMax:780,
+circuits:"6-8"
+},
 
-min+=0;
+terraced:{
+name:"Terraced",
+baseMin:710,
+baseMax:850,
+circuits:"8-10"
+},
 
-max+=0;
+semi:{
+name:"Semi Detached",
+baseMin:790,
+baseMax:930,
+circuits:"10-12"
+},
 
-break;
-
-case "Terraced":
-
-min+=40;
-
-max+=50;
-
-break;
-
-case "Semi":
-
-min+=90;
-
-max+=120;
-
-break;
-
-case "Detached":
-
-min+=180;
-
-max+=250;
-
-break;
-
+detached:{
+name:"Detached",
+baseMin:920,
+baseMax:1150,
+circuits:"12-16"
 }
 
+};
 
 /* BEDROOMS */
 
