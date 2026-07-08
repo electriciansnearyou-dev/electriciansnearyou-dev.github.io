@@ -605,6 +605,71 @@ height:22px;
 
 }
 
+/* Property Cards */
+
+.property-card{
+
+text-align:center;
+
+align-items:center;
+
+justify-content:center;
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.property-card .icon{
+
+font-size:4rem;
+
+margin-bottom:20px;
+
+transition:.4s;
+
+}
+
+.property-card h3{
+
+margin-bottom:12px;
+
+font-size:1.4rem;
+
+}
+
+.property-card p{
+
+margin:0;
+
+font-size:.95rem;
+
+color:#777;
+
+}
+
+.property-card:hover .icon{
+
+transform:scale(1.15) rotate(4deg);
+
+}
+
+.property-card.selected{
+
+background:linear-gradient(135deg,#0E4D92,#1F78FF);
+
+color:white;
+
+border:none;
+
+}
+
+.property-card.selected p{
+
+color:white;
+
+}
 
 /*==========================================================
  LIVE ESTIMATE
