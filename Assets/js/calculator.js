@@ -1,196 +1,164 @@
-/*==================================================
- ENY SMART ESTIMATE ENGINE
- Version 1.0
-==================================================*/
+/*==========================================================
+ ENY SMARTESTIMATE™ ENGINE
+ Electricians Near You
+ Version 2.0
+==========================================================*/
 
-const estimate = {
+const app = {
 
-property: "",
+    currentQuestion: 1,
 
-bedrooms: "",
+    totalQuestions: 8,
 
-board: "",
+    answers: {
 
-age: "",
+        property: null,
+        bedrooms: null,
+        board: null,
+        age: null,
+        extras: [],
+        surge: null,
+        urgency: null
 
-extras: [],
-
-priceMin:650,
-
-priceMax:900
+    }
 
 };
+
+
+/*==========================================================
+ PRICING DATABASE
+==========================================================*/
+
+const pricing = {
+
+    property: {
+
+        flat: {
+            name: "Flat / Apartment",
+            min: 650,
+            max: 780,
+            circuits: "6-8"
+        },
+
+        terraced: {
+            name: "Terraced House",
+            min: 720,
+            max: 860,
+            circuits: "8-10"
+        },
+
+        semi: {
+            name: "Semi Detached",
+            min: 790,
+            max: 930,
+            circuits: "10-12"
+        },
+
+        detached: {
+            name: "Detached House",
+            min: 920,
+            max: 1150,
+            circuits: "12-16"
+        }
+
+    }
+
+};
+
+
+/*==========================================================
+ UI REFERENCES
+==========================================================*/
+
+const ui = {
+
+    price: document.getElementById("livePrice"),
+
+    property: document.getElementById("summaryProperty"),
+
+    bedrooms: document.getElementById("summaryBedrooms"),
+
+    board: document.getElementById("summaryBoard"),
+
+    age: document.getElementById("summaryAge"),
+
+    extras: document.getElementById("summaryExtras"),
+
+    confidenceFill: document.getElementById("confidenceFill"),
+
+    confidenceText: document.getElementById("confidenceText"),
+
+    progress: document.getElementById("progressFill")
+
+};
+
+
+/*==========================================================
+ UPDATE SUMMARY
+==========================================================*/
+
+function updateSummary(){
+
+    if(app.answers.property){
+
+        ui.property.textContent =
+            pricing.property[app.answers.property].name;
+
+    }
+
+}
+
+
+/*==========================================================
+ UPDATE ESTIMATE
+==========================================================*/
 
 function updateEstimate(){
 
-let min = 650;
+    if(!app.answers.property) return;
 
-let max = 900;
+    const selected =
+        pricing.property[app.answers.property];
 
-
-/* PROPERTY */
-
-const propertyPricing={
-
-flat:{
-name:"Flat",
-baseMin:650,
-baseMax:780,
-circuits:"6-8"
-},
-
-terraced:{
-name:"Terraced",
-baseMin:710,
-baseMax:850,
-circuits:"8-10"
-},
-
-semi:{
-name:"Semi Detached",
-baseMin:790,
-baseMax:930,
-circuits:"10-12"
-},
-
-detached:{
-name:"Detached",
-baseMin:920,
-baseMax:1150,
-circuits:"12-16"
-}
-
-};
-
-/* BEDROOMS */
-
-switch(estimate.bedrooms){
-
-case "1":
-
-min+=0;
-
-max+=0;
-
-break;
-
-case "2":
-
-min+=40;
-
-max+=50;
-
-break;
-
-case "3":
-
-min+=80;
-
-max+=100;
-
-break;
-
-case "4":
-
-min+=140;
-
-max+=180;
-
-break;
-
-case "5+":
-
-min+=220;
-
-max+=260;
-
-break;
+    ui.price.textContent =
+        "£" +
+        selected.min +
+        " - £" +
+        selected.max;
 
 }
 
 
-/* BOARD */
+/*==========================================================
+ UPDATE PROGRESS
+==========================================================*/
 
-switch(estimate.board){
+function updateProgress(){
 
-case "Plastic":
+    const percent =
+        (app.currentQuestion / app.totalQuestions) * 100;
 
-min+=60;
+    ui.progress.style.width = percent + "%";
 
-max+=90;
+    ui.confidenceFill.style.width = percent + "%";
 
-break;
-
-case "Metal":
-
-min+=0;
-
-max+=0;
-
-break;
-
-case "Very Old":
-
-min+=160;
-
-max+=240;
-
-break;
+    ui.confidenceText.textContent =
+        Math.round(percent) + "% Complete";
 
 }
 
 
-/* AGE */
+/*==========================================================
+ INITIALISE
+==========================================================*/
 
-switch(estimate.age){
+function initialiseCalculator(){
 
-case "10-20":
-
-min+=20;
-
-max+=30;
-
-break;
-
-case "20-40":
-
-min+=70;
-
-max+=100;
-
-break;
-
-case "40+":
-
-min+=140;
-
-max+=220;
-
-break;
+    updateProgress();
 
 }
 
-
-/* EXTRAS */
-
-estimate.extras.forEach(extra=>{
-
-min+=35;
-
-max+=55;
-
-});
-
-
-estimate.priceMin=min;
-
-estimate.priceMax=max;
-
-
-/* UPDATE SCREEN */
-
-document.getElementById("livePrice").innerHTML=
-
-"£"+min.toLocaleString()+" - £"+max.toLocaleString();
-
-}
+document.addEventListener(
+    "DOMContentLoaded",
+    initialiseCalculator
+);
