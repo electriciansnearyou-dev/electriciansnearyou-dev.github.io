@@ -1,1045 +1,836 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENY Pro Quote Matrix</title>
-    <!-- Tailwind v4 Playground & Google Fonts -->
+    <title>ENY Electrical - Premium Project Planner & CRM</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&viewport=width=device-width,initial-scale=1.0" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        /* Custom scrollbar styling for a premium feel */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 99px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 flex flex-col min-h-screen selection:bg-indigo-500/30 selection:text-indigo-200 antialiased">
+<body class="bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-900">
 
-    <!-- Header Navigation Section -->
-    <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800/60 sticky top-0 z-40 transition-all duration-300">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
+    <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center shadow-lg shadow-amber-500/10">
-                    <i data-lucide="zap" class="w-5 h-5 text-slate-950 stroke-[2.5]"></i>
+                <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950">
+                    <i data-lucide="zap" class="w-6 h-6 stroke-[2.5]"></i>
                 </div>
                 <div>
-                    <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">ENY QUOTE MATRIX</h1>
-                    <p class="text-[10px] font-bold text-amber-400 tracking-wider uppercase">Electricians Near You</p>
+                    <h1 class="font-bold text-xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">ENY ELECTRICAL</h1>
+                    <p class="text-xs font-semibold text-amber-400 tracking-wider uppercase">Project Management System</p>
                 </div>
             </div>
-            <nav class="flex bg-slate-950 p-1 rounded-xl border border-slate-800/80 w-full sm:w-auto">
-                <button onclick="switchTab('quote')" id="btn-tab-quote" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer">
-                    <i data-lucide="file-plus-2" class="w-3.5 h-3.5"></i> Create Quote
+            
+            <nav class="flex flex-wrap items-center justify-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+                <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="nav-btn px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10">
+                    <i data-lucide="file-text" class="w-4 h-4"></i> Quote Builder
                 </button>
-                <button onclick="switchTab('saved')" id="btn-tab-saved" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer">
-                    <i data-lucide="layers" class="w-3.5 h-3.5"></i> Vault Records
+                <button onclick="switchTab('inventory-tab')" id="btn-inventory-tab" class="nav-btn px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all text-slate-400 hover:text-white">
+                    <i data-lucide="package" class="w-4 h-4"></i> Stock Manager
                 </button>
-                <button onclick="switchTab('settings')" id="btn-tab-settings" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer">
-                    <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i> Engine Setup
+                <button onclick="switchTab('clients-tab')" id="btn-clients-tab" class="nav-btn px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all text-slate-400 hover:text-white">
+                    <i data-lucide="users" class="w-4 h-4"></i> Client CRM
+                </button>
+                <button onclick="switchTab('vault-tab')" id="btn-vault-tab" class="nav-btn px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all text-slate-400 hover:text-white">
+                    <i data-lucide="archive" class="w-4 h-4"></i> Saved Quotes & Sync
                 </button>
             </nav>
         </div>
     </header>
 
-    <!-- Main Workspace Container Layout -->
-    <main class="max-w-6xl w-full mx-auto p-4 flex-grow">
-
-        <!-- ================= TAB: NEW QUOTE INTERFACE ================= -->
-        <section id="tab-quote" class="grid grid-cols-1 lg:grid-cols-12 gap-6 transition-all duration-300">
-            
-            <!-- Left Side Input Matrix Form Columns -->
-            <div class="lg:col-span-7 space-y-6">
-                <!-- Card Component: Client Profile Block -->
-                <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-xl shadow-black/20">
-                    <div class="flex items-center gap-2 mb-4 text-slate-200">
-                        <i data-lucide="user-square-2" class="w-4 h-4 text-indigo-400"></i>
-                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Client Information Profile</h2>
-                    </div>
-                    <div class="grid grid-cols-1 gap-3">
-                        <input type="text" id="client-name" placeholder="Client Name or Business entity" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:border-indigo-500 transition text-sm placeholder:text-slate-600 font-medium">
-                        <textarea id="client-address" placeholder="Physical Job Address Location details" rows="2" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:border-indigo-500 transition text-sm placeholder:text-slate-600 font-medium resize-none"></textarea>
-                    </div>
-                </div>
-
-                <!-- Card Component: Blueprint Mapping Array Node -->
-                <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-xl shadow-black/20">
-                    <div class="flex items-center gap-2 mb-3">
-                        <i data-lucide="git-branch" class="w-4 h-4 text-emerald-400"></i>
-                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Select Core Job Blueprint</h2>
-                    </div>
-                    <select id="job-preset-select" onchange="applyJobPreset()" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:border-emerald-500 text-sm font-semibold text-slate-200 cursor-pointer">
-                        <!-- Populated dynamically via initial configs -->
-                    </select>
-                </div>
-
-                <!-- Card Component: Materials Itemization Dynamic Blocks -->
-                <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-xl shadow-black/20 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="boxes" class="w-4 h-4 text-amber-400"></i>
-                            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Job Scoping Materials Matrix</h2>
-                        </div>
-                        <span class="text-[10px] bg-slate-950 border border-slate-800 text-slate-400 font-mono px-2.5 py-1 rounded-md" id="markup-badge">+0% Markup</span>
-                    </div>
-
-                    <!-- Accordion quick selection structural dropdown context -->
-                    <div class="border border-slate-800 bg-slate-950 rounded-xl overflow-hidden">
-                        <button onclick="toggleElement('quote-catalog-picker')" class="w-full p-3 text-left text-xs font-bold text-slate-400 flex justify-between items-center bg-slate-900/40 hover:bg-slate-900 transition cursor-pointer">
-                            <span class="flex items-center gap-1.5"><i data-lucide="plus-circle" class="w-3.5 h-3.5 text-indigo-400"></i> Query and Insert from Master Catalog</span>
-                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 transition-transform duration-200" id="chevron-catalog"></i>
-                        </button>
-                        <div id="quote-catalog-picker" class="hidden p-3 max-h-48 overflow-y-auto space-y-1.5 border-t border-slate-800 bg-slate-950">
-                            <!-- Populated dynamically via matrix engine loops -->
-                        </div>
-                    </div>
-
-                    <div id="quote-materials-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
-                        <!-- Real-time structural material input entries -->
-                    </div>
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
+        
+        <div id="quote-tab" class="tab-content active space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-6">
                     
-                    <button onclick="addCustomMaterialRow()" class="w-full py-2.5 bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-slate-700 rounded-xl text-xs font-bold transition flex justify-center items-center gap-1.5 cursor-pointer">
-                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Insert One-Off Item Specification
-                    </button>
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
+                                <i data-lucide="user-check" class="text-amber-400 w-5 h-5"></i> Link Client Account
+                            </h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select From Records</label>
+                                <select id="quote-client-select" onchange="loadSelectedClientIntoQuote()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition-colors">
+                                    <option value="">-- Direct Manual Input (Unsaved Client) --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Job Name Reference</label>
+                                <input type="text" id="job-name" placeholder="e.g., Board Upgrade & Kitchen Rewire" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-slate-900">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Contact Name</label>
+                                <input type="text" id="client-name" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Email Address</label>
+                                <input type="email" id="client-email" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Site/Billing Address</label>
+                                <input type="text" id="client-address" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
+                                    <i data-lucide="package-search" class="text-amber-400 w-5 h-5"></i> Smart Inventory Search
+                                </h2>
+                                <p class="text-xs text-slate-400 mt-0.5">Live filtering across auto-generated stock groups</p>
+                            </div>
+                            <div class="relative min-w-[240px]">
+                                <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                                <input type="text" id="material-search-input" oninput="filterMaterialCatalog()" placeholder="Search description, code..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
+
+                        <div id="category-tabs-container" class="flex flex-wrap gap-1.5 mb-4 pb-2 border-b border-slate-900"></div>
+
+                        <div id="catalog-results-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[310px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                    </div>
+
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4">
+                            <i data-lucide="shopping-cart" class="text-amber-400 w-5 h-5"></i> Allocated Materials Summary
+                        </h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead>
+                                    <tr class="border-b border-slate-800 text-slate-400 text-xs tracking-wider uppercase">
+                                        <th class="py-3 px-2">Description</th>
+                                        <th class="py-3 px-2 text-center w-24">Qty</th>
+                                        <th class="py-3 px-2 text-right w-28">Trade Cost</th>
+                                        <th class="py-3 px-2 text-right w-28">Subtotal</th>
+                                        <th class="py-3 px-2 text-center w-12"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allocated-materials-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4">
+                            <i data-lucide="clock" class="text-amber-400 w-5 h-5"></i> Labor & Overhead Projections
+                        </h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Total Project Hours</label>
+                                <input type="number" id="labor-hours" value="8" oninput="calculateComprehensiveMetrics()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Hourly Labor Rate (£)</label>
+                                <input type="number" id="labor-rate" value="45" oninput="calculateComprehensiveMetrics()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Global Markup Multiplier (%)</label>
+                                <input type="number" id="global-markup" value="25" oninput="calculateComprehensiveMetrics()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Card Component: Labour Calculation Interface Parameter controls -->
-                <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-xl shadow-black/20">
-                    <div class="flex items-center gap-2 mb-4">
-                        <i data-lucide="alarm-clock" class="w-4 h-4 text-cyan-400"></i>
-                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Labour Computation Engine</h2>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Billing Logic Strategy</label>
-                            <select id="quote-labour-type" onchange="calculateLiveTotals()" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none text-sm font-medium text-slate-200 cursor-pointer">
-                                <option value="hourly">Hourly Iteration Rates</option>
-                                <option value="halfday">Half Day Fixed Block</option>
-                                <option value="day">Full Day Fixed Block</option>
-                            </select>
+                <div class="space-y-6">
+                    <div class="bg-slate-950 border border-amber-500/20 rounded-2xl p-6 shadow-xl sticky top-24 space-y-6">
+                        <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Live Quotation Overview</h3>
+                        
+                        <div class="space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800/80">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">Net Materials:</span>
+                                <span id="summary-net-materials" class="font-medium">£0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">Marked-Up Materials:</span>
+                                <span id="summary-marked-materials" class="font-medium text-amber-400/90">£0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-400">Project Labor Gross:</span>
+                                <span id="summary-labor-costs" class="font-medium">£0.00</span>
+                            </div>
+                            <div class="border-t border-slate-800 pt-3 mt-1 flex justify-between text-base font-bold text-white">
+                                <span>Gross Total (Exc VAT):</span>
+                                <span id="summary-gross-total">£0.00</span>
+                            </div>
                         </div>
-                        <div id="hours-input-wrapper" class="transition-all duration-200">
-                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Quantity / Cumulative Hours</label>
-                            <input type="number" id="quote-labour-hours" value="1" min="1" oninput="calculateLiveTotals()" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:border-indigo-500 text-sm font-mono text-slate-200">
-                        </div>
+
+                        <button onclick="commitQuoteToVault()" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-amber-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm tracking-wide">
+                            <i data-lucide="save" class="w-4 h-4 stroke-[2.5]"></i> Commit Quote to Vault
+                        </button>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Card Component: Regulatory Compliance Variables Metrics -->
-                <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 shadow-xl shadow-black/20 space-y-3">
-                    <div class="flex items-center gap-2 mb-1">
-                        <i data-lucide="shield-alert" class="w-4 h-4 text-purple-400"></i>
-                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Regulatory Verification & Admin Addons</h2>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-slate-950 border border-slate-850 rounded-xl hover:border-slate-800 transition">
-                        <label for="include-testing" class="text-xs font-semibold text-slate-300 flex items-center gap-2.5 cursor-pointer user-select-none">
-                            <input type="checkbox" id="include-testing" onchange="calculateLiveTotals()" class="w-4 h-4 rounded bg-slate-900 border-slate-800 text-indigo-600 focus:ring-0 focus:ring-offset-0 cursor-pointer">
-                            Execute Circuit Inspection & Verification Testing
-                        </label>
-                        <span class="font-mono text-xs font-bold text-slate-400" id="label-testing-cost">£0.00</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-slate-950 border border-slate-850 rounded-xl hover:border-slate-800 transition">
-                        <label for="include-cert" class="text-xs font-semibold text-slate-300 flex items-center gap-2.5 cursor-pointer user-select-none">
-                            <input type="checkbox" id="include-cert" onchange="calculateLiveTotals()" class="w-4 h-4 rounded bg-slate-900 border-slate-800 text-indigo-600 focus:ring-0 focus:ring-offset-0 cursor-pointer">
-                            Generate Authorized Compliance Certification
-                        </label>
-                        <span class="font-mono text-xs font-bold text-slate-400" id="label-cert-cost">£0.00</span>
-                    </div>
+        <div id="inventory-tab" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
                     <div>
-                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Payment Terms Legal Duration</label>
-                        <select id="quote-payment-terms" class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none text-sm font-medium text-slate-200 cursor-pointer">
-                            <option value="Due on Receipt">Immediate Remittance / Due on Receipt</option>
-                            <option value="Within 7 Days">Net 7 Billing Cycle Schedule</option>
-                            <option value="Within 14 Days">Net 14 Billing Cycle Schedule</option>
-                            <option value="Within 30 Days">Net 30 Billing Cycle Schedule</option>
-                        </select>
+                        <h2 class="text-lg font-bold text-white">Add Custom Stock Item</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Creating a new category automatically updates global navigation search filters.</p>
+                    </div>
+                    <form id="new-item-form" onsubmit="createCustomInventoryItem(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Part Number / SKU *</label>
+                            <input type="text" id="stock-sku" required placeholder="e.g., 6124Y-10.0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Product Description *</label>
+                            <input type="text" id="stock-desc" required placeholder="e.g., 10mm Twin & Earth Cable" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Trade Cost (£) *</label>
+                                <input type="number" step="0.01" id="stock-cost" required placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Category Classification *</label>
+                                <input type="text" id="stock-category" required placeholder="e.g., Ev Chargers" list="existing-categories" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                <datalist id="existing-categories"></datalist>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Append to Database
+                        </button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold text-white mb-4">Stock Directory</h2>
+                    <div class="overflow-x-auto max-h-[500px] overflow-y-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider sticky top-0 bg-slate-950 z-10">
+                                    <th class="py-3 px-2">Part Number / SKU</th>
+                                    <th class="py-3 px-2">Description</th>
+                                    <th class="py-3 px-2">Category</th>
+                                    <th class="py-3 px-2 text-right">Wholesale Cost</th>
+                                    <th class="py-3 px-2 text-center w-12"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="master-stock-table-body" class="divide-y divide-slate-900"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Right Side Valuation Calculator Floating Display Columns -->
-            <div class="lg:col-span-5">
-                <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 shadow-2xl shadow-black/40 sticky top-24 space-y-5">
-                    <div class="border-b border-slate-800/80 pb-3 flex items-center justify-between">
-                        <h3 class="text-xs font-black uppercase tracking-widest text-slate-400">Live Valuation Summary</h3>
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <div id="clients-tab" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
+                    <div>
+                        <h2 class="text-lg font-bold text-white">New Client Registration</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Register account profiles inside local business memory storage</p>
                     </div>
-                    <div class="space-y-3.5">
-                        <div class="flex justify-between text-xs text-slate-400">
-                            <span class="font-medium">Gross Materials (Marked Up):</span>
-                            <span class="font-mono font-semibold text-slate-200" id="summary-mats">£0.00</span>
+                    <form id="new-client-form" onsubmit="createNewClientProfile(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Company / Individual Name *</label>
+                            <input type="text" id="crm-client-name" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                         </div>
-                        <div class="flex justify-between text-xs text-slate-400">
-                            <span class="font-medium">Calculated Labour Summation:</span>
-                            <span class="font-mono font-semibold text-slate-200" id="summary-labour">£0.00</span>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Primary Email Address</label>
+                            <input type="email" id="crm-client-email" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                         </div>
-                        <div class="flex justify-between text-xs text-slate-400">
-                            <span class="font-medium">Verification Addons Total:</span>
-                            <span class="font-mono font-semibold text-slate-200" id="summary-addons">£0.00</span>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Contact Phone Number</label>
+                            <input type="tel" id="crm-client-phone" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                         </div>
-                    </div>
-                    <div class="bg-slate-950 border border-slate-900 p-4 rounded-xl flex flex-col justify-center items-center gap-1 shadow-inner">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estimated Final Valuation (GBP)</span>
-                        <span class="text-3xl font-black font-mono tracking-tight bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent" id="summary-total">£0.00</span>
-                    </div>
-                    <div class="grid grid-cols-1 gap-2.5 pt-2">
-                        <button onclick="saveQuoteLocally()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-150 shadow-lg shadow-indigo-600/10 active:scale-[0.99] flex justify-center items-center gap-1.5 cursor-pointer">
-                            <i data-lucide="archive-restore" class="w-3.5 h-3.5"></i> Vault Commit Record
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Default Site Address</label>
+                            <textarea id="crm-client-address" rows="2" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> Create Database Entry
                         </button>
-                        <button onclick="exportToPDF()" class="w-full py-3 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 text-slate-200 border border-slate-700/60 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-150 active:scale-[0.99] flex justify-center items-center gap-1.5 cursor-pointer">
-                            <i data-lucide="printer" class="w-3.5 h-3.5 text-amber-400"></i> Compile Professional PDF Document
-                        </button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                                <i data-lucide="book-user" class="text-amber-400"></i> Client Database Ledger
+                            </h2>
+                            <span id="crm-count-badge" class="bg-slate-900 border border-slate-800 px-3 py-1 rounded-full text-xs font-semibold text-amber-400">0 Accounts</span>
+                        </div>
+                        <div id="crm-empty-state" class="text-center py-12 text-slate-500 text-sm">
+                            <i data-lucide="users-2" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> No accounts registered.
+                        </div>
+                        <div id="crm-ledger-accordion-wrapper" class="space-y-3"></div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- ================= TAB: VAULT RECORD STORAGE MANAGER ================= -->
-        <section id="tab-saved" class="hidden max-w-3xl mx-auto space-y-4 transition-all duration-300">
-            <div class="flex items-center gap-2 mb-2">
-                <i data-lucide="library" class="w-5 h-5 text-indigo-400"></i>
-                <h2 class="text-base font-bold text-slate-200 uppercase tracking-wider">Historical System Vault Records</h2>
-            </div>
-            <div id="saved-quotes-container" class="space-y-2.5">
-                <!-- Dynamically populated quote inventory index grids -->
-            </div>
-        </section>
-
-        <!-- ================= TAB: GLOBAL CORE CONFIG CONFIGURATIONS ================= -->
-        <section id="tab-settings" class="hidden max-w-3xl mx-auto space-y-6 transition-all duration-300">
+        <div id="vault-tab" class="tab-content space-y-6">
             
-            <!-- Structural Module: Backup anti-cache target persistence logic arrays -->
-            <div class="bg-slate-900 border border-amber-500/20 shadow-xl p-5 rounded-2xl space-y-4">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="hard-drive" class="text-amber-400 w-4 h-4"></i>
-                    <h2 class="text-sm font-bold text-amber-200 uppercase tracking-wider">Persistent Physical Hard Drive Mirror Storage</h2>
+            <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="text-amber-400 w-5 h-5 animate-pulse"></i> Intelligent Team Data Synchronization Engine
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+                        Export your database configuration file to share with team members. Importing safely merges unique client records and quotes, and applies a <span class="text-amber-400 font-semibold">Latest Price Overwrite</span> rule across identical material SKUs.
+                    </p>
                 </div>
-                <p class="text-xs text-slate-400 leading-relaxed">Browser operations risk structural data purge scenarios when historical cache clear mechanics trigger. Mitigate data loss vectors by saving a structural localized clone map straight to local drive space infrastructure locations.</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button onclick="exportDatabaseFile()" class="py-3 bg-amber-600 hover:bg-amber-500 text-slate-950 font-extrabold text-xs uppercase tracking-wider rounded-xl transition flex justify-center items-center gap-1.5 cursor-pointer shadow-lg shadow-amber-600/10">
-                        <i data-lucide="download-cloud" class="w-4 h-4 stroke-[2.5]"></i> Backup Master Data Map
+                <div class="flex flex-wrap items-center justify-end gap-3">
+                    <button onclick="exportSystemStateBackup()" class="bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-100 font-medium px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer">
+                        <i data-lucide="download-cloud" class="w-4 h-4 text-emerald-400"></i> Generate Shared Database Export
                     </button>
-                    <label class="py-3 bg-slate-950 hover:bg-slate-850 text-slate-300 font-bold text-xs uppercase tracking-wider border border-slate-800 rounded-xl transition flex justify-center items-center gap-1.5 cursor-pointer text-center">
-                        <i data-lucide="upload-cloud" class="w-4 h-4 text-indigo-400"></i> Import Physical Archive File
-                        <input type="file" id="import-db-file-input" onchange="importDatabaseFile(event)" class="hidden">
+                    <label class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-amber-500/10">
+                        <i data-lucide="upload-cloud" class="w-4 h-4 stroke-[2.5]"></i> Merge Inbound Sync File
+                        <input type="file" id="system-import-file-input" class="hidden" accept=".json" onchange="importSystemStateAndMerge(event)">
                     </label>
                 </div>
             </div>
 
-            <!-- Structural Module: Peer P2P sync token serialization -->
-            <div class="bg-slate-900 border border-indigo-500/20 shadow-xl p-5 rounded-2xl space-y-4">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="refresh-cw" class="text-indigo-400 w-4 h-4"></i>
-                    <h2 class="text-sm font-bold text-indigo-200 uppercase tracking-wider">Colleague Workspace Interlock / Sync Engine</h2>
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-white mb-4">Historical Vault Logs</h2>
+                <div id="vault-empty-state" class="text-center py-16 text-slate-500 text-sm">
+                    <i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Vault is completely empty.
                 </div>
-                <p class="text-xs text-slate-400 leading-relaxed">Mirror global matrix structural values, operational pricing indexes, and master parts array catalogs straight into a secondary operative device terminal effortlessly without internet latency dependancies.</p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button onclick="exportSyncCode()" class="py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition flex justify-center items-center gap-1.5 cursor-pointer shadow-lg shadow-indigo-600/10">
-                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Generate Interlock Token
-                    </button>
-                    <button onclick="importSyncCode()" class="py-3 bg-slate-950 hover:bg-slate-850 text-slate-300 font-bold text-xs uppercase tracking-wider border border-slate-800 rounded-xl transition flex justify-center items-center gap-1.5 cursor-pointer">
-                        <i data-lucide="terminal" class="w-3.5 h-3.5 text-emerald-400"></i> Ingest Overwrite Token
-                    </button>
-                </div>
-            </div>
-
-            <!-- Structural Module: Global Financial Value Cost Basis Adjustments -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="coins" class="w-4 h-4 text-emerald-400"></i>
-                    <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider">Global Labor Strategy Pricing Matrices</h2>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">First Target Hour Base rate (£)</label>
-                        <input type="number" id="cfg-rate-first" class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono focus:outline-none focus:border-indigo-500 text-slate-200">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Subsequent Sequential Hourly rate (£)</label>
-                        <input type="number" id="cfg-rate-sub" class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono focus:outline-none focus:border-indigo-500 text-slate-200">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Half Day Multiplier Scheme Block (£)</label>
-                        <input type="number" id="cfg-rate-half" class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono focus:outline-none focus:border-indigo-500 text-slate-200">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Full Day Multiplier Scheme Block (£)</label>
-                        <input type="number" id="cfg-rate-day" class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono focus:outline-none focus:border-indigo-500 text-slate-200">
-                    </div>
-                </div>
-                <hr class="border-slate-800 my-2">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="percent" class="w-4 h-4 text-cyan-400"></i>
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ancillary Fees & Handling Markups</h2>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Material Margin Markup (%)</label>
-                        <input type="number" id="cfg-markup" class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono focus:outline-none text-slate-200">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Testing Overhead Fee (£)</label>
-                        <input type="number" id="cfg-fee-testing" class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono focus:outline-none text-slate-200">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Cert Administration Fee (£)</label>
-                        <input type="number" id="cfg-fee-cert" class="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm font-mono focus:outline-none text-slate-200">
-                    </div>
-                </div>
-                <button onclick="saveGlobalSettings()" class="w-full py-3 bg-slate-950 hover:bg-slate-850 text-emerald-400 border border-slate-800 hover:border-slate-700 rounded-xl font-bold text-xs uppercase tracking-widest transition cursor-pointer">
-                    Commit Operational Constants Map
-                </button>
-            </div>
-
-            <!-- Structural Module: Global inventory system logs catalog tracking lists -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="database" class="w-4 h-4 text-indigo-400"></i>
-                    <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider">Master Systems Parts Inventory Database</h2>
-                </div>
-                
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 text-xs">
-                    <p class="font-bold text-slate-400 uppercase tracking-wide text-[10px]">Provision New Standard Line Resource Target</p>
-                    <input type="text" id="new-mat-name" placeholder="Item Nomenclature (e.g. 3-Phase Distribution Panel Board)" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg text-slate-200 focus:outline-none">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <input type="number" step="0.01" id="new-mat-cost" placeholder="Net Cost Basis (£)" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg text-slate-200 font-mono focus:outline-none">
-                        <input type="text" id="new-mat-cat" placeholder="Category Scope (e.g. Heavy Switchgear)" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg text-slate-200 focus:outline-none">
-                    </div>
-                    <button onclick="addNewMaterialToCatalog()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs transition uppercase tracking-wider cursor-pointer">Inject into Master Repository</button>
-                </div>
-
-                <div class="space-y-2">
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Current System Catalog Manifest</p>
-                    <div id="settings-catalog-list" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+                <div class="overflow-x-auto">
+                    <table id="vault-table" class="w-full text-left text-sm hidden">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider">
+                                <th class="py-3 px-4">Date Added</th>
+                                <th class="py-3 px-4">Job Reference</th>
+                                <th class="py-3 px-4">Client Linked</th>
+                                <th class="py-3 px-4 text-right">Value (Gross)</th>
+                                <th class="py-3 px-4 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vault-records-body" class="divide-y divide-slate-900"></tbody>
+                    </table>
                 </div>
             </div>
-
-            <!-- Structural Module: Job Blueprint Construction mapping nodes -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="combine" class="w-4 h-4 text-amber-400"></i>
-                    <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider">Job Blueprint Allocation Architect</h2>
-                </div>
-                
-                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 text-xs">
-                    <p class="font-bold text-slate-400 uppercase tracking-wide text-[10px]">Compile / Overwrite Preset Construct</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <input type="text" id="preset-slug" placeholder="Unique Key Handle (e.g. pnl_board_swap)" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg font-mono focus:outline-none">
-                        <input type="text" id="preset-title" placeholder="Display Context Label (e.g. 3-Phase Board Swap)" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg focus:outline-none">
-                    </div>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <div>
-                            <label class="text-[9px] text-slate-500 font-bold block mb-1 uppercase tracking-wide">Labor Framework Allocation</label>
-                            <select id="preset-labour-type" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg text-slate-300 cursor-pointer">
-                                <option value="hourly">Hourly Allocation Basis</option>
-                                <option value="halfday">Half Day Flat Valuation</option>
-                                <option value="day">Full Day Flat Valuation</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[9px] text-slate-500 font-bold block mb-1 uppercase tracking-wide">Base Time Units Duration</label>
-                            <input type="number" id="preset-hours" value="1" class="w-full p-2.5 bg-slate-900 border border-slate-800 rounded-lg font-mono focus:outline-none">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="text-[9px] text-slate-500 font-bold block mb-1.5 uppercase tracking-wide">Interlock Material Components Arrays</label>
-                        <div id="preset-material-checkboxes" class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 max-h-44 overflow-y-auto space-y-1.5"></div>
-                    </div>
-
-                    <button onclick="saveCustomJobPreset()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 rounded-lg font-extrabold text-xs uppercase tracking-wider transition cursor-pointer">
-                        Map Preset Vector to Structural System Memory Map
-                    </button>
-                </div>
-
-                <div class="space-y-2">
-                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-wider">Active System Macro Blueprints Configurations</p>
-                    <div id="settings-preset-list" class="space-y-1.5 max-h-44 overflow-y-auto"></div>
-                </div>
-            </div>
-        </section>
+        </div>
 
     </main>
 
-    <!-- Native System UI Toast Micro-Notification Stack Container -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
-
     <script>
-        // Core Storage Structural Defaults Context Objects Maps
-        const initialSystemDefaults = {
-            rates: { rateFirst: 75, rateSub: 45, rateHalf: 180, rateDay: 320, markup: 20, feeTesting: 120, feeCert: 45 },
-            catalog: [
-                { id: "m1", name: "Twin & Earth 2.5mm Cable (50m)", cost: 60.00, cat: "Cables" },
-                { id: "m2", name: "Double Socket Faceplate White", cost: 3.50, cat: "Sockets" },
-                { id: "m3", name: "7kW EV Charger Unit Base", cost: 380.00, cat: "Hardware" },
-                { id: "m4", name: "10-Way Surge Protected Consumer Board", cost: 145.00, cat: "Switchgear" }
-            ],
-            presets: {
-                rewire_room: {
-                    title: "Full Room Rewire Matrix",
-                    labourType: 'day',
-                    hours: 1,
-                    materials: [{ id: "m1", qty: 1 }, { id: "m2", qty: 4 }]
-                },
-                ev_charger: {
-                    title: "EV Charger Installation Scope",
-                    labourType: 'hourly',
-                    hours: 4,
-                    materials: [{ id: "m3", qty: 1 }]
-                }
-            }
-        };
+        // Seed Stock Core Default Archetypes if user browser database structure is completely clean
+        const DEFAULT_SEED_STOCK = [
+            { id: 'M1', sku: '6124Y-2.5', desc: '2.5mm² Twin & Earth Cable (100m Drum)', cost: 68.50, category: 'Wiring & Management' },
+            { id: 'M2', sku: '6124Y-1.5', desc: '1.5mm² Twin & Earth Cable (100m Drum)', cost: 42.20, category: 'Wiring & Management' },
+            { id: 'M6', sku: 'CU-AM3-10', desc: '10-Way AMD3 Metal Consumer Unit (Populated)', cost: 165.00, category: 'Consumer Units & Protection' },
+            { id: 'M7', sku: 'RCBO-B32', desc: '32A Type B Single Pole 30mA RCBO', cost: 19.50, category: 'Consumer Units & Protection' },
+            { id: 'M10', sku: 'SW-2G-W', desc: '13A 2-Gang Double Pole Switched Socket (White)', cost: 3.85, category: 'Sockets & Switches' },
+            { id: 'M14', sku: 'LED-DL-IP65', desc: 'IP65 Fire-Rated Dimmable LED Downlight (Warm White)', cost: 14.20, category: 'Luminaires & Fittings' }
+        ];
 
-        let currentSettings = {};
-        let systemPresets = {};
-        let masterCatalog = [];
-        let activeMaterials = [];
+        let selectedCategoryFilter = "ALL";
+        let activeAllocatedMaterials = [];
+        let activeLinkedClientId = "";
 
-        window.addEventListener('DOMContentLoaded', () => {
-            initializeStorageEngine();
-            switchTab('quote'); // Set implicit start frame layout view state context
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('eny_vault')) localStorage.setItem('eny_vault', JSON.stringify([]));
+            if (!localStorage.getItem('eny_clients')) localStorage.setItem('eny_clients', JSON.stringify([]));
+            if (!localStorage.getItem('eny_inventory')) localStorage.setItem('eny_inventory', JSON.stringify(DEFAULT_SEED_STOCK));
+            
+            reconstructUnifiedInterfaces();
         });
 
-        // Elegant Built-in Toast Notification UI Engine Component
-        function createToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `transform translate-y-4 opacity-0 transition-all duration-300 ease-out flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl text-xs font-bold border pointer-events-auto bg-slate-900 ${
-                type === 'success' ? 'border-emerald-500/30 text-emerald-400 shadow-emerald-950/20' : 
-                type === 'error' ? 'border-red-500/30 text-red-400 shadow-red-950/20' : 'border-indigo-500/30 text-indigo-400 shadow-indigo-950/20'
-            }`;
-            
-            let icon = 'info';
-            if (type === 'success') icon = 'check-circle-2';
-            if (type === 'error') icon = 'alert-triangle';
-            
-            toast.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 flex-shrink-0"></i> <span>${message}</span>`;
-            container.appendChild(toast);
+        function reconstructUnifiedInterfaces() {
             lucide.createIcons();
+            renderCategoryNavigationTabs();
+            filterMaterialCatalog();
+            rebuildMasterStockDirectoryTable();
+            rebuildCrmProfilesInterface();
+            rebuildQuoteClientDropdown();
+            rebuildVaultDataTable();
+            rebuildDatalistAssistanceArray();
+        }
 
-            // Reflow trigger execution frame sequencing link animations
-            setTimeout(() => { toast.classList.remove('translate-y-4', 'opacity-0'); }, 10);
+        function getStoredInventory() { return JSON.parse(localStorage.getItem('eny_inventory')) || []; }
+        function getStoredClients() { return JSON.parse(localStorage.getItem('eny_clients')) || []; }
+        function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
+
+        function switchTab(targetTabId) {
+            document.querySelectorAll('.tab-content').forEach(element => element.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+                btn.classList.add('text-slate-400', 'hover:text-white');
+            });
+            document.getElementById(targetTabId).classList.add('active');
+            const targetButton = document.getElementById(`btn-${targetTabId}`);
+            targetButton.classList.remove('text-slate-400', 'hover:text-white');
+            targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+        }
+
+        // --- AUTOMATIC CATEGORY CAPTURE MATRIX ---
+        function renderCategoryNavigationTabs() {
+            const container = document.getElementById('category-tabs-container');
+            const currentInventory = getStoredInventory();
+            const uniqueCategories = ["ALL", ...new Set(currentInventory.map(item => item.category).filter(Boolean))];
             
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => { toast.remove(); }, 300);
-            }, 3000);
+            // Auto-clean: Reset filter to ALL if your previously selected category was deleted
+            if (!uniqueCategories.includes(selectedCategoryFilter)) {
+                selectedCategoryFilter = "ALL";
+            }
+
+            container.innerHTML = uniqueCategories.map(cat => {
+                const isSelected = selectedCategoryFilter === cat;
+                return `
+                    <button type="button" onclick="setCategoryFilter('${cat}')" 
+                        class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer
+                        ${isSelected ? 'bg-slate-100 text-slate-950 border-white font-semibold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'}">
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
         }
 
-        function initializeStorageEngine() {
-            const storedRates = localStorage.getItem('eny_app_settings');
-            currentSettings = storedRates ? JSON.parse(storedRates) : { ...initialSystemDefaults.rates };
-            if(!storedRates) localStorage.setItem('eny_app_settings', JSON.stringify(currentSettings));
-
-            const storedCatalog = localStorage.getItem('eny_master_catalog');
-            masterCatalog = storedCatalog ? JSON.parse(storedCatalog) : [ ...initialSystemDefaults.catalog ];
-            if(!storedCatalog) localStorage.setItem('eny_master_catalog', JSON.stringify(masterCatalog));
-
-            const storedPresets = localStorage.getItem('eny_job_presets');
-            systemPresets = storedPresets ? JSON.parse(storedPresets) : { ...initialSystemDefaults.presets };
-            if(!storedPresets) localStorage.setItem('eny_job_presets', JSON.stringify(systemPresets));
-
-            populateSettingsFields();
-            refreshBlueprintSelectorDropdowns();
-            renderCatalogPickers();
-            applyJobPreset();
+        function setCategoryFilter(categoryName) {
+            selectedCategoryFilter = categoryName;
+            renderCategoryNavigationTabs();
+            filterMaterialCatalog();
         }
 
-        function exportDatabaseFile() {
-            const completeDatabasePackage = {
-                eny_app_settings: currentSettings,
-                eny_master_catalog: masterCatalog,
-                eny_job_presets: systemPresets,
-                eny_saved_quotes: JSON.parse(localStorage.getItem('eny_saved_quotes') || '[]')
+        function filterMaterialCatalog() {
+            const searchString = document.getElementById('material-search-input').value.toLowerCase().trim();
+            const resultsGrid = document.getElementById('catalog-results-grid');
+            const currentInventory = getStoredInventory();
+            
+            const targetedSubset = currentInventory.filter(item => {
+                const matchCategory = (selectedCategoryFilter === "ALL" || item.category === selectedCategoryFilter);
+                const matchSearch = item.desc.toLowerCase().includes(searchString) || item.sku.toLowerCase().includes(searchString);
+                return matchCategory && matchSearch;
+            });
+
+            if (targetedSubset.length === 0) {
+                resultsGrid.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-slate-500">No matching stock items found.</div>`;
+                return;
+            }
+
+            resultsGrid.innerHTML = targetedSubset.map(item => `
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-slate-700 transition-colors">
+                    <div>
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-mono tracking-wider font-semibold text-amber-500">${item.sku}</span>
+                            <span class="text-[9px] text-slate-500 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800">${item.category}</span>
+                        </div>
+                        <h4 class="text-xs font-medium text-slate-200 mt-1 line-clamp-2">${item.desc}</h4>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-950">
+                        <span class="text-sm font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</span>
+                        <button type="button" onclick="allocateItemToQuote('${item.id}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 p-1.5 rounded-lg transition-all text-slate-300 cursor-pointer">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // --- DYNAMIC STOCK LOGS ENGINE ---
+        function createCustomInventoryItem(event) {
+            event.preventDefault();
+            const currentInventory = getStoredInventory();
+            const providedSku = document.getElementById('stock-sku').value.trim();
+
+            if(currentInventory.some(i => i.sku.toLowerCase() === providedSku.toLowerCase())) {
+                alert("An item with this Part Number/SKU identifier already exists in your system memory ledger.");
+                return;
+            }
+
+            const newItem = {
+                id: 'MAT-' + Date.now(),
+                sku: providedSku,
+                desc: document.getElementById('stock-desc').value.trim(),
+                cost: parseFloat(document.getElementById('stock-cost').value) || 0,
+                category: document.getElementById('stock-category').value.trim()
             };
 
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(completeDatabasePackage, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "eny_quote_generator_db.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-            createToast("Master Data Archive Map written to downloads tracking directory safely");
+            currentInventory.push(newItem);
+            localStorage.setItem('eny_inventory', JSON.stringify(currentInventory));
+            document.getElementById('new-item-form').reset();
+            
+            reconstructUnifiedInterfaces();
         }
 
-        function importDatabaseFile(event) {
+        function purgeInventoryItem(itemId) {
+            let currentInventory = getStoredInventory();
+            currentInventory = currentInventory.filter(i => i.id !== itemId);
+            localStorage.setItem('eny_inventory', JSON.stringify(currentInventory));
+            
+            // Clean active allocations mapping if purged item is part of building block
+            activeAllocatedMaterials = activeAllocatedMaterials.filter(i => i.id !== itemId);
+            rebuildAllocatedMaterialsTable();
+            reconstructUnifiedInterfaces();
+        }
+
+        function rebuildMasterStockDirectoryTable() {
+            const tbody = document.getElementById('master-stock-table-body');
+            const inventory = getStoredInventory();
+
+            if(inventory.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">Your stock directory is empty.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = inventory.map(item => `
+                <tr class="text-xs text-slate-300 hover:bg-slate-900/20">
+                    <td class="py-3 px-2 font-mono font-semibold text-amber-500">${item.sku}</td>
+                    <td class="py-3 px-2 font-medium text-slate-100">${item.desc}</td>
+                    <td class="py-3 px-2 text-slate-400"><span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800/60">${item.category}</span></td>
+                    <td class="py-3 px-2 text-right font-mono font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</td>
+                    <td class="py-3 px-2 text-center">
+                        <button onclick="purgeInventoryItem('${item.id}')" class="text-slate-500 hover:text-red-400 p-1 transition-colors cursor-pointer">
+                            <i data-lucide="trash" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function rebuildDatalistAssistanceArray() {
+            const list = document.getElementById('existing-categories');
+            const inventory = getStoredInventory();
+            const uniqueCats = [...new Set(inventory.map(i => i.category).filter(Boolean))];
+            list.innerHTML = uniqueCats.map(c => `<option value="${c}"></option>`).join('');
+        }
+
+        // --- ALLOCATED SHEET CALCS ---
+        function allocateItemToQuote(itemId) {
+            const inventory = getStoredInventory();
+            const match = inventory.find(i => i.id === itemId);
+            const activeMatch = activeAllocatedMaterials.find(i => i.id === itemId);
+
+            if (activeMatch) {
+                activeMatch.qty += 1;
+            } else {
+                activeAllocatedMaterials.push({ ...match, qty: 1 });
+            }
+            rebuildAllocatedMaterialsTable();
+        }
+
+        function updateAllocationQty(itemId, newQty) {
+            const idx = activeAllocatedMaterials.findIndex(i => i.id === itemId);
+            if(idx === -1) return;
+            const clean = parseInt(newQty);
+            if (isNaN(clean) || clean <= 0) { activeAllocatedMaterials.splice(idx, 1); } 
+            else { activeAllocatedMaterials[idx].qty = clean; }
+            rebuildAllocatedMaterialsTable();
+        }
+
+        function rebuildAllocatedMaterialsTable() {
+            const tbody = document.getElementById('allocated-materials-body');
+            if (activeAllocatedMaterials.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">No items selected. Use the catalog above.</td></tr>`;
+                calculateComprehensiveMetrics();
+                return;
+            }
+            tbody.innerHTML = activeAllocatedMaterials.map(item => `
+                <tr class="border-b border-slate-900 text-xs text-slate-200">
+                    <td class="py-3 px-2"><div>${item.desc}</div><div class="text-[10px] font-mono text-slate-500 mt-0.5">${item.sku}</div></td>
+                    <td class="py-3 px-2 text-center">
+                        <input type="number" value="${item.qty}" min="1" onchange="updateAllocationQty('${item.id}', this.value)" class="w-12 bg-slate-900 border border-slate-800 text-center rounded p-1 font-mono text-white">
+                    </td>
+                    <td class="py-3 px-2 text-right font-mono">£${parseFloat(item.cost).toFixed(2)}</td>
+                    <td class="py-3 px-2 text-right font-mono font-bold text-white">£${(parseFloat(item.cost) * item.qty).toFixed(2)}</td>
+                    <td class="py-3 px-2 text-center">
+                        <button onclick="activeAllocatedMaterials=activeAllocatedMaterials.filter(i=>i.id!='${item.id}');rebuildAllocatedMaterialsTable();" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+            calculateComprehensiveMetrics();
+        }
+
+        function calculateComprehensiveMetrics() {
+            const netMaterials = activeAllocatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost) * curr.qty), 0);
+            const markup = parseFloat(document.getElementById('global-markup').value) || 0;
+            const markedMaterials = netMaterials * (1 + (markup / 100));
+            const laborHours = parseFloat(document.getElementById('labor-hours').value) || 0;
+            const laborRate = parseFloat(document.getElementById('labor-rate').value) || 0;
+            const laborCosts = laborHours * laborRate;
+            const grossTotal = markedMaterials + laborCosts;
+
+            document.getElementById('summary-net-materials').innerText = `£${netMaterials.toFixed(2)}`;
+            document.getElementById('summary-marked-materials').innerText = `£${markedUpMaterialsCost = markedMaterials.toFixed(2)}`;
+            document.getElementById('summary-labor-costs').innerText = `£${laborCosts.toFixed(2)}`;
+            document.getElementById('summary-gross-total').innerText = `£${grossTotal.toFixed(2)}`;
+            return { netMaterials, markedMaterials, laborCosts, grossTotal };
+        }
+
+        // --- CLIENT REGISTER CRM MATRIX ---
+        function createNewClientProfile(event) {
+            event.preventDefault();
+            const clients = getStoredClients();
+            const newClient = {
+                id: 'CLI-' + Date.now(),
+                name: document.getElementById('crm-client-name').value.trim(),
+                email: document.getElementById('crm-client-email').value.trim(),
+                phone: document.getElementById('crm-client-phone').value.trim(),
+                address: document.getElementById('crm-client-address').value.trim(),
+                createdDate: new Date().toLocaleDateString('en-GB')
+            };
+            clients.push(newClient);
+            localStorage.setItem('eny_clients', JSON.stringify(clients));
+            document.getElementById('new-client-form').reset();
+            rebuildCrmProfilesInterface();
+            rebuildQuoteClientDropdown();
+        }
+
+        function deleteClientProfile(clientId) {
+            if (!confirm("Remove this client profile? Saved historical quotes will remain intact.")) return;
+            let clients = getStoredClients();
+            localStorage.setItem('eny_clients', JSON.stringify(clients.filter(c => c.id !== clientId)));
+            if (activeLinkedClientId === clientId) {
+                document.getElementById('quote-client-select').value = "";
+                activeLinkedClientId = "";
+            }
+            rebuildCrmProfilesInterface();
+            rebuildQuoteClientDropdown();
+        }
+
+        function rebuildQuoteClientDropdown() {
+            const select = document.getElementById('quote-client-select');
+            select.innerHTML = `<option value="">-- Direct Manual Input (Unsaved Client) --</option>` + 
+                getStoredClients().map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            select.value = activeLinkedClientId;
+        }
+
+        function loadSelectedClientIntoQuote() {
+            const selectedId = document.getElementById('quote-client-select').value;
+            activeLinkedClientId = selectedId;
+            if (!selectedId) return;
+            const match = getStoredClients().find(c => c.id === selectedId);
+            if(match) {
+                document.getElementById('client-name').value = match.name;
+                document.getElementById('client-email').value = match.email || '';
+                document.getElementById('client-address').value = match.address || '';
+            }
+        }
+
+        function rebuildCrmProfilesInterface() {
+            const wrapper = document.getElementById('crm-ledger-accordion-wrapper');
+            const empty = document.getElementById('crm-empty-state');
+            const clients = getStoredClients();
+            const records = getStoredVaultRecords();
+            
+            document.getElementById('crm-count-badge').innerText = `${clients.length} Account${clients.length===1?'':'s'}`;
+            if(clients.length === 0) { empty.classList.remove('hidden'); wrapper.innerHTML=""; return; }
+            empty.classList.add('hidden');
+
+            wrapper.innerHTML = clients.map(client => {
+                const jobs = records.filter(q => q.linkedClientId === client.id);
+                const spend = jobs.reduce((acc, curr) => acc + curr.financials.grossTotal, 0);
+                return `
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                        <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                                <h3 class="text-sm font-bold text-white">${client.name}</h3>
+                                <p class="text-[11px] text-slate-500">ID: ${client.id} • Registered: ${client.createdDate}</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-right">
+                                    <span class="text-[10px] uppercase font-semibold text-slate-500 block">Total Client Value</span>
+                                    <span class="text-xs font-bold text-amber-400 font-mono">£${spend.toFixed(2)} (${jobs.length} Job${jobs.length===1?'':'s'})</span>
+                                </div>
+                                <button onclick="deleteClientProfile('${client.id}')" class="text-slate-500 hover:text-red-400 p-1.5 rounded-lg transition-all cursor-pointer"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-slate-950/40 border-t border-slate-900/60 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                            <div>
+                                <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Contact</span>
+                                <div class="text-slate-300 truncate"><i data-lucide="mail" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.email || 'None'}</div>
+                                <div class="text-slate-300 mt-0.5"><i data-lucide="phone" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.phone || 'None'}</div>
+                            </div>
+                            <div>
+                                <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Billing Site</span>
+                                <div class="text-slate-300 leading-relaxed"><i data-lucide="map-pin" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.address || 'None'}</div>
+                            </div>
+                            <div>
+                                <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Linked Records</span>
+                                <div class="max-h-20 overflow-y-auto space-y-1">
+                                    ${jobs.length===0?'<span class="text-slate-500 italic">No quotes recorded</span>':jobs.map(j=>`<div class="bg-slate-900 border border-slate-800 p-1 rounded flex justify-between text-[10px]"><span class="truncate text-slate-300">${j.jobName}</span><span class="font-mono text-slate-400">£${j.financials.grossTotal.toFixed(2)}</span></div>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // --- ARCHIVE CORE OPERATIONS ---
+        function commitQuoteToVault() {
+            const clientName = document.getElementById('client-name').value.trim();
+            if(!clientName) { alert("Enter a client profile name reference before committing records."); return; }
+
+            const vault = getStoredVaultRecords();
+            const newRecord = {
+                id: 'QTE-' + Date.now(),
+                timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
+                jobName: document.getElementById('job-name').value.trim() || "Electrical Contracting Works Portfolio",
+                linkedClientId: activeLinkedClientId,
+                clientDetailsPayload: {
+                    name: clientName,
+                    email: document.getElementById('client-email').value.trim(),
+                    address: document.getElementById('client-address').value.trim()
+                },
+                financials: calculateComprehensiveMetrics(),
+                itemsSnapshot: [...activeAllocatedMaterials]
+            };
+
+            vault.unshift(newRecord);
+            localStorage.setItem('eny_vault', JSON.stringify(vault));
+
+            // Reset workspace inputs cleanly
+            activeAllocatedMaterials = [];
+            document.getElementById('job-name').value = "";
+            document.getElementById('client-name').value = "";
+            document.getElementById('client-email').value = "";
+            document.getElementById('client-address').value = "";
+            document.getElementById('quote-client-select').value = "";
+            activeLinkedClientId = "";
+
+            rebuildAllocatedMaterialsTable();
+            reconstructUnifiedInterfaces();
+            alert("Quotation committed securely into your device archive.");
+        }
+
+        function rebuildVaultDataTable() {
+            const tbody = document.getElementById('vault-records-body');
+            const table = document.getElementById('vault-table');
+            const empty = document.getElementById('vault-empty-state');
+            const records = getStoredVaultRecords();
+
+            if(records.length === 0) { empty.classList.remove('hidden'); table.classList.add('hidden'); return; }
+            empty.classList.add('hidden'); table.classList.remove('hidden');
+
+            tbody.innerHTML = records.map(r => `
+                <tr class="text-xs text-slate-300 hover:bg-slate-900/40">
+                    <td class="py-3 px-4 text-slate-500 font-medium">${r.timestamp}</td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-white">${r.jobName}</div>
+                        <div class="text-[10px] text-slate-500 font-mono">${r.id}</div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-0.5 text-[10px] rounded font-medium ${r.linkedClientId ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-slate-800 text-slate-400'}">
+                            ${r.clientDetailsPayload.name}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-right font-mono font-bold text-white">£${r.financials.grossTotal.toFixed(2)}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="if(confirm('Delete archived sheet log?')){let v=getStoredVaultRecords().filter(x=>x.id!='${r.id}');localStorage.setItem('eny_vault',JSON.stringify(v));reconstructUnifiedInterfaces();}" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // ================= TEAM SYNC ENGINE CORE (OPTION 1 MECHANICS) =================
+        function exportSystemStateBackup() {
+            const packagePayload = {
+                exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM",
+                generatedTimestamp: Date.now(),
+                inventory: getStoredInventory(),
+                clients: getStoredClients(),
+                vault: getStoredVaultRecords()
+            };
+
+            const dataBlob = new Blob([JSON.stringify(packagePayload, null, 2)], { type: "application/json" });
+            const temporaryLinkElement = document.createElement('a');
+            temporaryLinkElement.href = URL.createObjectURL(dataBlob);
+            temporaryLinkElement.download = `ENY_TEAM_SYNC_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(temporaryLinkElement);
+            temporaryLinkElement.click();
+            document.body.removeChild(temporaryLinkElement);
+        }
+
+        function importSystemStateAndMerge(event) {
+            const uploadedFile = event.target.files[0];
+            if (!uploadedFile) return;
+
             const fileReader = new FileReader();
             fileReader.onload = function(e) {
                 try {
-                    const parsedData = JSON.parse(e.target.result);
-                    if (parsedData.eny_app_settings && parsedData.eny_master_catalog && parsedData.eny_job_presets) {
-                        localStorage.setItem('eny_app_settings', JSON.stringify(parsedData.eny_app_settings));
-                        localStorage.setItem('eny_master_catalog', JSON.stringify(parsedData.eny_master_catalog));
-                        localStorage.setItem('eny_job_presets', JSON.stringify(parsedData.eny_job_presets));
-                        localStorage.setItem('eny_saved_quotes', JSON.stringify(parsedData.eny_saved_quotes || []));
-                        
-                        initializeStorageEngine();
-                        createToast("Database fully restored from file storage target safely.", "success");
-                    } else {
-                        createToast("Invalid backup configuration document map context.", "error");
+                    const inboundPayload = JSON.parse(e.target.result);
+                    
+                    // Security Handshake Validation
+                    if (inboundPayload.exportMetadataSource !== "ENY_ELECTRICAL_CRM_SYSTEM") {
+                        alert("Malformed Configuration Format: Uploaded document payload does not match system validation handshakes.");
+                        return;
                     }
-                } catch(err) {
-                    createToast("Error parsing file resource target strings.", "error");
-                }
-            };
-            if(event.target.files[0]) fileReader.readAsText(event.target.files[0]);
-        }
 
-        function populateSettingsFields() {
-            document.getElementById('cfg-rate-first').value = currentSettings.rateFirst;
-            document.getElementById('cfg-rate-sub').value = currentSettings.rateSub;
-            document.getElementById('cfg-rate-half').value = currentSettings.rateHalf;
-            document.getElementById('cfg-rate-day').value = currentSettings.rateDay;
-            document.getElementById('cfg-markup').value = currentSettings.markup;
-            document.getElementById('cfg-fee-testing').value = currentSettings.feeTesting;
-            document.getElementById('cfg-fee-cert').value = currentSettings.feeCert;
+                    // 1. MERGE ENGINE CORE: STOCK INVENTORY (LATEST PRICE OVERWRITE RULE)
+                    const localInventory = getStoredInventory();
+                    let updatedStockCount = 0;
+                    let introducedStockCount = 0;
 
-            document.getElementById('markup-badge').innerText = `+${currentSettings.markup}% Parts Markup Margin`;
-            document.getElementById('label-testing-cost').innerText = `£${parseFloat(currentSettings.feeTesting).toFixed(2)}`;
-            document.getElementById('label-cert-cost').innerText = `£${parseFloat(currentSettings.feeCert).toFixed(2)}`;
-
-            const catWrapper = document.getElementById('settings-catalog-list');
-            catWrapper.innerHTML = '';
-            masterCatalog.forEach((item) => {
-                const row = document.createElement('div');
-                row.className = "flex items-center gap-3 bg-slate-950 p-2.5 rounded-xl border border-slate-850 text-xs";
-                row.innerHTML = `
-                    <div class="flex-1 min-w-0">
-                        <span class="text-[9px] font-black text-indigo-400 uppercase tracking-wider block mb-0.5">${item.cat}</span>
-                        <input type="text" value="${item.name}" onchange="updateCatalogItem('${item.id}', 'name', this.value)" class="w-full bg-transparent font-semibold text-slate-200 focus:outline-none">
-                    </div>
-                    <div class="w-20">
-                        <span class="text-[9px] text-slate-500 block font-bold uppercase tracking-wider">Cost (£)</span>
-                        <input type="number" step="0.01" value="${item.cost}" oninput="updateCatalogItem('${item.id}', 'cost', this.value)" class="w-full bg-transparent font-mono font-bold text-slate-300 focus:outline-none">
-                    </div>
-                    <button onclick="deleteCatalogItem('${item.id}')" class="text-slate-600 hover:text-red-400 p-2 transition rounded-lg hover:bg-red-950/20 self-end cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                `;
-                catWrapper.appendChild(row);
-            });
-
-            const wrapper = document.getElementById('settings-preset-list');
-            wrapper.innerHTML = '';
-            Object.keys(systemPresets).forEach(slug => {
-                const item = document.createElement('div');
-                item.className = "flex justify-between items-center text-xs bg-slate-950 p-2.5 rounded-xl border border-slate-850";
-                item.innerHTML = `
-                    <div class="truncate"><span class="font-mono text-[10px] text-slate-500 font-bold mr-1">[${slug}]</span> <strong class="text-slate-300">${systemPresets[slug].title}</strong></div>
-                    <div class="flex gap-1.5 flex-shrink-0">
-                        <button onclick="editPresetInline('${slug}')" class="text-indigo-400 bg-indigo-950/30 border border-indigo-900/40 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide hover:bg-indigo-900/40 transition cursor-pointer">Modify</button>
-                        <button onclick="deletePresetInline('${slug}')" class="text-red-400 bg-red-950/30 border border-red-900/40 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide hover:bg-red-900/40 transition cursor-pointer">Purge</button>
-                    </div>
-                `;
-                wrapper.appendChild(item);
-            });
-
-            const cbWrapper = document.getElementById('preset-material-checkboxes');
-            cbWrapper.innerHTML = '';
-            masterCatalog.forEach(item => {
-                const container = document.createElement('div');
-                container.className = "flex items-center justify-between text-xs p-1.5 bg-slate-950 border border-slate-850/40 hover:border-slate-800 rounded-lg transition";
-                container.innerHTML = `
-                    <label class="flex items-center gap-2 cursor-pointer text-slate-300 font-medium select-none truncate mr-2">
-                        <input type="checkbox" data-preset-mat-id="${item.id}" class="rounded bg-slate-900 border-slate-800 text-indigo-600 focus:ring-0 cursor-pointer">
-                        <span class="truncate">${item.name} <b class="text-slate-500 font-normal font-mono">(£${item.cost.toFixed(2)})</b></span>
-                    </label>
-                    <div class="flex items-center gap-1 flex-shrink-0">
-                        <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wide">Qty:</span>
-                        <input type="number" id="preset-qty-${item.id}" value="1" min="1" class="w-10 p-1 border border-slate-800 bg-slate-900 rounded-md text-center font-mono text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
-                    </div>
-                `;
-                cbWrapper.appendChild(container);
-            });
-            lucide.createIcons();
-        }
-
-        function renderCatalogPickers() {
-            const picker = document.getElementById('quote-catalog-picker');
-            picker.innerHTML = '';
-            if(masterCatalog.length === 0) {
-                picker.innerHTML = `<p class="text-xs text-slate-600 text-center py-2 font-medium">Inventory master repository structural values map array configuration currently completely empty.</p>`;
-                return;
-            }
-            masterCatalog.forEach(item => {
-                const row = document.createElement('div');
-                row.className = "flex items-center justify-between text-xs py-1.5 border-b border-slate-900 last:border-0 hover:bg-slate-900/20 px-1 rounded transition";
-                row.innerHTML = `
-                    <span class="text-slate-300 font-medium truncate mr-2">${item.name} <b class="text-amber-400 font-mono font-bold ml-1">£${item.cost.toFixed(2)}</b></span>
-                    <button onclick="addCatalogItemToActiveQuote('${item.id}')" class="bg-indigo-950 text-indigo-400 border border-indigo-900/50 hover:bg-indigo-900 hover:text-white px-2.5 py-1 rounded-md font-bold text-[10px] uppercase tracking-wider transition-all flex-shrink-0 cursor-pointer">+ Append</button>
-                `;
-                picker.appendChild(row);
-            });
-        }
-
-        function refreshBlueprintSelectorDropdowns() {
-            const selectNode = document.getElementById('job-preset-select');
-            selectNode.innerHTML = '';
-            Object.keys(systemPresets).forEach(slug => {
-                const opt = document.createElement('option');
-                opt.value = slug;
-                opt.innerText = systemPresets[slug].title;
-                selectNode.appendChild(opt);
-            });
-            const customOpt = document.createElement('option');
-            customOpt.value = 'custom_blank';
-            customOpt.innerText = '-- Manual Blank Construct Workspace Canvas --';
-            selectNode.appendChild(customOpt);
-        }
-
-        function saveGlobalSettings() {
-            currentSettings.rateFirst = parseFloat(document.getElementById('cfg-rate-first').value) || 0;
-            currentSettings.rateSub = parseFloat(document.getElementById('cfg-rate-sub').value) || 0;
-            currentSettings.rateHalf = parseFloat(document.getElementById('cfg-rate-half').value) || 0;
-            currentSettings.rateDay = parseFloat(document.getElementById('cfg-rate-day').value) || 0;
-            currentSettings.markup = parseFloat(document.getElementById('cfg-markup').value) || 0;
-            currentSettings.feeTesting = parseFloat(document.getElementById('cfg-fee-testing').value) || 0;
-            currentSettings.feeCert = parseFloat(document.getElementById('cfg-fee-cert').value) || 0;
-
-            localStorage.setItem('eny_app_settings', JSON.stringify(currentSettings));
-            populateSettingsFields();
-            calculateLiveTotals();
-            createToast("System financial multipliers committed safely");
-        }
-
-        function addNewMaterialToCatalog() {
-            const name = document.getElementById('new-mat-name').value.trim();
-            const cost = parseFloat(document.getElementById('new-mat-cost').value) || 0;
-            const cat = document.getElementById('new-mat-cat').value.trim() || 'General Components';
-
-            if(!name) { createToast('Nomenclature item labels descriptions cannot be empty lines.', 'error'); return; }
-
-            const newItem = { id: 'mat_' + Date.now(), name, cost, cat };
-            masterCatalog.push(newItem);
-            localStorage.setItem('eny_master_catalog', JSON.stringify(masterCatalog));
-
-            document.getElementById('new-mat-name').value = '';
-            document.getElementById('new-mat-cost').value = '';
-            document.getElementById('new-mat-cat').value = '';
-
-            initializeStorageEngine();
-            createToast("New standard item line injected successfully into master inventory map");
-        }
-
-        function updateCatalogItem(id, key, value) {
-            const item = masterCatalog.find(m => m.id === id);
-            if(!item) return;
-            if(key === 'name') item.name = value;
-            if(key === 'cost') item.cost = parseFloat(value) || 0;
-            localStorage.setItem('eny_master_catalog', JSON.stringify(masterCatalog));
-            renderCatalogPickers();
-            calculateLiveTotals();
-        }
-
-        function deleteCatalogItem(id) {
-            masterCatalog = masterCatalog.filter(m => m.id !== id);
-            localStorage.setItem('eny_master_catalog', JSON.stringify(masterCatalog));
-            initializeStorageEngine();
-            createToast("Product lines item configurations purged successfully");
-        }
-
-        function saveCustomJobPreset() {
-            const slug = document.getElementById('preset-slug').value.trim().toLowerCase().replace(/\s+/g, '_');
-            const title = document.getElementById('preset-title').value.trim();
-            const labourType = document.getElementById('preset-labour-type').value;
-            const hours = parseInt(document.getElementById('preset-hours').value) || 1;
-
-            if(!slug || !title) { createToast('Mandatory registration handles metrics configurations fields missing.', 'error'); return; }
-
-            const selectedMaterialsList = [];
-            const checkboxes = document.querySelectorAll('[data-preset-mat-id]');
-            checkboxes.forEach(cb => {
-                if(cb.checked) {
-                    const mId = cb.getAttribute('data-preset-mat-id');
-                    const qty = parseInt(document.getElementById(`preset-qty-${mId}`).value) || 1;
-                    selectedMaterialsList.push({ id: mId, qty: qty });
-                }
-            });
-
-            systemPresets[slug] = { title, labourType, hours, materials: selectedMaterialsList };
-            localStorage.setItem('eny_job_presets', JSON.stringify(systemPresets));
-            
-            document.getElementById('preset-slug').value = '';
-            document.getElementById('preset-title').value = '';
-
-            initializeStorageEngine();
-            createToast(`Blueprint macro vectors schema for "${title}" successfully integrated`);
-        }
-
-        function editPresetInline(slug) {
-            const tgt = systemPresets[slug];
-            document.getElementById('preset-slug').value = slug;
-            document.getElementById('preset-title').value = tgt.title;
-            document.getElementById('preset-labour-type').value = tgt.labourType;
-            document.getElementById('preset-hours').value = tgt.hours;
-
-            const checkboxes = document.querySelectorAll('[data-preset-mat-id]');
-            checkboxes.forEach(cb => {
-                const mId = cb.getAttribute('data-preset-mat-id');
-                const match = tgt.materials.find(m => m.id === mId);
-                if(match) {
-                    cb.checked = true;
-                    document.getElementById(`preset-qty-${mId}`).value = match.qty;
-                } else {
-                    cb.checked = false;
-                    document.getElementById(`preset-qty-${mId}`).value = 1;
-                }
-            });
-            document.getElementById('preset-slug').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Removed dangerous target-specific validation logs components structures matching policies
-        function deletePresetInline(slug) {
-            delete systemPresets[slug];
-            localStorage.setItem('eny_job_presets', JSON.stringify(systemPresets));
-            initializeStorageEngine();
-            createToast("Blueprint records removed successfully from local system configuration indexes");
-        }
-
-        function applyJobPreset() {
-            const selected = document.getElementById('job-preset-select').value;
-            if(selected === 'custom_blank' || !systemPresets[selected]) {
-                document.getElementById('quote-labour-type').value = 'hourly';
-                document.getElementById('quote-labour-hours').value = 1;
-                activeMaterials = [];
-                renderMaterialsFormRows();
-                return;
-            }
-
-            const blueprint = systemPresets[selected];
-            document.getElementById('quote-labour-type').value = blueprint.labourType;
-            document.getElementById('quote-labour-hours').value = blueprint.hours;
-            
-            activeMaterials = [];
-            blueprint.materials.forEach(pItem => {
-                const catalogMatch = masterCatalog.find(m => m.id === pItem.id);
-                if(catalogMatch) {
-                    activeMaterials.push({
-                        name: catalogMatch.name,
-                        cost: catalogMatch.cost,
-                        qty: pItem.qty,
-                        cat: catalogMatch.cat
+                    inboundPayload.inventory.forEach(inboundItem => {
+                        const localMatchIndex = localInventory.findIndex(li => li.sku.toLowerCase() === inboundItem.sku.toLowerCase());
+                        if (localMatchIndex !== -1) {
+                            // Check if price has fluctuated across shared sheets
+                            if (localInventory[localMatchIndex].cost !== inboundItem.cost) {
+                                localInventory[localMatchIndex].cost = inboundItem.cost;
+                                updatedStockCount++;
+                            }
+                            // Sync translations descriptions dynamically if altered
+                            localInventory[localMatchIndex].desc = inboundItem.desc;
+                            localInventory[localMatchIndex].category = inboundItem.category;
+                        } else {
+                            // Fresh part variant signature discovered
+                            localInventory.push(inboundItem);
+                            introducedStockCount++;
+                        }
                     });
-                }
-            });
-            renderMaterialsFormRows();
-        }
 
-        function addCatalogItemToActiveQuote(catalogId) {
-            const match = masterCatalog.find(m => m.id === catalogId);
-            if(!match) return;
-            
-            const existing = activeMaterials.find(m => m.name === match.name);
-            if(existing) {
-                existing.qty += 1;
-            } else {
-                activeMaterials.push({ name: match.name, cost: match.cost, qty: 1, cat: match.cat });
-            }
-            renderMaterialsFormRows();
-            createToast(`Appended ${match.name}`);
-        }
+                    // 2. MERGE ENGINE CORE: CLIENT CRM MANAGEMENT ACCOUNTS
+                    const localClients = getStoredClients();
+                    let introducedClientCount = 0;
+                    inboundPayload.clients.forEach(inboundClient => {
+                        if (!localClients.some(lc => lc.id === inboundClient.id)) {
+                            localClients.push(inboundClient);
+                            introducedClientCount++;
+                        }
+                    });
 
-        function renderMaterialsFormRows() {
-            const container = document.getElementById('quote-materials-list');
-            container.innerHTML = '';
+                    // 3. MERGE ENGINE CORE: HISTORICAL ARCHIVE QUOTE ENTRIES
+                    const localVault = getStoredVaultRecords();
+                    let introducedVaultCount = 0;
+                    inboundPayload.vault.forEach(inboundQuote => {
+                        if (!localVault.some(lv => lv.id === inboundQuote.id)) {
+                            localVault.push(inboundQuote);
+                            introducedVaultCount++;
+                        }
+                    });
 
-            if(activeMaterials.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-600 font-medium text-center py-4 border border-dashed border-slate-850 rounded-xl bg-slate-950/40">No localized item specifications mapped to workspace yet.</p>`;
-                calculateLiveTotals();
-                return;
-            }
+                    // Commit composite operations blocks back down into storage
+                    localStorage.setItem('eny_inventory', JSON.stringify(localInventory));
+                    localStorage.setItem('eny_clients', JSON.stringify(localClients));
+                    localStorage.setItem('eny_vault', JSON.stringify(localVault));
 
-            activeMaterials.forEach((item, index) => {
-                const row = document.createElement('div');
-                row.className = "flex items-center gap-3 bg-slate-950 p-3 rounded-xl border border-slate-850 text-xs shadow-inner";
-                row.innerHTML = `
-                    <div class="flex-1 min-w-0">
-                        <span class="block text-[9px] font-black text-indigo-400 uppercase tracking-wider mb-0.5">${item.cat}</span>
-                        <input type="text" value="${item.name}" onchange="updateMaterialItem(${index}, 'name', this.value)" class="w-full bg-transparent font-semibold text-slate-200 focus:outline-none truncate">
-                    </div>
-                    <div class="w-16">
-                        <span class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider">Cost (£)</span>
-                        <input type="number" step="0.01" value="${item.cost}" oninput="updateMaterialItem(${index}, 'cost', this.value)" class="w-full bg-transparent font-mono font-bold text-slate-300 focus:outline-none">
-                    </div>
-                    <div class="w-12">
-                        <span class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider">Qty</span>
-                        <input type="number" value="${item.qty}" oninput="updateMaterialItem(${index}, 'qty', this.value)" class="w-full bg-transparent font-mono font-bold text-slate-300 focus:outline-none">
-                    </div>
-                    <button onclick="removeMaterialRow(${index})" class="text-slate-600 hover:text-red-400 p-1.5 hover:bg-red-950/20 rounded-md transition self-end cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                `;
-                container.appendChild(row);
-            });
-            lucide.createIcons();
-            calculateLiveTotals();
-        }
-
-        function addCustomMaterialRow() {
-            activeMaterials.push({ name: 'Custom Line Allocation Specification', cost: 1.00, qty: 1, cat: 'Manual Insertion' });
-            renderMaterialsFormRows();
-        }
-
-        function removeMaterialRow(index) {
-            activeMaterials.splice(index, 1);
-            renderMaterialsFormRows();
-        }
-
-        function updateMaterialItem(index, key, value) {
-            if(key === 'name') activeMaterials[index].name = value;
-            if(key === 'cost') activeMaterials[index].cost = parseFloat(value) || 0;
-            if(key === 'qty') activeMaterials[index].qty = parseInt(value) || 0;
-            calculateLiveTotals();
-        }
-
-        function calculateLiveTotals() {
-            const labourType = document.getElementById('quote-labour-type').value;
-            const hoursInput = document.getElementById('quote-labour-hours');
-            const wrapper = document.getElementById('hours-input-wrapper');
-
-            if (labourType === 'hourly') {
-                wrapper.style.opacity = '1';
-                wrapper.style.pointerEvents = 'auto';
-            } else {
-                wrapper.style.opacity = '0.2';
-                wrapper.style.pointerEvents = 'none';
-            }
-
-            let matsSubtotal = 0;
-            activeMaterials.forEach(item => { matsSubtotal += (item.cost * item.qty); });
-            const markupMultiplier = 1 + (currentSettings.markup / 100);
-            const totalMaterialsWithMarkup = matsSubtotal * markupMultiplier;
-
-            let labourSubtotal = 0;
-            if (labourType === 'day') labourSubtotal = currentSettings.rateDay;
-            else if (labourType === 'halfday') labourSubtotal = currentSettings.rateHalf;
-            else if (labourType === 'hourly') {
-                const hours = parseInt(hoursInput.value) || 1;
-                labourSubtotal = hours <= 1 ? currentSettings.rateFirst : currentSettings.rateFirst + ((hours - 1) * currentSettings.rateSub);
-            }
-
-            let addonTotal = 0;
-            if(document.getElementById('include-testing').checked) addonTotal += currentSettings.feeTesting;
-            if(document.getElementById('include-cert').checked) addonTotal += currentSettings.feeCert;
-
-            const globalEstimatedFinalPrice = totalMaterialsWithMarkup + labourSubtotal + addonTotal;
-
-            document.getElementById('summary-mats').innerText = `£${totalMaterialsWithMarkup.toFixed(2)}`;
-            document.getElementById('summary-labour').innerText = `£${labourSubtotal.toFixed(2)}`;
-            document.getElementById('summary-addons').innerText = `£${addonTotal.toFixed(2)}`;
-            document.getElementById('summary-total').innerText = `£${globalEstimatedFinalPrice.toFixed(2)}`;
-        }
-
-        function switchTab(tabId) {
-            ['quote', 'saved', 'settings'].forEach(t => {
-                document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`btn-tab-${t}`).className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 text-slate-400 hover:text-slate-200 cursor-pointer";
-            });
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            document.getElementById(`btn-tab-${tabId}`).className = "flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all duration-200 bg-indigo-600 text-white shadow-md shadow-indigo-600/10 cursor-pointer";
-            if(tabId === 'saved') renderSavedQuotesList();
-        }
-
-        function toggleElement(id) {
-            const node = document.getElementById(id);
-            const chev = document.getElementById('chevron-catalog');
-            node.classList.toggle('hidden');
-            if (node.classList.contains('hidden')) {
-                if(chev) chev.style.transform = 'rotate(0deg)';
-            } else {
-                if(chev) chev.style.transform = 'rotate(180deg)';
-            }
-        }
-
-        function exportSyncCode() {
-            const syncPackage = { rates: currentSettings, catalog: masterCatalog, presets: systemPresets };
-            const encodedString = btoa(unescape(encodeURIComponent(JSON.stringify(syncPackage))));
-            navigator.clipboard.writeText(encodedString).then(() => {
-                createToast("Workspace interlock code synchronization token copied to clipboard memory bank.");
-            }).catch(err => { 
-                createToast("Could not access clipboard repository.", "error");
-            });
-        }
-
-        function importSyncCode() {
-            const inputCode = prompt("Paste structural colleague interlocking token data strings matrix parameters:");
-            if (!inputCode) return;
-            try {
-                const decodedString = decodeURIComponent(escape(atob(inputCode.trim())));
-                const parsedPackage = JSON.parse(decodedString);
-                if (parsedPackage.rates && parsedPackage.catalog && parsedPackage.presets) {
-                    localStorage.setItem('eny_app_settings', JSON.stringify(parsedPackage.rates));
-                    localStorage.setItem('eny_master_catalog', JSON.stringify(parsedPackage.catalog));
-                    localStorage.setItem('eny_job_presets', JSON.stringify(parsedPackage.presets));
-                    initializeStorageEngine();
-                    createToast("Workspace matrix structural alignment synced successfully", "success");
-                }
-            } catch (e) { createToast("Failed parsing code validation parameters target maps.", "error"); }
-        }
-
-        function saveQuoteLocally() {
-            const clientName = document.getElementById('client-name').value.trim() || 'Provisional Client Account';
-            const clientAddress = document.getElementById('client-address').value.trim() || 'No Site Physical Location Parameters Mapped';
-            const paymentTerms = document.getElementById('quote-payment-terms').value;
-            const savedQuotes = JSON.parse(localStorage.getItem('eny_saved_quotes') || '[]');
-            
-            const quoteObject = {
-                id: Date.now(),
-                date: new Date().toLocaleDateString('en-GB'),
-                clientName, clientAddress, paymentTerms,
-                materials: activeMaterials,
-                labourType: document.getElementById('quote-labour-type').value,
-                labourHours: document.getElementById('quote-labour-hours').value,
-                includeTesting: document.getElementById('include-testing').checked,
-                includeCert: document.getElementById('include-cert').checked,
-                totals: {
-                    mats: document.getElementById('summary-mats').innerText,
-                    labour: document.getElementById('summary-labour').innerText,
-                    addons: document.getElementById('summary-addons').innerText,
-                    total: document.getElementById('summary-total').innerText
+                    // Rebuild interface components tree states immediately
+                    reconstructUnifiedInterfaces();
+                    
+                    alert(`Sync Complete!\n\n• Overwrote ${updatedStockCount} material lines with updated trade costs.\n• Loaded ${introducedStockCount} new catalog materials.\n• Merged ${introducedClientCount} unique Client Profiles.\n• Appended ${introducedVaultCount} missing historical Quote documents safely.`);
+                    
+                } catch (err) {
+                    alert("Error parsing file. Ensure the document hasn't been modified manually.");
+                    console.error(err);
                 }
             };
-
-            savedQuotes.unshift(quoteObject);
-            localStorage.setItem('eny_saved_quotes', JSON.stringify(savedQuotes));
-            createToast(`Quote tracking node for "${clientName}" permanently vaulted internally.`);
-        }
-
-        function renderSavedQuotesList() {
-            const container = document.getElementById('saved-quotes-container');
-            container.innerHTML = '';
-            const quotes = JSON.parse(localStorage.getItem('eny_saved_quotes') || '[]');
-
-            if(quotes.length === 0) {
-                container.innerHTML = `<div class="text-center py-12 text-slate-600 text-xs font-medium border border-dashed border-slate-850 rounded-2xl bg-slate-900/20">System records archive vault storage matrix totally empty.</div>`;
-                return;
-            }
-
-            quotes.forEach(q => {
-                const card = document.createElement('div');
-                card.className = "bg-slate-900 p-4 rounded-xl border border-slate-850/80 flex justify-between items-center shadow-lg hover:border-slate-800 transition";
-                card.innerHTML = `
-                    <div class="min-w-0 mr-3">
-                        <h4 class="font-bold text-sm text-slate-200 truncate">${q.clientName}</h4>
-                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">${q.date} • Valuation Balance: <span class="text-emerald-400 font-bold font-mono">${q.totals.total}</span></p>
-                    </div>
-                    <div class="flex gap-1.5 flex-shrink-0">
-                        <button onclick="loadHistoricalQuoteToEngine(${q.id})" class="p-2 bg-indigo-950/40 border border-indigo-900/30 text-indigo-400 hover:text-white hover:bg-indigo-900 rounded-lg transition cursor-pointer"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                        <button onclick="deleteStoredQuote(${q.id})" class="p-2 bg-red-950/40 border border-red-900/30 text-red-400 hover:text-white hover:bg-red-900 rounded-lg transition cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        function loadHistoricalQuoteToEngine(id) {
-            const quotes = JSON.parse(localStorage.getItem('eny_saved_quotes') || '[]');
-            const matches = quotes.find(q => q.id === id);
-            if(!matches) return;
-
-            document.getElementById('client-name').value = matches.clientName;
-            document.getElementById('client-address').value = matches.clientAddress;
-            document.getElementById('quote-payment-terms').value = matches.paymentTerms;
-            document.getElementById('quote-labour-type').value = matches.labourType;
-            document.getElementById('quote-labour-hours').value = matches.labourHours;
-            document.getElementById('include-testing').checked = matches.includeTesting;
-            document.getElementById('include-cert').checked = matches.includeCert;
-
-            activeMaterials = matches.materials;
-            renderMaterialsFormRows();
-            switchTab('quote');
-            createToast("Historical system records active layout context pulled successfully");
-        }
-
-        function deleteStoredQuote(id) {
-            let quotes = JSON.parse(localStorage.getItem('eny_saved_quotes') || '[]');
-            quotes = quotes.filter(q => q.id !== id);
-            localStorage.setItem('eny_saved_quotes', JSON.stringify(quotes));
-            renderSavedQuotesList();
-            createToast("Vault object entry track removed completely");
-        }
-
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const name = document.getElementById('client-name').value || 'Valued Client';
-            const address = document.getElementById('client-address').value || 'N/A';
-            const date = new Date().toLocaleDateString('en-GB');
-            const term = document.getElementById('quote-payment-terms').value;
-
-            doc.setFillColor(15, 23, 42); 
-            doc.rect(0, 0, 220, 42, 'F');
-            
-            doc.setTextColor(255, 255, 255);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(22);
-            doc.text("ELECTRICIANS NEAR YOU (ENY)", 15, 18);
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(241, 245, 249);
-            doc.text("Professional Electrical Design, Installation & Commissioning Maintenance", 15, 25);
-            doc.text("Web: www.electriciansnearyou.uk  | Email: electriciansnearyou@gmail.com", 15, 32);
-
-            doc.setTextColor(15, 23, 42);
-            doc.setFontSize(11);
-            doc.setFont("helvetica", "bold");
-            doc.text("ISSUED TO CLIENT:", 15, 56);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(71, 85, 105);
-            doc.text(name, 15, 63);
-            doc.text(address, 15, 69);
-
-            doc.setTextColor(15, 23, 42);
-            doc.setFont("helvetica", "bold");
-            doc.text("QUOTE SPECIFICS:", 130, 56);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(71, 85, 105);
-            doc.text(`Date of Issue: ${date}`, 130, 63);
-            doc.text(`Payment Term: ${term}`, 130, 69);
-            doc.text(`Phone Contact: 07711261478`, 130, 75);
-
-            doc.setDrawColor(226, 232, 240);
-            doc.line(15, 86, 195, 86);
-            
-            doc.setTextColor(15, 23, 42);
-            doc.setFont("helvetica", "bold");
-            doc.text("Financial Breakdown Categories Summary Description", 15, 94);
-            doc.text("Net Pricing Value", 160, 94);
-            doc.line(15, 98, 195, 98);
-
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(51, 65, 85);
-            doc.text("Materials Subtotal (Inclusive of global specified parts handling markup margin)", 15, 108);
-            doc.text(document.getElementById('summary-mats').innerText, 160, 108);
-
-            doc.text(`Labour Allocation Charges (Rate Structure Matrix Scheme Applied)`, 15, 118);
-            doc.text(document.getElementById('summary-labour').innerText, 160, 118);
-
-            doc.text("Regulatory Testing & Administrative Certification Issuance Fees", 15, 128);
-            doc.text(document.getElementById('summary-addons').innerText, 160, 128);
-
-            doc.line(15, 136, 195, 136);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.setTextColor(15, 23, 42);
-            doc.text("Estimated Total Price (GBP):", 95, 147);
-            doc.setTextColor(16, 185, 129);
-            doc.text(document.getElementById('summary-total').innerText, 160, 147);
-
-            doc.setTextColor(148, 163, 184);
-            doc.setFontSize(9);
-            doc.setFont("helvetica", "italic");
-            doc.text("Notice: This documentation constitutes a provisional pricing calculation estimation summary compiled matching the specified scoping.", 15, 175, { maxWidth: 180 });
-
-            doc.save(`ENY_Quote_${name.replace(/\s+/g, '_')}.pdf`);
-            createToast("PDF Document compiled and saved to local download targets path.");
+            fileReader.readAsText(uploadedFile);
+            event.target.value = ''; // Flush input channel element
         }
     </script>
 </body>
