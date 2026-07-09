@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENY Electrical - Premium Project Planner & CRM</title>
-    <!-- Stable Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- HTML2PDF Library for Client-Side PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
@@ -23,7 +20,6 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-900">
 
-    <!-- Top Navigation Header -->
     <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -58,7 +54,6 @@
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
         
-        <!-- ================= TAB 1: QUOTE BUILDER ================= -->
         <div id="quote-tab" class="tab-content active space-y-6">
             
             <div id="editing-mode-banner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -241,7 +236,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 2: TEMPLATES MANAGER ================= -->
         <div id="templates-tab" class="tab-content space-y-6">
             <div id="template-edit-banner" class="hidden bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex justify-between items-center">
                 <div class="flex items-center gap-2 text-blue-400">
@@ -279,8 +273,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Included Materials</label>
                             <div id="template-materials-selector-box" class="max-h-40 overflow-y-auto border border-slate-800 rounded-xl p-2 bg-slate-900/40 divide-y divide-slate-900 custom-scrollbar">
-                                <!-- Generated dynamically -->
-                            </div>
+                                </div>
                         </div>
 
                         <button type="submit" id="template-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
@@ -299,7 +292,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 3: MATERIAL STOCK MANAGER ================= -->
         <div id="inventory-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
@@ -353,7 +345,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 4: CLIENT CRM ENGINE ================= -->
         <div id="clients-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="space-y-4">
@@ -408,7 +399,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 5: ARCHIVE VAULT & SYNC MATRIX ================= -->
         <div id="vault-tab" class="tab-content space-y-6">
             
             <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -431,7 +421,6 @@
                 </div>
             </div>
 
-            <!-- Historical Sheet Ledger Logs Area -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
                 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
@@ -466,7 +455,6 @@
 
     </main>
 
-    <!-- SHOPPING LIST MODAL OVERLAY -->
     <div id="shopping-list-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -479,8 +467,7 @@
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
                 <ul id="shopping-list-content" class="space-y-2 text-sm text-slate-300">
-                    <!-- List items injected here dynamically -->
-                </ul>
+                    </ul>
             </div>
             <div class="p-5 border-t border-slate-800 bg-slate-800/50 flex justify-end gap-3">
                 <button onclick="copyShoppingList()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer">
@@ -493,7 +480,6 @@
         </div>
     </div>
 
-    <!-- INVOICE CONVERSION / RECONCILIATION MODAL -->
     <div id="invoice-reconciliation-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -536,7 +522,6 @@
         </div>
     </div>
 
-    <!-- PROFITABILITY LEDGER MODAL (EYES ONLY) -->
     <div id="profit-view-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-amber-500/30 rounded-2xl w-full max-w-sm overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -583,10 +568,6 @@
         </div>
     </div>
 
-    <!-- HIDDEN PDF RENDERING CONTAINER -->
-    <div id="pdf-render-zone" style="position: absolute; left: -9999px; top: -9999px; width: 800px; display: none;"></div>
-
-    <!-- ================= SYSTEM ENGINE CORE JAVASCRIPT LOGIC ================= -->
     <script>
         const DEFAULT_SEED_STOCK = [
             { id: 'M1', sku: '6124Y-2.5', desc: '2.5mm² Twin & Earth Cable (100m Drum)', cost: 68.50, category: 'Wiring & Management' },
@@ -1287,7 +1268,7 @@
         function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); }
 
         // --- PDF GENERATION ENGINE ---
-        async function generateDocumentPDF(id) {
+        function generateDocumentPDF(id) {
             const vault = getStoredVaultRecords();
             const target = vault.find(r => r.id === id);
             if (!target) return;
@@ -1349,10 +1330,6 @@
                 </div>
             `;
 
-            const renderZone = document.getElementById('pdf-render-zone');
-            renderZone.innerHTML = pdfHtml;
-            renderZone.style.display = 'block'; 
-
             const opt = {
                 margin: 10,
                 filename: `${docPrefix.toLowerCase()}_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${target.id}.pdf`,
@@ -1361,163 +1338,7 @@
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            await html2pdf().set(opt).from(renderZone).save();
-            
-            renderZone.style.display = 'none'; 
-        }
-
-        // --- COMMIT ARCHIVE ACTIONS ---
-        function commitQuoteToVault(overwriteExistingMode = false) {
-            const clientName = document.getElementById('client-name').value.trim();
-            if(!clientName) { alert("Enter a client profile name reference before committing records."); return; }
-
-            const calcs = calculateComprehensiveMetrics();
-            let vault = getStoredVaultRecords();
-
-            const targetRecordId = (overwriteExistingMode && currentlyEditingQuoteId) ? currentlyEditingQuoteId : 'QTE-' + Date.now();
-            const timestampString = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-
-            let currentStatus = 'Draft';
-            if (overwriteExistingMode && currentlyEditingQuoteId) {
-                const existing = vault.find(q => q.id === currentlyEditingQuoteId);
-                if (existing && existing.status) currentStatus = existing.status;
-            }
-
-            const compositeRecordObject = {
-                id: targetRecordId,
-                timestamp: timestampString,
-                status: currentStatus,
-                jobName: document.getElementById('job-name').value.trim() || "Electrical Contracting Works Portfolio",
-                linkedClientId: activeLinkedClientId,
-                clientDetailsPayload: {
-                    name: clientName,
-                    email: document.getElementById('client-email').value.trim(),
-                    address: document.getElementById('client-address').value.trim()
-                },
-                laborHours: calcs.laborHours,
-                laborRate: calcs.laborRate,
-                globalMarkup: calcs.markup,
-                includeTestingCertificate: calcs.isTestingIncluded,
-                testingCostFixed: calcs.testingCostFixed,
-                financials: {
-                    netMaterials: calcs.netMaterials,
-                    markedMaterials: calcs.markedMaterials,
-                    laborCosts: calcs.laborCosts,
-                    testingCosts: calcs.computedTestingCharge,
-                    grossTotal: calcs.grossTotal
-                },
-                itemsSnapshot: [...activeAllocatedMaterials]
-            };
-
-            if (overwriteExistingMode && currentlyEditingQuoteId) {
-                const searchIdx = vault.findIndex(q => q.id === currentlyEditingQuoteId);
-                if(searchIdx !== -1) {
-                    compositeRecordObject.actuals = vault[searchIdx].actuals; 
-                    vault[searchIdx] = compositeRecordObject;
-                    alert("Historical snapshot overwrote configuration record logs successfully.");
-                } else { vault.unshift(compositeRecordObject); }
-            } else {
-                vault.unshift(compositeRecordObject);
-                alert("New sheet profile record added inside the archive vault core.");
-            }
-
-            localStorage.setItem('eny_vault', JSON.stringify(vault));
-            cancelActiveEditingSessionMode();
-            reconstructUnifiedInterfaces();
-        }
-
-        function toggleInlineQuoteBreakdownFolder(rowId) { document.getElementById(rowId).classList.toggle('hidden'); }
-
-        function rebuildVaultDataTable() {
-            const tbody = document.getElementById('vault-records-body');
-            const table = document.getElementById('vault-table');
-            const empty = document.getElementById('vault-empty-state');
-            const records = getStoredVaultRecords();
-
-            if(records.length === 0) { empty.classList.remove('hidden'); table.classList.add('hidden'); return; }
-            empty.classList.add('hidden'); table.classList.remove('hidden');
-
-            tbody.innerHTML = records.map(r => {
-                const itemizedListHtml = (r.itemsSnapshot && r.itemsSnapshot.length > 0) 
-                    ? r.itemsSnapshot.map(i => `<div class="flex justify-between py-1 border-b border-slate-900/60 text-slate-400"><span>• ${i.desc} (x${i.qty})</span><span class="font-mono">£${(parseFloat(i.cost)*i.qty).toFixed(2)}</span></div>`).join('')
-                    : `<div class="text-slate-500 italic">No specific materials mapped.</div>`;
-
-                const isChecked = selectedVaultQuotes.has(r.id) ? 'checked' : '';
-                const status = r.status || 'Draft';
-                
-                let statusBadgeClass = 'bg-slate-800 text-slate-400 border-slate-700';
-                let primaryActionBtn = '';
-                let extraActionBtns = '';
-
-                if (status === 'Draft') {
-                    primaryActionBtn = `<button onclick="updateQuoteStatus('${r.id}', 'Sent')" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 w-full transition-colors"><i data-lucide="send" class="w-3.5 h-3.5"></i> Mark Sent</button>`;
-                } else if (status === 'Sent') {
-                    statusBadgeClass = 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-                    primaryActionBtn = `<button onclick="updateQuoteStatus('${r.id}', 'Approved')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 w-full transition-colors"><i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i> Approve</button>`;
-                } else if (status === 'Approved') {
-                    statusBadgeClass = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-                    primaryActionBtn = `<button onclick="openInvoiceReconciliation('${r.id}')" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 w-full transition-colors"><i data-lucide="file-check-2" class="w-3.5 h-3.5"></i> Invoice</button>`;
-                } else if (status === 'Invoiced') {
-                    statusBadgeClass = 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-                    primaryActionBtn = `<button onclick="updateQuoteStatus('${r.id}', 'Paid')" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 w-full transition-colors"><i data-lucide="pound-sterling" class="w-3.5 h-3.5"></i> Mark Paid</button>`;
-                    extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="View Profit Margin"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
-                } else if (status === 'Paid') {
-                    statusBadgeClass = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-                    primaryActionBtn = `<div class="text-amber-400 text-[11px] font-bold flex items-center justify-center gap-1.5 w-full py-1.5 border border-amber-500/20 rounded-lg bg-amber-500/10"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Settled</div>`;
-                    extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="View Profit Margin"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
-                }
-
-                const pdfButton = `<button onclick="generateDocumentPDF('${r.id}')" class="text-blue-400 hover:text-blue-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="Download Document"><i data-lucide="file-down" class="w-4 h-4"></i></button>`;
-
-                return `
-                    <tr class="text-xs text-slate-300 hover:bg-slate-900/40 border-b border-slate-900 transition-colors">
-                        <td class="py-4 px-3 text-center">
-                            <input type="checkbox" onchange="toggleQuoteSelection('${r.id}')" class="w-4 h-4 rounded bg-slate-950 border-slate-700 text-amber-500 cursor-pointer accent-amber-500" ${isChecked}>
-                        </td>
-                        <td class="py-4 px-3">
-                            <span class="px-2.5 py-1 border rounded-lg text-[10px] font-bold uppercase tracking-wider ${statusBadgeClass}">${status}</span>
-                        </td>
-                        <td class="py-4 px-3">
-                            <div class="font-bold text-white">${r.jobName}</div>
-                            <div class="text-[10px] text-slate-500 font-mono">${r.id}</div>
-                        </td>
-                        <td class="py-4 px-3 text-right font-mono font-bold text-white">£${r.financials.grossTotal.toFixed(2)}</td>
-                        <td class="py-4 px-3 w-32">
-                            ${primaryActionBtn}
-                        </td>
-                        <td class="py-4 px-3 text-right space-x-1 whitespace-nowrap">
-                            ${extraActionBtns}
-                            ${pdfButton}
-                            <button onclick="toggleInlineQuoteBreakdownFolder('folder-${r.id}')" class="text-slate-400 hover:text-white p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Inspect"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                            <button onclick="loadQuoteForActiveModification('${r.id}')" class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Edit to Workspace"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                            <button onclick="if(confirm('Delete archived sheet log?')){let v=getStoredVaultRecords().filter(x=>x.id!='${r.id}');localStorage.setItem('eny_vault',JSON.stringify(v));selectedVaultQuotes.delete('${r.id}');reconstructUnifiedInterfaces();}" class="text-slate-500 hover:text-red-400 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </td>
-                    </tr>
-                    <tr id="folder-${r.id}" class="hidden bg-slate-950/60">
-                        <td colspan="6" class="p-6 text-xs text-slate-300">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-950 rounded-xl p-5 border border-slate-800/80">
-                                <div class="space-y-3">
-                                    <h4 class="font-bold text-amber-400 uppercase tracking-wider text-[10px]">Financial Breakdown Profile Mapping</h4>
-                                    <div class="space-y-2 bg-slate-900/40 p-3 rounded-lg border border-slate-800/40">
-                                        <div class="flex justify-between"><span>Net Wholesale Cost Materials:</span><span class="font-mono">£${(r.financials.netMaterials || 0).toFixed(2)}</span></div>
-                                        <div class="flex justify-between"><span>Marked-Up Materials Sheet Cost:</span><span class="font-mono text-slate-400">£${(r.financials.markedMaterials || 0).toFixed(2)}</span></div>
-                                        <div class="flex justify-between"><span>Estimated Operational Labor (${r.laborHours || 0} hrs @ £${r.laborRate || 0}/hr):</span><span class="font-mono">£${(r.financials.laborCosts || 0).toFixed(2)}</span></div>
-                                        <div class="flex justify-between"><span>Certification & Inspection Add-On Charges:</span><span class="font-mono">${r.includeTestingCertificate ? `£${(r.financials.testingCosts || 0).toFixed(2)}` : 'Excluded'}</span></div>
-                                        <div class="border-t border-slate-800/80 pt-2 font-bold flex justify-between text-white text-sm"><span>Total Gross (Exc VAT):</span><span class="font-mono text-amber-400">£${r.financials.grossTotal.toFixed(2)}</span></div>
-                                    </div>
-                                </div>
-                                <div class="space-y-2">
-                                    <h4 class="font-bold text-amber-400 uppercase tracking-wider text-[10px]">Allocated Stock Parts Manifest</h4>
-                                    <div class="max-h-40 overflow-y-auto bg-slate-900/20 p-3 rounded-lg border border-slate-800/40 space-y-1 custom-scrollbar pr-2">
-                                        ${itemizedListHtml}
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-            lucide.createIcons();
+            html2pdf().set(opt).from(pdfHtml).save();
         }
 
         // --- TEAM SYNC ENGINE EXPORTS CORE ---
