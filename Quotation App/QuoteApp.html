@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENY Quote Generator</title>
-    <!-- Tailwind CSS for clean, modern mobile styling -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- jsPDF for generating PDFs client-side -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans min-h-screen pb-20">
@@ -20,13 +17,13 @@
             <p class="text-xs text-blue-200">Electricians Near You</p>
         </div>
         <nav class="flex space-x-2">
-            <button onclick="switchTab('quote')" id="btn-tab-quote" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-800 text-white flex items-center gap-1">
+            <button onclick="switchTab('quote')" id="btn-tab-quote" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-800 text-white flex items-center gap-1 cursor-pointer">
                 <i data-lucide="file-text" class="w-4 h-4"></i> New
             </button>
-            <button onclick="switchTab('saved')" id="btn-tab-saved" class="px-3 py-1.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-blue-800/50 flex items-center gap-1">
+            <button onclick="switchTab('saved')" id="btn-tab-saved" class="px-3 py-1.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-blue-800/50 flex items-center gap-1 cursor-pointer">
                 <i data-lucide="folder-open" class="w-4 h-4"></i> Saved
             </button>
-            <button onclick="switchTab('settings')" id="btn-tab-settings" class="px-3 py-1.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-blue-800/50 flex items-center gap-1">
+            <button onclick="switchTab('settings')" id="btn-tab-settings" class="px-3 py-1.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-blue-800/50 flex items-center gap-1 cursor-pointer">
                 <i data-lucide="settings" class="w-4 h-4"></i> Setup
             </button>
         </nav>
@@ -47,21 +44,34 @@
             <div class="bg-white p-5 rounded-2xl shadow-xs border border-gray-100">
                 <h2 class="text-lg font-bold mb-4 flex items-center gap-2 text-blue-900"><i data-lucide="zap"></i> Select Job Blueprint</h2>
                 <select id="job-preset-select" onchange="applyJobPreset()" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <!-- Loaded dynamically from memory -->
+                    <!-- Loaded dynamically -->
                 </select>
             </div>
 
             <!-- Materials Breakdown -->
             <div class="bg-white p-5 rounded-2xl shadow-xs border border-gray-100">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-lg font-bold flex items-center gap-2 text-blue-900"><i data-lucide="package"></i> Materials</h2>
+                    <h2 class="text-lg font-bold flex items-center gap-2 text-blue-900"><i data-lucide="package"></i> Job Materials</h2>
                     <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-1 rounded-full" id="markup-badge">+0% Markup</span>
                 </div>
+
+                <!-- Catalog Picker Accordion Menu -->
+                <div class="mb-4 border border-gray-200 rounded-xl overflow-hidden bg-gray-50">
+                    <button onclick="toggleElement('quote-catalog-picker')" class="w-full p-3 text-left text-xs font-bold text-gray-700 flex justify-between items-center bg-gray-100 cursor-pointer">
+                        <span>+ Quick Add from Master Catalog</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </button>
+                    <div id="quote-catalog-picker" class="hidden p-3 max-h-48 overflow-y-auto space-y-2 border-t border-gray-200 bg-white">
+                        <!-- Loaded dynamically via inventory -->
+                    </div>
+                </div>
+
                 <div id="quote-materials-list" class="space-y-2 max-h-60 overflow-y-auto mb-3">
                     <!-- Dynamic Rows -->
                 </div>
-                <button onclick="addCustomMaterialRow()" class="w-full py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 flex justify-center items-center gap-1">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Add Extra Material Line
+                
+                <button onclick="addCustomMaterialRow()" class="w-full py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 flex justify-center items-center gap-1 cursor-pointer">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add Extra One-Off Item
                 </button>
             </div>
 
@@ -84,26 +94,23 @@
                 </div>
             </div>
 
-            <!-- Certificate & Testing & Terms -->
+            <!-- Testing & Admin Options -->
             <div class="bg-white p-5 rounded-2xl shadow-xs border border-gray-100 space-y-4">
                 <h2 class="text-lg font-bold text-blue-900 flex items-center gap-2"><i data-lucide="shield-check"></i> Testing & Administration</h2>
-                
                 <div class="flex items-center justify-between p-2 bg-gray-50 rounded-xl">
                     <label for="include-testing" class="text-sm font-medium text-gray-700 flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="include-testing" onchange="calculateLiveTotals()" class="w-5 h-5 rounded text-blue-600 focus:ring-blue-500">
+                        <input type="checkbox" id="include-testing" onchange="calculateLiveTotals()" class="w-5 h-5 rounded text-blue-600">
                         Include Testing Fee
                     </label>
                     <span class="font-bold text-gray-700" id="label-testing-cost">£0.00</span>
                 </div>
-
                 <div class="flex items-center justify-between p-2 bg-gray-50 rounded-xl">
                     <label for="include-cert" class="text-sm font-medium text-gray-700 flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="include-cert" onchange="calculateLiveTotals()" class="w-5 h-5 rounded text-blue-600 focus:ring-blue-500">
+                        <input type="checkbox" id="include-cert" onchange="calculateLiveTotals()" class="w-5 h-5 rounded text-blue-600">
                         Include Certification
                     </label>
                     <span class="font-bold text-gray-700" id="label-cert-cost">£0.00</span>
                 </div>
-
                 <div>
                     <label class="text-xs font-semibold text-gray-500 block mb-1">Payment Term Duration</label>
                     <select id="quote-payment-terms" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl">
@@ -115,7 +122,7 @@
                 </div>
             </div>
 
-            <!-- Pricing Summary Box -->
+            <!-- Sticky Metrics Display Container -->
             <div class="bg-blue-950 text-white p-6 rounded-2xl shadow-lg space-y-3">
                 <div class="flex justify-between text-sm text-blue-200 border-b border-blue-800 pb-2">
                     <span>Materials Subtotal:</span>
@@ -147,9 +154,7 @@
         <!-- ================= TAB: SAVED QUOTES ================= -->
         <section id="tab-saved" class="hidden space-y-4">
             <h2 class="text-xl font-bold text-blue-900 flex items-center gap-2 mb-2"><i data-lucide="folder"></i> Stored Quotes</h2>
-            <div id="saved-quotes-container" class="space-y-3">
-                <!-- Stored items pull here dynamically -->
-            </div>
+            <div id="saved-quotes-container" class="space-y-3"></div>
         </section>
 
         <!-- ================= TAB: SETTINGS ================= -->
@@ -158,7 +163,7 @@
             <!-- TEAM SYNC MODULE -->
             <div class="bg-blue-50 border border-blue-200 p-5 rounded-2xl space-y-3">
                 <h2 class="text-base font-bold text-blue-950 flex items-center gap-2"><i data-lucide="refresh-cw" class="text-blue-600"></i> Team Share & Sync</h2>
-                <p class="text-xs text-gray-600">Use this to easily copy your custom job presets and labor rates over to your colleague's device.</p>
+                <p class="text-xs text-gray-600">Sync all custom job presets, global rates, and your complete materials list to your colleague's device.</p>
                 <div class="flex gap-2">
                     <button onclick="exportSyncCode()" class="flex-1 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs rounded-lg flex justify-center items-center gap-1 cursor-pointer">
                         <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Sync Code
@@ -167,13 +172,6 @@
                         <i data-lucide="download" class="w-3.5 h-3.5"></i> Import Code
                     </button>
                 </div>
-            </div>
-
-            <!-- Business Profile Info -->
-            <div class="bg-gray-800 text-gray-200 p-4 rounded-xl text-xs space-y-1">
-                <p class="font-bold text-white text-sm">ENY Business Profile:</p>
-                <p>Company: Electricians Near You (ENY)</p>
-                <p>Phone: 07711261478 | Email: electriciansnearyou@gmail.com</p>
             </div>
 
             <!-- Global Financial Overrides -->
@@ -218,14 +216,38 @@
                 </button>
             </div>
 
-            <!-- DYNAMIC PRESET BUILDER -->
+            <!-- MASTER MATERIALS CATALOG MANAGER -->
+            <div class="bg-white p-5 rounded-2xl shadow-xs border border-gray-100 space-y-4">
+                <h2 class="text-lg font-bold text-blue-900 flex items-center gap-2"><i data-lucide="database"></i> Master Materials Catalog</h2>
+                
+                <!-- Add New Material Box Line Item Form -->
+                <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-2 text-xs">
+                    <p class="font-bold text-gray-700">Add New Part to Catalog</p>
+                    <input type="text" id="new-mat-name" placeholder="Material Name (e.g. 2.5mm T&E Cable 100m)" class="w-full p-2 bg-white border border-gray-200 rounded-lg">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" step="0.01" id="new-mat-cost" placeholder="Cost Price (£)" class="w-full p-2 bg-white border border-gray-200 rounded-lg">
+                        <input type="text" id="new-mat-cat" placeholder="Category (e.g. Cables)" class="w-full p-2 bg-white border border-gray-200 rounded-lg">
+                    </div>
+                    <button onclick="addNewMaterialToCatalog()" class="w-full py-2 bg-blue-800 text-white font-bold rounded-lg cursor-pointer">Add to Master Inventory</button>
+                </div>
+
+                <!-- Live List Rendering Box -->
+                <div class="space-y-2">
+                    <p class="text-xs font-bold text-gray-500">Current Saved Catalog Items:</p>
+                    <div id="settings-catalog-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <!-- Dynamic items layout -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- JOB PRESET CONSTRUCTOR -->
             <div class="bg-white p-5 rounded-2xl shadow-xs border border-gray-100 space-y-4">
                 <h2 class="text-lg font-bold text-blue-900 flex items-center gap-2"><i data-lucide="sliders"></i> Manage Job Presets</h2>
                 
                 <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-3 text-xs">
                     <p class="font-bold text-gray-700">Create / Modify Preset</p>
-                    <input type="text" id="preset-slug" placeholder="Preset ID Name (e.g. shower_install)" class="w-full p-2 bg-white border border-gray-200 rounded-lg">
-                    <input type="text" id="preset-title" placeholder="Display Title (e.g. 10kW Shower Install)" class="w-full p-2 bg-white border border-gray-200 rounded-lg">
+                    <input type="text" id="preset-slug" placeholder="Preset ID (e.g. consumer_upgrade)" class="w-full p-2 bg-white border border-gray-200 rounded-lg">
+                    <input type="text" id="preset-title" placeholder="Display Title (e.g. 10-Way Consumer Unit)" class="w-full p-2 bg-white border border-gray-200 rounded-lg">
                     
                     <div class="grid grid-cols-2 gap-2">
                         <div>
@@ -242,9 +264,12 @@
                         </div>
                     </div>
 
+                    <!-- Preset Tick List Wrapper -->
                     <div>
-                        <label class="text-[10px] text-gray-400 font-bold block mb-1">Assigned Stock Parts (JSON Array Format)</label>
-                        <textarea id="preset-materials-json" rows="4" class="w-full p-2 bg-white border border-gray-200 rounded-lg font-mono text-[11px]" placeholder='[\n  {"name": "6mm Twin & Earth", "cost": 2.50, "qty": 10, "cat": "Cables"}\n]'></textarea>
+                        <label class="text-[11px] text-gray-500 font-bold block mb-1">Select Materials for this Preset:</label>
+                        <div id="preset-material-checkboxes" class="bg-white border border-gray-200 rounded-lg p-2 max-h-40 overflow-y-auto space-y-2">
+                            <!-- Dynamic checkboxes list -->
+                        </div>
                     </div>
 
                     <button onclick="saveCustomJobPreset()" class="w-full py-2 bg-emerald-600 text-white rounded-lg font-bold text-xs cursor-pointer">
@@ -252,12 +277,9 @@
                     </button>
                 </div>
 
-                <!-- List of existing user Presets to Delete/Edit -->
                 <div class="space-y-2">
                     <p class="text-xs font-bold text-gray-500">Configured System Presets:</p>
-                    <div id="settings-preset-list" class="space-y-1 max-h-40 overflow-y-auto">
-                        <!-- Dynamic lines -->
-                    </div>
+                    <div id="settings-preset-list" class="space-y-1 max-h-40 overflow-y-auto"></div>
                 </div>
             </div>
         </section>
@@ -265,34 +287,35 @@
     </main>
 
     <script>
-        // System defaults if completely blank slate
+        // System defaults factory baseline mapping
         const initialSystemDefaults = {
             rates: { rateFirst: 75, rateSub: 45, rateHalf: 180, rateDay: 320, markup: 20, feeTesting: 120, feeCert: 45 },
+            catalog: [
+                { id: "m1", name: "Twin & Earth 2.5mm Cable (50m)", cost: 60.00, cat: "Cables" },
+                { id: "m2", name: "Double Socket Faceplate White", cost: 3.50, cat: "Sockets" },
+                { id: "m3", name: "7kW EV Charger Unit Base", cost: 380.00, cat: "Hardware" },
+                { id: "m4", name: "10-Way Surge Protected Consumer Board", cost: 145.00, cat: "Switchgear" }
+            ],
             presets: {
                 rewire_room: {
                     title: "Full Room Rewire",
                     labourType: 'day',
                     hours: 1,
-                    materials: [
-                        { name: 'Twin & Earth 2.5mm Cable (m)', cost: 1.20, qty: 50, cat: 'Cables' },
-                        { name: 'Double Socket Faceplates White', cost: 3.50, qty: 4, cat: 'Sockets' }
-                    ]
+                    materials: [{ id: "m1", qty: 1 }, { id: "m2", qty: 4 }]
                 },
                 ev_charger: {
                     title: "EV Charger Installation",
                     labourType: 'hourly',
                     hours: 4,
-                    materials: [
-                        { name: '7kW EV Charger Unit Base', cost: 380.00, qty: 1, cat: 'Hardware' },
-                        { name: '6mm EV Ultra SWA Cable (m)', cost: 4.80, qty: 15, cat: 'Cables' }
-                    ]
+                    materials: [{ id: "m3", qty: 1 }]
                 }
             }
         };
 
         let currentSettings = {};
         let systemPresets = {};
-        let activeMaterials = [];
+        let masterCatalog = [];
+        let activeMaterials = []; // Holds items currently active on the quote builder
 
         window.addEventListener('DOMContentLoaded', () => {
             initializeStorageEngine();
@@ -300,24 +323,24 @@
         });
 
         function initializeStorageEngine() {
+            // Load core base rates parameters
             const storedRates = localStorage.getItem('eny_app_settings');
-            if (storedRates) {
-                currentSettings = JSON.parse(storedRates);
-            } else {
-                currentSettings = { ...initialSystemDefaults.rates };
-                localStorage.setItem('eny_app_settings', JSON.stringify(currentSettings));
-            }
+            currentSettings = storedRates ? JSON.parse(storedRates) : { ...initialSystemDefaults.rates };
+            if(!storedRates) localStorage.setItem('eny_app_settings', JSON.stringify(currentSettings));
 
+            // Load master materials database catalog framework
+            const storedCatalog = localStorage.getItem('eny_master_catalog');
+            masterCatalog = storedCatalog ? JSON.parse(storedCatalog) : [ ...initialSystemDefaults.catalog ];
+            if(!storedCatalog) localStorage.setItem('eny_master_catalog', JSON.stringify(masterCatalog));
+
+            // Load workflow presets loop map
             const storedPresets = localStorage.getItem('eny_job_presets');
-            if (storedPresets) {
-                systemPresets = JSON.parse(storedPresets);
-            } else {
-                systemPresets = { ...initialSystemDefaults.presets };
-                localStorage.setItem('eny_job_presets', JSON.stringify(systemPresets));
-            }
+            systemPresets = storedPresets ? JSON.parse(storedPresets) : { ...initialSystemDefaults.presets };
+            if(!storedPresets) localStorage.setItem('eny_job_presets', JSON.stringify(systemPresets));
 
             populateSettingsFields();
             refreshBlueprintSelectorDropdowns();
+            renderCatalogPickers();
             applyJobPreset();
         }
 
@@ -334,6 +357,27 @@
             document.getElementById('label-testing-cost').innerText = `£${parseFloat(currentSettings.feeTesting).toFixed(2)}`;
             document.getElementById('label-cert-cost').innerText = `£${parseFloat(currentSettings.feeCert).toFixed(2)}`;
 
+            // Render inventory list format settings panel
+            const catWrapper = document.getElementById('settings-catalog-list');
+            catWrapper.innerHTML = '';
+            masterCatalog.forEach((item) => {
+                const row = document.createElement('div');
+                row.className = "flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-200 text-xs";
+                row.innerHTML = `
+                    <div class="flex-1">
+                        <span class="text-[9px] font-bold text-blue-800 uppercase block">${item.cat}</span>
+                        <input type="text" value="${item.name}" onchange="updateCatalogItem('${item.id}', 'name', this.value)" class="w-full bg-transparent font-medium text-gray-800 focus:outline-none">
+                    </div>
+                    <div class="w-20">
+                        <span class="text-[9px] text-gray-400 block font-semibold">Cost (£)</span>
+                        <input type="number" step="0.01" value="${item.cost}" oninput="updateCatalogItem('${item.id}', 'cost', this.value)" class="w-full bg-transparent font-semibold text-gray-700 focus:outline-none">
+                    </div>
+                    <button onclick="deleteCatalogItem('${item.id}')" class="text-red-500 p-1 self-end cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                `;
+                catWrapper.appendChild(row);
+            });
+
+            // Render presets tracker lists summary
             const wrapper = document.getElementById('settings-preset-list');
             wrapper.innerHTML = '';
             Object.keys(systemPresets).forEach(slug => {
@@ -342,25 +386,61 @@
                 item.innerHTML = `
                     <div><span class="font-mono text-[10px] text-gray-400">[${slug}]</span> <strong class="text-gray-700">${systemPresets[slug].title}</strong></div>
                     <div class="flex gap-1">
-                        <button onclick="editPresetInline('${slug}')" class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[11px]">Edit</button>
-                        <button onclick="deletePresetInline('${slug}')" class="text-red-600 bg-red-50 px-1.5 py-0.5 rounded text-[11px]">Del</button>
+                        <button onclick="editPresetInline('${slug}')" class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded text-[11px] cursor-pointer">Edit</button>
+                        <button onclick="deletePresetInline('${slug}')" class="text-red-600 bg-red-50 px-1.5 py-0.5 rounded text-[11px] cursor-pointer">Del</button>
                     </div>
                 `;
                 wrapper.appendChild(item);
+            });
+
+            // Render preset builder checkboxes
+            const cbWrapper = document.getElementById('preset-material-checkboxes');
+            cbWrapper.innerHTML = '';
+            masterCatalog.forEach(item => {
+                const container = document.createElement('div');
+                container.className = "flex items-center justify-between text-xs p-1 hover:bg-gray-50 rounded";
+                container.innerHTML = `
+                    <label class="flex items-center gap-2 cursor-pointer text-gray-700 font-medium">
+                        <input type="checkbox" data-preset-mat-id="${item.id}" class="rounded text-blue-600">
+                        <span>${item.name} (£${item.cost.toFixed(2)})</span>
+                    </label>
+                    <div class="flex items-center gap-1">
+                        <span class="text-[10px] text-gray-400">Qty:</span>
+                        <input type="number" id="preset-qty-${item.id}" value="1" min="1" class="w-10 p-0.5 border border-gray-200 bg-gray-50 rounded text-center text-xs">
+                    </div>
+                `;
+                cbWrapper.appendChild(container);
+            });
+            lucide.createIcons();
+        }
+
+        function renderCatalogPickers() {
+            const picker = document.getElementById('quote-catalog-picker');
+            picker.innerHTML = '';
+            if(masterCatalog.length === 0) {
+                picker.innerHTML = `<p class="text-xs text-gray-400 text-center">Catalog empty. Set up parts in Setup tab.</p>`;
+                return;
+            }
+            masterCatalog.forEach(item => {
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between text-xs py-1 border-b border-gray-100 last:border-0";
+                row.innerHTML = `
+                    <span class="text-gray-700 font-medium">${item.name} <b class="text-blue-900">£${item.cost.toFixed(2)}</b></span>
+                    <button onclick="addCatalogItemToActiveQuote('${item.id}')" class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md font-bold text-[11px] cursor-pointer">+ Add</button>
+                `;
+                picker.appendChild(row);
             });
         }
 
         function refreshBlueprintSelectorDropdowns() {
             const selectNode = document.getElementById('job-preset-select');
             selectNode.innerHTML = '';
-            
             Object.keys(systemPresets).forEach(slug => {
                 const opt = document.createElement('option');
                 opt.value = slug;
                 opt.innerText = systemPresets[slug].title;
                 selectNode.appendChild(opt);
             });
-
             const customOpt = document.createElement('option');
             customOpt.value = 'custom_blank';
             customOpt.innerText = '-- Blank Custom Canvas --';
@@ -382,37 +462,70 @@
             alert('System rates committed safely!');
         }
 
+        // Master Catalog Management Engine
+        function addNewMaterialToCatalog() {
+            const name = document.getElementById('new-mat-name').value.trim();
+            const cost = parseFloat(document.getElementById('new-mat-cost').value) || 0;
+            const cat = document.getElementById('new-mat-cat').value.trim() || 'General Parts';
+
+            if(!name) { alert('Provide a clear product item name line description.'); return; }
+
+            const newItem = { id: 'mat_' + Date.now(), name, cost, cat };
+            masterCatalog.push(newItem);
+            localStorage.setItem('eny_master_catalog', JSON.stringify(masterCatalog));
+
+            document.getElementById('new-mat-name').value = '';
+            document.getElementById('new-mat-cost').value = '';
+            document.getElementById('new-mat-cat').value = '';
+
+            initializeStorageEngine();
+        }
+
+        function updateCatalogItem(id, key, value) {
+            const item = masterCatalog.find(m => m.id === id);
+            if(!item) return;
+            if(key === 'name') item.name = value;
+            if(key === 'cost') item.cost = parseFloat(value) || 0;
+            localStorage.setItem('eny_master_catalog', JSON.stringify(masterCatalog));
+            renderCatalogPickers();
+            calculateLiveTotals();
+        }
+
+        function deleteCatalogItem(id) {
+            if(!confirm("Purge product line from global master inventory registry list?")) return;
+            masterCatalog = masterCatalog.filter(m => m.id !== id);
+            localStorage.setItem('eny_master_catalog', JSON.stringify(masterCatalog));
+            initializeStorageEngine();
+        }
+
+        // Preset Construction Engine Using Tickbox Controls Matrix
         function saveCustomJobPreset() {
             const slug = document.getElementById('preset-slug').value.trim().toLowerCase().replace(/\s+/g, '_');
             const title = document.getElementById('preset-title').value.trim();
             const labourType = document.getElementById('preset-labour-type').value;
             const hours = parseInt(document.getElementById('preset-hours').value) || 1;
-            const rawJson = document.getElementById('preset-materials-json').value.trim();
 
-            if(!slug || !title) {
-                alert('Please supply an identifying Unique Key Code and Display Title.');
-                return;
-            }
+            if(!slug || !title) { alert('Unique Key ID and Display Title fields are mandatory layout bounds.'); return; }
 
-            let materialsParsedArray = [];
-            if(rawJson) {
-                try {
-                    materialsParsedArray = JSON.parse(rawJson);
-                } catch(e) {
-                    alert('Invalid JSON array formatting built for material listings structure. Check syntax.');
-                    return;
+            // Extract values via check box nodes map references matrix loops
+            const selectedMaterialsList = [];
+            const checkboxes = document.querySelectorAll('[data-preset-mat-id]');
+            checkboxes.forEach(cb => {
+                if(cb.checked) {
+                    const mId = cb.getAttribute('data-preset-mat-id');
+                    const qty = parseInt(document.getElementById(`preset-qty-${mId}`).value) || 1;
+                    selectedMaterialsList.push({ id: mId, qty: qty });
                 }
-            }
+            });
 
-            systemPresets[slug] = { title, labourType, hours, materials: materialsParsedArray };
+            systemPresets[slug] = { title, labourType, hours, materials: selectedMaterialsList };
             localStorage.setItem('eny_job_presets', JSON.stringify(systemPresets));
             
             document.getElementById('preset-slug').value = '';
             document.getElementById('preset-title').value = '';
-            document.getElementById('preset-materials-json').value = '';
 
             initializeStorageEngine();
-            alert(`Job Preset [${title}] compiled securely!`);
+            alert(`Preset Workflow "${title}" mapped completely.`);
         }
 
         function editPresetInline(slug) {
@@ -421,55 +534,31 @@
             document.getElementById('preset-title').value = tgt.title;
             document.getElementById('preset-labour-type').value = tgt.labourType;
             document.getElementById('preset-hours').value = tgt.hours;
-            document.getElementById('preset-materials-json').value = JSON.stringify(tgt.materials, null, 2);
+
+            // Clear checkboxes then assign values match criteria rules
+            const checkboxes = document.querySelectorAll('[data-preset-mat-id]');
+            checkboxes.forEach(cb => {
+                const mId = cb.getAttribute('data-preset-mat-id');
+                const match = tgt.materials.find(m => m.id === mId);
+                if(match) {
+                    cb.checked = true;
+                    document.getElementById(`preset-qty-${mId}`).value = match.qty;
+                } else {
+                    cb.checked = false;
+                    document.getElementById(`preset-qty-${mId}`).value = 1;
+                }
+            });
             document.getElementById('preset-slug').scrollIntoView({ behavior: 'smooth' });
         }
 
         function deletePresetInline(slug) {
-            if(!confirm(`Delete the "${slug}" preset permanently?`)) return;
+            if(!confirm(`Delete preset rules loop key [${slug}] forever?`)) return;
             delete systemPresets[slug];
             localStorage.setItem('eny_job_presets', JSON.stringify(systemPresets));
             initializeStorageEngine();
         }
 
-        // TEAM SYNC LOGIC ENGINE
-        function exportSyncCode() {
-            const syncPackage = {
-                rates: currentSettings,
-                presets: systemPresets
-            };
-            const encodedString = btoa(unescape(encodeURIComponent(JSON.stringify(syncPackage))));
-            
-            navigator.clipboard.writeText(encodedString).then(() => {
-                alert("Sync code copied to clipboard! You can now send this via text/WhatsApp to your colleague.");
-            }).catch(err => {
-                alert("Failed to copy automatically. Here is your text code string:\n\n" + encodedString);
-            });
-        }
-
-        function importSyncCode() {
-            const inputCode = prompt("Paste the Sync Code received from your colleague here:");
-            if (!inputCode) return;
-
-            try {
-                const decodedString = decodeURIComponent(escape(atob(inputCode.trim())));
-                const parsedPackage = JSON.parse(decodedString);
-
-                if (parsedPackage.rates && parsedPackage.presets) {
-                    if (confirm("This will overwrite your existing system setup and presets to match your colleague. Proceed?")) {
-                        localStorage.setItem('eny_app_settings', JSON.stringify(parsedPackage.rates));
-                        localStorage.setItem('eny_job_presets', JSON.stringify(parsedPackage.presets));
-                        initializeStorageEngine();
-                        alert("System sync successful! Rates and Presets are now identical.");
-                    }
-                } else {
-                    alert("Invalid setup format data detected inside package.");
-                }
-            } catch (e) {
-                alert("Failed to read the code. Make sure you copied the full string exactly.");
-            }
-        }
-
+        // Live Quoting Execution Engine Mechanics
         function applyJobPreset() {
             const selected = document.getElementById('job-preset-select').value;
             if(selected === 'custom_blank' || !systemPresets[selected]) {
@@ -484,7 +573,33 @@
             document.getElementById('quote-labour-type').value = blueprint.labourType;
             document.getElementById('quote-labour-hours').value = blueprint.hours;
             
-            activeMaterials = JSON.parse(JSON.stringify(blueprint.materials));
+            // Re-inflate raw structural relational data items pointers lists keys elements links maps logic references values parameters
+            activeMaterials = [];
+            blueprint.materials.forEach(pItem => {
+                const catalogMatch = masterCatalog.find(m => m.id === pItem.id);
+                if(catalogMatch) {
+                    activeMaterials.push({
+                        name: catalogMatch.name,
+                        cost: catalogMatch.cost,
+                        qty: pItem.qty,
+                        cat: catalogMatch.cat
+                    });
+                }
+            });
+            renderMaterialsFormRows();
+        }
+
+        function addCatalogItemToActiveQuote(catalogId) {
+            const match = masterCatalog.find(m => m.id === catalogId);
+            if(!match) return;
+            
+            // If already on quote canvas, increment quantity, else create row item line
+            const existing = activeMaterials.find(m => m.name === match.name);
+            if(existing) {
+                existing.qty += 1;
+            } else {
+                activeMaterials.push({ name: match.name, cost: match.cost, qty: 1, cat: match.cat });
+            }
             renderMaterialsFormRows();
         }
 
@@ -493,7 +608,7 @@
             container.innerHTML = '';
 
             if(activeMaterials.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">No materials standard on this work loop. Click below to add items.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-400 text-center py-4">No materials currently on quote layout context fields.</p>`;
                 calculateLiveTotals();
                 return;
             }
@@ -503,7 +618,7 @@
                 row.className = "flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200 text-xs";
                 row.innerHTML = `
                     <div class="flex-1 min-w-0">
-                        <span class="block text-[10px] font-bold text-blue-800 uppercase tracking-tight">${item.cat || 'Part Line'}</span>
+                        <span class="block text-[10px] font-bold text-blue-800 uppercase tracking-tight">${item.cat}</span>
                         <input type="text" value="${item.name}" onchange="updateMaterialItem(${index}, 'name', this.value)" class="w-full bg-transparent font-medium text-gray-800 focus:outline-none truncate">
                     </div>
                     <div class="w-16">
@@ -514,9 +629,7 @@
                         <span class="block text-[9px] text-gray-400 font-semibold">Qty</span>
                         <input type="number" value="${item.qty}" oninput="updateMaterialItem(${index}, 'qty', this.value)" class="w-full bg-transparent font-semibold text-gray-700 focus:outline-none">
                     </div>
-                    <button onclick="removeMaterialRow(${index})" class="text-red-500 hover:text-red-700 p-1 self-end cursor-pointer">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
+                    <button onclick="removeMaterialRow(${index})" class="text-red-500 p-1 self-end cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 `;
                 container.appendChild(row);
             });
@@ -525,7 +638,7 @@
         }
 
         function addCustomMaterialRow() {
-            activeMaterials.push({ name: 'Custom Extra Parts Item', cost: 1.00, qty: 1, cat: 'Manual Add' });
+            activeMaterials.push({ name: 'Custom One-Off Item', cost: 1.00, qty: 1, cat: 'Manual Add' });
             renderMaterialsFormRows();
         }
 
@@ -546,31 +659,20 @@
             const hoursInput = document.getElementById('quote-labour-hours');
             const wrapper = document.getElementById('hours-input-wrapper');
 
-            if (labourType === 'hourly') {
-                wrapper.classList.remove('invisible');
-            } else {
-                wrapper.classList.add('invisible');
-            }
+            if (labourType === 'hourly') wrapper.classList.remove('invisible');
+            else wrapper.classList.add('invisible');
 
             let matsSubtotal = 0;
-            activeMaterials.forEach(item => {
-                matsSubtotal += (item.cost * item.qty);
-            });
+            activeMaterials.forEach(item => { matsSubtotal += (item.cost * item.qty); });
             const markupMultiplier = 1 + (currentSettings.markup / 100);
             const totalMaterialsWithMarkup = matsSubtotal * markupMultiplier;
 
             let labourSubtotal = 0;
-            if (labourType === 'day') {
-                labourSubtotal = currentSettings.rateDay;
-            } else if (labourType === 'halfday') {
-                labourSubtotal = currentSettings.rateHalf;
-            } else if (labourType === 'hourly') {
+            if (labourType === 'day') labourSubtotal = currentSettings.rateDay;
+            else if (labourType === 'halfday') labourSubtotal = currentSettings.rateHalf;
+            else if (labourType === 'hourly') {
                 const hours = parseInt(hoursInput.value) || 1;
-                if (hours <= 1) {
-                    labourSubtotal = currentSettings.rateFirst;
-                } else {
-                    labourSubtotal = currentSettings.rateFirst + ((hours - 1) * currentSettings.rateSub);
-                }
+                labourSubtotal = hours <= 1 ? currentSettings.rateFirst : currentSettings.rateFirst + ((hours - 1) * currentSettings.rateSub);
             }
 
             let addonTotal = 0;
@@ -585,30 +687,66 @@
             document.getElementById('summary-total').innerText = `£${globalEstimatedFinalPrice.toFixed(2)}`;
         }
 
+        // Global Utility/Navigation Helpers Module
         function switchTab(tabId) {
             ['quote', 'saved', 'settings'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`btn-tab-${t}`).className = "px-3 py-1.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-blue-800/50 flex items-center gap-1";
+                document.getElementById(`btn-tab-${t}`).className = "px-3 py-1.5 rounded-lg text-sm font-medium text-blue-200 hover:bg-blue-800/50 flex items-center gap-1 cursor-pointer";
             });
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            document.getElementById(`btn-tab-${tabId}`).className = "px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-800 text-white flex items-center gap-1";
-            
+            document.getElementById(`btn-tab-${tabId}`).className = "px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-800 text-white flex items-center gap-1 cursor-pointer";
             if(tabId === 'saved') renderSavedQuotesList();
+        }
+
+        function toggleElement(id) {
+            const node = document.getElementById(id);
+            node.classList.toggle('hidden');
+        }
+
+        // TEAM SYNC EXPORT IMPORT CORE ENGINE LOGIC FIELDS
+        function exportSyncCode() {
+            const syncPackage = {
+                rates: currentSettings,
+                catalog: masterCatalog,
+                presets: systemPresets
+            };
+            const encodedString = btoa(unescape(encodeURIComponent(JSON.stringify(syncPackage))));
+            navigator.clipboard.writeText(encodedString).then(() => {
+                alert("Team Sync token generated and copied to clipboard! WhatsApp or text it directly to your colleague.");
+            }).catch(err => {
+                alert("Text string compilation complete:\n\n" + encodedString);
+            });
+        }
+
+        function importSyncCode() {
+            const inputCode = prompt("Paste your colleague's exported Sync Token Code below:");
+            if (!inputCode) return;
+            try {
+                const decodedString = decodeURIComponent(escape(atob(inputCode.trim())));
+                const parsedPackage = JSON.parse(decodedString);
+
+                if (parsedPackage.rates && parsedPackage.catalog && parsedPackage.presets) {
+                    if (confirm("Importing will fully update your rates, master catalog tracking lines, and active presets list to match theirs exactly. Proceed?")) {
+                        localStorage.setItem('eny_app_settings', JSON.stringify(parsedPackage.rates));
+                        localStorage.setItem('eny_master_catalog', JSON.stringify(parsedPackage.catalog));
+                        localStorage.setItem('eny_job_presets', JSON.stringify(parsedPackage.presets));
+                        initializeStorageEngine();
+                        alert("System mapping mirrored successfully! Your app matches your colleague's device profile.");
+                    }
+                } else { alert("Data stream error: structural nodes missing attributes keys mapping matches."); }
+            } catch (e) { alert("Failed to resolve Sync Token. Ensure full string copies are identical."); }
         }
 
         function saveQuoteLocally() {
             const clientName = document.getElementById('client-name').value.trim() || 'Unnamed Client';
             const clientAddress = document.getElementById('client-address').value.trim() || 'No Address Listed';
             const paymentTerms = document.getElementById('quote-payment-terms').value;
-            
             const savedQuotes = JSON.parse(localStorage.getItem('eny_saved_quotes') || '[]');
             
             const quoteObject = {
                 id: Date.now(),
                 date: new Date().toLocaleDateString('en-GB'),
-                clientName,
-                clientAddress,
-                paymentTerms,
+                clientName, clientAddress, paymentTerms,
                 materials: activeMaterials,
                 labourType: document.getElementById('quote-labour-type').value,
                 labourHours: document.getElementById('quote-labour-hours').value,
@@ -624,7 +762,7 @@
 
             savedQuotes.unshift(quoteObject);
             localStorage.setItem('eny_saved_quotes', JSON.stringify(savedQuotes));
-            alert('Quote archived safely on device local cache!');
+            alert('Quote file tracked locally on memory storage canvas context loops.');
         }
 
         function renderSavedQuotesList() {
@@ -633,7 +771,7 @@
             const quotes = JSON.parse(localStorage.getItem('eny_saved_quotes') || '[]');
 
             if(quotes.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">No documents created yet.</div>`;
+                container.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">No historical records available on current terminal node.</div>`;
                 return;
             }
 
@@ -643,11 +781,11 @@
                 card.innerHTML = `
                     <div>
                         <h4 class="font-bold text-gray-900">${q.clientName}</h4>
-                        <p class="text-xs text-gray-400">${q.date} • Total: <span class="text-blue-900 font-bold">${q.totals.total}</span></p>
+                        <p class="text-xs text-gray-400">${q.date} • Total Calc Value: <span class="text-blue-900 font-bold">${q.totals.total}</span></p>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="loadHistoricalQuoteToEngine(${q.id})" class="p-2 bg-blue-50 text-blue-700 rounded-lg"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                        <button onclick="deleteStoredQuote(${q.id})" class="p-2 bg-red-50 text-red-600 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <button onclick="loadHistoricalQuoteToEngine(${q.id})" class="p-2 bg-blue-50 text-blue-700 rounded-lg cursor-pointer"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                        <button onclick="deleteStoredQuote(${q.id})" class="p-2 bg-red-50 text-red-600 rounded-lg cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -674,7 +812,7 @@
         }
 
         function deleteStoredQuote(id) {
-            if(!confirm("Purge selected record?")) return;
+            if(!confirm("Purge historical document matrix from tracking nodes memory lines?")) return;
             let quotes = JSON.parse(localStorage.getItem('eny_saved_quotes') || '[]');
             quotes = quotes.filter(q => q.id !== id);
             localStorage.setItem('eny_saved_quotes', JSON.stringify(quotes));
@@ -752,4 +890,3 @@
     </script>
 </body>
 </html>
-
