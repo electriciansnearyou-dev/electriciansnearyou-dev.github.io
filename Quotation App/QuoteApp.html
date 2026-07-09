@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENY Electrical - Premium Project Planner & CRM</title>
+    <!-- Stable Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- HTML2PDF Library for Client-Side PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -19,6 +23,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-900">
 
+    <!-- Top Navigation Header -->
     <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -53,6 +58,7 @@
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
         
+        <!-- ================= TAB 1: QUOTE BUILDER ================= -->
         <div id="quote-tab" class="tab-content active space-y-6">
             
             <div id="editing-mode-banner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -235,6 +241,7 @@
             </div>
         </div>
 
+        <!-- ================= TAB 2: TEMPLATES MANAGER ================= -->
         <div id="templates-tab" class="tab-content space-y-6">
             <div id="template-edit-banner" class="hidden bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex justify-between items-center">
                 <div class="flex items-center gap-2 text-blue-400">
@@ -272,7 +279,8 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Included Materials</label>
                             <div id="template-materials-selector-box" class="max-h-40 overflow-y-auto border border-slate-800 rounded-xl p-2 bg-slate-900/40 divide-y divide-slate-900 custom-scrollbar">
-                                </div>
+                                <!-- Generated dynamically -->
+                            </div>
                         </div>
 
                         <button type="submit" id="template-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
@@ -291,6 +299,7 @@
             </div>
         </div>
 
+        <!-- ================= TAB 3: MATERIAL STOCK MANAGER ================= -->
         <div id="inventory-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
@@ -344,6 +353,7 @@
             </div>
         </div>
 
+        <!-- ================= TAB 4: CLIENT CRM ENGINE ================= -->
         <div id="clients-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="space-y-4">
@@ -398,6 +408,7 @@
             </div>
         </div>
 
+        <!-- ================= TAB 5: ARCHIVE VAULT & SYNC MATRIX ================= -->
         <div id="vault-tab" class="tab-content space-y-6">
             
             <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -420,6 +431,7 @@
                 </div>
             </div>
 
+            <!-- Historical Sheet Ledger Logs Area -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
                 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
@@ -454,6 +466,7 @@
 
     </main>
 
+    <!-- SHOPPING LIST MODAL OVERLAY -->
     <div id="shopping-list-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -466,7 +479,8 @@
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
                 <ul id="shopping-list-content" class="space-y-2 text-sm text-slate-300">
-                    </ul>
+                    <!-- List items injected here dynamically -->
+                </ul>
             </div>
             <div class="p-5 border-t border-slate-800 bg-slate-800/50 flex justify-end gap-3">
                 <button onclick="copyShoppingList()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer">
@@ -479,6 +493,7 @@
         </div>
     </div>
 
+    <!-- INVOICE CONVERSION / RECONCILIATION MODAL -->
     <div id="invoice-reconciliation-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -521,6 +536,7 @@
         </div>
     </div>
 
+    <!-- PROFITABILITY LEDGER MODAL (EYES ONLY) -->
     <div id="profit-view-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-amber-500/30 rounded-2xl w-full max-w-sm overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -567,6 +583,10 @@
         </div>
     </div>
 
+    <!-- HIDDEN PDF RENDERING CONTAINER -->
+    <div id="pdf-render-zone" style="position: absolute; left: -9999px; top: -9999px; width: 800px;"></div>
+
+    <!-- ================= SYSTEM ENGINE CORE JAVASCRIPT LOGIC ================= -->
     <script>
         const DEFAULT_SEED_STOCK = [
             { id: 'M1', sku: '6124Y-2.5', desc: '2.5mm² Twin & Earth Cable (100m Drum)', cost: 68.50, category: 'Wiring & Management' },
@@ -633,11 +653,7 @@
 
         // --- SHOPPING LIST LOGIC ---
         function toggleQuoteSelection(id) {
-            if (selectedVaultQuotes.has(id)) {
-                selectedVaultQuotes.delete(id);
-            } else {
-                selectedVaultQuotes.add(id);
-            }
+            if (selectedVaultQuotes.has(id)) { selectedVaultQuotes.delete(id); } else { selectedVaultQuotes.add(id); }
             updateShoppingListButton();
         }
 
@@ -659,42 +675,29 @@
 
         function openShoppingListModal() {
             if (selectedVaultQuotes.size === 0) return;
-            
             const vault = getStoredVaultRecords();
             const aggregatedItems = {};
-            
             selectedVaultQuotes.forEach(quoteId => {
                 const quote = vault.find(q => q.id === quoteId);
                 if (quote && quote.itemsSnapshot) {
                     quote.itemsSnapshot.forEach(item => {
                         const key = item.sku;
-                        if (!aggregatedItems[key]) {
-                            aggregatedItems[key] = { desc: item.desc, sku: item.sku, qty: 0 };
-                        }
+                        if (!aggregatedItems[key]) { aggregatedItems[key] = { desc: item.desc, sku: item.sku, qty: 0 }; }
                         aggregatedItems[key].qty += parseInt(item.qty);
                     });
                 }
             });
-            
             const listEl = document.getElementById('shopping-list-content');
             const itemsArray = Object.values(aggregatedItems);
-            
-            if (itemsArray.length === 0) {
-                listEl.innerHTML = `<li class="text-slate-500 italic text-center py-4">No materials mapped in the selected jobs.</li>`;
-            } else {
+            if (itemsArray.length === 0) { listEl.innerHTML = `<li class="text-slate-500 italic text-center py-4">No materials mapped in the selected jobs.</li>`; } 
+            else {
                 listEl.innerHTML = itemsArray.map(item => `
                     <li class="flex justify-between items-center py-3 border-b border-slate-800/60 last:border-0">
-                        <div class="pr-4">
-                            <span class="font-medium text-slate-200 block">${item.desc}</span>
-                            <span class="text-[10px] text-slate-500 font-mono mt-0.5 block">${item.sku}</span>
-                        </div>
-                        <div class="font-bold text-amber-400 font-mono bg-slate-950/50 px-3 py-1.5 rounded-lg border border-slate-800 text-base">
-                            x${item.qty}
-                        </div>
+                        <div class="pr-4"><span class="font-medium text-slate-200 block">${item.desc}</span><span class="text-[10px] text-slate-500 font-mono mt-0.5 block">${item.sku}</span></div>
+                        <div class="font-bold text-amber-400 font-mono bg-slate-950/50 px-3 py-1.5 rounded-lg border border-slate-800 text-base">x${item.qty}</div>
                     </li>
                 `).join('');
             }
-            
             document.getElementById('shopping-list-modal').classList.remove('hidden');
         }
 
@@ -1222,7 +1225,6 @@
 
             document.getElementById('recon-quote-id').value = id;
             document.getElementById('recon-gross-total').innerText = `£${target.financials.grossTotal.toFixed(2)}`;
-            // Pre-fill with estimated actuals
             document.getElementById('recon-actual-materials').value = target.financials.netMaterials.toFixed(2);
             document.getElementById('recon-actual-labor').value = target.financials.laborCosts.toFixed(2);
 
@@ -1285,6 +1287,125 @@
         function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); }
 
 
+        // --- PDF GENERATION ENGINE ---
+        function generateDocumentPDF(id) {
+            const vault = getStoredVaultRecords();
+            const target = vault.find(r => r.id === id);
+            if (!target) return;
+
+            // Pipeline Automation: If Draft, update to Sent automatically.
+            if (target.status === 'Draft' || !target.status) {
+                updateQuoteStatus(id, 'Sent');
+            }
+
+            // Determine Header Type based on Job Status
+            const isInvoice = target.status === 'Invoiced' || target.status === 'Paid';
+            const docPrefix = isInvoice ? 'INVOICE' : 'QUOTATION';
+            const clientName = target.clientDetailsPayload?.name || 'Client';
+            const headerTitle = `${docPrefix} - ${clientName.toUpperCase()}`;
+
+            // Build item rows (Client view: No trade costs shown)
+            let itemsHtml = '';
+            if (target.itemsSnapshot && target.itemsSnapshot.length > 0) {
+                target.itemsSnapshot.forEach(item => {
+                    itemsHtml += `
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px;">${item.desc}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; text-align: center;">${item.qty}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            // Add Labor and Testing lines cleanly
+            if (target.laborHours > 0) {
+                itemsHtml += `
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px;">Operational Labor & Installation</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; text-align: center;">-</td>
+                    </tr>
+                `;
+            }
+            if (target.includeTestingCertificate) {
+                itemsHtml += `
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px;">Initial Verification & Testing Certification</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; text-align: center;">-</td>
+                    </tr>
+                `;
+            }
+
+            // Footer Text specific to Invoice or Quote
+            const footerText = isInvoice 
+                ? `<strong>Payment Terms:</strong> Due upon receipt.<br><strong>Bank Details:</strong> ENY Electrical | Account: XXXXXXXX | Sort Code: XX-XX-XX`
+                : `<strong>Terms:</strong> This quotation is valid for 30 days. Please contact us to proceed with scheduling.`;
+
+            // Construct the PDF blueprint HTML
+            const pdfHtml = `
+                <div style="padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background-color: #ffffff; min-height: 800px;">
+                    <table style="width: 100%; margin-bottom: 40px;">
+                        <tr>
+                            <td>
+                                <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0f172a;">ENY ELECTRICAL</h1>
+                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">Professional Electrical Contracting</p>
+                            </td>
+                            <td style="text-align: right;">
+                                <h2 style="margin: 0; font-size: 18px; color: #0f172a;">${headerTitle}</h2>
+                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">Date: ${target.timestamp.split(' ')[0]}</p>
+                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">Ref: ${target.id}</p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="margin-bottom: 40px;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #64748b; text-transform: uppercase;">To:</h3>
+                        <p style="margin: 0 0 5px 0; font-weight: bold; font-size: 16px;">${clientName}</p>
+                        ${target.clientDetailsPayload?.address ? `<p style="margin: 0 0 5px 0; font-size: 14px;">${target.clientDetailsPayload.address}</p>` : ''}
+                        ${target.clientDetailsPayload?.email ? `<p style="margin: 0 0 5px 0; font-size: 14px;">${target.clientDetailsPayload.email}</p>` : ''}
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin: 0 0 5px 0; font-size: 14px; color: #64748b; text-transform: uppercase;">Project Reference</h3>
+                        <p style="margin: 0; font-size: 16px; font-weight: bold;">${target.jobName}</p>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+                        <thead>
+                            <tr style="background-color: #f8fafc;">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #cbd5e1; font-size: 12px; text-transform: uppercase; color: #64748b;">Description</th>
+                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #cbd5e1; font-size: 12px; text-transform: uppercase; color: #64748b; w-24">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsHtml}
+                        </tbody>
+                    </table>
+
+                    <div style="text-align: right; margin-bottom: 60px;">
+                        <p style="font-size: 14px; color: #64748b; margin: 0 0 5px 0;">Total Amount (Exc VAT)</p>
+                        <p style="font-size: 24px; font-weight: bold; margin: 0; color: #0f172a;">£${target.financials.grossTotal.toFixed(2)}</p>
+                    </div>
+
+                    <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #64748b; line-height: 1.5;">
+                        ${footerText}
+                    </div>
+                </div>
+            `;
+
+            const renderZone = document.getElementById('pdf-render-zone');
+            renderZone.innerHTML = pdfHtml;
+
+            // Generate and Save the PDF using HTML2PDF
+            html2pdf().set({
+                margin: 10,
+                filename: `${docPrefix.toLowerCase()}_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${target.id}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(renderZone).save();
+        }
+
+
         // --- COMMIT ARCHIVE ACTIONS ---
         function commitQuoteToVault(overwriteExistingMode = false) {
             const clientName = document.getElementById('client-name').value.trim();
@@ -1331,7 +1452,7 @@
             if (overwriteExistingMode && currentlyEditingQuoteId) {
                 const searchIdx = vault.findIndex(q => q.id === currentlyEditingQuoteId);
                 if(searchIdx !== -1) {
-                    compositeRecordObject.actuals = vault[searchIdx].actuals; // preserve actuals if they exist
+                    compositeRecordObject.actuals = vault[searchIdx].actuals; 
                     vault[searchIdx] = compositeRecordObject;
                     alert("Historical snapshot overwrote configuration record logs successfully.");
                 } else { vault.unshift(compositeRecordObject); }
@@ -1386,6 +1507,9 @@
                     extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="View Profit Margin"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
                 }
 
+                // Injecting the PDF Button to options panel
+                const pdfButton = `<button onclick="generateDocumentPDF('${r.id}')" class="text-blue-400 hover:text-blue-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="Download Document"><i data-lucide="file-down" class="w-4 h-4"></i></button>`;
+
                 return `
                     <tr class="text-xs text-slate-300 hover:bg-slate-900/40 border-b border-slate-900 transition-colors">
                         <td class="py-4 px-3 text-center">
@@ -1404,8 +1528,9 @@
                         </td>
                         <td class="py-4 px-3 text-right space-x-1 whitespace-nowrap">
                             ${extraActionBtns}
+                            ${pdfButton}
                             <button onclick="toggleInlineQuoteBreakdownFolder('folder-${r.id}')" class="text-slate-400 hover:text-white p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Inspect"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                            <button onclick="loadQuoteForActiveModification('${r.id}')" class="text-blue-400 hover:text-blue-300 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Edit to Workspace"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                            <button onclick="loadQuoteForActiveModification('${r.id}')" class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Edit to Workspace"><i data-lucide="edit" class="w-4 h-4"></i></button>
                             <button onclick="if(confirm('Delete archived sheet log?')){let v=getStoredVaultRecords().filter(x=>x.id!='${r.id}');localStorage.setItem('eny_vault',JSON.stringify(v));selectedVaultQuotes.delete('${r.id}');reconstructUnifiedInterfaces();}" class="text-slate-500 hover:text-red-400 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </td>
                     </tr>
