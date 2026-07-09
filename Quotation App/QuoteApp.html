@@ -584,7 +584,7 @@
     </div>
 
     <!-- HIDDEN PDF RENDERING CONTAINER -->
-    <div id="pdf-render-zone" style="position: absolute; left: -9999px; top: -9999px; width: 800px;"></div>
+    <div id="pdf-render-zone" style="position: absolute; left: -9999px; top: -9999px; width: 800px; display: none;"></div>
 
     <!-- ================= SYSTEM ENGINE CORE JAVASCRIPT LOGIC ================= -->
     <script>
@@ -1286,25 +1286,21 @@
 
         function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); }
 
-
         // --- PDF GENERATION ENGINE ---
-        function generateDocumentPDF(id) {
+        async function generateDocumentPDF(id) {
             const vault = getStoredVaultRecords();
             const target = vault.find(r => r.id === id);
             if (!target) return;
 
-            // Pipeline Automation: If Draft, update to Sent automatically.
             if (target.status === 'Draft' || !target.status) {
                 updateQuoteStatus(id, 'Sent');
             }
 
-            // Determine Header Type based on Job Status
             const isInvoice = target.status === 'Invoiced' || target.status === 'Paid';
             const docPrefix = isInvoice ? 'INVOICE' : 'QUOTATION';
             const clientName = target.clientDetailsPayload?.name || 'Client';
             const headerTitle = `${docPrefix} - ${clientName.toUpperCase()}`;
 
-            // Build item rows (Client view: No trade costs shown)
             let itemsHtml = '';
             if (target.itemsSnapshot && target.itemsSnapshot.length > 0) {
                 target.itemsSnapshot.forEach(item => {
@@ -1317,94 +1313,58 @@
                 });
             }
 
-            // Add Labor and Testing lines cleanly
             if (target.laborHours > 0) {
-                itemsHtml += `
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px;">Operational Labor & Installation</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; text-align: center;">-</td>
-                    </tr>
-                `;
+                itemsHtml += `<tr><td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px;">Operational Labor & Installation</td><td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; text-align: center;">-</td></tr>`;
             }
             if (target.includeTestingCertificate) {
-                itemsHtml += `
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px;">Initial Verification & Testing Certification</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; text-align: center;">-</td>
-                    </tr>
-                `;
+                itemsHtml += `<tr><td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px;">Initial Verification & Testing Certification</td><td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; text-align: center;">-</td></tr>`;
             }
 
-            // Footer Text specific to Invoice or Quote
             const footerText = isInvoice 
                 ? `<strong>Payment Terms:</strong> Due upon receipt.<br><strong>Bank Details:</strong> ENY Electrical | Account: XXXXXXXX | Sort Code: XX-XX-XX`
                 : `<strong>Terms:</strong> This quotation is valid for 30 days. Please contact us to proceed with scheduling.`;
 
-            // Construct the PDF blueprint HTML
             const pdfHtml = `
-                <div style="padding: 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background-color: #ffffff; min-height: 800px;">
+                <div style="padding: 40px; font-family: sans-serif; color: #1e293b; background-color: #ffffff;">
                     <table style="width: 100%; margin-bottom: 40px;">
                         <tr>
-                            <td>
-                                <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0f172a;">ENY ELECTRICAL</h1>
-                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">Professional Electrical Contracting</p>
-                            </td>
-                            <td style="text-align: right;">
-                                <h2 style="margin: 0; font-size: 18px; color: #0f172a;">${headerTitle}</h2>
-                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">Date: ${target.timestamp.split(' ')[0]}</p>
-                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">Ref: ${target.id}</p>
-                            </td>
+                            <td><h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0f172a;">ENY ELECTRICAL</h1><p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">Professional Electrical Contracting</p></td>
+                            <td style="text-align: right;"><h2 style="margin: 0; font-size: 18px; color: #0f172a;">${headerTitle}</h2><p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">Date: ${target.timestamp.split(' ')[0]}</p><p style="margin: 5px 0 0 0; font-size: 12px; color: #64748b;">Ref: ${target.id}</p></td>
                         </tr>
                     </table>
-
                     <div style="margin-bottom: 40px;">
                         <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #64748b; text-transform: uppercase;">To:</h3>
                         <p style="margin: 0 0 5px 0; font-weight: bold; font-size: 16px;">${clientName}</p>
-                        ${target.clientDetailsPayload?.address ? `<p style="margin: 0 0 5px 0; font-size: 14px;">${target.clientDetailsPayload.address}</p>` : ''}
-                        ${target.clientDetailsPayload?.email ? `<p style="margin: 0 0 5px 0; font-size: 14px;">${target.clientDetailsPayload.email}</p>` : ''}
+                        <p style="margin: 0 0 5px 0; font-size: 14px;">${target.clientDetailsPayload?.address || ''}</p>
                     </div>
-
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="margin: 0 0 5px 0; font-size: 14px; color: #64748b; text-transform: uppercase;">Project Reference</h3>
-                        <p style="margin: 0; font-size: 16px; font-weight: bold;">${target.jobName}</p>
-                    </div>
-
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
-                        <thead>
-                            <tr style="background-color: #f8fafc;">
-                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #cbd5e1; font-size: 12px; text-transform: uppercase; color: #64748b;">Description</th>
-                                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #cbd5e1; font-size: 12px; text-transform: uppercase; color: #64748b; w-24">Qty</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${itemsHtml}
-                        </tbody>
+                        <thead><tr style="background-color: #f8fafc;"><th style="padding: 12px; text-align: left; border-bottom: 2px solid #cbd5e1; font-size: 12px; text-transform: uppercase; color: #64748b;">Description</th><th style="padding: 12px; text-align: center; border-bottom: 2px solid #cbd5e1; font-size: 12px; text-transform: uppercase; color: #64748b;">Qty</th></tr></thead>
+                        <tbody>${itemsHtml}</tbody>
                     </table>
-
                     <div style="text-align: right; margin-bottom: 60px;">
                         <p style="font-size: 14px; color: #64748b; margin: 0 0 5px 0;">Total Amount (Exc VAT)</p>
                         <p style="font-size: 24px; font-weight: bold; margin: 0; color: #0f172a;">£${target.financials.grossTotal.toFixed(2)}</p>
                     </div>
-
-                    <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #64748b; line-height: 1.5;">
-                        ${footerText}
-                    </div>
+                    <div style="border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 12px; color: #64748b; line-height: 1.5;">${footerText}</div>
                 </div>
             `;
 
             const renderZone = document.getElementById('pdf-render-zone');
             renderZone.innerHTML = pdfHtml;
+            renderZone.style.display = 'block'; 
 
-            // Generate and Save the PDF using HTML2PDF
-            html2pdf().set({
+            const opt = {
                 margin: 10,
                 filename: `${docPrefix.toLowerCase()}_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${target.id}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, logging: false },
+                html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).from(renderZone).save();
-        }
+            };
 
+            await html2pdf().set(opt).from(renderZone).save();
+            
+            renderZone.style.display = 'none'; 
+        }
 
         // --- COMMIT ARCHIVE ACTIONS ---
         function commitQuoteToVault(overwriteExistingMode = false) {
@@ -1507,7 +1467,6 @@
                     extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="View Profit Margin"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
                 }
 
-                // Injecting the PDF Button to options panel
                 const pdfButton = `<button onclick="generateDocumentPDF('${r.id}')" class="text-blue-400 hover:text-blue-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="Download Document"><i data-lucide="file-down" class="w-4 h-4"></i></button>`;
 
                 return `
