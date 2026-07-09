@@ -28,17 +28,20 @@
             </div>
             
             <nav class="flex flex-wrap items-center justify-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
-                <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="nav-btn px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10">
+                <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10">
                     <i data-lucide="file-text" class="w-4 h-4"></i> Quote Builder
                 </button>
-                <button onclick="switchTab('inventory-tab')" id="btn-inventory-tab" class="nav-btn px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all text-slate-400 hover:text-white">
+                <button onclick="switchTab('templates-tab')" id="btn-templates-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                    <i data-lucide="layout-template" class="w-4 h-4"></i> Templates Manager
+                </button>
+                <button onclick="switchTab('inventory-tab')" id="btn-inventory-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
                     <i data-lucide="package" class="w-4 h-4"></i> Stock Manager
                 </button>
-                <button onclick="switchTab('clients-tab')" id="btn-clients-tab" class="nav-btn px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all text-slate-400 hover:text-white">
+                <button onclick="switchTab('clients-tab')" id="btn-clients-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
                     <i data-lucide="users" class="w-4 h-4"></i> Client CRM
                 </button>
-                <button onclick="switchTab('vault-tab')" id="btn-vault-tab" class="nav-btn px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-all text-slate-400 hover:text-white">
-                    <i data-lucide="archive" class="w-4 h-4"></i> Saved Quotes & Sync
+                <button onclick="switchTab('vault-tab')" id="btn-vault-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                    <i data-lucide="archive" class="w-4 h-4"></i> Vault & Sync
                 </button>
             </nav>
         </div>
@@ -83,9 +86,6 @@
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pre-filled Job Template</label>
                                 <select id="prefilled-job-select" onchange="applyPrefilledJobTemplate()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-amber-400 font-medium focus:outline-none focus:border-amber-500 transition-colors">
                                     <option value="">-- Blank Workspace Canvas --</option>
-                                    <option value="consumer_upgrade">10-Way Consumer Unit Upgrade Kit</option>
-                                    <option value="ev_install">Standard EV Charger Installation Kit</option>
-                                    <option value="downlight_mesh">Kitchen LED Downlight Layout Pack</option>
                                 </select>
                             </div>
                             <div>
@@ -231,6 +231,62 @@
             </div>
         </div>
 
+        <div id="templates-tab" class="tab-content space-y-6">
+            <div id="template-edit-banner" class="hidden bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex justify-between items-center">
+                <div class="flex items-center gap-2 text-blue-400">
+                    <i data-lucide="info" class="w-4 h-4"></i>
+                    <span class="text-xs font-semibold">Editing Template: <span id="editing-template-name" class="text-white"></span></span>
+                </div>
+                <button onclick="clearTemplateForm()" class="text-[11px] text-slate-400 hover:text-white bg-slate-800 px-2 py-1 rounded">Cancel Edit</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
+                    <div>
+                        <h2 id="template-form-title" class="text-lg font-bold text-white">Create Job Template</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Bundle configurations and item quantities into a reusable selection pack.</p>
+                    </div>
+                    <form id="new-template-form" onsubmit="saveJobTemplateConfig(event)" class="space-y-4">
+                        <input type="hidden" id="template-id-field">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Template Label / Name *</label>
+                            <input type="text" id="template-name-input" required placeholder="e.g., Standard EV Charger Installation Pack" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Labor Hours</label>
+                                <input type="number" id="template-hours-input" value="4" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div class="flex items-center justify-center pt-5">
+                                <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+                                    <input type="checkbox" id="template-testing-input" class="rounded bg-slate-900 border-slate-800 text-amber-500 focus:ring-0">
+                                    Include Testing Cert
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Included Materials</label>
+                            <div id="template-materials-selector-box" class="max-h-40 overflow-y-auto border border-slate-800 rounded-xl p-2 bg-slate-900/40 divide-y divide-slate-900">
+                                </div>
+                        </div>
+
+                        <button type="submit" id="template-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job Template
+                        </button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold text-white mb-4">Saved Presets Catalog</h2>
+                    <div id="template-catalog-empty" class="text-center py-12 text-slate-500 text-sm hidden">
+                        <i data-lucide="layout" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> No custom job presets configured.
+                    </div>
+                    <div class="space-y-3" id="template-catalog-list-wrapper"></div>
+                </div>
+            </div>
+        </div>
+
         <div id="inventory-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
@@ -314,18 +370,6 @@
                             </button>
                         </form>
                     </div>
-
-                    <div class="bg-gradient-to-br from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
-                        <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                            <i data-lucide="download" class="text-amber-400 w-4 h-4"></i> Local CRM Data Export
-                        </h4>
-                        <p class="text-[11px] text-slate-400 leading-relaxed">
-                            Need a standalone backup of your client base? Click below to download a shareable JSON ledger configuration file.
-                        </p>
-                        <button onclick="exportSystemStateBackup()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 font-semibold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                            <i data-lucide="file-json" class="w-3.5 h-3.5 text-emerald-400"></i> Export Shared JSON Config
-                        </button>
-                    </div>
                 </div>
 
                 <div class="lg:col-span-2 space-y-4">
@@ -358,7 +402,7 @@
                         <i data-lucide="refresh-cw" class="text-amber-400 w-5 h-5"></i> Team Sync Engine
                     </h3>
                     <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-                        Export database configs to map across company devices. Importing safely appends entries and triggers the latest item wholesale costs update.
+                        Export database configs to map across company devices. Importing safely validates existing IDs and asks before overwriting values.
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center justify-end gap-3">
@@ -406,6 +450,12 @@
             { id: 'M14', sku: 'LED-DL-IP65', desc: 'IP65 Fire-Rated Dimmable LED Downlight (Warm White)', cost: 14.20, category: 'Luminaires & Fittings' }
         ];
 
+        const DEFAULT_SEED_TEMPLATES = [
+            { id: 'T1', name: "10-Way Consumer Unit Upgrade Kit", hours: 6, testing: true, items: [{ id: 'M6', qty: 1 }, { id: 'M7', qty: 8 }] },
+            { id: 'T2', name: "Standard EV Charger Installation Kit", hours: 4, testing: true, items: [{ id: 'M2', qty: 1 }, { id: 'M7', qty: 1 }] },
+            { id: 'T3', name: "Kitchen LED Downlight Layout Pack", hours: 8, testing: false, items: [{ id: 'M14', qty: 10 }, { id: 'M2', qty: 1 }] }
+        ];
+
         // --- GLOBAL STATE ROUTERS ---
         let selectedCategoryFilter = "ALL";
         let activeAllocatedMaterials = [];
@@ -416,6 +466,7 @@
             if (!localStorage.getItem('eny_vault')) localStorage.setItem('eny_vault', JSON.stringify([]));
             if (!localStorage.getItem('eny_clients')) localStorage.setItem('eny_clients', JSON.stringify([]));
             if (!localStorage.getItem('eny_inventory')) localStorage.setItem('eny_inventory', JSON.stringify(DEFAULT_SEED_STOCK));
+            if (!localStorage.getItem('eny_templates')) localStorage.setItem('eny_templates', JSON.stringify(DEFAULT_SEED_TEMPLATES));
             
             reconstructUnifiedInterfaces();
         });
@@ -429,11 +480,14 @@
             rebuildQuoteClientDropdown();
             rebuildVaultDataTable();
             rebuildDatalistAssistanceArray();
+            rebuildJobTemplatesDropdown();
+            rebuildTemplatesManagementInterface();
         }
 
         function getStoredInventory() { return JSON.parse(localStorage.getItem('eny_inventory')) || []; }
         function getStoredClients() { return JSON.parse(localStorage.getItem('eny_clients')) || []; }
         function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
+        function getStoredTemplates() { return JSON.parse(localStorage.getItem('eny_templates')) || []; }
 
         function switchTab(targetTabId) {
             document.querySelectorAll('.tab-content').forEach(element => element.classList.remove('active'));
@@ -449,50 +503,190 @@
             }
         }
 
-        // --- PRE-FILLED JOBS ENGINE INJECTION MODULE ---
+        // --- PRE-FILLED JOBS POPULATION ENGINE ---
+        function rebuildJobTemplatesDropdown() {
+            const select = document.getElementById('prefilled-job-select');
+            if (!select) return;
+            const templates = getStoredTemplates();
+            select.innerHTML = '<option value="">-- Blank Workspace Canvas --</option>' + 
+                templates.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        }
+
         function applyPrefilledJobTemplate() {
-            const templateKey = document.getElementById('prefilled-job-select').value;
-            if (!templateKey) return;
+            const templateId = document.getElementById('prefilled-job-select').value;
+            if (!templateId) return;
 
+            const templates = getStoredTemplates();
             const inventory = getStoredInventory();
-            activeAllocatedMaterials = []; 
+            const template = templates.find(t => t.id === templateId);
+            if (!template) return;
 
-            if (templateKey === 'consumer_upgrade') {
-                document.getElementById('job-name').value = "10-Way AMD3 Consumer Unit Upgrade Split";
-                document.getElementById('labor-hours').value = "6";
-                document.getElementById('include-testing-toggle').checked = true;
-                
-                const board = inventory.find(i => i.sku === 'CU-AM3-10');
-                const rcbo = inventory.find(i => i.sku === 'RCBO-B32');
-                
-                if (board) activeAllocatedMaterials.push({ ...board, qty: 1 });
-                if (rcbo) activeAllocatedMaterials.push({ ...rcbo, qty: 8 });
-
-            } else if (templateKey === 'ev_install') {
-                document.getElementById('job-name').value = "EV Charger Supply & Surface Mount Run";
-                document.getElementById('labor-hours').value = "4";
-                document.getElementById('include-testing-toggle').checked = true;
-                
-                const cable10mm = inventory.find(i => i.sku === '6124Y-10.0') || inventory.find(i => i.sku === '6124Y-2.5'); 
-                const rcbo = inventory.find(i => i.sku === 'RCBO-B32');
-                
-                if (cable10mm) activeAllocatedMaterials.push({ ...cable10mm, qty: 1 }); 
-                if (rcbo) activeAllocatedMaterials.push({ ...rcbo, qty: 1 });
-
-            } else if (templateKey === 'downlight_mesh') {
-                document.getElementById('job-name').value = "Kitchen LED Dimmable Downlight Installation mesh";
-                document.getElementById('labor-hours').value = "8";
-                document.getElementById('include-testing-toggle').checked = false;
-                
-                const light = inventory.find(i => i.sku === 'LED-DL-IP65');
-                const cable1_5 = inventory.find(i => i.sku === '6124Y-1.5');
-                
-                if (light) activeAllocatedMaterials.push({ ...light, qty: 10 });
-                if (cable1_5) activeAllocatedMaterials.push({ ...cable1_5, qty: 1 });
-            }
+            document.getElementById('job-name').value = template.name;
+            document.getElementById('labor-hours').value = template.hours;
+            document.getElementById('include-testing-toggle').checked = template.testing;
+            
+            activeAllocatedMaterials = [];
+            template.items.forEach(ti => {
+                const stockItem = inventory.find(i => i.id === ti.id);
+                if (stockItem) {
+                    activeAllocatedMaterials.push({ ...stockItem, qty: ti.qty });
+                }
+            });
 
             rebuildAllocatedMaterialsTable();
             document.getElementById('prefilled-job-select').value = ""; 
+        }
+
+        // --- CUSTOM TEMPLATE CREATION & CONFIGURATION MANAGEMENT ---
+        function rebuildTemplatesManagementInterface() {
+            const stock = getStoredInventory();
+            const templates = getStoredTemplates();
+            
+            // Rebuild Materials selector checklists
+            const selectorBox = document.getElementById('template-materials-selector-box');
+            if (selectorBox) {
+                selectorBox.innerHTML = stock.map(item => `
+                    <div class="flex items-center justify-between py-1.5 px-1 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 truncate cursor-pointer select-none">
+                            <input type="checkbox" id="chk-tmpl-mat-${item.id}" data-id="${item.id}" onchange="toggleTemplateMatQtyField('${item.id}')" class="tmpl-mat-checkbox rounded bg-slate-950 border-slate-800 text-amber-500 focus:ring-0">
+                            <span class="truncate max-w-[180px]">${item.desc}</span>
+                        </label>
+                        <input type="number" id="input-tmpl-qty-${item.id}" disabled value="1" min="1" class="w-12 bg-slate-950 border border-slate-800 text-center rounded text-[11px] font-mono text-white p-0.5 hidden">
+                    </div>
+                `).join('');
+            }
+
+            // Rebuild presets listing table catalog cards
+            const wrapper = document.getElementById('template-catalog-list-wrapper');
+            const empty = document.getElementById('template-catalog-empty');
+            if (!wrapper) return;
+
+            if (templates.length === 0) {
+                empty.classList.remove('hidden');
+                wrapper.innerHTML = "";
+                return;
+            }
+            empty.classList.add('hidden');
+
+            wrapper.innerHTML = templates.map(t => {
+                const partsText = t.items.map(ti => {
+                    const match = stock.find(s => s.id === ti.id);
+                    return match ? `• ${match.desc} (x${ti.qty})` : null;
+                }).filter(Boolean).join('<br>');
+
+                return `
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <h3 class="text-sm font-bold text-white">${t.name}</h3>
+                            <div class="flex flex-wrap gap-3 text-[11px] text-slate-400">
+                                <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${t.hours} Hours Line</span>
+                                <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3 h-3"></i> ${t.testing ? 'Testing Certificate Appended' : 'Cert Excluded'}</span>
+                            </div>
+                            <div class="text-[10px] text-slate-500 font-mono pt-1 leading-relaxed">${partsText || 'No custom materials mapped.'}</div>
+                        </div>
+                        <div class="flex items-center gap-2 self-end md:self-auto">
+                            <button onclick="loadTemplateForEdit('${t.id}')" class="text-xs bg-slate-800 hover:bg-slate-750 text-amber-400 px-3 py-1.5 rounded-lg border border-slate-700 font-medium transition-colors flex items-center gap-1 cursor-pointer">
+                                <i data-lucide="edit-2" class="w-3.5 h-3.5"></i> Modify
+                            </button>
+                            <button onclick="deleteJobTemplatePreset('${t.id}')" class="text-slate-500 hover:text-red-400 p-2 rounded-lg transition-colors cursor-pointer">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function toggleTemplateMatQtyField(itemId) {
+            const checked = document.getElementById(`chk-tmpl-mat-${itemId}`).checked;
+            const field = document.getElementById(`input-tmpl-qty-${itemId}`);
+            if (checked) {
+                field.disabled = false;
+                field.classList.remove('hidden');
+            } else {
+                field.disabled = true;
+                field.classList.add('hidden');
+            }
+        }
+
+        function saveJobTemplateConfig(event) {
+            event.preventDefault();
+            const name = document.getElementById('template-name-input').value.trim();
+            const hours = parseInt(document.getElementById('template-hours-input').value) || 0;
+            const testing = document.getElementById('template-testing-input').checked;
+            const editId = document.getElementById('template-id-field').value;
+
+            let checkedItems = [];
+            document.querySelectorAll('.tmpl-mat-checkbox:checked').forEach(chk => {
+                const id = chk.getAttribute('data-id');
+                const qty = parseInt(document.getElementById(`input-tmpl-qty-${id}`).value) || 1;
+                checkedItems.push({ id, qty });
+            });
+
+            let templates = getStoredTemplates();
+
+            if (editId) {
+                const idx = templates.findIndex(t => t.id === editId);
+                if (idx !== -1) {
+                    templates[idx] = { id: editId, name, hours, testing, items: checkedItems };
+                }
+            } else {
+                templates.push({ id: 'TMPL-' + Date.now(), name, hours, testing, items: checkedItems });
+            }
+
+            localStorage.setItem('eny_templates', JSON.stringify(templates));
+            clearTemplateForm();
+            reconstructUnifiedInterfaces();
+        }
+
+        function loadTemplateForEdit(id) {
+            const templates = getStoredTemplates();
+            const target = templates.find(t => t.id === id);
+            if (!target) return;
+
+            clearTemplateForm();
+            
+            document.getElementById('template-id-field').value = target.id;
+            document.getElementById('template-name-input').value = target.name;
+            document.getElementById('template-hours-input').value = target.hours;
+            document.getElementById('template-testing-input').checked = target.testing;
+
+            target.items.forEach(ti => {
+                const chk = document.getElementById(`chk-tmpl-mat-${ti.id}`);
+                const qtyInput = document.getElementById(`input-tmpl-qty-${ti.id}`);
+                if (chk && qtyInput) {
+                    chk.checked = true;
+                    qtyInput.value = ti.qty;
+                    qtyInput.disabled = false;
+                    qtyInput.classList.remove('hidden');
+                }
+            });
+
+            document.getElementById('template-edit-banner').classList.remove('hidden');
+            document.getElementById('editing-template-name').innerText = target.name;
+            document.getElementById('template-form-title').innerText = "Modify Template Preset";
+            document.getElementById('template-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Template Preset`;
+            lucide.createIcons();
+        }
+
+        function clearTemplateForm() {
+            document.getElementById('new-template-form').reset();
+            document.getElementById('template-id-field').value = "";
+            document.getElementById('template-edit-banner').classList.add('hidden');
+            document.getElementById('template-form-title').innerText = "Create Job Template";
+            document.getElementById('template-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job Template`;
+            
+            document.querySelectorAll('.tmpl-mat-checkbox').forEach(chk => { chk.checked = false; });
+            document.querySelectorAll('[id^="input-tmpl-qty-"]').forEach(input => { input.disabled = true; input.classList.add('hidden'); });
+            lucide.createIcons();
+        }
+
+        function deleteJobTemplatePreset(id) {
+            if (!confirm("Permanently remove this layout template preset from choice filters?")) return;
+            let templates = getStoredTemplates();
+            localStorage.setItem('eny_templates', JSON.stringify(templates.filter(t => t.id !== id)));
+            reconstructUnifiedInterfaces();
         }
 
         // --- CORE RELOAD ENGINE (LOAD & EDIT) ---
@@ -956,11 +1150,7 @@
 
         function toggleInlineQuoteBreakdownFolder(rowId) {
             const targetingEl = document.getElementById(rowId);
-            if(targetingEl.classList.contains('hidden')) {
-                targetingEl.classList.remove('hidden');
-            } else {
-                targetingEl.classList.add('hidden');
-            }
+            targetingEl.classList.toggle('hidden');
         }
 
         function rebuildVaultDataTable() {
@@ -1027,9 +1217,16 @@
             lucide.createIcons();
         }
 
-        // --- TEAM SYNC ENGINE EXPORTS CORE ---
+        // --- TEAM SYNC ENGINE EXPORTS CORE (SAFE OVERWRITE CHECKS) ---
         function exportSystemStateBackup() {
-            const packagePayload = { exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", generatedTimestamp: Date.now(), inventory: getStoredInventory(), clients: getStoredClients(), vault: getStoredVaultRecords() };
+            const packagePayload = { 
+                exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", 
+                generatedTimestamp: Date.now(), 
+                inventory: getStoredInventory(), 
+                clients: getStoredClients(), 
+                vault: getStoredVaultRecords(),
+                templates: getStoredTemplates()
+            };
             const dataBlob = new Blob([JSON.stringify(packagePayload, null, 2)], { type: "application/json" });
             const temporaryLinkElement = document.createElement('a');
             temporaryLinkElement.href = URL.createObjectURL(dataBlob);
@@ -1045,23 +1242,91 @@
                     const inboundPayload = JSON.parse(e.target.result);
                     if (inboundPayload.exportMetadataSource !== "ENY_ELECTRICAL_CRM_SYSTEM") { alert("Malformed Format Configuration Signature Match Error."); return; }
 
-                    const localInventory = getStoredInventory();
-                    let updatedStockCount = 0, introducedStockCount = 0;
-                    inboundPayload.inventory.forEach(inboundItem => {
-                        const idx = localInventory.findIndex(li => li.sku.toLowerCase() === inboundItem.sku.toLowerCase());
-                        if (idx !== -1) { if (localInventory[idx].cost !== inboundItem.cost) { localInventory[idx].cost = inboundItem.cost; updatedStockCount++; } localInventory[idx].desc = inboundItem.desc; localInventory[idx].category = inboundItem.category; } 
-                        else { localInventory.push(inboundItem); introducedStockCount++; }
-                    });
+                    let localInventory = getStoredInventory();
+                    let localClients = getStoredClients();
+                    let localVault = getStoredVaultRecords();
+                    let localTemplates = getStoredTemplates();
 
-                    const localClients = getStoredClients(); let introducedClientCount = 0;
-                    inboundPayload.clients.forEach(inboundClient => { if (!localClients.some(lc => lc.id === inboundClient.id)) { localClients.push(inboundClient); introducedClientCount++; } });
+                    let stats = { stockOverwrites: 0, stockAppends: 0, clientOverwrites: 0, clientAppends: 0, quoteOverwrites: 0, quoteAppends: 0, templateOverwrites: 0, templateAppends: 0 };
 
-                    const localVault = getStoredVaultRecords(); let introducedVaultCount = 0;
-                    inboundPayload.vault.forEach(inboundQuote => { if (!localVault.some(lv => lv.id === inboundQuote.id)) { localVault.push(inboundQuote); introducedVaultCount++; } });
+                    // 1. Process Material Stock Catalog
+                    if (inboundPayload.inventory) {
+                        inboundPayload.inventory.forEach(inboundItem => {
+                            const matchIdx = localInventory.findIndex(li => li.sku.toLowerCase() === inboundItem.sku.toLowerCase());
+                            if (matchIdx !== -1) {
+                                if (confirm(`Conflict Found: Stock SKU "${inboundItem.sku}" exists.\nInbound wholesale cost: £${inboundItem.cost}\nLocal wholesale cost: £${localInventory[matchIdx].cost}\n\nOverwrite local item data?`)) {
+                                    localInventory[matchIdx] = inboundItem;
+                                    stats.stockOverwrites++;
+                                }
+                            } else {
+                                localInventory.push(inboundItem);
+                                stats.stockAppends++;
+                            }
+                        });
+                    }
 
-                    localStorage.setItem('eny_inventory', JSON.stringify(localInventory)); localStorage.setItem('eny_clients', JSON.stringify(localClients)); localStorage.setItem('eny_vault', JSON.stringify(localVault));
+                    // 2. Process Client Base CRM
+                    if (inboundPayload.clients) {
+                        inboundPayload.clients.forEach(inboundClient => {
+                            const matchIdx = localClients.findIndex(lc => lc.id === inboundClient.id || lc.name.toLowerCase() === inboundClient.name.toLowerCase());
+                            if (matchIdx !== -1) {
+                                if (confirm(`Conflict Found: Client Profile "${inboundClient.name}" matches an existing record.\n\nOverwrite local client contact profiles?`)) {
+                                    localClients[matchIdx] = inboundClient;
+                                    stats.clientOverwrites++;
+                                }
+                            } else {
+                                localClients.push(inboundClient);
+                                stats.clientAppends++;
+                            }
+                        });
+                    }
+
+                    // 3. Process Vault Historical Documents
+                    if (inboundPayload.vault) {
+                        inboundPayload.vault.forEach(inboundQuote => {
+                            const matchIdx = localVault.findIndex(lv => lv.id === inboundQuote.id);
+                            if (matchIdx !== -1) {
+                                if (confirm(`Conflict Found: Vault Quote Log "${inboundQuote.id}" (${inboundQuote.jobName}) matches an existing document hash.\n\nOverwrite local log file?`)) {
+                                    localVault[matchIdx] = inboundQuote;
+                                    stats.quoteOverwrites++;
+                                }
+                            } else {
+                                localVault.push(inboundQuote);
+                                stats.quoteAppends++;
+                            }
+                        });
+                    }
+
+                    // 4. Process Job Presets/Templates
+                    if (inboundPayload.templates) {
+                        inboundPayload.templates.forEach(inboundTemplate => {
+                            const matchIdx = localTemplates.findIndex(lt => lt.id === inboundTemplate.id || lt.name.toLowerCase() === inboundTemplate.name.toLowerCase());
+                            if (matchIdx !== -1) {
+                                if (confirm(`Conflict Found: Pre-filled template preset "${inboundTemplate.name}" already exists.\n\nOverwrite configuration structures?`)) {
+                                    localTemplates[matchIdx] = inboundTemplate;
+                                    stats.templateOverwrites++;
+                                }
+                            } else {
+                                localTemplates.push(inboundTemplate);
+                                stats.templateAppends++;
+                            }
+                        });
+                    }
+
+                    // Save back out to storage cells
+                    localStorage.setItem('eny_inventory', JSON.stringify(localInventory)); 
+                    localStorage.setItem('eny_clients', JSON.stringify(localClients)); 
+                    localStorage.setItem('eny_vault', JSON.stringify(localVault));
+                    localStorage.setItem('eny_templates', JSON.stringify(localTemplates));
+                    
                     reconstructUnifiedInterfaces();
-                    alert(`Sync Complete!\n\n• Overwrote ${updatedStockCount} material lines with updated trade costs.\n• Loaded ${introducedStockCount} new catalog materials.\n• Merged ${introducedClientCount} unique Client Profiles.\n• Appended ${introducedVaultCount} missing historical Quote documents safely.`);
+                    
+                    alert(`Sync Validation Engine Execution Summary:\n\n` +
+                          `• Materials: Added ${stats.stockAppends}, Overwrote ${stats.stockOverwrites}\n` +
+                          `• Clients: Added ${stats.clientAppends}, Overwrote ${stats.clientOverwrites}\n` +
+                          `• Vault Records: Added ${stats.quoteAppends}, Overwrote ${stats.quoteOverwrites}\n` +
+                          `• Job Templates: Added ${stats.templateAppends}, Overwrote ${stats.templateOverwrites}`);
+                          
                 } catch (err) { alert("Error parsing synchronization document mapping configurations."); console.error(err); }
             };
             fileReader.readAsText(uploadedFile); event.target.value = '';
