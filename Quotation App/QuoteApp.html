@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENY Electrical - Premium Project Planner & CRM</title>
-    <!-- Stable Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -21,7 +19,6 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-900">
 
-    <!-- Top Navigation Header -->
     <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -56,7 +53,6 @@
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
         
-        <!-- ================= TAB 1: QUOTE BUILDER ================= -->
         <div id="quote-tab" class="tab-content active space-y-6">
             
             <div id="editing-mode-banner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -239,7 +235,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 2: TEMPLATES MANAGER ================= -->
         <div id="templates-tab" class="tab-content space-y-6">
             <div id="template-edit-banner" class="hidden bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex justify-between items-center">
                 <div class="flex items-center gap-2 text-blue-400">
@@ -277,8 +272,7 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Included Materials</label>
                             <div id="template-materials-selector-box" class="max-h-40 overflow-y-auto border border-slate-800 rounded-xl p-2 bg-slate-900/40 divide-y divide-slate-900 custom-scrollbar">
-                                <!-- Generated dynamically -->
-                            </div>
+                                </div>
                         </div>
 
                         <button type="submit" id="template-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
@@ -297,7 +291,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 3: MATERIAL STOCK MANAGER ================= -->
         <div id="inventory-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
@@ -351,7 +344,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 4: CLIENT CRM ENGINE ================= -->
         <div id="clients-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="space-y-4">
@@ -406,7 +398,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 5: ARCHIVE VAULT & SYNC MATRIX ================= -->
         <div id="vault-tab" class="tab-content space-y-6">
             
             <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -429,13 +420,11 @@
                 </div>
             </div>
 
-            <!-- Historical Sheet Ledger Logs Area -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
                 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                    <h2 class="text-lg font-bold text-white">Historical Vault Logs</h2>
+                    <h2 class="text-lg font-bold text-white">Workflow Pipeline & Vault Logs</h2>
                     
-                    <!-- NEW: Shopping List Generator Button -->
                     <button id="btn-generate-shopping-list" onclick="openShoppingListModal()" class="bg-slate-800 text-slate-400 opacity-50 cursor-not-allowed px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
                         <i data-lucide="clipboard-list" class="w-4 h-4"></i> <span id="shopping-btn-text">Generate Shopping List</span>
                     </button>
@@ -449,14 +438,12 @@
                     <table id="vault-table" class="w-full text-left text-sm hidden">
                         <thead>
                             <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider">
-                                <th class="py-3 px-4 w-12 text-center">
-                                    <i data-lucide="check-square" class="w-4 h-4 text-slate-500 mx-auto"></i>
-                                </th>
-                                <th class="py-3 px-4">Date Portfolio Logged</th>
-                                <th class="py-3 px-4">Job Reference</th>
-                                <th class="py-3 px-4">Client Linked</th>
-                                <th class="py-3 px-4 text-right">Value (Gross)</th>
-                                <th class="py-3 px-4 text-center">Actions / Summaries</th>
+                                <th class="py-3 px-3 w-10 text-center"><i data-lucide="check-square" class="w-4 h-4 text-slate-500 mx-auto"></i></th>
+                                <th class="py-3 px-3">Pipeline Status</th>
+                                <th class="py-3 px-3">Job Reference</th>
+                                <th class="py-3 px-3 text-right">Value (Gross)</th>
+                                <th class="py-3 px-3 text-center">Primary Action</th>
+                                <th class="py-3 px-3 text-right">Options</th>
                             </tr>
                         </thead>
                         <tbody id="vault-records-body" class="divide-y divide-slate-900"></tbody>
@@ -467,7 +454,6 @@
 
     </main>
 
-    <!-- SHOPPING LIST MODAL OVERLAY -->
     <div id="shopping-list-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -480,8 +466,7 @@
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
                 <ul id="shopping-list-content" class="space-y-2 text-sm text-slate-300">
-                    <!-- List items injected here dynamically -->
-                </ul>
+                    </ul>
             </div>
             <div class="p-5 border-t border-slate-800 bg-slate-800/50 flex justify-end gap-3">
                 <button onclick="copyShoppingList()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer">
@@ -494,7 +479,94 @@
         </div>
     </div>
 
-    <!-- ================= SYSTEM ENGINE CORE JAVASCRIPT LOGIC ================= -->
+    <div id="invoice-reconciliation-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i data-lucide="file-check-2" class="text-emerald-400"></i> Convert to Invoice
+                </h3>
+                <button onclick="closeInvoiceModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Verify your actual spending to accurately calculate the hidden profit margin for this job.
+                </p>
+                <input type="hidden" id="recon-quote-id">
+                
+                <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
+                    <span class="text-sm text-slate-300 font-semibold">Total Charged to Client:</span>
+                    <span class="text-base text-white font-bold font-mono" id="recon-gross-total">£0.00</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Actual Wholesaler Material Cost (£)</label>
+                    <input type="number" step="0.01" id="recon-actual-materials" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Actual Labor/Overhead Cost (£)</label>
+                    <input type="number" step="0.01" id="recon-actual-labor" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+            <div class="p-5 border-t border-slate-800 bg-slate-800/50 flex justify-end gap-3">
+                <button onclick="closeInvoiceModal()" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors cursor-pointer">
+                    Cancel
+                </button>
+                <button onclick="confirmInvoiceConversion()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer">
+                    <i data-lucide="check" class="w-4 h-4"></i> Lock & Convert
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profit-view-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-amber-500/30 rounded-2xl w-full max-w-sm overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)]">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
+                <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
+                    <i data-lucide="pie-chart" class="text-amber-400"></i> Profitability Ledger
+                </h3>
+                <button onclick="closeProfitModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="space-y-2 border-b border-slate-800 pb-4">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400">Total Revenue:</span>
+                        <span class="font-mono text-white font-bold" id="profit-revenue">£0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400">Actual Materials:</span>
+                        <span class="font-mono text-red-400">-£<span id="profit-materials">0.00</span></span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400">Actual Labor:</span>
+                        <span class="font-mono text-red-400">-£<span id="profit-labor">0.00</span></span>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400">Testing / Add-ons:</span>
+                        <span class="font-mono text-red-400">-£<span id="profit-testing">0.00</span></span>
+                    </div>
+                </div>
+                <div class="pt-2 flex justify-between items-center">
+                    <span class="text-base font-bold text-white uppercase tracking-wide">Net Profit</span>
+                    <span class="text-2xl font-black font-mono text-emerald-400" id="profit-net">£0.00</span>
+                </div>
+                <div class="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800">
+                    <span class="text-xs font-semibold text-slate-400 uppercase">Gross Margin %</span>
+                    <span class="text-lg font-bold font-mono text-amber-400" id="profit-margin">0%</span>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-800 bg-slate-800/50 flex justify-center">
+                <button onclick="closeProfitModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer">
+                    Close Ledger
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const DEFAULT_SEED_STOCK = [
             { id: 'M1', sku: '6124Y-2.5', desc: '2.5mm² Twin & Earth Cable (100m Drum)', cost: 68.50, category: 'Wiring & Management' },
@@ -511,12 +583,11 @@
             { id: 'T3', name: "Kitchen LED Downlight Layout Pack", hours: 8, testing: false, items: [{ id: 'M14', qty: 10 }, { id: 'M2', qty: 1 }] }
         ];
 
-        // --- GLOBAL STATE ROUTERS ---
         let selectedCategoryFilter = "ALL";
         let activeAllocatedMaterials = [];
         let activeLinkedClientId = "";
         let currentlyEditingQuoteId = null;
-        let selectedVaultQuotes = new Set(); // Stores checked jobs for shopping list
+        let selectedVaultQuotes = new Set(); 
 
         document.addEventListener('DOMContentLoaded', () => {
             if (!localStorage.getItem('eny_vault')) localStorage.setItem('eny_vault', JSON.stringify([]));
@@ -627,9 +698,7 @@
             document.getElementById('shopping-list-modal').classList.remove('hidden');
         }
 
-        function closeShoppingListModal() {
-            document.getElementById('shopping-list-modal').classList.add('hidden');
-        }
+        function closeShoppingListModal() { document.getElementById('shopping-list-modal').classList.add('hidden'); }
 
         function copyShoppingList() {
             const vault = getStoredVaultRecords();
@@ -646,22 +715,13 @@
             });
 
             const itemsArray = Object.values(aggregatedItems);
-            if (itemsArray.length === 0) {
-                alert("Nothing to copy!");
-                return;
-            }
+            if (itemsArray.length === 0) { alert("Nothing to copy!"); return; }
 
             let text = "WHOLESALER SHOPPING LIST\n------------------------\n";
-            itemsArray.forEach(item => {
-                text += `[ ] ${item.qty}x - ${item.desc} (SKU: ${item.sku})\n`;
-            });
+            itemsArray.forEach(item => { text += `[ ] ${item.qty}x - ${item.desc} (SKU: ${item.sku})\n`; });
             
-            navigator.clipboard.writeText(text).then(() => {
-                alert("Shopping list copied to clipboard successfully.");
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-                alert("Failed to copy to clipboard.");
-            });
+            navigator.clipboard.writeText(text).then(() => { alert("Shopping list copied to clipboard successfully."); })
+            .catch(err => { console.error('Failed to copy text: ', err); alert("Failed to copy to clipboard."); });
         }
 
 
@@ -669,9 +729,7 @@
         function rebuildJobTemplatesDropdown() {
             const select = document.getElementById('prefilled-job-select');
             if (!select) return;
-            const templates = getStoredTemplates();
-            select.innerHTML = '<option value="">-- Blank Workspace Canvas --</option>' + 
-                templates.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            select.innerHTML = '<option value="">-- Blank Workspace Canvas --</option>' + getStoredTemplates().map(t => `<option value="${t.id}">${t.name}</option>`).join('');
         }
 
         function applyPrefilledJobTemplate() {
@@ -690,9 +748,7 @@
             activeAllocatedMaterials = [];
             template.items.forEach(ti => {
                 const stockItem = inventory.find(i => i.id === ti.id);
-                if (stockItem) {
-                    activeAllocatedMaterials.push({ ...stockItem, qty: ti.qty });
-                }
+                if (stockItem) { activeAllocatedMaterials.push({ ...stockItem, qty: ti.qty }); }
             });
 
             rebuildAllocatedMaterialsTable();
@@ -721,11 +777,7 @@
             const empty = document.getElementById('template-catalog-empty');
             if (!wrapper) return;
 
-            if (templates.length === 0) {
-                empty.classList.remove('hidden');
-                wrapper.innerHTML = "";
-                return;
-            }
+            if (templates.length === 0) { empty.classList.remove('hidden'); wrapper.innerHTML = ""; return; }
             empty.classList.add('hidden');
 
             wrapper.innerHTML = templates.map(t => {
@@ -748,9 +800,7 @@
                             <button onclick="loadTemplateForEdit('${t.id}')" class="text-xs bg-slate-800 hover:bg-slate-750 text-amber-400 px-3 py-1.5 rounded-lg border border-slate-700 font-medium transition-colors flex items-center gap-1 cursor-pointer">
                                 <i data-lucide="edit-2" class="w-3.5 h-3.5"></i> Modify
                             </button>
-                            <button onclick="deleteJobTemplatePreset('${t.id}')" class="text-slate-500 hover:text-red-400 p-2 rounded-lg transition-colors cursor-pointer">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
+                            <button onclick="deleteJobTemplatePreset('${t.id}')" class="text-slate-500 hover:text-red-400 p-2 rounded-lg transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>
                 `;
@@ -761,13 +811,7 @@
         function toggleTemplateMatQtyField(itemId) {
             const checked = document.getElementById(`chk-tmpl-mat-${itemId}`).checked;
             const field = document.getElementById(`input-tmpl-qty-${itemId}`);
-            if (checked) {
-                field.disabled = false;
-                field.classList.remove('hidden');
-            } else {
-                field.disabled = true;
-                field.classList.add('hidden');
-            }
+            if (checked) { field.disabled = false; field.classList.remove('hidden'); } else { field.disabled = true; field.classList.add('hidden'); }
         }
 
         function saveJobTemplateConfig(event) {
@@ -788,12 +832,8 @@
 
             if (editId) {
                 const idx = templates.findIndex(t => t.id === editId);
-                if (idx !== -1) {
-                    templates[idx] = { id: editId, name, hours, testing, items: checkedItems };
-                }
-            } else {
-                templates.push({ id: 'TMPL-' + Date.now(), name, hours, testing, items: checkedItems });
-            }
+                if (idx !== -1) { templates[idx] = { id: editId, name, hours, testing, items: checkedItems }; }
+            } else { templates.push({ id: 'TMPL-' + Date.now(), name, hours, testing, items: checkedItems }); }
 
             localStorage.setItem('eny_templates', JSON.stringify(templates));
             clearTemplateForm();
@@ -854,10 +894,7 @@
             const vault = getStoredVaultRecords();
             const targetedQuote = vault.find(q => q.id === quoteId);
             
-            if(!targetedQuote) {
-                alert("Target file snapshot could not be accessed inside storage records.");
-                return;
-            }
+            if(!targetedQuote) { alert("Target file snapshot could not be accessed inside storage records."); return; }
 
             currentlyEditingQuoteId = targetedQuote.id;
             activeLinkedClientId = targetedQuote.linkedClientId || "";
@@ -878,9 +915,7 @@
             if (targetedQuote.includeTestingCertificate === true) {
                 testingToggle.checked = true;
                 testingCostInput.value = targetedQuote.testingCostFixed !== undefined ? targetedQuote.testingCostFixed : 75.00;
-            } else {
-                testingToggle.checked = false;
-            }
+            } else { testingToggle.checked = false; }
 
             document.getElementById('editing-mode-banner').classList.remove('hidden');
             document.getElementById('editing-record-id-display').innerText = targetedQuote.id;
@@ -890,7 +925,6 @@
             rebuildAllocatedMaterialsTable();
             rebuildQuoteClientDropdown();
             switchTab('quote-tab');
-            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -923,21 +957,11 @@
 
             container.innerHTML = uniqueCategories.map(cat => {
                 const isSelected = selectedCategoryFilter === cat;
-                return `
-                    <button type="button" onclick="setCategoryFilter('${cat}')" 
-                        class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer
-                        ${isSelected ? 'bg-slate-100 text-slate-950 border-white font-semibold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'}">
-                        ${cat}
-                    </button>
-                `;
+                return `<button type="button" onclick="setCategoryFilter('${cat}')" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${isSelected ? 'bg-slate-100 text-slate-950 border-white font-semibold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'}">${cat}</button>`;
             }).join('');
         }
 
-        function setCategoryFilter(categoryName) {
-            selectedCategoryFilter = categoryName;
-            renderCategoryNavigationTabs();
-            filterMaterialCatalog();
-        }
+        function setCategoryFilter(categoryName) { selectedCategoryFilter = categoryName; renderCategoryNavigationTabs(); filterMaterialCatalog(); }
 
         function filterMaterialCatalog() {
             const searchInput = document.getElementById('material-search-input');
@@ -951,10 +975,7 @@
                 return matchCategory && matchSearch;
             });
 
-            if (targetedSubset.length === 0) {
-                resultsGrid.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-slate-500">No matching stock items found.</div>`;
-                return;
-            }
+            if (targetedSubset.length === 0) { resultsGrid.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-slate-500">No matching stock items found.</div>`; return; }
 
             resultsGrid.innerHTML = targetedSubset.map(item => `
                 <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-slate-700 transition-colors">
@@ -967,9 +988,7 @@
                     </div>
                     <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-950">
                         <span class="text-sm font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</span>
-                        <button type="button" onclick="allocateItemToQuote('${item.id}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 p-1.5 rounded-lg transition-all text-slate-300 cursor-pointer">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                        </button>
+                        <button type="button" onclick="allocateItemToQuote('${item.id}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 p-1.5 rounded-lg transition-all text-slate-300 cursor-pointer"><i data-lucide="plus" class="w-3.5 h-3.5"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -982,20 +1001,12 @@
             const currentInventory = getStoredInventory();
             const providedSku = document.getElementById('stock-sku').value.trim();
 
-            if(currentInventory.some(i => i.sku.toLowerCase() === providedSku.toLowerCase())) {
-                alert("An item with this Part Number/SKU identifier already exists.");
-                return;
-            }
+            if(currentInventory.some(i => i.sku.toLowerCase() === providedSku.toLowerCase())) { alert("An item with this Part Number/SKU identifier already exists."); return; }
 
-            const newItem = {
-                id: 'MAT-' + Date.now(),
-                sku: providedSku,
-                desc: document.getElementById('stock-desc').value.trim(),
-                cost: parseFloat(document.getElementById('stock-cost').value) || 0,
-                category: document.getElementById('stock-category').value.trim()
-            };
-
-            currentInventory.push(newItem);
+            currentInventory.push({
+                id: 'MAT-' + Date.now(), sku: providedSku, desc: document.getElementById('stock-desc').value.trim(),
+                cost: parseFloat(document.getElementById('stock-cost').value) || 0, category: document.getElementById('stock-category').value.trim()
+            });
             localStorage.setItem('eny_inventory', JSON.stringify(currentInventory));
             document.getElementById('new-item-form').reset();
             reconstructUnifiedInterfaces();
@@ -1012,19 +1023,14 @@
         function rebuildMasterStockDirectoryTable() {
             const tbody = document.getElementById('master-stock-table-body');
             const inventory = getStoredInventory();
-            if(inventory.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">Stock directory empty.</td></tr>`;
-                return;
-            }
+            if(inventory.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">Stock directory empty.</td></tr>`; return; }
             tbody.innerHTML = inventory.map(item => `
                 <tr class="text-xs text-slate-300 hover:bg-slate-900/20">
                     <td class="py-3 px-2 font-mono font-semibold text-amber-500">${item.sku}</td>
                     <td class="py-3 px-2 font-medium text-slate-100">${item.desc}</td>
                     <td class="py-3 px-2 text-slate-400"><span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800/60">${item.category}</span></td>
                     <td class="py-3 px-2 text-right font-mono font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</td>
-                    <td class="py-3 px-2 text-center">
-                        <button onclick="purgeInventoryItem('${item.id}')" class="text-slate-500 hover:text-red-400 p-1 transition-colors cursor-pointer"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
-                    </td>
+                    <td class="py-3 px-2 text-center"><button onclick="purgeInventoryItem('${item.id}')" class="text-slate-500 hover:text-red-400 p-1 transition-colors cursor-pointer"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button></td>
                 </tr>
             `).join('');
             lucide.createIcons();
@@ -1032,8 +1038,7 @@
 
         function rebuildDatalistAssistanceArray() {
             const list = document.getElementById('existing-categories');
-            const inventory = getStoredInventory();
-            list.innerHTML = [...new Set(inventory.map(i => i.category).filter(Boolean))].map(c => `<option value="${c}"></option>`).join('');
+            list.innerHTML = [...new Set(getStoredInventory().map(i => i.category).filter(Boolean))].map(c => `<option value="${c}"></option>`).join('');
         }
 
         // --- CALC SHEET BUILD DATA MANAGEMENT ---
@@ -1063,14 +1068,10 @@
             tbody.innerHTML = activeAllocatedMaterials.map(item => `
                 <tr class="border-b border-slate-900 text-xs text-slate-200">
                     <td class="py-3 px-2"><div>${item.desc}</div><div class="text-[10px] font-mono text-slate-500 mt-0.5">${item.sku}</div></td>
-                    <td class="py-3 px-2 text-center">
-                        <input type="number" value="${item.qty}" min="1" onchange="updateAllocationQty('${item.id}', this.value)" class="w-12 bg-slate-900 border border-slate-800 text-center rounded p-1 font-mono text-white">
-                    </td>
+                    <td class="py-3 px-2 text-center"><input type="number" value="${item.qty}" min="1" onchange="updateAllocationQty('${item.id}', this.value)" class="w-12 bg-slate-900 border border-slate-800 text-center rounded p-1 font-mono text-white"></td>
                     <td class="py-3 px-2 text-right font-mono">£${parseFloat(item.cost).toFixed(2)}</td>
                     <td class="py-3 px-2 text-right font-mono font-bold text-white">£${(parseFloat(item.cost) * item.qty).toFixed(2)}</td>
-                    <td class="py-3 px-2 text-center">
-                        <button onclick="activeAllocatedMaterials=activeAllocatedMaterials.filter(i=>i.id!='${item.id}');rebuildAllocatedMaterialsTable();" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                    </td>
+                    <td class="py-3 px-2 text-center"><button onclick="activeAllocatedMaterials=activeAllocatedMaterials.filter(i=>i.id!='${item.id}');rebuildAllocatedMaterialsTable();" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></td>
                 </tr>
             `).join('');
             lucide.createIcons();
@@ -1105,14 +1106,7 @@
         function createNewClientProfile(event) {
             event.preventDefault();
             const clients = getStoredClients();
-            clients.push({
-                id: 'CLI-' + Date.now(),
-                name: document.getElementById('crm-client-name').value.trim(),
-                email: document.getElementById('crm-client-email').value.trim(),
-                phone: document.getElementById('crm-client-phone').value.trim(),
-                address: document.getElementById('crm-client-address').value.trim(),
-                createdDate: new Date().toLocaleDateString('en-GB')
-            });
+            clients.push({ id: 'CLI-' + Date.now(), name: document.getElementById('crm-client-name').value.trim(), email: document.getElementById('crm-client-email').value.trim(), phone: document.getElementById('crm-client-phone').value.trim(), address: document.getElementById('crm-client-address').value.trim(), createdDate: new Date().toLocaleDateString('en-GB') });
             localStorage.setItem('eny_clients', JSON.stringify(clients));
             document.getElementById('new-client-form').reset();
             rebuildCrmProfilesInterface();
@@ -1123,10 +1117,7 @@
             if (!confirm("Remove this client profile?")) return;
             let clients = getStoredClients();
             localStorage.setItem('eny_clients', JSON.stringify(clients.filter(c => c.id !== clientId)));
-            if (activeLinkedClientId === clientId) {
-                document.getElementById('quote-client-select').value = "";
-                activeLinkedClientId = "";
-            }
+            if (activeLinkedClientId === clientId) { document.getElementById('quote-client-select').value = ""; activeLinkedClientId = ""; }
             rebuildCrmProfilesInterface();
             rebuildQuoteClientDropdown();
         }
@@ -1134,26 +1125,16 @@
         function rebuildQuoteClientDropdown() {
             const select = document.getElementById('quote-client-select');
             if (!select) return;
-            select.innerHTML = `<option value="">-- Manual Entry (Unsaved) --</option>` + 
-                getStoredClients().map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            select.innerHTML = `<option value="">-- Manual Entry (Unsaved) --</option>` + getStoredClients().map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             select.value = activeLinkedClientId;
         }
 
         function loadSelectedClientIntoQuote() {
             const selectedId = document.getElementById('quote-client-select').value;
             activeLinkedClientId = selectedId;
-            if (!selectedId) {
-                document.getElementById('client-name').value = "";
-                document.getElementById('client-email').value = "";
-                document.getElementById('client-address').value = "";
-                return;
-            }
+            if (!selectedId) { document.getElementById('client-name').value = ""; document.getElementById('client-email').value = ""; document.getElementById('client-address').value = ""; return; }
             const match = getStoredClients().find(c => c.id === selectedId);
-            if(match) {
-                document.getElementById('client-name').value = match.name;
-                document.getElementById('client-email').value = match.email || '';
-                document.getElementById('client-address').value = match.address || '';
-            }
+            if(match) { document.getElementById('client-name').value = match.name; document.getElementById('client-email').value = match.email || ''; document.getElementById('client-address').value = match.address || ''; }
         }
 
         function rebuildCrmProfilesInterface() {
@@ -1161,19 +1142,12 @@
             const empty = document.getElementById('crm-empty-state');
             const searchInput = document.getElementById('crm-search-input');
             const filterText = searchInput ? searchInput.value.toLowerCase().trim() : "";
-            
-            const clients = getStoredClients();
-            const records = getStoredVaultRecords();
+            const clients = getStoredClients(); const records = getStoredVaultRecords();
             
             const filteredClients = clients.filter(c => {
                 const clientJobs = records.filter(j => j.linkedClientId === c.id);
                 const matchesJobInfo = clientJobs.some(j => j.jobName.toLowerCase().includes(filterText) || j.id.toLowerCase().includes(filterText));
-                
-                return c.name.toLowerCase().includes(filterText) ||
-                       (c.email && c.email.toLowerCase().includes(filterText)) ||
-                       (c.address && c.address.toLowerCase().includes(filterText)) ||
-                       (c.phone && c.phone.includes(filterText)) ||
-                       matchesJobInfo;
+                return c.name.toLowerCase().includes(filterText) || (c.email && c.email.toLowerCase().includes(filterText)) || (c.address && c.address.toLowerCase().includes(filterText)) || (c.phone && c.phone.includes(filterText)) || matchesJobInfo;
             });
 
             document.getElementById('crm-count-badge').innerText = `${filteredClients.length} Account${filteredClients.length===1?'':'s'}`;
@@ -1186,62 +1160,37 @@
                 return `
                     <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
                         <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div>
-                                <h3 class="text-sm font-bold text-white">${client.name}</h3>
-                                <p class="text-[11px] text-slate-500">ID: ${client.id} • Registered: ${client.createdDate}</p>
-                            </div>
+                            <div><h3 class="text-sm font-bold text-white">${client.name}</h3><p class="text-[11px] text-slate-500">ID: ${client.id} • Registered: ${client.createdDate}</p></div>
                             <div class="flex items-center gap-4">
-                                <div class="text-right">
-                                    <span class="text-[10px] uppercase font-semibold text-slate-500 block">Total Client Value</span>
-                                    <span class="text-xs font-bold text-amber-400 font-mono">£${spend.toFixed(2)} (${jobs.length} Job${jobs.length===1?'':'s'})</span>
-                                </div>
+                                <div class="text-right"><span class="text-[10px] uppercase font-semibold text-slate-500 block">Total Client Value</span><span class="text-xs font-bold text-amber-400 font-mono">£${spend.toFixed(2)} (${jobs.length} Job${jobs.length===1?'':'s'})</span></div>
                                 <button onclick="deleteClientProfile('${client.id}')" class="text-slate-500 hover:text-red-400 p-1.5 rounded-lg transition-all cursor-pointer"><i data-lucide="trash" class="w-4 h-4"></i></button>
                             </div>
                         </div>
                         <div class="p-4 bg-slate-950/40 border-t border-slate-900/60 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                            <div>
-                                <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Contact</span>
-                                <div class="text-slate-300 truncate"><i data-lucide="mail" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.email || 'None'}</div>
-                                <div class="text-slate-300 mt-0.5"><i data-lucide="phone" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.phone || 'None'}</div>
-                            </div>
-                            <div>
-                                <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Billing Site</span>
-                                <div class="text-slate-300 leading-relaxed"><i data-lucide="map-pin" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.address || 'None'}</div>
-                            </div>
-                            <div>
-                                <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Linked Records History</span>
+                            <div><span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Contact</span><div class="text-slate-300 truncate"><i data-lucide="mail" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.email || 'None'}</div><div class="text-slate-300 mt-0.5"><i data-lucide="phone" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.phone || 'None'}</div></div>
+                            <div><span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Billing Site</span><div class="text-slate-300 leading-relaxed"><i data-lucide="map-pin" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.address || 'None'}</div></div>
+                            <div><span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Linked Records History</span>
                                 <div class="max-h-36 overflow-y-auto space-y-1.5 custom-scrollbar pr-1">
                                     ${jobs.length===0?'<span class="text-slate-500 italic">No historical sheets.</span>':jobs.map(j=> {
                                         const itemsSummaryText = j.itemsSnapshot?.map(i => `• ${i.desc} (x${i.qty})`).join('<br>') || 'No items.';
+                                        let statusBadgeClass = j.status === 'Sent' ? 'bg-blue-500/20 text-blue-400' : (j.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400' : (j.status === 'Invoiced' ? 'bg-purple-500/20 text-purple-400' : (j.status === 'Paid' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400')));
                                         return `
                                         <div class="bg-slate-900 border border-slate-800 p-2 rounded-lg space-y-2">
                                             <div class="truncate">
-                                                <span class="font-bold text-slate-200 block text-[10px] truncate">${j.jobName}</span>
-                                                <div class="flex items-center justify-between text-[9px] text-slate-400 font-mono mt-0.5">
-                                                    <span>${j.id}</span>
-                                                    <span class="text-amber-400 font-bold">£${j.financials.grossTotal.toFixed(2)}</span>
-                                                </div>
+                                                <div class="flex items-center gap-2 mb-1"><span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${statusBadgeClass}">${j.status || 'Draft'}</span><span class="font-bold text-slate-200 block text-[10px] truncate">${j.jobName}</span></div>
+                                                <div class="flex items-center justify-between text-[9px] text-slate-400 font-mono mt-0.5"><span>${j.id}</span><span class="text-amber-400 font-bold">£${j.financials.grossTotal.toFixed(2)}</span></div>
                                             </div>
-                                            
                                             <div class="grid grid-cols-2 gap-1 pt-1.5 border-t border-slate-800/60">
-                                                <button onclick="toggleInlineQuoteBreakdownFolder('crm-folder-${j.id}')" class="text-[10px] font-semibold text-slate-300 hover:text-white bg-slate-950 px-1.5 py-1 rounded border border-slate-800 flex items-center justify-center gap-1 cursor-pointer">
-                                                    <i data-lucide="eye" class="w-2.5 h-2.5"></i> Inspect
-                                                </button>
-                                                <button onclick="loadQuoteForActiveModification('${j.id}')" class="text-[10px] font-semibold text-amber-400 hover:text-amber-300 bg-slate-950 px-1.5 py-1 rounded border border-slate-800 flex items-center justify-center gap-1 cursor-pointer">
-                                                    <i data-lucide="edit" class="w-2.5 h-2.5"></i> Edit
-                                                </button>
+                                                <button onclick="toggleInlineQuoteBreakdownFolder('crm-folder-${j.id}')" class="text-[10px] font-semibold text-slate-300 hover:text-white bg-slate-950 px-1.5 py-1 rounded border border-slate-800 flex items-center justify-center gap-1 cursor-pointer"><i data-lucide="eye" class="w-2.5 h-2.5"></i> Inspect</button>
+                                                <button onclick="loadQuoteForActiveModification('${j.id}')" class="text-[10px] font-semibold text-amber-400 hover:text-amber-300 bg-slate-950 px-1.5 py-1 rounded border border-slate-800 flex items-center justify-center gap-1 cursor-pointer"><i data-lucide="edit" class="w-2.5 h-2.5"></i> Edit</button>
                                             </div>
-
                                             <div id="crm-folder-${j.id}" class="hidden pt-2 text-[10px] border-t border-dashed border-slate-800 text-slate-400 space-y-2 bg-slate-950/80 p-2 rounded">
                                                 <div class="space-y-1">
                                                     <div class="flex justify-between"><span>Materials:</span><span class="font-mono">£${j.financials.markedMaterials.toFixed(2)}</span></div>
                                                     <div class="flex justify-between"><span>Labor:</span><span class="font-mono">£${j.financials.laborCosts.toFixed(2)}</span></div>
-                                                    <div class="flex justify-between"><span>Testing:</span><span class="font-mono">${j.includeTestingCertificate ? '£'+j.financials.testingCosts.toFixed(2) : 'Excluded'}</span></div>
                                                 </div>
                                                 <div class="border-t border-slate-800 pt-1 font-bold text-slate-300">Inventory Manifest:</div>
-                                                <div class="text-[9px] leading-relaxed max-h-20 overflow-y-auto font-mono text-slate-400 custom-scrollbar pr-1">
-                                                    ${itemsSummaryText}
-                                                </div>
+                                                <div class="text-[9px] leading-relaxed max-h-20 overflow-y-auto font-mono text-slate-400 custom-scrollbar pr-1">${itemsSummaryText}</div>
                                             </div>
                                         </div>
                                     `}).join('')}
@@ -1254,6 +1203,88 @@
             lucide.createIcons();
         }
 
+        // --- LIFECYCLE / STATUS MACHINE ACTIONS ---
+        function updateQuoteStatus(id, newStatus) {
+            let vault = getStoredVaultRecords();
+            let targetIdx = vault.findIndex(r => r.id === id);
+            if (targetIdx !== -1) {
+                vault[targetIdx].status = newStatus;
+                localStorage.setItem('eny_vault', JSON.stringify(vault));
+                reconstructUnifiedInterfaces();
+            }
+        }
+
+        // --- INVOICE RECONCILIATION MODAL LOGIC ---
+        function openInvoiceReconciliation(id) {
+            const vault = getStoredVaultRecords();
+            const target = vault.find(r => r.id === id);
+            if (!target) return;
+
+            document.getElementById('recon-quote-id').value = id;
+            document.getElementById('recon-gross-total').innerText = `£${target.financials.grossTotal.toFixed(2)}`;
+            // Pre-fill with estimated actuals
+            document.getElementById('recon-actual-materials').value = target.financials.netMaterials.toFixed(2);
+            document.getElementById('recon-actual-labor').value = target.financials.laborCosts.toFixed(2);
+
+            document.getElementById('invoice-reconciliation-modal').classList.remove('hidden');
+        }
+
+        function closeInvoiceModal() { document.getElementById('invoice-reconciliation-modal').classList.add('hidden'); }
+
+        function confirmInvoiceConversion() {
+            const id = document.getElementById('recon-quote-id').value;
+            const actualMaterials = parseFloat(document.getElementById('recon-actual-materials').value) || 0;
+            const actualLabor = parseFloat(document.getElementById('recon-actual-labor').value) || 0;
+
+            let vault = getStoredVaultRecords();
+            let targetIdx = vault.findIndex(r => r.id === id);
+            if (targetIdx !== -1) {
+                vault[targetIdx].status = 'Invoiced';
+                vault[targetIdx].actuals = { materials: actualMaterials, labor: actualLabor };
+                localStorage.setItem('eny_vault', JSON.stringify(vault));
+                closeInvoiceModal();
+                reconstructUnifiedInterfaces();
+            }
+        }
+
+        // --- PROFITABILITY MODAL LOGIC ---
+        function openProfitModal(id) {
+            const vault = getStoredVaultRecords();
+            const target = vault.find(r => r.id === id);
+            if (!target || !target.actuals) return;
+
+            const revenue = target.financials.grossTotal;
+            const costMat = target.actuals.materials;
+            const costLab = target.actuals.labor;
+            const costTest = target.includeTestingCertificate ? target.financials.testingCosts : 0;
+            const totalCosts = costMat + costLab + costTest;
+            const netProfit = revenue - totalCosts;
+            const margin = revenue > 0 ? ((netProfit / revenue) * 100).toFixed(1) : 0;
+
+            document.getElementById('profit-revenue').innerText = `£${revenue.toFixed(2)}`;
+            document.getElementById('profit-materials').innerText = `${costMat.toFixed(2)}`;
+            document.getElementById('profit-labor').innerText = `${costLab.toFixed(2)}`;
+            document.getElementById('profit-testing').innerText = `${costTest.toFixed(2)}`;
+            
+            document.getElementById('profit-net').innerText = `£${netProfit.toFixed(2)}`;
+            
+            const marginEl = document.getElementById('profit-margin');
+            marginEl.innerText = `${margin}%`;
+            
+            if (netProfit < 0) {
+                document.getElementById('profit-net').classList.replace('text-emerald-400', 'text-red-500');
+                marginEl.classList.replace('text-amber-400', 'text-red-500');
+            } else {
+                document.getElementById('profit-net').classList.replace('text-red-500', 'text-emerald-400');
+                marginEl.classList.replace('text-red-500', 'text-amber-400');
+            }
+
+            document.getElementById('profit-view-modal').classList.remove('hidden');
+        }
+
+        function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); }
+
+
         // --- COMMIT ARCHIVE ACTIONS ---
         function commitQuoteToVault(overwriteExistingMode = false) {
             const clientName = document.getElementById('client-name').value.trim();
@@ -1265,9 +1296,16 @@
             const targetRecordId = (overwriteExistingMode && currentlyEditingQuoteId) ? currentlyEditingQuoteId : 'QTE-' + Date.now();
             const timestampString = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 
+            let currentStatus = 'Draft';
+            if (overwriteExistingMode && currentlyEditingQuoteId) {
+                const existing = vault.find(q => q.id === currentlyEditingQuoteId);
+                if (existing && existing.status) currentStatus = existing.status;
+            }
+
             const compositeRecordObject = {
                 id: targetRecordId,
                 timestamp: timestampString,
+                status: currentStatus,
                 jobName: document.getElementById('job-name').value.trim() || "Electrical Contracting Works Portfolio",
                 linkedClientId: activeLinkedClientId,
                 clientDetailsPayload: {
@@ -1293,11 +1331,10 @@
             if (overwriteExistingMode && currentlyEditingQuoteId) {
                 const searchIdx = vault.findIndex(q => q.id === currentlyEditingQuoteId);
                 if(searchIdx !== -1) {
+                    compositeRecordObject.actuals = vault[searchIdx].actuals; // preserve actuals if they exist
                     vault[searchIdx] = compositeRecordObject;
                     alert("Historical snapshot overwrote configuration record logs successfully.");
-                } else {
-                    vault.unshift(compositeRecordObject);
-                }
+                } else { vault.unshift(compositeRecordObject); }
             } else {
                 vault.unshift(compositeRecordObject);
                 alert("New sheet profile record added inside the archive vault core.");
@@ -1308,10 +1345,7 @@
             reconstructUnifiedInterfaces();
         }
 
-        function toggleInlineQuoteBreakdownFolder(rowId) {
-            const targetingEl = document.getElementById(rowId);
-            targetingEl.classList.toggle('hidden');
-        }
+        function toggleInlineQuoteBreakdownFolder(rowId) { document.getElementById(rowId).classList.toggle('hidden'); }
 
         function rebuildVaultDataTable() {
             const tbody = document.getElementById('vault-records-body');
@@ -1325,34 +1359,54 @@
             tbody.innerHTML = records.map(r => {
                 const itemizedListHtml = (r.itemsSnapshot && r.itemsSnapshot.length > 0) 
                     ? r.itemsSnapshot.map(i => `<div class="flex justify-between py-1 border-b border-slate-900/60 text-slate-400"><span>• ${i.desc} (x${i.qty})</span><span class="font-mono">£${(parseFloat(i.cost)*i.qty).toFixed(2)}</span></div>`).join('')
-                    : `<div class="text-slate-500 italic">No specific materials mapped to this portfolio.</div>`;
+                    : `<div class="text-slate-500 italic">No specific materials mapped.</div>`;
 
                 const isChecked = selectedVaultQuotes.has(r.id) ? 'checked' : '';
+                const status = r.status || 'Draft';
+                
+                let statusBadgeClass = 'bg-slate-800 text-slate-400 border-slate-700';
+                let primaryActionBtn = '';
+                let extraActionBtns = '';
+
+                if (status === 'Draft') {
+                    primaryActionBtn = `<button onclick="updateQuoteStatus('${r.id}', 'Sent')" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 w-full transition-colors"><i data-lucide="send" class="w-3.5 h-3.5"></i> Mark Sent</button>`;
+                } else if (status === 'Sent') {
+                    statusBadgeClass = 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+                    primaryActionBtn = `<button onclick="updateQuoteStatus('${r.id}', 'Approved')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 w-full transition-colors"><i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i> Approve</button>`;
+                } else if (status === 'Approved') {
+                    statusBadgeClass = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+                    primaryActionBtn = `<button onclick="openInvoiceReconciliation('${r.id}')" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 w-full transition-colors"><i data-lucide="file-check-2" class="w-3.5 h-3.5"></i> Invoice</button>`;
+                } else if (status === 'Invoiced') {
+                    statusBadgeClass = 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+                    primaryActionBtn = `<button onclick="updateQuoteStatus('${r.id}', 'Paid')" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 w-full transition-colors"><i data-lucide="pound-sterling" class="w-3.5 h-3.5"></i> Mark Paid</button>`;
+                    extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="View Profit Margin"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
+                } else if (status === 'Paid') {
+                    statusBadgeClass = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+                    primaryActionBtn = `<div class="text-amber-400 text-[11px] font-bold flex items-center justify-center gap-1.5 w-full py-1.5 border border-amber-500/20 rounded-lg bg-amber-500/10"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Settled</div>`;
+                    extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="View Profit Margin"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
+                }
 
                 return `
                     <tr class="text-xs text-slate-300 hover:bg-slate-900/40 border-b border-slate-900 transition-colors">
-                        <td class="py-4 px-4 text-center">
+                        <td class="py-4 px-3 text-center">
                             <input type="checkbox" onchange="toggleQuoteSelection('${r.id}')" class="w-4 h-4 rounded bg-slate-950 border-slate-700 text-amber-500 cursor-pointer accent-amber-500" ${isChecked}>
                         </td>
-                        <td class="py-4 px-4 text-slate-500 font-medium">${r.timestamp}</td>
-                        <td class="py-4 px-4">
+                        <td class="py-4 px-3">
+                            <span class="px-2.5 py-1 border rounded-lg text-[10px] font-bold uppercase tracking-wider ${statusBadgeClass}">${status}</span>
+                        </td>
+                        <td class="py-4 px-3">
                             <div class="font-bold text-white">${r.jobName}</div>
                             <div class="text-[10px] text-slate-500 font-mono">${r.id}</div>
                         </td>
-                        <td class="py-4 px-4">
-                            <span class="px-2 py-0.5 text-[10px] rounded font-medium ${r.linkedClientId ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-slate-800 text-slate-400'}">
-                                ${r.clientDetailsPayload?.name || 'Direct Entry'}
-                            </span>
+                        <td class="py-4 px-3 text-right font-mono font-bold text-white">£${r.financials.grossTotal.toFixed(2)}</td>
+                        <td class="py-4 px-3 w-32">
+                            ${primaryActionBtn}
                         </td>
-                        <td class="py-4 px-4 text-right font-mono font-bold text-white">£${r.financials.grossTotal.toFixed(2)}</td>
-                        <td class="py-4 px-4 text-center space-x-2">
-                            <button onclick="toggleInlineQuoteBreakdownFolder('folder-${r.id}')" class="text-slate-400 hover:text-white bg-slate-900 border border-slate-800 px-2 py-1 rounded text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer">
-                                <i data-lucide="eye" class="w-3.5 h-3.5"></i> Inspect
-                            </button>
-                            <button onclick="loadQuoteForActiveModification('${r.id}')" class="text-amber-400 hover:text-amber-500 bg-slate-900 border border-slate-800 px-2 py-1 rounded text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer">
-                                <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit
-                            </button>
-                            <button onclick="if(confirm('Delete archived sheet log?')){let v=getStoredVaultRecords().filter(x=>x.id!='${r.id}');localStorage.setItem('eny_vault',JSON.stringify(v));selectedVaultQuotes.delete('${r.id}');reconstructUnifiedInterfaces();}" class="text-slate-500 hover:text-red-400 p-1 inline-block align-middle cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <td class="py-4 px-3 text-right space-x-1 whitespace-nowrap">
+                            ${extraActionBtns}
+                            <button onclick="toggleInlineQuoteBreakdownFolder('folder-${r.id}')" class="text-slate-400 hover:text-white p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Inspect"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                            <button onclick="loadQuoteForActiveModification('${r.id}')" class="text-blue-400 hover:text-blue-300 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Edit to Workspace"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                            <button onclick="if(confirm('Delete archived sheet log?')){let v=getStoredVaultRecords().filter(x=>x.id!='${r.id}');localStorage.setItem('eny_vault',JSON.stringify(v));selectedVaultQuotes.delete('${r.id}');reconstructUnifiedInterfaces();}" class="text-slate-500 hover:text-red-400 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </td>
                     </tr>
                     <tr id="folder-${r.id}" class="hidden bg-slate-950/60">
@@ -1384,14 +1438,7 @@
 
         // --- TEAM SYNC ENGINE EXPORTS CORE ---
         function exportSystemStateBackup() {
-            const packagePayload = { 
-                exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", 
-                generatedTimestamp: Date.now(), 
-                inventory: getStoredInventory(), 
-                clients: getStoredClients(), 
-                vault: getStoredVaultRecords(),
-                templates: getStoredTemplates()
-            };
+            const packagePayload = { exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", generatedTimestamp: Date.now(), inventory: getStoredInventory(), clients: getStoredClients(), vault: getStoredVaultRecords(), templates: getStoredTemplates() };
             const dataBlob = new Blob([JSON.stringify(packagePayload, null, 2)], { type: "application/json" });
             const temporaryLinkElement = document.createElement('a');
             temporaryLinkElement.href = URL.createObjectURL(dataBlob);
@@ -1407,25 +1454,15 @@
                     const inboundPayload = JSON.parse(e.target.result);
                     if (inboundPayload.exportMetadataSource !== "ENY_ELECTRICAL_CRM_SYSTEM") { alert("Malformed Format Configuration Signature Match Error."); return; }
 
-                    let localInventory = getStoredInventory();
-                    let localClients = getStoredClients();
-                    let localVault = getStoredVaultRecords();
-                    let localTemplates = getStoredTemplates();
-
+                    let localInventory = getStoredInventory(); let localClients = getStoredClients(); let localVault = getStoredVaultRecords(); let localTemplates = getStoredTemplates();
                     let stats = { stockOverwrites: 0, stockAppends: 0, clientOverwrites: 0, clientAppends: 0, quoteOverwrites: 0, quoteAppends: 0, templateOverwrites: 0, templateAppends: 0 };
 
                     if (inboundPayload.inventory) {
                         inboundPayload.inventory.forEach(inboundItem => {
                             const matchIdx = localInventory.findIndex(li => li.sku.toLowerCase() === inboundItem.sku.toLowerCase());
                             if (matchIdx !== -1) {
-                                if (confirm(`Conflict Found: Stock SKU "${inboundItem.sku}" exists.\nInbound wholesale cost: £${inboundItem.cost}\nLocal wholesale cost: £${localInventory[matchIdx].cost}\n\nOverwrite local item data?`)) {
-                                    localInventory[matchIdx] = inboundItem;
-                                    stats.stockOverwrites++;
-                                }
-                            } else {
-                                localInventory.push(inboundItem);
-                                stats.stockAppends++;
-                            }
+                                if (confirm(`Conflict Found: Stock SKU "${inboundItem.sku}" exists.\nInbound wholesale cost: £${inboundItem.cost}\nLocal wholesale cost: £${localInventory[matchIdx].cost}\n\nOverwrite local item data?`)) { localInventory[matchIdx] = inboundItem; stats.stockOverwrites++; }
+                            } else { localInventory.push(inboundItem); stats.stockAppends++; }
                         });
                     }
 
@@ -1433,14 +1470,8 @@
                         inboundPayload.clients.forEach(inboundClient => {
                             const matchIdx = localClients.findIndex(lc => lc.id === inboundClient.id || lc.name.toLowerCase() === inboundClient.name.toLowerCase());
                             if (matchIdx !== -1) {
-                                if (confirm(`Conflict Found: Client Profile "${inboundClient.name}" matches an existing record.\n\nOverwrite local client contact profiles?`)) {
-                                    localClients[matchIdx] = inboundClient;
-                                    stats.clientOverwrites++;
-                                }
-                            } else {
-                                localClients.push(inboundClient);
-                                stats.clientAppends++;
-                            }
+                                if (confirm(`Conflict Found: Client Profile "${inboundClient.name}" matches an existing record.\n\nOverwrite local client contact profiles?`)) { localClients[matchIdx] = inboundClient; stats.clientOverwrites++; }
+                            } else { localClients.push(inboundClient); stats.clientAppends++; }
                         });
                     }
 
@@ -1448,14 +1479,8 @@
                         inboundPayload.vault.forEach(inboundQuote => {
                             const matchIdx = localVault.findIndex(lv => lv.id === inboundQuote.id);
                             if (matchIdx !== -1) {
-                                if (confirm(`Conflict Found: Vault Quote Log "${inboundQuote.id}" (${inboundQuote.jobName}) matches an existing document hash.\n\nOverwrite local log file?`)) {
-                                    localVault[matchIdx] = inboundQuote;
-                                    stats.quoteOverwrites++;
-                                }
-                            } else {
-                                localVault.push(inboundQuote);
-                                stats.quoteAppends++;
-                            }
+                                if (confirm(`Conflict Found: Vault Quote Log "${inboundQuote.id}" (${inboundQuote.jobName}) matches an existing document hash.\n\nOverwrite local log file?`)) { localVault[matchIdx] = inboundQuote; stats.quoteOverwrites++; }
+                            } else { localVault.push(inboundQuote); stats.quoteAppends++; }
                         });
                     }
 
@@ -1463,30 +1488,14 @@
                         inboundPayload.templates.forEach(inboundTemplate => {
                             const matchIdx = localTemplates.findIndex(lt => lt.id === inboundTemplate.id || lt.name.toLowerCase() === inboundTemplate.name.toLowerCase());
                             if (matchIdx !== -1) {
-                                if (confirm(`Conflict Found: Pre-filled template preset "${inboundTemplate.name}" already exists.\n\nOverwrite configuration structures?`)) {
-                                    localTemplates[matchIdx] = inboundTemplate;
-                                    stats.templateOverwrites++;
-                                }
-                            } else {
-                                localTemplates.push(inboundTemplate);
-                                stats.templateAppends++;
-                            }
+                                if (confirm(`Conflict Found: Pre-filled template preset "${inboundTemplate.name}" already exists.\n\nOverwrite configuration structures?`)) { localTemplates[matchIdx] = inboundTemplate; stats.templateOverwrites++; }
+                            } else { localTemplates.push(inboundTemplate); stats.templateAppends++; }
                         });
                     }
 
-                    localStorage.setItem('eny_inventory', JSON.stringify(localInventory)); 
-                    localStorage.setItem('eny_clients', JSON.stringify(localClients)); 
-                    localStorage.setItem('eny_vault', JSON.stringify(localVault));
-                    localStorage.setItem('eny_templates', JSON.stringify(localTemplates));
-                    
+                    localStorage.setItem('eny_inventory', JSON.stringify(localInventory)); localStorage.setItem('eny_clients', JSON.stringify(localClients)); localStorage.setItem('eny_vault', JSON.stringify(localVault)); localStorage.setItem('eny_templates', JSON.stringify(localTemplates));
                     reconstructUnifiedInterfaces();
-                    
-                    alert(`Sync Validation Engine Execution Summary:\n\n` +
-                          `• Materials: Added ${stats.stockAppends}, Overwrote ${stats.stockOverwrites}\n` +
-                          `• Clients: Added ${stats.clientAppends}, Overwrote ${stats.clientOverwrites}\n` +
-                          `• Vault Records: Added ${stats.quoteAppends}, Overwrote ${stats.quoteOverwrites}\n` +
-                          `• Job Templates: Added ${stats.templateAppends}, Overwrote ${stats.templateOverwrites}`);
-                          
+                    alert(`Sync Validation Engine Execution Summary:\n\n• Materials: Added ${stats.stockAppends}, Overwrote ${stats.stockOverwrites}\n• Clients: Added ${stats.clientAppends}, Overwrote ${stats.clientOverwrites}\n• Vault Records: Added ${stats.quoteAppends}, Overwrote ${stats.quoteOverwrites}\n• Job Templates: Added ${stats.templateAppends}, Overwrote ${stats.templateOverwrites}`);
                 } catch (err) { alert("Error parsing synchronization document mapping configurations."); console.error(err); }
             };
             fileReader.readAsText(uploadedFile); event.target.value = '';
