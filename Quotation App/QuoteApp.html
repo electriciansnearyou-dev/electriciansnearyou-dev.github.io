@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENY Electrical - Premium Project Planner & CRM</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap');
@@ -123,7 +123,7 @@
                             </div>
                         </div>
                         <div id="category-tabs-container" class="flex flex-wrap gap-1.5 mb-4 pb-2 border-b border-slate-900"></div>
-                        <div id="catalog-results-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[310px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                        <div id="catalog-results-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[310px] overflow-y-auto pr-2"></div>
                     </div>
 
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
@@ -315,7 +315,7 @@
                         </form>
                     </div>
 
-                    <div class="bg-gradient-to-br from-slate-950 to-slate-900 border border-slate-850 rounded-2xl p-5 shadow-sm space-y-3">
+                    <div class="bg-gradient-to-br from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
                         <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
                             <i data-lucide="download" class="text-amber-400 w-4 h-4"></i> Local CRM Data Export
                         </h4>
@@ -443,8 +443,10 @@
             });
             document.getElementById(targetTabId).classList.add('active');
             const targetButton = document.getElementById(`btn-${targetTabId}`);
-            targetButton.classList.remove('text-slate-400', 'hover:text-white');
-            targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+            if (targetButton) {
+                targetButton.classList.remove('text-slate-400', 'hover:text-white');
+                targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+            }
         }
 
         // --- PRE-FILLED JOBS ENGINE INJECTION MODULE ---
@@ -453,12 +455,617 @@
             if (!templateKey) return;
 
             const inventory = getStoredInventory();
-            activeAllocatedMaterials = []; // Clear current workspace slate
+            activeAllocatedMaterials = []; 
 
             if (templateKey === 'consumer_upgrade') {
                 document.getElementById('job-name').value = "10-Way AMD3 Consumer Unit Upgrade Split";
                 document.getElementById('labor-hours').value = "6";
                 document.getElementById('include-testing-toggle').checked = true;
                 
-                // Fetch template inventory lines
-                const board = inventory.find(i => i.sku === 'CU-AM3-10
+                const board = inventory.find(i => i.sku === 'CU-AM3-10');
+                const rcbo = inventory.find(i => i.sku === 'RCBO-B32');
+                
+                if (board) activeAllocatedMaterials.push({ ...board, qty: 1 });
+                if (rcbo) activeAllocatedMaterials.push({ ...rcbo, qty: 8 });
+
+            } else if (templateKey === 'ev_install') {
+                document.getElementById('job-name').value = "EV Charger Supply & Surface Mount Run";
+                document.getElementById('labor-hours').value = "4";
+                document.getElementById('include-testing-toggle').checked = true;
+                
+                const cable10mm = inventory.find(i => i.sku === '6124Y-10.0') || inventory.find(i => i.sku === '6124Y-2.5'); 
+                const rcbo = inventory.find(i => i.sku === 'RCBO-B32');
+                
+                if (cable10mm) activeAllocatedMaterials.push({ ...cable10mm, qty: 1 }); 
+                if (rcbo) activeAllocatedMaterials.push({ ...rcbo, qty: 1 });
+
+            } else if (templateKey === 'downlight_mesh') {
+                document.getElementById('job-name').value = "Kitchen LED Dimmable Downlight Installation mesh";
+                document.getElementById('labor-hours').value = "8";
+                document.getElementById('include-testing-toggle').checked = false;
+                
+                const light = inventory.find(i => i.sku === 'LED-DL-IP65');
+                const cable1_5 = inventory.find(i => i.sku === '6124Y-1.5');
+                
+                if (light) activeAllocatedMaterials.push({ ...light, qty: 10 });
+                if (cable1_5) activeAllocatedMaterials.push({ ...cable1_5, qty: 1 });
+            }
+
+            rebuildAllocatedMaterialsTable();
+            document.getElementById('prefilled-job-select').value = ""; 
+        }
+
+        // --- CORE RELOAD ENGINE (LOAD & EDIT) ---
+        function loadQuoteForActiveModification(quoteId) {
+            const vault = getStoredVaultRecords();
+            const targetedQuote = vault.find(q => q.id === quoteId);
+            
+            if(!targetedQuote) {
+                alert("Target file snapshot could not be accessed inside storage records.");
+                return;
+            }
+
+            currentlyEditingQuoteId = targetedQuote.id;
+            activeLinkedClientId = targetedQuote.linkedClientId || "";
+            activeAllocatedMaterials = JSON.parse(JSON.stringify(targetedQuote.itemsSnapshot || []));
+
+            document.getElementById('job-name').value = targetedQuote.jobName || "";
+            document.getElementById('client-name').value = targetedQuote.clientDetailsPayload?.name || "";
+            document.getElementById('client-email').value = targetedQuote.clientDetailsPayload?.email || "";
+            document.getElementById('client-address').value = targetedQuote.clientDetailsPayload?.address || "";
+            
+            document.getElementById('labor-hours').value = targetedQuote.laborHours !== undefined ? targetedQuote.laborHours : 8;
+            document.getElementById('labor-rate').value = targetedQuote.laborRate !== undefined ? targetedQuote.laborRate : 45;
+            document.getElementById('global-markup').value = targetedQuote.globalMarkup !== undefined ? targetedQuote.globalMarkup : 25;
+
+            const testingToggle = document.getElementById('include-testing-toggle');
+            const testingCostInput = document.getElementById('testing-flat-cost');
+            
+            if (targetedQuote.includeTestingCertificate === true) {
+                testingToggle.checked = true;
+                testingCostInput.value = targetedQuote.testingCostFixed !== undefined ? targetedQuote.testingCostFixed : 75.00;
+            } else {
+                testingToggle.checked = false;
+            }
+
+            document.getElementById('editing-mode-banner').classList.remove('hidden');
+            document.getElementById('editing-record-id-display').innerText = targetedQuote.id;
+            document.getElementById('standard-save-actions-wrapper').classList.add('hidden');
+            document.getElementById('editing-save-actions-wrapper').classList.remove('hidden');
+
+            rebuildAllocatedMaterialsTable();
+            rebuildQuoteClientDropdown();
+            switchTab('quote-tab');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelActiveEditingSessionMode() {
+            currentlyEditingQuoteId = null;
+            activeLinkedClientId = "";
+            activeAllocatedMaterials = [];
+
+            document.getElementById('job-name').value = "";
+            document.getElementById('client-name').value = "";
+            document.getElementById('client-email').value = "";
+            document.getElementById('client-address').value = "";
+            document.getElementById('include-testing-toggle').checked = false;
+
+            document.getElementById('editing-mode-banner').classList.add('hidden');
+            document.getElementById('standard-save-actions-wrapper').classList.remove('hidden');
+            document.getElementById('editing-save-actions-wrapper').classList.add('hidden');
+
+            rebuildAllocatedMaterialsTable();
+            rebuildQuoteClientDropdown();
+        }
+
+        // --- AUTOMATIC NAVIGATION MATRIX FILTERS ---
+        function renderCategoryNavigationTabs() {
+            const container = document.getElementById('category-tabs-container');
+            const currentInventory = getStoredInventory();
+            const uniqueCategories = ["ALL", ...new Set(currentInventory.map(item => item.category).filter(Boolean))];
+            
+            if (!uniqueCategories.includes(selectedCategoryFilter)) selectedCategoryFilter = "ALL";
+
+            container.innerHTML = uniqueCategories.map(cat => {
+                const isSelected = selectedCategoryFilter === cat;
+                return `
+                    <button type="button" onclick="setCategoryFilter('${cat}')" 
+                        class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer
+                        ${isSelected ? 'bg-slate-100 text-slate-950 border-white font-semibold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'}">
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function setCategoryFilter(categoryName) {
+            selectedCategoryFilter = categoryName;
+            renderCategoryNavigationTabs();
+            filterMaterialCatalog();
+        }
+
+        function filterMaterialCatalog() {
+            const searchInput = document.getElementById('material-search-input');
+            const searchString = searchInput ? searchInput.value.toLowerCase().trim() : "";
+            const resultsGrid = document.getElementById('catalog-results-grid');
+            const currentInventory = getStoredInventory();
+            
+            const targetedSubset = currentInventory.filter(item => {
+                const matchCategory = (selectedCategoryFilter === "ALL" || item.category === selectedCategoryFilter);
+                const matchSearch = item.desc.toLowerCase().includes(searchString) || item.sku.toLowerCase().includes(searchString);
+                return matchCategory && matchSearch;
+            });
+
+            if (targetedSubset.length === 0) {
+                resultsGrid.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-slate-500">No matching stock items found.</div>`;
+                return;
+            }
+
+            resultsGrid.innerHTML = targetedSubset.map(item => `
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-slate-700 transition-colors">
+                    <div>
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-mono tracking-wider font-semibold text-amber-500">${item.sku}</span>
+                            <span class="text-[9px] text-slate-500 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800">${item.category}</span>
+                        </div>
+                        <h4 class="text-xs font-medium text-slate-200 mt-1 line-clamp-2">${item.desc}</h4>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-950">
+                        <span class="text-sm font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</span>
+                        <button type="button" onclick="allocateItemToQuote('${item.id}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 p-1.5 rounded-lg transition-all text-slate-300 cursor-pointer">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // --- STOCK MANAGER ROUTINES ---
+        function createCustomInventoryItem(event) {
+            event.preventDefault();
+            const currentInventory = getStoredInventory();
+            const providedSku = document.getElementById('stock-sku').value.trim();
+
+            if(currentInventory.some(i => i.sku.toLowerCase() === providedSku.toLowerCase())) {
+                alert("An item with this Part Number/SKU identifier already exists.");
+                return;
+            }
+
+            const newItem = {
+                id: 'MAT-' + Date.now(),
+                sku: providedSku,
+                desc: document.getElementById('stock-desc').value.trim(),
+                cost: parseFloat(document.getElementById('stock-cost').value) || 0,
+                category: document.getElementById('stock-category').value.trim()
+            };
+
+            currentInventory.push(newItem);
+            localStorage.setItem('eny_inventory', JSON.stringify(currentInventory));
+            document.getElementById('new-item-form').reset();
+            reconstructUnifiedInterfaces();
+        }
+
+        function purgeInventoryItem(itemId) {
+            let currentInventory = getStoredInventory();
+            localStorage.setItem('eny_inventory', JSON.stringify(currentInventory.filter(i => i.id !== itemId)));
+            activeAllocatedMaterials = activeAllocatedMaterials.filter(i => i.id !== itemId);
+            rebuildAllocatedMaterialsTable();
+            reconstructUnifiedInterfaces();
+        }
+
+        function rebuildMasterStockDirectoryTable() {
+            const tbody = document.getElementById('master-stock-table-body');
+            const inventory = getStoredInventory();
+            if(inventory.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">Stock directory empty.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = inventory.map(item => `
+                <tr class="text-xs text-slate-300 hover:bg-slate-900/20">
+                    <td class="py-3 px-2 font-mono font-semibold text-amber-500">${item.sku}</td>
+                    <td class="py-3 px-2 font-medium text-slate-100">${item.desc}</td>
+                    <td class="py-3 px-2 text-slate-400"><span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800/60">${item.category}</span></td>
+                    <td class="py-3 px-2 text-right font-mono font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</td>
+                    <td class="py-3 px-2 text-center">
+                        <button onclick="purgeInventoryItem('${item.id}')" class="text-slate-500 hover:text-red-400 p-1 transition-colors cursor-pointer"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function rebuildDatalistAssistanceArray() {
+            const list = document.getElementById('existing-categories');
+            const inventory = getStoredInventory();
+            list.innerHTML = [...new Set(inventory.map(i => i.category).filter(Boolean))].map(c => `<option value="${c}"></option>`).join('');
+        }
+
+        // --- CALC SHEET BUILD DATA MANAGEMENT ---
+        function allocateItemToQuote(itemId) {
+            const inventory = getStoredInventory();
+            const match = inventory.find(i => i.id === itemId);
+            const activeMatch = activeAllocatedMaterials.find(i => i.id === itemId);
+            if (activeMatch) { activeMatch.qty += 1; } else { activeAllocatedMaterials.push({ ...match, qty: 1 }); }
+            rebuildAllocatedMaterialsTable();
+        }
+
+        function updateAllocationQty(itemId, newQty) {
+            const idx = activeAllocatedMaterials.findIndex(i => i.id === itemId);
+            if(idx === -1) return;
+            const clean = parseInt(newQty);
+            if (isNaN(clean) || clean <= 0) { activeAllocatedMaterials.splice(idx, 1); } else { activeAllocatedMaterials[idx].qty = clean; }
+            rebuildAllocatedMaterialsTable();
+        }
+
+        function rebuildAllocatedMaterialsTable() {
+            const tbody = document.getElementById('allocated-materials-body');
+            if (activeAllocatedMaterials.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">No items selected.</td></tr>`;
+                calculateComprehensiveMetrics();
+                return;
+            }
+            tbody.innerHTML = activeAllocatedMaterials.map(item => `
+                <tr class="border-b border-slate-900 text-xs text-slate-200">
+                    <td class="py-3 px-2"><div>${item.desc}</div><div class="text-[10px] font-mono text-slate-500 mt-0.5">${item.sku}</div></td>
+                    <td class="py-3 px-2 text-center">
+                        <input type="number" value="${item.qty}" min="1" onchange="updateAllocationQty('${item.id}', this.value)" class="w-12 bg-slate-900 border border-slate-800 text-center rounded p-1 font-mono text-white">
+                    </td>
+                    <td class="py-3 px-2 text-right font-mono">£${parseFloat(item.cost).toFixed(2)}</td>
+                    <td class="py-3 px-2 text-right font-mono font-bold text-white">£${(parseFloat(item.cost) * item.qty).toFixed(2)}</td>
+                    <td class="py-3 px-2 text-center">
+                        <button onclick="activeAllocatedMaterials=activeAllocatedMaterials.filter(i=>i.id!='${item.id}');rebuildAllocatedMaterialsTable();" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+            calculateComprehensiveMetrics();
+        }
+
+        function calculateComprehensiveMetrics() {
+            const netMaterials = activeAllocatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost) * curr.qty), 0);
+            const markup = parseFloat(document.getElementById('global-markup').value) || 0;
+            const markedMaterials = netMaterials * (1 + (markup / 100));
+            
+            const laborHours = parseFloat(document.getElementById('labor-hours').value) || 0;
+            const laborRate = parseFloat(document.getElementById('labor-rate').value) || 0;
+            const laborCosts = laborHours * laborRate;
+            
+            const isTestingIncluded = document.getElementById('include-testing-toggle').checked;
+            const testingCostFixed = parseFloat(document.getElementById('testing-flat-cost').value) || 0;
+            const computedTestingCharge = isTestingIncluded ? testingCostFixed : 0;
+
+            const grossTotal = markedMaterials + laborCosts + computedTestingCharge;
+
+            document.getElementById('summary-net-materials').innerText = `£${netMaterials.toFixed(2)}`;
+            document.getElementById('summary-marked-materials').innerText = `£${markedMaterials.toFixed(2)}`;
+            document.getElementById('summary-labor-costs').innerText = `£${laborCosts.toFixed(2)}`;
+            document.getElementById('summary-testing-costs').innerText = `£${computedTestingCharge.toFixed(2)}`;
+            document.getElementById('summary-gross-total').innerText = `£${grossTotal.toFixed(2)}`;
+            
+            return { netMaterials, markedMaterials, laborCosts, computedTestingCharge, grossTotal, laborHours, laborRate, markup, isTestingIncluded, testingCostFixed };
+        }
+
+        // --- CLIENT REGISTER CRM PROCESSORS ---
+        function createNewClientProfile(event) {
+            event.preventDefault();
+            const clients = getStoredClients();
+            clients.push({
+                id: 'CLI-' + Date.now(),
+                name: document.getElementById('crm-client-name').value.trim(),
+                email: document.getElementById('crm-client-email').value.trim(),
+                phone: document.getElementById('crm-client-phone').value.trim(),
+                address: document.getElementById('crm-client-address').value.trim(),
+                createdDate: new Date().toLocaleDateString('en-GB')
+            });
+            localStorage.setItem('eny_clients', JSON.stringify(clients));
+            document.getElementById('new-client-form').reset();
+            rebuildCrmProfilesInterface();
+            rebuildQuoteClientDropdown();
+        }
+
+        function deleteClientProfile(clientId) {
+            if (!confirm("Remove this client profile?")) return;
+            let clients = getStoredClients();
+            localStorage.setItem('eny_clients', JSON.stringify(clients.filter(c => c.id !== clientId)));
+            if (activeLinkedClientId === clientId) {
+                document.getElementById('quote-client-select').value = "";
+                activeLinkedClientId = "";
+            }
+            rebuildCrmProfilesInterface();
+            rebuildQuoteClientDropdown();
+        }
+
+        function rebuildQuoteClientDropdown() {
+            const select = document.getElementById('quote-client-select');
+            if (!select) return;
+            select.innerHTML = `<option value="">-- Manual Entry (Unsaved) --</option>` + 
+                getStoredClients().map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            select.value = activeLinkedClientId;
+        }
+
+        function loadSelectedClientIntoQuote() {
+            const selectedId = document.getElementById('quote-client-select').value;
+            activeLinkedClientId = selectedId;
+            if (!selectedId) {
+                document.getElementById('client-name').value = "";
+                document.getElementById('client-email').value = "";
+                document.getElementById('client-address').value = "";
+                return;
+            }
+            const match = getStoredClients().find(c => c.id === selectedId);
+            if(match) {
+                document.getElementById('client-name').value = match.name;
+                document.getElementById('client-email').value = match.email || '';
+                document.getElementById('client-address').value = match.address || '';
+            }
+        }
+
+        function rebuildCrmProfilesInterface() {
+            const wrapper = document.getElementById('crm-ledger-accordion-wrapper');
+            const empty = document.getElementById('crm-empty-state');
+            const searchInput = document.getElementById('crm-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : "";
+            
+            const clients = getStoredClients();
+            const records = getStoredVaultRecords();
+            
+            const filteredClients = clients.filter(c => {
+                const clientJobs = records.filter(j => j.linkedClientId === c.id);
+                const matchesJobInfo = clientJobs.some(j => j.jobName.toLowerCase().includes(filterText) || j.id.toLowerCase().includes(filterText));
+                
+                return c.name.toLowerCase().includes(filterText) ||
+                       (c.email && c.email.toLowerCase().includes(filterText)) ||
+                       (c.address && c.address.toLowerCase().includes(filterText)) ||
+                       (c.phone && c.phone.includes(filterText)) ||
+                       matchesJobInfo;
+            });
+
+            document.getElementById('crm-count-badge').innerText = `${filteredClients.length} Account${filteredClients.length===1?'':'s'}`;
+            if(filteredClients.length === 0) { empty.classList.remove('hidden'); wrapper.innerHTML=""; return; }
+            empty.classList.add('hidden');
+
+            wrapper.innerHTML = filteredClients.map(client => {
+                const jobs = records.filter(q => q.linkedClientId === client.id);
+                const spend = jobs.reduce((acc, curr) => acc + curr.financials.grossTotal, 0);
+                return `
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+                        <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                                <h3 class="text-sm font-bold text-white">${client.name}</h3>
+                                <p class="text-[11px] text-slate-500">ID: ${client.id} • Registered: ${client.createdDate}</p>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-right">
+                                    <span class="text-[10px] uppercase font-semibold text-slate-500 block">Total Client Value</span>
+                                    <span class="text-xs font-bold text-amber-400 font-mono">£${spend.toFixed(2)} (${jobs.length} Job${jobs.length===1?'':'s'})</span>
+                                </div>
+                                <button onclick="deleteClientProfile('${client.id}')" class="text-slate-500 hover:text-red-400 p-1.5 rounded-lg transition-all cursor-pointer"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-slate-950/40 border-t border-slate-900/60 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                            <div>
+                                <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Contact</span>
+                                <div class="text-slate-300 truncate"><i data-lucide="mail" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.email || 'None'}</div>
+                                <div class="text-slate-300 mt-0.5"><i data-lucide="phone" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.phone || 'None'}</div>
+                            </div>
+                            <div>
+                                <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Billing Site</span>
+                                <div class="text-slate-300 leading-relaxed"><i data-lucide="map-pin" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.address || 'None'}</div>
+                            </div>
+                            <div>
+                                <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Linked Records History</span>
+                                <div class="max-h-36 overflow-y-auto space-y-1.5">
+                                    ${jobs.length===0?'<span class="text-slate-500 italic">No historical sheets.</span>':jobs.map(j=> {
+                                        const itemsSummaryText = j.itemsSnapshot?.map(i => `• ${i.desc} (x${i.qty})`).join('<br>') || 'No items.';
+                                        return `
+                                        <div class="bg-slate-900 border border-slate-800 p-2 rounded-lg space-y-2">
+                                            <div class="truncate">
+                                                <span class="font-bold text-slate-200 block text-[10px] truncate">${j.jobName}</span>
+                                                <div class="flex items-center justify-between text-[9px] text-slate-400 font-mono mt-0.5">
+                                                    <span>${j.id}</span>
+                                                    <span class="text-amber-400 font-bold">£${j.financials.grossTotal.toFixed(2)}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="grid grid-cols-2 gap-1 pt-1.5 border-t border-slate-800/60">
+                                                <button onclick="toggleInlineQuoteBreakdownFolder('crm-folder-${j.id}')" class="text-[10px] font-semibold text-slate-300 hover:text-white bg-slate-950 px-1.5 py-1 rounded border border-slate-800 flex items-center justify-center gap-1 cursor-pointer">
+                                                    <i data-lucide="eye" class="w-2.5 h-2.5"></i> Inspect
+                                                </button>
+                                                <button onclick="loadQuoteForActiveModification('${j.id}')" class="text-[10px] font-semibold text-amber-400 hover:text-amber-300 bg-slate-950 px-1.5 py-1 rounded border border-slate-800 flex items-center justify-center gap-1 cursor-pointer">
+                                                    <i data-lucide="edit" class="w-2.5 h-2.5"></i> Edit
+                                                </button>
+                                            </div>
+
+                                            <div id="crm-folder-${j.id}" class="hidden pt-2 text-[10px] border-t border-dashed border-slate-800 text-slate-400 space-y-2 bg-slate-950/80 p-2 rounded">
+                                                <div class="space-y-1">
+                                                    <div class="flex justify-between"><span>Materials:</span><span class="font-mono">£${j.financials.markedMaterials.toFixed(2)}</span></div>
+                                                    <div class="flex justify-between"><span>Labor:</span><span class="font-mono">£${j.financials.laborCosts.toFixed(2)}</span></div>
+                                                    <div class="flex justify-between"><span>Testing:</span><span class="font-mono">${j.includeTestingCertificate ? '£'+j.financials.testingCosts.toFixed(2) : 'Excluded'}</span></div>
+                                                </div>
+                                                <div class="border-t border-slate-800 pt-1 font-bold text-slate-300">Inventory Manifest:</div>
+                                                <div class="text-[9px] leading-relaxed max-h-20 overflow-y-auto font-mono text-slate-400">
+                                                    ${itemsSummaryText}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `}).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // --- COMMIT ARCHIVE ACTIONS ---
+        function commitQuoteToVault(overwriteExistingMode = false) {
+            const clientName = document.getElementById('client-name').value.trim();
+            if(!clientName) { alert("Enter a client profile name reference before committing records."); return; }
+
+            const calcs = calculateComprehensiveMetrics();
+            let vault = getStoredVaultRecords();
+
+            const targetRecordId = (overwriteExistingMode && currentlyEditingQuoteId) ? currentlyEditingQuoteId : 'QTE-' + Date.now();
+            const timestampString = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+
+            const compositeRecordObject = {
+                id: targetRecordId,
+                timestamp: timestampString,
+                jobName: document.getElementById('job-name').value.trim() || "Electrical Contracting Works Portfolio",
+                linkedClientId: activeLinkedClientId,
+                clientDetailsPayload: {
+                    name: clientName,
+                    email: document.getElementById('client-email').value.trim(),
+                    address: document.getElementById('client-address').value.trim()
+                },
+                laborHours: calcs.laborHours,
+                laborRate: calcs.laborRate,
+                globalMarkup: calcs.markup,
+                includeTestingCertificate: calcs.isTestingIncluded,
+                testingCostFixed: calcs.testingCostFixed,
+                financials: {
+                    netMaterials: calcs.netMaterials,
+                    markedMaterials: calcs.markedMaterials,
+                    laborCosts: calcs.laborCosts,
+                    testingCosts: calcs.computedTestingCharge,
+                    grossTotal: calcs.grossTotal
+                },
+                itemsSnapshot: [...activeAllocatedMaterials]
+            };
+
+            if (overwriteExistingMode && currentlyEditingQuoteId) {
+                const searchIdx = vault.findIndex(q => q.id === currentlyEditingQuoteId);
+                if(searchIdx !== -1) {
+                    vault[searchIdx] = compositeRecordObject;
+                    alert("Historical snapshot overwrote configuration record logs successfully.");
+                } else {
+                    vault.unshift(compositeRecordObject);
+                }
+            } else {
+                vault.unshift(compositeRecordObject);
+                alert("New sheet profile record added inside the archive vault core.");
+            }
+
+            localStorage.setItem('eny_vault', JSON.stringify(vault));
+            cancelActiveEditingSessionMode();
+            reconstructUnifiedInterfaces();
+        }
+
+        function toggleInlineQuoteBreakdownFolder(rowId) {
+            const targetingEl = document.getElementById(rowId);
+            if(targetingEl.classList.contains('hidden')) {
+                targetingEl.classList.remove('hidden');
+            } else {
+                targetingEl.classList.add('hidden');
+            }
+        }
+
+        function rebuildVaultDataTable() {
+            const tbody = document.getElementById('vault-records-body');
+            const table = document.getElementById('vault-table');
+            const empty = document.getElementById('vault-empty-state');
+            const records = getStoredVaultRecords();
+
+            if(records.length === 0) { empty.classList.remove('hidden'); table.classList.add('hidden'); return; }
+            empty.classList.add('hidden'); table.classList.remove('hidden');
+
+            tbody.innerHTML = records.map(r => {
+                const itemizedListHtml = (r.itemsSnapshot && r.itemsSnapshot.length > 0) 
+                    ? r.itemsSnapshot.map(i => `<div class="flex justify-between py-1 border-b border-slate-900/60 text-slate-400"><span>• ${i.desc} (x${i.qty})</span><span class="font-mono">£${(parseFloat(i.cost)*i.qty).toFixed(2)}</span></div>`).join('')
+                    : `<div class="text-slate-500 italic">No specific materials mapped to this portfolio.</div>`;
+
+                return `
+                    <tr class="text-xs text-slate-300 hover:bg-slate-900/40 border-b border-slate-900">
+                        <td class="py-4 px-4 text-slate-500 font-medium">${r.timestamp}</td>
+                        <td class="py-4 px-4">
+                            <div class="font-bold text-white">${r.jobName}</div>
+                            <div class="text-[10px] text-slate-500 font-mono">${r.id}</div>
+                        </td>
+                        <td class="py-4 px-4">
+                            <span class="px-2 py-0.5 text-[10px] rounded font-medium ${r.linkedClientId ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-slate-800 text-slate-400'}">
+                                ${r.clientDetailsPayload?.name || 'Direct Entry'}
+                            </span>
+                        </td>
+                        <td class="py-4 px-4 text-right font-mono font-bold text-white">£${r.financials.grossTotal.toFixed(2)}</td>
+                        <td class="py-4 px-4 text-center space-x-2">
+                            <button onclick="toggleInlineQuoteBreakdownFolder('folder-${r.id}')" class="text-slate-400 hover:text-white bg-slate-900 border border-slate-800 px-2 py-1 rounded text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer">
+                                <i data-lucide="eye" class="w-3.5 h-3.5"></i> Inspect
+                            </button>
+                            <button onclick="loadQuoteForActiveModification('${r.id}')" class="text-amber-400 hover:text-amber-500 bg-slate-900 border border-slate-800 px-2 py-1 rounded text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer">
+                                <i data-lucide="edit" class="w-3.5 h-3.5"></i> Edit
+                            </button>
+                            <button onclick="if(confirm('Delete archived sheet log?')){let v=getStoredVaultRecords().filter(x=>x.id!='${r.id}');localStorage.setItem('eny_vault',JSON.stringify(v));reconstructUnifiedInterfaces();}" class="text-slate-500 hover:text-red-400 p-1 inline-block align-middle cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </td>
+                    </tr>
+                    <tr id="folder-${r.id}" class="hidden bg-slate-950/60">
+                        <td colspan="5" class="p-6 text-xs text-slate-300">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-950 rounded-xl p-5 border border-slate-800/80">
+                                <div class="space-y-3">
+                                    <h4 class="font-bold text-amber-400 uppercase tracking-wider text-[10px]">Financial Breakdown Profile Mapping</h4>
+                                    <div class="space-y-2 bg-slate-900/40 p-3 rounded-lg border border-slate-800/40">
+                                        <div class="flex justify-between"><span>Net Wholesale Cost Materials:</span><span class="font-mono">£${(r.financials.netMaterials || 0).toFixed(2)}</span></div>
+                                        <div class="flex justify-between"><span>Marked-Up Materials Sheet Cost:</span><span class="font-mono text-slate-400">£${(r.financials.markedMaterials || 0).toFixed(2)}</span></div>
+                                        <div class="flex justify-between"><span>Estimated Operational Labor (${r.laborHours || 0} hrs @ £${r.laborRate || 0}/hr):</span><span class="font-mono">£${(r.financials.laborCosts || 0).toFixed(2)}</span></div>
+                                        <div class="flex justify-between"><span>Certification & Inspection Add-On Charges:</span><span class="font-mono">${r.includeTestingCertificate ? `£${(r.financials.testingCosts || 0).toFixed(2)}` : 'Excluded'}</span></div>
+                                        <div class="border-t border-slate-800/80 pt-2 font-bold flex justify-between text-white text-sm"><span>Total Gross (Exc VAT):</span><span class="font-mono text-amber-400">£${r.financials.grossTotal.toFixed(2)}</span></div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <h4 class="font-bold text-amber-400 uppercase tracking-wider text-[10px]">Allocated Stock Parts Manifest</h4>
+                                    <div class="max-h-40 overflow-y-auto bg-slate-900/20 p-3 rounded-lg border border-slate-800/40 space-y-1">
+                                        ${itemizedListHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // --- TEAM SYNC ENGINE EXPORTS CORE ---
+        function exportSystemStateBackup() {
+            const packagePayload = { exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", generatedTimestamp: Date.now(), inventory: getStoredInventory(), clients: getStoredClients(), vault: getStoredVaultRecords() };
+            const dataBlob = new Blob([JSON.stringify(packagePayload, null, 2)], { type: "application/json" });
+            const temporaryLinkElement = document.createElement('a');
+            temporaryLinkElement.href = URL.createObjectURL(dataBlob);
+            temporaryLinkElement.download = `ENY_TEAM_SYNC_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(temporaryLinkElement); temporaryLinkElement.click(); document.body.removeChild(temporaryLinkElement);
+        }
+
+        function importSystemStateAndMerge(event) {
+            const uploadedFile = event.target.files[0]; if (!uploadedFile) return;
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    const inboundPayload = JSON.parse(e.target.result);
+                    if (inboundPayload.exportMetadataSource !== "ENY_ELECTRICAL_CRM_SYSTEM") { alert("Malformed Format Configuration Signature Match Error."); return; }
+
+                    const localInventory = getStoredInventory();
+                    let updatedStockCount = 0, introducedStockCount = 0;
+                    inboundPayload.inventory.forEach(inboundItem => {
+                        const idx = localInventory.findIndex(li => li.sku.toLowerCase() === inboundItem.sku.toLowerCase());
+                        if (idx !== -1) { if (localInventory[idx].cost !== inboundItem.cost) { localInventory[idx].cost = inboundItem.cost; updatedStockCount++; } localInventory[idx].desc = inboundItem.desc; localInventory[idx].category = inboundItem.category; } 
+                        else { localInventory.push(inboundItem); introducedStockCount++; }
+                    });
+
+                    const localClients = getStoredClients(); let introducedClientCount = 0;
+                    inboundPayload.clients.forEach(inboundClient => { if (!localClients.some(lc => lc.id === inboundClient.id)) { localClients.push(inboundClient); introducedClientCount++; } });
+
+                    const localVault = getStoredVaultRecords(); let introducedVaultCount = 0;
+                    inboundPayload.vault.forEach(inboundQuote => { if (!localVault.some(lv => lv.id === inboundQuote.id)) { localVault.push(inboundQuote); introducedVaultCount++; } });
+
+                    localStorage.setItem('eny_inventory', JSON.stringify(localInventory)); localStorage.setItem('eny_clients', JSON.stringify(localClients)); localStorage.setItem('eny_vault', JSON.stringify(localVault));
+                    reconstructUnifiedInterfaces();
+                    alert(`Sync Complete!\n\n• Overwrote ${updatedStockCount} material lines with updated trade costs.\n• Loaded ${introducedStockCount} new catalog materials.\n• Merged ${introducedClientCount} unique Client Profiles.\n• Appended ${introducedVaultCount} missing historical Quote documents safely.`);
+                } catch (err) { alert("Error parsing synchronization document mapping configurations."); console.error(err); }
+            };
+            fileReader.readAsText(uploadedFile); event.target.value = '';
+        }
+    </script>
+</body>
+</html>
