@@ -301,6 +301,7 @@
         <h1>Fuseboard Upgrade Cost Calculator</h1>
         <p class="intro-text">Select your options below to get an instant budget price and physical installation time estimate for a modern consumer unit replacement.</p>
 
+        <!-- STEP 1: PROPERTY & BEDROOMS -->
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">1</div>
@@ -308,21 +309,24 @@
             </div>
             <div class="grid-options">
                 <div class="card-option selected" data-type="flat" onclick="selectPropertyShape(this, 'flat')">
-                    <img src="../images/flat-apartment.jpg" class="card-img" alt="Flat / Apartment">
+                    <!-- Flat/Apartment (Unsplash Modern Apartment Block) -->
+                    <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=400&q=80" class="card-img" alt="Flat / Apartment">
                     <div class="card-info">
                         <div class="card-label">Flat / Apartment</div>
                         <div class="card-desc">Simpler access paths, concentrated circuits.</div>
                     </div>
                 </div>
                 <div class="card-option" data-type="bungalow" onclick="selectPropertyShape(this, 'bungalow')">
-                    <img src="../images/bungalow.jpg" class="card-img" alt="Bungalow">
+                    <!-- Bungalow (Unsplash Single Story House) -->
+                    <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=400&q=80" class="card-img" alt="Bungalow">
                     <div class="card-info">
                         <div class="card-label">Bungalow</div>
                         <div class="card-desc">Single story layout, requires loft space routing checks.</div>
                     </div>
                 </div>
                 <div class="card-option" data-type="house" onclick="selectPropertyShape(this, 'house')">
-                    <img src="../images/house.jpg" class="card-img" alt="House">
+                    <!-- House (Unsplash Traditional Multi-story House) -->
+                    <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=400&q=80" class="card-img" alt="House">
                     <div class="card-info">
                         <div class="card-label">House</div>
                         <div class="card-desc">Multi-story layout requiring standard bonding validation.</div>
@@ -330,6 +334,7 @@
                 </div>
             </div>
 
+            <!-- Bedroom Sub-Selection -->
             <div class="bedroom-selector">
                 <label>Number of Bedrooms</label>
                 <div class="bedroom-btn-group">
@@ -340,6 +345,7 @@
             </div>
         </div>
 
+        <!-- STEP 2: EXISTING BOARD TYPE -->
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">2</div>
@@ -347,28 +353,32 @@
             </div>
             <div class="grid-options">
                 <div class="card-option selected" onclick="selectCard('existingBoard', 0, 0, this)">
-                    <img src="../images/modern-ish-plastic.jpg" class="card-img" alt="Modern-ish Plastic">
+                    <!-- Modernish Plastic representation -->
+                    <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=400&q=80" class="card-img" alt="Modern-ish Plastic">
                     <div class="card-info">
                         <div class="card-label">Modern-ish Plastic</div>
                         <div class="card-desc">Dual RCD setup. Basic earthing infrastructure present.</div>
                     </div>
                 </div>
                 <div class="card-option" onclick="selectCard('existingBoard', -30, -0.5, this)">
-                    <img src="../images/metal-split-load.jpg" class="card-img" alt="Modern Metal Split Load">
+                    <!-- Split Load Open Internal representation -->
+                    <img src="https://images.unsplash.com/photo-1498084393753-b411b2d26b34?auto=format&fit=crop&w=400&q=80" class="card-img" alt="Modern Metal Split Load">
                     <div class="card-info">
                         <div class="card-label">Modern Metal Split Load</div>
                         <div class="card-desc">Compliant enclosure. Easier layout migration path.</div>
                     </div>
                 </div>
                 <div class="card-option" onclick="selectCard('existingBoard', 50, 0.5, this)">
-                    <img src="../images/mcb-no-rcd.jpg" class="card-img" alt="MCBs Only / No RCD">
+                    <!-- MCB Board representation -->
+                    <img src="https://images.unsplash.com/photo-1558441719-ff34b0524a24?auto=format&fit=crop&w=400&q=80" class="card-img" alt="MCBs Only / No RCD">
                     <div class="card-info">
                         <div class="card-label">MCBs Only (No RCD)</div>
                         <div class="card-desc">Lacks shock prevention. Risk of uncovering underlying earth leaks.</div>
                     </div>
                 </div>
                 <div class="card-option" onclick="selectCard('existingBoard', 120, 1.5, this)">
-                    <img src="../images/rewireable-fuses.jpg" class="card-img" alt="Old Re-wirable Fuses">
+                    <!-- Old Rewireable fuse box representation -->
+                    <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=400&q=80" class="card-img" alt="Old Re-wirable Fuses">
                     <div class="card-info">
                         <div class="card-label">Old Re-wirable Fuses</div>
                         <div class="card-desc">Asbestos risks. Requires complete safety re-testing.</div>
@@ -377,6 +387,7 @@
             </div>
         </div>
 
+        <!-- STEP 3: AMOUNT OF BREAKERS -->
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">3</div>
@@ -389,6 +400,7 @@
             </div>
         </div>
 
+        <!-- STEP 4: WHAT PROTECTION WOULD YOU LIKE? -->
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">4</div>
@@ -396,14 +408,14 @@
             </div>
             <div class="grid-options">
                 <div class="card-option selected" onclick="selectCard('protection', 350, 2, this)">
-                    <img src="../images/dual-rcd-metal.jpg" class="card-img" alt="Dual RCD Metal Board">
+                    <img src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=400&q=80" class="card-img" alt="Dual RCD Metal Board">
                     <div class="card-info">
                         <div class="card-label">Dual RCD Metal Board</div>
                         <div class="card-desc">Standard split protection. Reg-compliant metal enclosure.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard('protection', 550, 3, this)">
-                    <img src="../images/rcbo-metal.jpg" class="card-img" alt="Premium RCBO Board">
+                <div class="card-option" onclick="with premium features" onclick="selectCard('protection', 550, 3, this)">
+                    <img src="https://images.unsplash.com/photo-1563770660941-20978e870e26?auto=format&fit=crop&w=400&q=80" class="card-img" alt="Premium RCBO Board">
                     <div class="card-info">
                         <div class="card-label">Premium RCBO & SPD Board</div>
                         <div class="card-desc">Gold Standard. Individual circuit isolation prevents full blackouts.</div>
@@ -414,6 +426,7 @@
 
     </div>
 
+    <!-- STICKY SUMMARY TRAY -->
     <div class="summary-tray">
         <div class="tray-content">
             <div class="metric-group">
@@ -431,7 +444,6 @@
     </div>
 
     <script>
-        // Matrix Configuration Object
         const configurationMatrix = {
             flat: {
                 "1-2": { price: 0, time: 3.0 },
@@ -453,7 +465,6 @@
         const COST_PER_BREAKER = 30;
         const TIME_PER_BREAKER = 0.25;
 
-        // Interactive Application State Variables
         let currentShape = 'flat';
         let currentBeds = '1-2';
 
