@@ -29,11 +29,11 @@
             background-color: var(--navy-dark);
             color: var(--text-light);
             line-height: 1.6;
-            padding-bottom: 6rem;
+            padding-bottom: 8rem;
         }
 
         .container {
-            max-width: 700px;
+            max-width: 750px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
@@ -56,7 +56,6 @@
             font-size: 0.95rem;
         }
 
-        /* --- STEP WIZARD STRUCTURE --- */
         .step-container {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -89,13 +88,13 @@
         /* --- VISUAL CARDS GRID --- */
         .grid-options {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
         }
 
         @media (max-width: 480px) {
             .grid-options {
-                grid-template-columns: 1fr; /* Stack vertically on mobile devices */
+                grid-template-columns: 1fr;
             }
         }
 
@@ -140,9 +139,9 @@
 
         .card-img {
             width: 100%;
-            height: 120px;
+            height: 130px;
             object-fit: cover;
-            background: #222;
+            background: #071426;
         }
 
         .card-info {
@@ -164,7 +163,46 @@
             color: var(--text-muted);
         }
 
-        /* --- LIVE COUNTER ELEMENT (For breaker amounts) --- */
+        /* --- SUB-GRID BEDROOM SELECTION --- */
+        .bedroom-selector {
+            margin-top: 1.25rem;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .bedroom-selector label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bedroom-btn-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .bed-btn {
+            background: var(--navy-dark);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .bed-btn.selected {
+            background: var(--gold);
+            color: var(--navy-dark);
+            border-color: var(--gold);
+        }
+
+        /* --- COUNTER --- */
         .counter-box {
             display: flex;
             align-items: center;
@@ -195,7 +233,7 @@
             text-align: center;
         }
 
-        /* --- STICKY MOBILE LIVE LIVE SUMMARY TRAY --- */
+        /* --- STICKY SUMMARY TRAY --- */
         .summary-tray {
             position: fixed;
             bottom: 0;
@@ -203,13 +241,13 @@
             right: 0;
             background: #060f1e;
             border-top: 3px solid var(--gold);
-            padding: 1rem;
+            padding: 1.25rem 1rem;
             box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
             z-index: 2000;
         }
 
         .tray-content {
-            max-width: 700px;
+            max-width: 750px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -218,7 +256,7 @@
 
         .metric-group {
             display: flex;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
         .metric {
@@ -234,7 +272,7 @@
         }
 
         .metric-value {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: bold;
             color: var(--gold);
         }
@@ -247,7 +285,7 @@
             background: var(--success-green);
             color: white;
             border: none;
-            padding: 0.8rem 1.2rem;
+            padding: 0.8rem 1.5rem;
             font-weight: bold;
             font-size: 1rem;
             border-radius: 6px;
@@ -258,7 +296,7 @@
 <body>
 
     <div class="container">
-        <a href="blog.html" class="back-link">&larr; Back to Electrical Blog</a>
+        <a href="../blog.html" class="back-link">&larr; Back to Electrical Blog</a>
         
         <h1>Fuseboard Upgrade Cost Calculator</h1>
         <p class="intro-text">Select your options below to get an instant budget price and physical installation time estimate for a modern consumer unit replacement.</p>
@@ -266,22 +304,38 @@
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">1</div>
-                <h3>Select Property Type</h3>
+                <h3>Property Configuration</h3>
             </div>
             <div class="grid-options">
-                <div class="card-option selected" onclick="selectCard(this, 'property', 0, 0)">
-                    <img src="https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=300&q=80" class="card-img" alt="Flat">
+                <div class="card-option selected" data-type="flat" onclick="selectPropertyShape(this, 'flat')">
+                    <img src="../images/flat-apartment.jpg" class="card-img" alt="Flat / Apartment">
                     <div class="card-info">
                         <div class="card-label">Flat / Apartment</div>
-                        <div class="card-desc">Simpler access paths, typically fewer circuits overall.</div>
+                        <div class="card-desc">Simpler access paths, concentrated circuits.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard(this, 'property', 75, 1)">
-                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=300&q=80" class="card-img" alt="House">
+                <div class="card-option" data-type="bungalow" onclick="selectPropertyShape(this, 'bungalow')">
+                    <img src="../images/bungalow.jpg" class="card-img" alt="Bungalow">
+                    <div class="card-info">
+                        <div class="card-label">Bungalow</div>
+                        <div class="card-desc">Single story layout, requires loft space routing checks.</div>
+                    </div>
+                </div>
+                <div class="card-option" data-type="house" onclick="selectPropertyShape(this, 'house')">
+                    <img src="../images/house.jpg" class="card-img" alt="House">
                     <div class="card-info">
                         <div class="card-label">House</div>
                         <div class="card-desc">Multi-story layout requiring standard bonding validation.</div>
                     </div>
+                </div>
+            </div>
+
+            <div class="bedroom-selector">
+                <label>Number of Bedrooms</label>
+                <div class="bedroom-btn-group">
+                    <button class="bed-btn selected" data-beds="1-2" onclick="selectBedrooms(this, '1-2')">1 - 2 Beds</button>
+                    <button class="bed-btn" data-beds="2-3" onclick="selectBedrooms(this, '2-3')">2 - 3 Beds</button>
+                    <button class="bed-btn" data-beds="4+" onclick="selectBedrooms(this, '4+')">4+ Beds</button>
                 </div>
             </div>
         </div>
@@ -289,21 +343,35 @@
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">2</div>
-                <h3>Age of Existing Fuseboard</h3>
+                <h3>Age & Type of Existing Board</h3>
             </div>
             <div class="grid-options">
-                <div class="card-option selected" onclick="selectCard(this, 'age', 0, 0)">
-                    <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=300&q=80" class="card-img" alt="Modern Plastic">
+                <div class="card-option selected" onclick="selectCard('existingBoard', 0, 0, this)">
+                    <img src="../images/modern-ish-plastic.jpg" class="card-img" alt="Modern-ish Plastic">
                     <div class="card-info">
                         <div class="card-label">Modern-ish Plastic</div>
-                        <div class="card-desc">Post-2000s board. Earthing configuration is likely compliant.</div>
+                        <div class="card-desc">Dual RCD setup. Basic earthing infrastructure present.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard(this, 'age', 120, 2)">
-                    <img src="https://images.unsplash.com/photo-1558441719-ff34b0524a24?auto=format&fit=crop&w=300&q=80" class="card-img" alt="Old Re-wirable">
+                <div class="card-option" onclick="selectCard('existingBoard', -30, -0.5, this)">
+                    <img src="../images/metal-split-load.jpg" class="card-img" alt="Modern Metal Split Load">
                     <div class="card-info">
-                        <div class="card-label">Old Re-wirable / Asbestos</div>
-                        <div class="card-desc">Requires extra care, safety isolation protocols, and testing steps.</div>
+                        <div class="card-label">Modern Metal Split Load</div>
+                        <div class="card-desc">Compliant enclosure. Easier layout migration path.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('existingBoard', 50, 0.5, this)">
+                    <img src="../images/mcb-no-rcd.jpg" class="card-img" alt="MCBs Only / No RCD">
+                    <div class="card-info">
+                        <div class="card-label">MCBs Only (No RCD)</div>
+                        <div class="card-desc">Lacks shock prevention. Risk of uncovering underlying earth leaks.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('existingBoard', 120, 1.5, this)">
+                    <img src="../images/rewireable-fuses.jpg" class="card-img" alt="Old Re-wirable Fuses">
+                    <div class="card-info">
+                        <div class="card-label">Old Re-wirable Fuses</div>
+                        <div class="card-desc">Asbestos risks. Requires complete safety re-testing.</div>
                     </div>
                 </div>
             </div>
@@ -324,21 +392,21 @@
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">4</div>
-                <h3>Protection Hardware Type</h3>
+                <h3>What Protection Would You Like?</h3>
             </div>
             <div class="grid-options">
-                <div class="card-option selected" onclick="selectCard(this, 'type', 350, 2)">
-                    <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=300&q=80" class="card-img" alt="Dual RCD">
+                <div class="card-option selected" onclick="selectCard('protection', 350, 2, this)">
+                    <img src="../images/dual-rcd-metal.jpg" class="card-img" alt="Dual RCD Metal Board">
                     <div class="card-info">
-                        <div class="card-label">Dual RCD Board</div>
-                        <div class="card-desc">Standard split protection. If one circuit trips, half the house loses light.</div>
+                        <div class="card-label">Dual RCD Metal Board</div>
+                        <div class="card-desc">Standard split protection. Reg-compliant metal enclosure.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard(this, 'type', 550, 3)">
-                    <img src="https://images.unsplash.com/photo-1565538810844-1e1194121730?auto=format&fit=crop&w=300&q=80" class="card-img" alt="Full RCBO">
+                <div class="card-option" onclick="selectCard('protection', 550, 3, this)">
+                    <img src="../images/rcbo-metal.jpg" class="card-img" alt="Premium RCBO Board">
                     <div class="card-info">
-                        <div class="card-label">Premium RCBO & SPD</div>
-                        <div class="card-desc">Gold standard. Every circuit is isolated. Includes surge protection.</div>
+                        <div class="card-label">Premium RCBO & SPD Board</div>
+                        <div class="card-desc">Gold Standard. Individual circuit isolation prevents full blackouts.</div>
                     </div>
                 </div>
             </div>
@@ -351,48 +419,89 @@
             <div class="metric-group">
                 <div class="metric">
                     <span class="metric-label">Est. Budget</span>
-                    <span class="metric-value" id="total-price">£470</span>
+                    <span class="metric-value" id="total-price">£530</span>
                 </div>
                 <div class="metric">
                     <span class="metric-label">Est. Time</span>
-                    <span class="metric-value time" id="total-time">4 hrs</span>
+                    <span class="metric-value time" id="total-time">4.5 hrs</span>
                 </div>
             </div>
-            <button class="btn-book" onclick="alert('Thank you! Redirecting to booking configuration panel.')">Book Survey</button>
+            <button class="btn-book" onclick="alert('Redirecting to the booking calendar...')">Book Survey</button>
         </div>
     </div>
 
     <script>
-        // Track the selections explicitly
-        let choices = {
-            property: { price: 0, time: 0 },
-            age: { price: 0, time: 0 },
-            breakers: 6, // default setting
-            type: { price: 350, time: 2 }
+        // Matrix Configuration Object
+        const configurationMatrix = {
+            flat: {
+                "1-2": { price: 0, time: 3.0 },
+                "2-3": { price: 40, time: 3.5 },
+                "4+": { price: 90, time: 4.5 }
+            },
+            bungalow: {
+                "1-2": { price: 30, time: 3.5 },
+                "2-3": { price: 70, time: 4.0 },
+                "4+": { price: 120, time: 5.0 }
+            },
+            house: {
+                "1-2": { price: 50, time: 4.0 },
+                "2-3": { price: 95, time: 4.5 },
+                "4+": { price: 150, time: 5.5 }
+            }
         };
 
-        // Pricing Rules variables
-        const COST_PER_BREAKER = 30; // Every additional switch adds £30 hardware/labor
-        const TIME_PER_BREAKER = 0.25; // Every switch adds 15 minutes of testing time
+        const COST_PER_BREAKER = 30;
+        const TIME_PER_BREAKER = 0.25;
 
-        function selectCard(element, category, priceModifier, timeModifier) {
-            // Find parent element context and remove active states
+        // Interactive Application State Variables
+        let currentShape = 'flat';
+        let currentBeds = '1-2';
+
+        let choices = {
+            propertyBase: { price: 0, time: 3.0 },
+            existingBoard: { price: 0, time: 0 },
+            breakers: 6,
+            protection: { price: 350, time: 2.0 }
+        };
+
+        function selectPropertyShape(element, shape) {
             const parent = element.parentElement;
             parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
             
-            // Activate current selection
+            currentShape = shape;
+            updatePropertyBaseData();
+        }
+
+        function selectBedrooms(button, bedRange) {
+            const parent = button.parentElement;
+            parent.querySelectorAll('.bed-btn').forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            
+            currentBeds = bedRange;
+            updatePropertyBaseData();
+        }
+
+        function updatePropertyBaseData() {
+            const matrixTarget = configurationMatrix[currentShape][currentBeds];
+            choices.propertyBase.price = matrixTarget.price;
+            choices.propertyBase.time = matrixTarget.time;
+            calculateTotals();
+        }
+
+        function selectCard(category, priceModifier, timeModifier, element) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
             element.classList.add('selected');
 
-            // Save variables to state registry
             choices[category].price = priceModifier;
             choices[category].time = timeModifier;
-
             calculateTotals();
         }
 
         function adjustBreakers(change) {
             let newVal = choices.breakers + change;
-            if (newVal >= 2 && newVal <= 24) { // Logical limits for standard consumer unit sizes
+            if (newVal >= 2 && newVal <= 24) {
                 choices.breakers = newVal;
                 document.getElementById('breaker-display').innerText = newVal;
                 calculateTotals();
@@ -400,13 +509,18 @@
         }
 
         function calculateTotals() {
-            // Sum calculations based on formula logic
-            let priceTotal = choices.property.price + choices.age.price + choices.type.price + (choices.breakers * COST_PER_BREAKER);
-            let timeTotal = choices.property.time + choices.age.time + choices.type.time + (choices.breakers * TIME_PER_BREAKER);
+            let priceTotal = choices.propertyBase.price + 
+                             choices.existingBoard.price + 
+                             choices.protection.price + 
+                             (choices.breakers * COST_PER_BREAKER);
 
-            // Print dynamically to UI elements
+            let timeTotal = choices.propertyBase.time + 
+                            choices.existingBoard.time + 
+                            choices.protection.time + 
+                            (choices.breakers * TIME_PER_BREAKER);
+
             document.getElementById('total-price').innerText = '£' + priceTotal;
-            document.getElementById('total-time').innerText = timeTotal + ' hrs';
+            document.getElementById('total-time').innerText = timeTotal.toFixed(1) + ' hrs';
         }
     </script>
 </body>
