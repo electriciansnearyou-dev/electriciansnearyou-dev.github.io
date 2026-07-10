@@ -61,7 +61,7 @@
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
 
-        <!-- ================= TAB 0: HOME DASHBOARD (DEFAULT ON OPEN) ================= -->
+        <!-- ================= TAB 0: HOME DASHBOARD ================= -->
         <div id="home-tab" class="tab-content active space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
@@ -112,9 +112,7 @@
                         <span id="dash-pending-quotes-count" class="text-4xl font-black font-mono text-white block">0</span>
                         <p class="text-xs text-slate-500 mt-1">Estimates sent to client awaiting confirmation tracking.</p>
                     </div>
-                    <div id="dash-pending-quotes-list" class="mt-4 max-h-[140px] overflow-y-auto custom-scrollbar border-t border-slate-900 pt-3 space-y-1.5 text-xs">
-                        <!-- Injected via runtime arrays -->
-                    </div>
+                    <div id="dash-pending-quotes-list" class="mt-4 max-h-[140px] overflow-y-auto custom-scrollbar border-t border-slate-900 pt-3 space-y-1.5 text-xs"></div>
                 </div>
 
                 <!-- Invoices Outstanding Pending Settlement Monitor -->
@@ -127,9 +125,7 @@
                         <span id="dash-pending-invoices-value" class="text-4xl font-black font-mono text-emerald-400 block">£0.00</span>
                         <p class="text-xs text-slate-500 mt-1"><span id="dash-pending-invoices-count">0</span> invoice document ledgers currently un-settled.</p>
                     </div>
-                    <div id="dash-pending-invoices-list" class="mt-4 max-h-[140px] overflow-y-auto custom-scrollbar border-t border-slate-900 pt-3 space-y-1.5 text-xs">
-                        <!-- Injected via runtime arrays -->
-                    </div>
+                    <div id="dash-pending-invoices-list" class="mt-4 max-h-[140px] overflow-y-auto custom-scrollbar border-t border-slate-900 pt-3 space-y-1.5 text-xs"></div>
                 </div>
 
             </div>
@@ -355,9 +351,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Included Materials</label>
-                            <div id="template-materials-selector-box" class="max-h-40 overflow-y-auto border border-slate-800 rounded-xl p-2 bg-slate-900/40 divide-y divide-slate-900 custom-scrollbar">
-                                <!-- Generated dynamically -->
-                            </div>
+                            <div id="template-materials-selector-box" class="max-h-40 overflow-y-auto border border-slate-800 rounded-xl p-2 bg-slate-900/40 divide-y divide-slate-900 custom-scrollbar"></div>
                         </div>
 
                         <button type="submit" id="template-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
@@ -381,10 +375,11 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
                     <div>
-                        <h2 class="text-lg font-bold text-white">Add Custom Stock Item</h2>
+                        <h2 id="stock-form-title" class="text-lg font-bold text-white">Add Custom Stock Item</h2>
                         <p class="text-xs text-slate-400 mt-0.5">Creating a new category automatically updates global navigation search filters.</p>
                     </div>
                     <form id="new-item-form" onsubmit="createCustomInventoryItem(event)" class="space-y-4">
+                        <input type="hidden" id="stock-id-field">
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Part Number / SKU *</label>
                             <input type="text" id="stock-sku" required placeholder="e.g., 6124Y-10.0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
@@ -396,7 +391,7 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Trade Cost (£) *</label>
-                                <input type="number" step="0.01" id="stock-cost" required placeholder="0.00" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                <input type="number" step="1" id="stock-cost" required placeholder="0" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Category Classification *</label>
@@ -404,14 +399,20 @@
                                 <datalist id="existing-categories"></datalist>
                             </div>
                         </div>
-                        <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
-                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Append to Database
-                        </button>
+                        <div class="flex gap-2">
+                            <button type="submit" id="stock-submit-btn" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i> Append to Database
+                            </button>
+                            <button type="button" id="stock-cancel-btn" onclick="clearStockForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-800 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">
+                                Cancel
+                            </button>
+                        </div>
                     </form>
                 </div>
 
                 <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                    <h2 class="text-lg font-bold text-white mb-4">Stock Directory</h2>
+                    <h2 class="text-lg font-bold text-white mb-2">Stock Directory</h2>
+                    <p class="text-xs text-slate-400 mb-4">Click directly on any row item below to load its properties into the modifier editing frame.</p>
                     <div class="overflow-x-auto max-h-[500px] overflow-y-auto custom-scrollbar">
                         <table class="w-full text-left text-sm">
                             <thead>
@@ -555,9 +556,7 @@
                 </button>
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
-                <ul id="shopping-list-content" class="space-y-2 text-sm text-slate-300">
-                    <!-- List items injected here dynamically -->
-                </ul>
+                <ul id="shopping-list-content" class="space-y-2 text-sm text-slate-300"></ul>
             </div>
             <div class="p-5 border-t border-slate-800 bg-slate-800/50 flex justify-end gap-3">
                 <button onclick="copyShoppingList()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer">
@@ -662,19 +661,63 @@
 
     <!-- ================= SYSTEM ENGINE CORE JAVASCRIPT LOGIC ================= -->
     <script>
-        const DEFAULT_SEED_STOCK = [
-            { id: 'M1', sku: '6124Y-2.5', desc: '2.5mm² Twin & Earth Cable (100m Drum)', cost: 68.50, category: 'Wiring & Management' },
-            { id: 'M2', sku: '6124Y-1.5', desc: '1.5mm² Twin & Earth Cable (100m Drum)', cost: 42.20, category: 'Wiring & Management' },
-            { id: 'M6', sku: 'CU-AM3-10', desc: '10-Way AMD3 Metal Consumer Unit (Populated)', cost: 165.00, category: 'Consumer Units & Protection' },
-            { id: 'M7', sku: 'RCBO-B32', desc: '32A Type B Single Pole 30mA RCBO', cost: 19.50, category: 'Consumer Units & Protection' },
-            { id: 'M10', sku: 'SW-2G-W', desc: '13A 2-Gang Double Pole Switched Socket (White)', cost: 3.85, category: 'Sockets & Switches' },
-            { id: 'M14', sku: 'LED-DL-IP65', desc: 'IP65 Fire-Rated Dimmable LED Downlight (Warm White)', cost: 14.20, category: 'Luminaires & Fittings' }
+        // Pre-seeded comprehensive 50-item catalog directly extracted and rounded from your supplier quote form
+        const STB_SEEDED_INVENTORY = [
+            { id: 'STB-1', sku: 'F3007MZ', desc: 'FUSEBOX F3007MZ 7WAY 100A SPD CON UNIT', cost: 69, category: 'Consumer Units & Protection' },
+            { id: 'STB-2', sku: 'F3011MZ', desc: 'FUSEBOX F3011MZ 11WAY 100A SPD CON UNIT', cost: 76, category: 'Consumer Units & Protection' },
+            { id: 'STB-3', sku: 'F3015MZ', desc: 'FUSEBOX F3015MZ 15WAY 100A SPD CON UNIT', cost: 82, category: 'Consumer Units & Protection' },
+            { id: 'STB-4', sku: 'F3021MZ', desc: 'FUSEBOX F3021MZ 21WAY 100A SPD CON UNIT', cost: 91, category: 'Consumer Units & Protection' },
+            { id: 'STB-5', sku: '6381Y25KIT1M', desc: '6381Y 25MM DI FLEXIBLE TAILS KIT 1M', cost: 14, category: 'Wiring & Management' },
+            { id: 'STB-6', sku: '6381Y251BLU', desc: '25MM DI FLEXIBLE TAILS BLUE 6381Y', cost: 0, category: 'Wiring & Management' },
+            { id: 'STB-7', sku: '6381Y251BR', desc: '25MM DI FLEXIBLE TAILS BROWN 6381Y', cost: 0, category: 'Wiring & Management' },
+            { id: 'STB-8', sku: '6491X161GY', desc: '16MM SINGLE G/Y EARTH 6491X', cost: 0, category: 'Wiring & Management' },
+            { id: 'STB-9', sku: 'RTA060630B', desc: 'FUSEBOX RTA060630B 6A B TYPE A RCBO 6ΚΑ', cost: 12, category: 'Consumer Units & Protection' },
+            { id: 'STB-10', sku: 'MT06B061', desc: 'FUSEBOX MT06B061 6A B TYPE MCB 6KA SP', cost: 2, category: 'Consumer Units & Protection' },
+            { id: 'STB-11', sku: 'G32T', desc: 'FUSEBOX G32T 32MM IP68 TAILS GLAND CLICK SCOLMORE', cost: 3, category: 'Consumer Units & Protection' },
+            { id: 'STB-12', sku: 'CMA036', desc: 'CLICK CMA036 SOCKET 2G SWITCHED 13A WHI', cost: 3, category: 'Sockets & Switches' },
+            { id: 'STB-13', sku: 'CMA786', desc: 'CMA786 Socket 2G Swd & USB 13A Whi Click', cost: 20, category: 'Sockets & Switches' },
+            { id: 'STB-14', sku: 'CMA035', desc: 'CMA035 SOCKET 1G SWITCHED 13A WHI CLICK', cost: 3, category: 'Sockets & Switches' },
+            { id: 'STB-15', sku: 'CMA011', desc: 'CMA011 CLICK PLATESWITCH 1G 2W 10A WHI', cost: 2, category: 'Sockets & Switches' },
+            { id: 'STB-16', sku: 'CMA651', desc: 'CMA651 CONNECTION UNIT SWD 13A CLICK', cost: 4, category: 'Sockets & Switches' },
+            { id: 'STB-17', sku: 'CMA500', desc: 'CLICK SWITCH DP 45A WHITE CMA500', cost: 6, category: 'Sockets & Switches' },
+            { id: 'STB-18', sku: 'CMA215', desc: 'CONN UNIT COOKER OUTLET CMA215 CLICK', cost: 4, category: 'Sockets & Switches' },
+            { id: 'STB-19', sku: 'CMA081', desc: 'CLICK CMA081 PATTRESS 1GANG 25MM WHI', cost: 1, category: 'Sockets & Switches' },
+            { id: 'STB-20', sku: 'CMA082', desc: 'CLICK CMA082 PATTRESS 2GANG 25MM WHI', cost: 2, category: 'Sockets & Switches' },
+            { id: 'STB-21', sku: 'SFR1', desc: 'U/Volt SFR1 Box 1 Gang Rad Corners White', cost: 3, category: 'Sockets & Switches' },
+            { id: 'STB-22', sku: 'SFR2', desc: 'U/Volt SFR2 Box 2 Gang Rad Corners White', cost: 4, category: 'Sockets & Switches' },
+            { id: 'STB-23', sku: 'SFR1/44', desc: 'U/Volt SFR1/44 Box 1 Gang Rad Corners', cost: 5, category: 'Sockets & Switches' },
+            { id: 'STB-24', sku: 'SFR2/44', desc: 'U/Volt SFR2/44 Box 2 Gang Rad Corners', cost: 7, category: 'Sockets & Switches' },
+            { id: 'STB-25', sku: 'JC1101/NB', desc: 'JCC JC1101/NB X50 LED Downlight 3/5W', cost: 11, category: 'Luminaires & Fittings' },
+            { id: 'STB-26', sku: 'JC1107/WH', desc: 'JCC JC1107/WH Downlight Bezel Whi X50', cost: 2, category: 'Luminaires & Fittings' },
+            { id: 'STB-27', sku: 'JC1101/WH10', desc: 'JCC JC1101/WH10 X50 LED D/Lgt 3/5W Pk=10', cost: 78, category: 'Luminaires & Fittings' },
+            { id: 'STB-28', sku: 'AFD600D/CCT', desc: 'Allled AFD600D/CCT LED Downlight 6W', cost: 9, category: 'Luminaires & Fittings' },
+            { id: 'STB-29', sku: '666', desc: 'BG 666 Pendant Set 6in', cost: 3, category: 'Luminaires & Fittings' },
+            { id: 'STB-30', sku: '4207-1', desc: 'Crompton 4207-1 LED BC-B22 7W 2700K Clr', cost: 6, category: 'Luminaires & Fittings' },
+            { id: 'STB-31', sku: '107139', desc: 'Saxby 107139 RularPRO Batten 5ft 39W', cost: 22, category: 'Luminaires & Fittings' },
+            { id: 'STB-32', sku: 'ADIS2/1', desc: 'Ansell ADIS2/1 B/Hd IP65 9-16W', cost: 25, category: 'Luminaires & Fittings' },
+            { id: 'STB-33', sku: 'ADIS1/1', desc: 'Ansell ADIS1/1 B/Hd IP65 4-7W', cost: 16, category: 'Luminaires & Fittings' },
+            { id: 'STB-34', sku: 'ADLED2/WV/CCT', desc: 'Ansell ADLED2/WV/CCT B/Hd LED Whi', cost: 40, category: 'Luminaires & Fittings' },
+            { id: 'STB-35', sku: '113960', desc: 'Saxby 113960 HeroULTRA B/Hd 15W 316mm', cost: 20, category: 'Luminaires & Fittings' },
+            { id: 'STB-36', sku: '16699', desc: 'Crompton 16699 LED Lamp GU10 5W 3000K', cost: 3, category: 'Luminaires & Fittings' },
+            { id: 'STB-37', sku: 'FSA2W', desc: 'Falcon FSA2W Mini Trunking 25x16mmx75m', cost: 2, category: 'Containment' },
+            { id: 'STB-38', sku: 'FSA4W', desc: 'Falcon FSA4W Mini Trunking 40x25mmx30m', cost: 3, category: 'Containment' },
+            { id: 'STB-39', sku: 'BSSH20W-LSF', desc: 'U/Volt BSSH20W-LSF Conduit 20mmx3m 100m', cost: 1, category: 'Containment' },
+            { id: 'STB-40', sku: 'FCT32W', desc: 'Falcon FCT32W Cbl Trunking 75x50mmx18m', cost: 9, category: 'Containment' },
+            { id: 'STB-41', sku: 'IE20WH', desc: 'U/Volt IE20WH InspectionElbow 20mm White', cost: 2, category: 'Containment' },
+            { id: 'STB-42', sku: 'SM20WH', desc: 'U/Volt SM20WH Coupler 20mm White', cost: 1, category: 'Containment' },
+            { id: 'STB-43', sku: 'AFT/MBS20WH', desc: 'U/Volt AFT/MBS20WH Adaptor 20mm White', cost: 1, category: 'Containment' },
+            { id: 'STB-44', sku: 'AMT/LR20WH', desc: 'U/Volt AMT/LR20WH Adaptor 20mm White', cost: 1, category: 'Containment' },
+            { id: 'STB-45', sku: 'CB20/1WH', desc: 'U/Volt CB20/1WH Terminal Box 20mm White', cost: 2, category: 'Containment' },
+            { id: 'STB-46', sku: 'CB20/AWH', desc: 'U/Volt CB20/AWH Angle Box 20mm White', cost: 2, category: 'Containment' },
+            { id: 'STB-47', sku: '207-3301', desc: 'Wago 207-3301 Wago 221-4 Junction Box', cost: 3, category: 'Sundries' },
+            { id: 'STB-48', sku: 'J803', desc: 'Hager J803 Junction Box 3Terminals 30A', cost: 5, category: 'Sundries' },
+            { id: 'STB-49', sku: 'J804', desc: 'Hager J804 Junction Box 4Terminals 20A', cost: 6, category: 'Sundries' },
+            { id: 'STB-50', sku: '034385', desc: 'Legd 034385 Earthing Clamp 12/16mm', cost: 5, category: 'Sundries' }
         ];
 
         const DEFAULT_SEED_TEMPLATES = [
-            { id: 'T1', name: "10-Way Consumer Unit Upgrade Kit", hours: 6, testing: true, items: [{ id: 'M6', qty: 1 }, { id: 'M7', qty: 8 }] },
-            { id: 'T2', name: "Standard EV Charger Installation Kit", hours: 4, testing: true, items: [{ id: 'M2', qty: 1 }, { id: 'M7', qty: 1 }] },
-            { id: 'T3', name: "Kitchen LED Downlight Layout Pack", hours: 8, testing: false, items: [{ id: 'M14', qty: 10 }, { id: 'M2', qty: 1 }] }
+            { id: 'T1', name: "10-Way Consumer Unit Upgrade Kit", hours: 6, testing: true, items: [{ id: 'STB-1', qty: 1 }, { id: 'STB-9', qty: 8 }] },
+            { id: 'T2', name: "Standard Room Recessed Lighting Kit", hours: 4, testing: true, items: [{ id: 'STB-27', qty: 1 }, { id: 'STB-26', qty: 10 }] }
         ];
 
         let selectedCategoryFilter = "ALL";
@@ -686,22 +729,18 @@
         document.addEventListener('DOMContentLoaded', () => {
             if (!localStorage.getItem('eny_vault')) localStorage.setItem('eny_vault', JSON.stringify([]));
             if (!localStorage.getItem('eny_clients')) localStorage.setItem('eny_clients', JSON.stringify([]));
-            if (!localStorage.getItem('eny_inventory')) localStorage.setItem('eny_inventory', JSON.stringify(DEFAULT_SEED_STOCK));
+            if (!localStorage.getItem('eny_inventory')) localStorage.setItem('eny_inventory', JSON.stringify(STB_SEEDED_INVENTORY));
             if (!localStorage.getItem('eny_templates')) localStorage.setItem('eny_templates', JSON.stringify(DEFAULT_SEED_TEMPLATES));
             
-            // Initialization matrix for operator configs
             if (!localStorage.getItem('eny_profile_user')) localStorage.setItem('eny_profile_user', 'HUGHES');
             if (!localStorage.getItem('eny_bank_HUGHES')) localStorage.setItem('eny_bank_HUGHES', JSON.stringify({ name: 'HUGHES ELECTRICAL', acc: '', sort: '' }));
             if (!localStorage.getItem('eny_bank_MABBLEY')) localStorage.setItem('eny_bank_MABBLEY', JSON.stringify({ name: 'MABBLEY ELECTRICAL', acc: '', sort: '' }));
 
-            // Load saved user state
             const cachedUser = localStorage.getItem('eny_profile_user');
             document.getElementById('global-user-profile-select').value = cachedUser;
             loadCurrentProfileBankConfig();
 
             reconstructUnifiedInterfaces();
-            
-            // Explicitly force Home tab to mount as initial view state on reload
             switchTab('home-tab');
         });
 
@@ -728,8 +767,6 @@
         // --- HOME DASHBOARD LIVE COUNTERS ---
         function rebuildHomeDashboardMetrics() {
             const records = getStoredVaultRecords();
-            
-            // Quotes Pending (Status: 'Sent')
             const pendingQuotes = records.filter(r => r.status === 'Sent');
             document.getElementById('dash-pending-quotes-count').innerText = pendingQuotes.length;
             
@@ -748,7 +785,6 @@
                 `).join('');
             }
 
-            // Invoices Outstanding (Status: 'Invoiced')
             const pendingInvoices = records.filter(r => r.status === 'Invoiced');
             const totalOutstandingValue = pendingInvoices.reduce((acc, curr) => acc + curr.financials.grossTotal, 0);
             
@@ -1043,18 +1079,10 @@
             lucide.createIcons();
         }
 
-        function deleteJobTemplatePreset(id) {
-            if (!confirm("Permanently remove this layout template preset from choice filters?")) return;
-            let templates = getStoredTemplates();
-            localStorage.setItem('eny_templates', JSON.stringify(templates.filter(t => t.id !== id)));
-            reconstructUnifiedInterfaces();
-        }
-
         // --- CORE RELOAD ENGINE (LOAD & EDIT) ---
         function loadQuoteForActiveModification(quoteId) {
             const vault = getStoredVaultRecords();
             const targetedQuote = vault.find(q => q.id === quoteId);
-            
             if(!targetedQuote) { alert("Target file snapshot could not be accessed inside storage records."); return; }
 
             currentlyEditingQuoteId = targetedQuote.id;
@@ -1078,7 +1106,6 @@
                 testingCostInput.value = targetedQuote.testingCostFixed !== undefined ? targetedQuote.testingCostFixed : 75.00;
             } else { testingToggle.checked = false; }
 
-            // Restore user profile used when quote was modified if saved
             if (targetedQuote.ownerOperatorProfileID) {
                 document.getElementById('global-user-profile-select').value = targetedQuote.ownerOperatorProfileID;
                 localStorage.setItem('eny_profile_user', targetedQuote.ownerOperatorProfileID);
@@ -1163,24 +1190,65 @@
             lucide.createIcons();
         }
 
-        // --- STOCK MANAGER ROUTINES ---
+        // --- STOCK DIRECTORY INTERACTIVE EDITOR ENGINE ---
         function createCustomInventoryItem(event) {
             event.preventDefault();
             const currentInventory = getStoredInventory();
+            
             const providedSku = document.getElementById('stock-sku').value.trim();
+            const providedDesc = document.getElementById('stock-desc').value.trim();
+            const rawCost = parseFloat(document.getElementById('stock-cost').value) || 0;
+            // Strict Rounding Constraint Parameter Implementation
+            const roundedWholeCost = Math.ceil(rawCost);
+            const providedCategory = document.getElementById('stock-category').value.trim();
+            const editId = document.getElementById('stock-id-field').value;
 
-            if(currentInventory.some(i => i.sku.toLowerCase() === providedSku.toLowerCase())) { alert("An item with this Part Number/SKU identifier already exists."); return; }
+            if (editId) {
+                // Modifying an existing item structure
+                const matchIdx = currentInventory.findIndex(i => i.id === editId);
+                if (matchIdx !== -1) {
+                    currentInventory[matchIdx] = { id: editId, sku: providedSku, desc: providedDesc, cost: roundedWholeCost, category: providedCategory };
+                }
+            } else {
+                // Appending clean entry record lines
+                if(currentInventory.some(i => i.sku.toLowerCase() === providedSku.toLowerCase())) { alert("An item with this Part Number/SKU identifier already exists."); return; }
+                currentInventory.push({ id: 'MAT-' + Date.now(), sku: providedSku, desc: providedDesc, cost: roundedWholeCost, category: providedCategory });
+            }
 
-            currentInventory.push({
-                id: 'MAT-' + Date.now(), sku: providedSku, desc: document.getElementById('stock-desc').value.trim(),
-                cost: parseFloat(document.getElementById('stock-cost').value) || 0, category: document.getElementById('stock-category').value.trim()
-            });
             localStorage.setItem('eny_inventory', JSON.stringify(currentInventory));
-            document.getElementById('new-item-form').reset();
+            clearStockForm();
             reconstructUnifiedInterfaces();
         }
 
-        function purgeInventoryItem(itemId) {
+        function loadStockItemForModification(itemId) {
+            const inventory = getStoredInventory();
+            const match = inventory.find(i => i.id === itemId);
+            if (!match) return;
+
+            document.getElementById('stock-id-field').value = match.id;
+            document.getElementById('stock-sku').value = match.sku;
+            document.getElementById('stock-desc').value = match.desc;
+            document.getElementById('stock-cost').value = match.cost;
+            document.getElementById('stock-category').value = match.category;
+
+            document.getElementById('stock-form-title').innerText = "Modify Inventory Record";
+            document.getElementById('stock-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Record Parameters`;
+            document.getElementById('stock-cancel-btn').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function clearStockForm() {
+            document.getElementById('new-item-form').reset();
+            document.getElementById('stock-id-field').value = "";
+            document.getElementById('stock-form-title').innerText = "Add Custom Stock Item";
+            document.getElementById('stock-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Append to Database`;
+            document.getElementById('stock-cancel-btn').classList.add('hidden');
+            lucide.createIcons();
+        }
+
+        function purgeInventoryItem(itemId, event) {
+            if(event) event.stopPropagation(); // Stop row click propagation firing
+            if(!confirm("Permanently discard this item from lookup indices?")) return;
             let currentInventory = getStoredInventory();
             localStorage.setItem('eny_inventory', JSON.stringify(currentInventory.filter(i => i.id !== itemId)));
             activeAllocatedMaterials = activeAllocatedMaterials.filter(i => i.id !== itemId);
@@ -1192,13 +1260,16 @@
             const tbody = document.getElementById('master-stock-table-body');
             const inventory = getStoredInventory();
             if(inventory.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">Stock directory empty.</td></tr>`; return; }
+            
             tbody.innerHTML = inventory.map(item => `
-                <tr class="text-xs text-slate-300 hover:bg-slate-900/20">
-                    <td class="py-3 px-2 font-mono font-semibold text-amber-500">${item.sku}</td>
-                    <td class="py-3 px-2 font-medium text-slate-100">${item.desc}</td>
+                <tr onclick="loadStockItemForModification('${item.id}')" class="text-xs text-slate-300 hover:bg-slate-800/40 cursor-pointer transition-colors group">
+                    <td class="py-3 px-2 font-mono font-semibold text-amber-500 group-hover:text-amber-400">${item.sku}</td>
+                    <td class="py-3 px-2 font-medium text-slate-100 group-hover:underline">${item.desc}</td>
                     <td class="py-3 px-2 text-slate-400"><span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800/60">${item.category}</span></td>
                     <td class="py-3 px-2 text-right font-mono font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</td>
-                    <td class="py-3 px-2 text-center"><button onclick="purgeInventoryItem('${item.id}')" class="text-slate-500 hover:text-red-400 p-1 transition-colors cursor-pointer"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button></td>
+                    <td class="py-3 px-2 text-center">
+                        <button onclick="purgeInventoryItem('${item.id}', event)" class="text-slate-500 hover:text-red-400 p-1 transition-colors cursor-pointer"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+                    </td>
                 </tr>
             `).join('');
             lucide.createIcons();
@@ -1432,7 +1503,6 @@
             document.getElementById('profit-materials').innerText = `${costMat.toFixed(2)}`;
             document.getElementById('profit-labor').innerText = `${costLab.toFixed(2)}`;
             document.getElementById('profit-testing').innerText = `${costTest.toFixed(2)}`;
-            
             document.getElementById('profit-net').innerText = `£${netProfit.toFixed(2)}`;
             
             const marginEl = document.getElementById('profit-margin');
@@ -1466,11 +1536,9 @@
             const clientName = target.clientDetailsPayload?.name || 'Client';
             const headerTitle = `${docPrefix}`;
 
-            // Extract document-bound structural identity preference configs
             const docUser = target.ownerOperatorProfileID || 'HUGHES';
             const bankConfig = JSON.parse(localStorage.getItem(`eny_bank_${docUser}`)) || { name: 'ENY Electrical', acc: 'XXXXXXXX', sort: 'XX-XX-XX' };
 
-            // Calculate values
             const materialsValue = target.financials.markedMaterials || 0;
             const labourValue = target.financials.laborCosts || 0;
             const testingValue = target.includeTestingCertificate ? (target.financials.testingCosts || 0) : 0;
@@ -1681,12 +1749,10 @@
             const clientName = document.getElementById('client-name').value.trim();
             if(!clientName) { alert("Enter a client profile name reference before committing records."); return; }
 
-            // --- SMART BACKGROUND CLIENT AUTO-REGISTRY ---
             const currentClients = getStoredClients();
             const clientMatchExists = currentClients.some(c => c.name.toLowerCase() === clientName.toLowerCase());
             
             if (!clientMatchExists) {
-                // Silently push missing workspace contact names straight into active CRM indexes
                 currentClients.push({
                     id: 'CLI-' + Date.now(),
                     name: clientName,
@@ -1710,7 +1776,6 @@
                 if (existing && existing.status) currentStatus = existing.status;
             }
 
-            // Bind explicitly to the profile logged in at the moment of commit
             const activeProfileID = localStorage.getItem('eny_profile_user') || 'HUGHES';
 
             const compositeRecordObject = {
@@ -1761,7 +1826,6 @@
 
         // --- TEAM SYNC ENGINE EXPORTS CORE ---
         function exportSystemStateBackup() {
-            // Package standard records, entirely excluding bank account arrays to prevent cross-over corruption
             const packagePayload = { 
                 exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", 
                 generatedTimestamp: Date.now(), 
