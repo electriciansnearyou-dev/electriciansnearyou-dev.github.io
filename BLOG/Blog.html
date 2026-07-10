@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expert Electrical Blog & Cost Calculators | Electricians Near You</title>
+    <style>
+        /* --- BRAND COLOR PALETTE & RESET --- */
+        :root {
+            --navy-dark: #0a1931;
+            --navy-light: #15305b;
+            --gold: #ffc000;
+            --gold-hover: #e0a800;
+            --text-light: #ffffff;
+            --text-muted: #b0c4de;
+            --bg-card: #112240;
+            --border-color: #1e3d73;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--navy-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background-color: rgba(10, 25, 49, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Temporary CSS Logo to match your uploaded asset badge */
+        .logo-circle {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            color: #0044cc;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1;
+        }
+        .logo-circle span {
+            font-size: 8px;
+            color: #555;
+            margin-top: 2px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--gold);
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 4px;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            background: linear-gradient(135deg, var(--navy-dark) 40%, rgba(21, 48, 91, 0.6)), url('https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            padding: 5rem 2rem;
+            border-bottom: 4px solid var(--gold);
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 600px;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        .main-container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+        }
+
+        /* --- BLOG GRID --- */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .blog-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-color: var(--gold);
+        }
+
+        .blog-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #222;
+        }
+
+        .blog-content {
+            padding: 1.5rem;
+        }
+
+        .blog-tag {
+            background: rgba(255, 192, 0, 0.1);
+            color: var(--gold);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 0.8rem;
+        }
+
+        .blog-content h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .blog-content p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .read-more {
+            color: var(--gold);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* --- SIDEBAR & CALCULATORS --- */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .widget {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .widget-title {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.5rem;
+            color: var(--gold);
+        }
+
+        /* Calculator Buttons/Tabs */
+        .calc-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .calc-tab-btn {
+            background: var(--navy-light);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .calc-tab-btn.active, .calc-tab-btn:hover {
+            background: var(--gold);
+            color: var(--navy-dark);
+            font-weight: bold;
+        }
+
+        .calc-panel {
+            display: none;
+        }
+
+        .calc-panel.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-muted);
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 0.6rem;
+            background: var(--navy-dark);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 4px;
+        }
+
+        .calc-result {
+            background: rgba(255, 192, 0, 0.1);
+            border: 1px dashed var(--gold);
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .calc-result span {
+            display: block;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .btn-emergency {
+            display: block;
+            background: linear-gradient(180deg, #ff4444, #cc0000);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(235, 64, 64, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-emergency:hover {
+            background: #ff3333;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: #050d1a;
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            margin-top: 5rem;
+            font-size: 0.9rem;
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER NAVIGATION -->
+    <header>
+        <div class="nav-container">
+            <div class="logo-area">
+                <!-- Visual simulation of your uploaded circular ENY logo -->
+                <div class="logo-circle">
+                    ENY
+                    <span>Electricians</span>
+                </div>
+                <h2>electriciansnearyou.uk</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Emergency</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#" class="active">Blog</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Electrical Emergency? Immediate Advice & Expert Solutions</h1>
+                <p>Stay informed with home safety guides, energy-saving tips, and instant budgetary tools from your trusted local UK electricians.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <div class="main-container">
+        
+        <!-- LEFT COLUMN: BLOG POST FEED -->
+        <main class="blog-grid">
+            
+            <!-- Card 1 -->
+            <article class="blog-card">
+                <img src="https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=500&q=80" alt="Fuseboard" class="blog-img">
+                <div class="blog-content">
+                    <span class="blog-tag">Safety First</span>
+                    <h3>What to Do in a Sudden Power Cut?</h3>
+                    <p>A step-by-step survival guide to testing your trip switches before calling out an emergency engineer.</p>
+                    <a href="#" class="read-more">Read Guide &rarr;</a>
+                </div>
+            </article>
+
+            <!-- Card 2 -->
+            <article class="blog-card">
+                <img src="https://images.unsplash.com/photo-1558441719-ff34b0524a24?auto=format&fit=crop&w=500&q=80" alt="EV Charger" class="blog-img">
+                <div class="blog-content">
+                    <span class="blog-tag">EV Installations</span>
+                    <h3>Choosing the Right Home EV Charger</h3>
+                    <p>An unbiased look into Tethered vs Untethered smart charging units for UK homeowners in 2026.</p>
+                    <a href="#" class="read-more">Read Guide &rarr;</a>
+                </div>
+            </article>
+
+            <!-- Card 3 -->
+            <article class="blog-card">
+                <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=500&q=80" alt="Testing" class="blog-img">
+                <div class="blog-content">
+                    <span class="blog-tag">Landlord Advice</span>
+                    <h3>Understanding EICR Test Requirements</h3>
+                    <p>Are you legally covered? Here is exactly what an inspector looks for during an electrical safety check.</p>
+                    <a href="#" class="read-more">Read Guide &rarr;</a>
+                </div>
+            </article>
+
+            <!-- Card 4 -->
+            <article class="blog-card">
+                <img src="https://images.unsplash.com/photo-1565538810844-1e1194121730?auto=format&fit=crop&w=500&q=80" alt="Wiring" class="blog-img">
+                <div class="blog-content">
+                    <span class="blog-tag">Home Improvement</span>
+                    <h3>5 Subtle Signs Your Home Needs Rewiring</h3>
+                    <p>From flickering lights to weird humming sounds—don't ignore these crucial structural warnings.</p>
+                    <a href="#" class="read-more">Read Guide &rarr;</a>
+                </div>
+            </article>
+
+        </main>
+
+        <!-- RIGHT COLUMN: SIDEBAR WIDGETS & CALCULATORS -->
+        <aside class="sidebar">
+            
+            <!-- EMERGENCY CALL OUT -->
+            <div class="widget">
+                <h3 class="widget-title">Need Help Now?</h3>
+                <a href="tel:0000000000" class="btn-emergency">Emergency Call Now</a>
+            </div>
+
+            <!-- INTERACTIVE ESTIMATE CALCULATORS CONTAINER -->
+            <div class="widget">
+                <h3 class="widget-title">Instant Estimators</h3>
+                
+                <!-- Calculator Tabs -->
+                <div class="calc-tabs">
+                    <button class="calc-tab-btn active" onclick="switchCalc('fuseboard')">Fuseboard</button>
+                    <button class="calc-tab-btn" onclick="switchCalc('swap')">Acc. Swap</button>
+                    <button class="calc-tab-btn" onclick="switchCalc('test')">EICR Test</button>
+                    <button class="calc-tab-btn" onclick="switchCalc('ev')">EV Charger</button>
+                </div>
+
+                <!-- 1. FUSEBOARD CALCULATOR -->
+                <div id="calc-fuseboard" class="calc-panel active">
+                    <div class="form-group">
+                        <label for="fb-ways">Number of Ways/Consumer Units:</label>
+                        <select id="fb-ways" onchange="calculateFuseboard()">
+                            <option value="450">Up to 6 Ways (Small Flat)</option>
+                            <option value="600" selected>8 to 10 Ways (Standard Home)</option>
+                            <option value="850">12+ Ways / Dual RCD (Large Property)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fb-type">Protection Level Required:</label>
+                        <select id="fb-type" onchange="calculateFuseboard()">
+                            <option value="0">Standard Dual RCD Board</option>
+                            <option value="150">Surge Protection Device (SPD) Upgrade</option>
+                            <option value="350">Full RCBO Individual Safety Upgrade</option>
+                        </select>
+                    </div>
+                    <div class="calc-result">
+                        Estimated Install Cost*
+                        <span id="fb-total">£600</span>
+                    </div>
+                </div>
+
+                <!-- 2. ACCESSORY SWAP CALCULATOR -->
+                <div id="calc-swap" class="calc-panel">
+                    <div class="form-group">
+                        <label for="swap-sockets">Number of Sockets / Switches to Replace:</label>
+                        <input type="number" id="swap-sockets" value="4" min="1" max="50" oninput="calculateSwap()">
+                    </div>
+                    <div class="form-group">
+                        <label for="swap-finish">Desired Fitting Finish:</label>
+                        <select id="swap-finish" onchange="calculateSwap()">
+                            <option value="15">Standard White Plastic</option>
+                            <option value="25">Brushed Chrome / Metal Finish</option>
+                            <option value="35">Premium Matt Black / Bespoke Styling</option>
+                        </select>
+                    </div>
+                    <div class="calc-result">
+                        Estimated Swap Cost*
+                        <span id="swap-total">£60</span>
+                    </div>
+                </div>
+
+                <!-- 3. ELECTRICAL TEST (EICR) CALCULATOR -->
+                <div id="calc-test" class="calc-panel">
+                    <div class="form-group">
+                        <label for="test-beds">Property Size:</label>
+                        <select id="test-beds" onchange="calculateTest()">
+                            <option value="120">1 Bedroom Studio / Flat</option>
+                            <option value="160" selected>2-3 Bedroom House</option>
+                            <option value="220">4+ Bedroom Family Home</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="test-type">Property Profile:</label>
+                        <select id="test-type" onchange="calculateTest()">
+                            <option value="1">Domestic Tenant / Landlord Check</option>
+                            <option value="1.3">Commercial Property Premises</option>
+                        </select>
+                    </div>
+                    <div class="calc-result">
+                        Estimated Certification Cost*
+                        <span id="test-total">£160</span>
+                    </div>
+                </div>
+
+                <!-- 4. EV CHARGER CALCULATOR -->
+                <div id="calc-ev" class="calc-panel">
+                    <div class="form-group">
+                        <label for="ev-unit">Preferred Charger Brand / Output:</label>
+                        <select id="ev-unit" onchange="calculateEV()">
+                            <option value="550">7kW Standard Smart Unit (Entry Level)</option>
+                            <option value="799" selected>Zappi / Ohme Eco-Smart (Solar Compatible)</option>
+                            <option value="1100">Premium Discrete Design Unit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ev-run">Cable Run Length from Meter Box:</label>
+                        <select id="ev-run" onchange="calculateEV()">
+                            <option value="200">Short Run (Under 5 Metres)</option>
+                            <option value="350">Standard Run (5 - 15 Metres)</option>
+                            <option value="550">Long Complex Run (Over 15 Metres)</option>
+                        </select>
+                    </div>
+                    <div class="calc-result">
+                        Estimated EV Install*
+                        <span id="ev-total">£1,149</span>
+                    </div>
+                </div>
+
+                <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:0.8rem;">*Prices are indicative estimates subject to site survey variables.</p>
+            </div>
+
+        </aside>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2026 electriciansnearyou.uk. All rights reserved. Registered UK Electrical Contractors.</p>
+    </footer>
+
+    <!-- INTERACTIVE CALCULATOR LOGIC SCRIPT -->
+    <script>
+        // Tab switching logic
+        function switchCalc(calcName) {
+            // Hide all panels
+            document.querySelectorAll('.calc-panel').forEach(panel => panel.classList.remove('active'));
+            // Deactivate all tab buttons
+            document.querySelectorAll('.calc-tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Activate selected components
+            document.getElementById('calc-' + calcName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // 1. Fuseboard Pricing logic
+        function calculateFuseboard() {
+            const base = parseFloat(document.getElementById('fb-ways').value);
+            const upgrade = parseFloat(document.getElementById('fb-type').value);
+            const total = base + upgrade;
+            document.getElementById('fb-total').innerText = '£' + total;
+        }
+
+        // 2. Accessory Swap logic
+        function calculateSwap() {
+            const qty = parseInt(document.getElementById('swap-sockets').value) || 0;
+            const itemPrice = parseFloat(document.getElementById('swap-finish').value);
+            const total = qty * itemPrice;
+            document.getElementById('swap-total').innerText = '£' + total;
+        }
+
+        // 3. EICR Test logic
+        function calculateTest() {
+            const baseSize = parseFloat(document.getElementById('test-beds').value);
+            const multiplier = parseFloat(document.getElementById('test-type').value);
+            const total = Math.round(baseSize * multiplier);
+            document.getElementById('test-total').innerText = '£' + total;
+        }
+
+        // 4. EV Charger installation logic
+        function calculateEV() {
+            const unitCost = parseFloat(document.getElementById('ev-unit').value);
+            const installComplexity = parseFloat(document.getElementById('ev-run').value);
+            const total = unitCost + installComplexity;
+            document.getElementById('ev-total').innerText = '£' + total.toLocaleString();
+        }
+    </script>
+</body>
+</html>
