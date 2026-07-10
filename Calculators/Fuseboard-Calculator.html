@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Fuseboard Upgrade Cost Estimator | Electricians Near You</title>
+    <style>
+        :root {
+            --navy-dark: #0a1931;
+            --navy-light: #15305b;
+            --gold: #ffc000;
+            --gold-hover: #e0a800;
+            --text-light: #ffffff;
+            --text-muted: #b0c4de;
+            --bg-card: #112240;
+            --border-color: #1e3d73;
+            --success-green: #00cc66;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--navy-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding-bottom: 6rem;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .back-link {
+            color: var(--gold);
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .intro-text {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        /* --- STEP WIZARD STRUCTURE --- */
+        .step-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-number {
+            background: var(--gold);
+            color: var(--navy-dark);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* --- VISUAL CARDS GRID --- */
+        .grid-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .grid-options {
+                grid-template-columns: 1fr; /* Stack vertically on mobile devices */
+            }
+        }
+
+        .card-option {
+            background: var(--navy-light);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-option:hover {
+            border-color: var(--gold-hover);
+        }
+
+        .card-option.selected {
+            border-color: var(--gold);
+            background: rgba(255, 192, 0, 0.05);
+        }
+
+        .card-option.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--gold);
+            color: var(--navy-dark);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.75rem;
+            z-index: 10;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            background: #222;
+        }
+
+        .card-info {
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-label {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* --- LIVE COUNTER ELEMENT (For breaker amounts) --- */
+        .counter-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 1rem;
+            background: var(--navy-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .counter-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: var(--navy-dark);
+            border: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .counter-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* --- STICKY MOBILE LIVE LIVE SUMMARY TRAY --- */
+        .summary-tray {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #060f1e;
+            border-top: 3px solid var(--gold);
+            padding: 1rem;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .tray-content {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-group {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .metric-value.time {
+            color: #fff;
+        }
+
+        .btn-book {
+            background: var(--success-green);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.2rem;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="blog.html" class="back-link">&larr; Back to Electrical Blog</a>
+        
+        <h1>Fuseboard Upgrade Cost Calculator</h1>
+        <p class="intro-text">Select your options below to get an instant budget price and physical installation time estimate for a modern consumer unit replacement.</p>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">1</div>
+                <h3>Select Property Type</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" onclick="selectCard(this, 'property', 0, 0)">
+                    <img src="https://images.unsplash.com/photo-1544724569-5f546fd6f2b5?auto=format&fit=crop&w=300&q=80" class="card-img" alt="Flat">
+                    <div class="card-info">
+                        <div class="card-label">Flat / Apartment</div>
+                        <div class="card-desc">Simpler access paths, typically fewer circuits overall.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard(this, 'property', 75, 1)">
+                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=300&q=80" class="card-img" alt="House">
+                    <div class="card-info">
+                        <div class="card-label">House</div>
+                        <div class="card-desc">Multi-story layout requiring standard bonding validation.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">2</div>
+                <h3>Age of Existing Fuseboard</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" onclick="selectCard(this, 'age', 0, 0)">
+                    <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=300&q=80" class="card-img" alt="Modern Plastic">
+                    <div class="card-info">
+                        <div class="card-label">Modern-ish Plastic</div>
+                        <div class="card-desc">Post-2000s board. Earthing configuration is likely compliant.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard(this, 'age', 120, 2)">
+                    <img src="https://images.unsplash.com/photo-1558441719-ff34b0524a24?auto=format&fit=crop&w=300&q=80" class="card-img" alt="Old Re-wirable">
+                    <div class="card-info">
+                        <div class="card-label">Old Re-wirable / Asbestos</div>
+                        <div class="card-desc">Requires extra care, safety isolation protocols, and testing steps.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">3</div>
+                <h3>Number of Electrical Breakers (Ways)</h3>
+            </div>
+            <div class="counter-box">
+                <button class="counter-btn" onclick="adjustBreakers(-1)">&minus;</button>
+                <div class="counter-value" id="breaker-display">6</div>
+                <button class="counter-btn" onclick="adjustBreakers(1)">&plus;</button>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">4</div>
+                <h3>Protection Hardware Type</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" onclick="selectCard(this, 'type', 350, 2)">
+                    <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=300&q=80" class="card-img" alt="Dual RCD">
+                    <div class="card-info">
+                        <div class="card-label">Dual RCD Board</div>
+                        <div class="card-desc">Standard split protection. If one circuit trips, half the house loses light.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard(this, 'type', 550, 3)">
+                    <img src="https://images.unsplash.com/photo-1565538810844-1e1194121730?auto=format&fit=crop&w=300&q=80" class="card-img" alt="Full RCBO">
+                    <div class="card-info">
+                        <div class="card-label">Premium RCBO & SPD</div>
+                        <div class="card-desc">Gold standard. Every circuit is isolated. Includes surge protection.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="summary-tray">
+        <div class="tray-content">
+            <div class="metric-group">
+                <div class="metric">
+                    <span class="metric-label">Est. Budget</span>
+                    <span class="metric-value" id="total-price">£470</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Est. Time</span>
+                    <span class="metric-value time" id="total-time">4 hrs</span>
+                </div>
+            </div>
+            <button class="btn-book" onclick="alert('Thank you! Redirecting to booking configuration panel.')">Book Survey</button>
+        </div>
+    </div>
+
+    <script>
+        // Track the selections explicitly
+        let choices = {
+            property: { price: 0, time: 0 },
+            age: { price: 0, time: 0 },
+            breakers: 6, // default setting
+            type: { price: 350, time: 2 }
+        };
+
+        // Pricing Rules variables
+        const COST_PER_BREAKER = 30; // Every additional switch adds £30 hardware/labor
+        const TIME_PER_BREAKER = 0.25; // Every switch adds 15 minutes of testing time
+
+        function selectCard(element, category, priceModifier, timeModifier) {
+            // Find parent element context and remove active states
+            const parent = element.parentElement;
+            parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
+            
+            // Activate current selection
+            element.classList.add('selected');
+
+            // Save variables to state registry
+            choices[category].price = priceModifier;
+            choices[category].time = timeModifier;
+
+            calculateTotals();
+        }
+
+        function adjustBreakers(change) {
+            let newVal = choices.breakers + change;
+            if (newVal >= 2 && newVal <= 24) { // Logical limits for standard consumer unit sizes
+                choices.breakers = newVal;
+                document.getElementById('breaker-display').innerText = newVal;
+                calculateTotals();
+            }
+        }
+
+        function calculateTotals() {
+            // Sum calculations based on formula logic
+            let priceTotal = choices.property.price + choices.age.price + choices.type.price + (choices.breakers * COST_PER_BREAKER);
+            let timeTotal = choices.property.time + choices.age.time + choices.type.time + (choices.breakers * TIME_PER_BREAKER);
+
+            // Print dynamically to UI elements
+            document.getElementById('total-price').innerText = '£' + priceTotal;
+            document.getElementById('total-time').innerText = timeTotal + ' hrs';
+        }
+    </script>
+</body>
+</html>
