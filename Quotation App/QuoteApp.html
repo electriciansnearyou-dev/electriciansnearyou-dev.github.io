@@ -53,8 +53,43 @@
                     <i data-lucide="archive" class="w-4 h-4"></i> Vault & Sync
                 </button>
             </nav>
+
+            <!-- User Switcher UI Frame Matrix -->
+            <div class="flex items-center gap-2 border-l border-slate-800 pl-4">
+                <div class="text-right hidden sm:block">
+                    <span class="text-[10px] text-slate-500 block font-bold uppercase tracking-wider">Active Operator</span>
+                    <button onclick="toggleBankSettingsDrawer()" class="text-xs text-amber-400 font-semibold hover:underline flex items-center gap-1 justify-end">
+                        <i data-lucide="wallet" class="w-3 h-3"></i> Bank Setup
+                    </button>
+                </div>
+                <select id="global-user-profile-select" onchange="handleUserProfileChange()" class="bg-slate-900 border border-slate-700 text-white rounded-lg px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:border-amber-500">
+                    <option value="HUGHES">HUGHES</option>
+                    <option value="MABBLEY">MABBLEY</option>
+                </select>
+            </div>
         </div>
     </header>
+
+    <!-- INLINE BANK CONFIGURATION SETTINGS PANEL -->
+    <div id="bank-settings-drawer" class="hidden max-w-7xl mx-auto px-4 lg:px-8 mt-4">
+        <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-end justify-between gap-4">
+            <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Invoice Account Name Reference</label>
+                    <input type="text" id="cfg-bank-name" placeholder="e.g., Hughes Electrical Ltd" oninput="saveCurrentProfileBankConfig()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Account Number</label>
+                    <input type="text" id="cfg-bank-acc" placeholder="XXXXXXXX" oninput="saveCurrentProfileBankConfig()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Sort Code</label>
+                    <input type="text" id="cfg-bank-sort" placeholder="XX-XX-XX" oninput="saveCurrentProfileBankConfig()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white font-mono focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+            <button onclick="toggleBankSettingsDrawer()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-medium shrink-0 border border-slate-700">Minimize Setup</button>
+        </div>
+    </div>
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
         
@@ -89,7 +124,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select From Records</label>
                                 <select id="quote-client-select" onchange="loadSelectedClientIntoQuote()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition-colors">
-                                    <option value="">-- Manual Entry (Unsaved) --</option>
+                                    <option value="">-- Manual Entry (Auto-Saves) --</option>
                                 </select>
                             </div>
                             <div>
@@ -612,6 +647,16 @@
             if (!localStorage.getItem('eny_inventory')) localStorage.setItem('eny_inventory', JSON.stringify(DEFAULT_SEED_STOCK));
             if (!localStorage.getItem('eny_templates')) localStorage.setItem('eny_templates', JSON.stringify(DEFAULT_SEED_TEMPLATES));
             
+            // Initialization matrix for operator configs
+            if (!localStorage.getItem('eny_profile_user')) localStorage.setItem('eny_profile_user', 'HUGHES');
+            if (!localStorage.getItem('eny_bank_HUGHES')) localStorage.setItem('eny_bank_HUGHES', JSON.stringify({ name: 'HUGHES ELECTRICAL', acc: '', sort: '' }));
+            if (!localStorage.getItem('eny_bank_MABBLEY')) localStorage.setItem('eny_bank_MABBLEY', JSON.stringify({ name: 'MABBLEY ELECTRICAL', acc: '', sort: '' }));
+
+            // Load saved user state
+            const cachedUser = localStorage.getItem('eny_profile_user');
+            document.getElementById('global-user-profile-select').value = cachedUser;
+            loadCurrentProfileBankConfig();
+
             reconstructUnifiedInterfaces();
         });
 
@@ -633,6 +678,35 @@
         function getStoredClients() { return JSON.parse(localStorage.getItem('eny_clients')) || []; }
         function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
         function getStoredTemplates() { return JSON.parse(localStorage.getItem('eny_templates')) || []; }
+
+        // --- ACCOUNT IDENTITY MANAGEMENT ROUTINES ---
+        function handleUserProfileChange() {
+            const chosenUser = document.getElementById('global-user-profile-select').value;
+            localStorage.setItem('eny_profile_user', chosenUser);
+            loadCurrentProfileBankConfig();
+        }
+
+        function toggleBankSettingsDrawer() {
+            document.getElementById('bank-settings-drawer').classList.toggle('hidden');
+        }
+
+        function loadCurrentProfileBankConfig() {
+            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
+            const bankData = JSON.parse(localStorage.getItem(`eny_bank_${user}`)) || { name: '', acc: '', sort: '' };
+            document.getElementById('cfg-bank-name').value = bankData.name || '';
+            document.getElementById('cfg-bank-acc').value = bankData.acc || '';
+            document.getElementById('cfg-bank-sort').value = bankData.sort || '';
+        }
+
+        function saveCurrentProfileBankConfig() {
+            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
+            const payload = {
+                name: document.getElementById('cfg-bank-name').value.trim(),
+                acc: document.getElementById('cfg-bank-acc').value.trim(),
+                sort: document.getElementById('cfg-bank-sort').value.trim()
+            };
+            localStorage.setItem(`eny_bank_${user}`, JSON.stringify(payload));
+        }
 
         function switchTab(targetTabId) {
             document.querySelectorAll('.tab-content').forEach(element => element.classList.remove('active'));
@@ -916,6 +990,13 @@
                 testingCostInput.value = targetedQuote.testingCostFixed !== undefined ? targetedQuote.testingCostFixed : 75.00;
             } else { testingToggle.checked = false; }
 
+            // Restore user profile used when quote was modified if saved
+            if (targetedQuote.ownerOperatorProfileID) {
+                document.getElementById('global-user-profile-select').value = targetedQuote.ownerOperatorProfileID;
+                localStorage.setItem('eny_profile_user', targetedQuote.ownerOperatorProfileID);
+                loadCurrentProfileBankConfig();
+            }
+
             document.getElementById('editing-mode-banner').classList.remove('hidden');
             document.getElementById('editing-record-id-display').innerText = targetedQuote.id;
             document.getElementById('standard-save-actions-wrapper').classList.add('hidden');
@@ -965,7 +1046,7 @@
         function filterMaterialCatalog() {
             const searchInput = document.getElementById('material-search-input');
             const searchString = searchInput ? searchInput.value.toLowerCase().trim() : "";
-            const resultsGrid = document.getElementById('catalog-results-grid');
+            constresultsGrid = document.getElementById('catalog-results-grid');
             const currentInventory = getStoredInventory();
             
             const targetedSubset = currentInventory.filter(item => {
@@ -1103,11 +1184,11 @@
 
         // --- CLIENT REGISTER CRM PROCESSORS ---
         function createNewClientProfile(event) {
-            event.preventDefault();
+            if(event) event.preventDefault();
             const clients = getStoredClients();
             clients.push({ id: 'CLI-' + Date.now(), name: document.getElementById('crm-client-name').value.trim(), email: document.getElementById('crm-client-email').value.trim(), phone: document.getElementById('crm-client-phone').value.trim(), address: document.getElementById('crm-client-address').value.trim(), createdDate: new Date().toLocaleDateString('en-GB') });
             localStorage.setItem('eny_clients', JSON.stringify(clients));
-            document.getElementById('new-client-form').reset();
+            if(event) document.getElementById('new-client-form').reset();
             rebuildCrmProfilesInterface();
             rebuildQuoteClientDropdown();
         }
@@ -1124,7 +1205,7 @@
         function rebuildQuoteClientDropdown() {
             const select = document.getElementById('quote-client-select');
             if (!select) return;
-            select.innerHTML = `<option value="">-- Manual Entry (Unsaved) --</option>` + getStoredClients().map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            select.innerHTML = `<option value="">-- Manual Entry (Auto-Saves) --</option>` + getStoredClients().map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             select.value = activeLinkedClientId;
         }
 
@@ -1273,7 +1354,7 @@
                 document.getElementById('profit-net').classList.replace('text-emerald-400', 'text-red-500');
                 marginEl.classList.replace('text-amber-400', 'text-red-500');
             } else {
-                document.getElementById('profit-net').classList.replace('text-red-500', 'text-emerald-400');
+                document.getElementById('profit-red-500', 'text-emerald-400');
                 marginEl.classList.replace('text-red-500', 'text-amber-400');
             }
 
@@ -1297,6 +1378,10 @@
             const clientName = target.clientDetailsPayload?.name || 'Client';
             const headerTitle = `${docPrefix}`;
 
+            // Extract document-bound structural identity preference configs
+            const docUser = target.ownerOperatorProfileID || 'HUGHES';
+            const bankConfig = JSON.parse(localStorage.getItem(`eny_bank_${docUser}`)) || { name: 'ENY Electrical', acc: 'XXXXXXXX', sort: 'XX-XX-XX' };
+
             // Calculate values
             const materialsValue = target.financials.markedMaterials || 0;
             const labourValue = target.financials.laborCosts || 0;
@@ -1304,7 +1389,6 @@
             const subtotalValue = materialsValue + labourValue + testingValue;
             const totalValue = target.financials.grossTotal || 0;
 
-            // Generate condensed 3-line output row structure matching the image form guides
             let itemsHtml = `
                 <tr style="background-color: #ffffff;">
                     <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Materials</td>
@@ -1326,20 +1410,16 @@
                 </tr>
             `;
 
-            // Bank details for invoices only
             const invoiceBankBlock = isInvoice 
                 ? `<div style="margin-top: 15px; padding: 10px; background-color: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px;">
                     <strong>Bank Payment Transfer Details:</strong><br>
-                    Account Name: ENY Electrical &nbsp;|&nbsp; Account Number: XXXXXXXX &nbsp;|&nbsp; Sort Code: XX-XX-XX
+                    Account Name: ${bankConfig.name || 'ENY Electrical'} &nbsp;|&nbsp; Account Number: ${bankConfig.acc || 'XXXXXXXX'} &nbsp;|&nbsp; Sort Code: ${bankConfig.sort || 'XX-XX-XX'}
                    </div>`
                 : '';
 
             const pdfHtml = `
                 <div style="padding: 45px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #334155; background-color: #ffffff; min-height: 842px; position: relative;">
-                    <!-- Top Blue Divider Accent Bar -->
                     <div style="height: 4px; background-color: #2b4c7e; margin: -45px -45px 35px -45px;"></div>
-
-                    <!-- Header Segment -->
                     <table style="width: 100%; margin-bottom: 35px;">
                         <tr>
                             <td style="vertical-align: top;">
@@ -1348,20 +1428,16 @@
                                 <div style="font-size: 11px; color: #db2777; font-weight: 600; margin-top: 4px;">Submitted on ${target.timestamp.split(' ')[0]}</div>
                             </td>
                             <td style="text-align: right; vertical-align: top;">
-                                <!-- Logo Badge Container Placeholder -->
                                 <div style="display: inline-block; border: 2px solid #e2e8f0; border-radius: 50%; width: 72px; height: 72px; text-align: center; line-height: 68px; font-size: 18px; font-bold: 800; color: #1e3a8a; background-color: #fafafa;">ENY</div>
                             </td>
                         </tr>
                     </table>
-
-                    <!-- Metadata Grid Layout Blocks -->
                     <table style="width: 100%; margin-bottom: 40px; font-size: 12px; border-collapse: collapse;">
                         <tr>
                             <td style="width: 60%; vertical-align: top; padding-right: 20px;">
                                 <div style="color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; font-size: 10px; tracking-wider;">Submitted To</div>
                                 <div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 2px;">${clientName}</div>
                                 ${target.clientDetailsPayload?.address ? `<div style="color: #475569; line-height: 1.4; font-size: 12px;">${target.clientDetailsPayload.address}</div>` : ''}
-                                ${target.clientDetailsPayload?.email ? `<div style="color: #64748b; margin-top: 4px;">${target.clientDetailsPayload.email}</div>` : ''}
                             </td>
                             <td style="width: 40%; vertical-align: top; line-height: 1.6; color: #475569; padding-left: 20px;">
                                 <div><strong style="color: #0f172a;">${isInvoice ? 'Invoice' : 'Quote'} #:</strong> ${target.id.slice(-5)}</div>
@@ -1370,8 +1446,6 @@
                             </td>
                         </tr>
                     </table>
-
-                    <!-- Main Materials & Labor Matrix Grid -->
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
                         <thead>
                             <tr style="background-color: #1e3a8a;">
@@ -1381,12 +1455,8 @@
                                 <th style="padding: 10px 12px; text-align: right; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #ffffff; tracking-wider; width: 100px; border-top-right-radius: 4px; border-bottom-right-radius: 4px;">Total price</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            ${itemsHtml}
-                        </tbody>
+                        <tbody>${itemsHtml}</tbody>
                     </table>
-
-                    <!-- Financial Summary Stack Panels -->
                     <table style="width: 100%; margin-bottom: 40px; font-size: 13px;">
                         <tr>
                             <td style="width: 60%; vertical-align: top; font-size: 11px; color: #64748b; padding-right: 30px; line-height: 1.5;">
@@ -1421,67 +1491,6 @@
 
             html2pdf().set(opt).from(pdfHtml).save();
         }
-
-        function commitQuoteToVault(overwriteExistingMode = false) {
-            const clientName = document.getElementById('client-name').value.trim();
-            if(!clientName) { alert("Enter a client profile name reference before committing records."); return; }
-
-            const calcs = calculateComprehensiveMetrics();
-            let vault = getStoredVaultRecords();
-
-            const targetRecordId = (overwriteExistingMode && currentlyEditingQuoteId) ? currentlyEditingQuoteId : 'QTE-' + Date.now();
-            const timestampString = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-
-            let currentStatus = 'Draft';
-            if (overwriteExistingMode && currentlyEditingQuoteId) {
-                const existing = vault.find(q => q.id === currentlyEditingQuoteId);
-                if (existing && existing.status) currentStatus = existing.status;
-            }
-
-            const compositeRecordObject = {
-                id: targetRecordId,
-                timestamp: timestampString,
-                status: currentStatus,
-                jobName: document.getElementById('job-name').value.trim() || "Electrical Contracting Works Portfolio",
-                linkedClientId: activeLinkedClientId,
-                clientDetailsPayload: {
-                    name: clientName,
-                    email: document.getElementById('client-email').value.trim(),
-                    address: document.getElementById('client-address').value.trim()
-                },
-                laborHours: calcs.laborHours,
-                laborRate: calcs.laborRate,
-                globalMarkup: calcs.markup,
-                includeTestingCertificate: calcs.isTestingIncluded,
-                testingCostFixed: calcs.testingCostFixed,
-                financials: {
-                    netMaterials: calcs.netMaterials,
-                    markedMaterials: calcs.markedMaterials,
-                    laborCosts: calcs.laborCosts,
-                    testingCosts: calcs.computedTestingCharge,
-                    grossTotal: calcs.grossTotal
-                },
-                itemsSnapshot: [...activeAllocatedMaterials]
-            };
-
-            if (overwriteExistingMode && currentlyEditingQuoteId) {
-                const searchIdx = vault.findIndex(q => q.id === currentlyEditingQuoteId);
-                if(searchIdx !== -1) {
-                    compositeRecordObject.actuals = vault[searchIdx].actuals; 
-                    vault[searchIdx] = compositeRecordObject;
-                    alert("Historical snapshot overwrote configuration record logs successfully.");
-                } else { vault.unshift(compositeRecordObject); }
-            } else {
-                vault.unshift(compositeRecordObject);
-                alert("New sheet profile record added inside the archive vault core.");
-            }
-
-            localStorage.setItem('eny_vault', JSON.stringify(vault));
-            cancelActiveEditingSessionMode();
-            reconstructUnifiedInterfaces();
-        }
-
-        function toggleInlineQuoteBreakdownFolder(rowId) { document.getElementById(rowId).classList.toggle('hidden'); }
 
         function rebuildVaultDataTable() {
             const tbody = document.getElementById('vault-records-body');
@@ -1523,6 +1532,7 @@
                 }
 
                 const pdfButton = `<button onclick="generateDocumentPDF('${r.id}')" class="text-blue-400 hover:text-blue-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="Download Document"><i data-lucide="file-down" class="w-4 h-4"></i></button>`;
+                const profileBadge = `<span class="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 text-[9px] font-mono text-slate-400 inline-block mt-1">${r.ownerOperatorProfileID || 'HUGHES'}</span>`;
 
                 return `
                     <tr class="text-xs text-slate-300 hover:bg-slate-900/40 border-b border-slate-900 transition-colors">
@@ -1532,6 +1542,7 @@
                         <td class="py-4 px-3">
                             <div class="text-[10px] text-slate-500 font-mono mb-1">${r.timestamp.split(' ')[0]}</div>
                             <span class="px-2.5 py-1 border rounded-lg text-[10px] font-bold uppercase tracking-wider ${statusBadgeClass}">${status}</span>
+                            <div>${profileBadge}</div>
                         </td>
                         <td class="py-4 px-3">
                             <div class="font-bold text-white">${r.jobName}</div>
@@ -1577,9 +1588,98 @@
             lucide.createIcons();
         }
 
+        // --- COMMIT ARCHIVE ACTIONS ---
+        function commitQuoteToVault(overwriteExistingMode = false) {
+            const clientName = document.getElementById('client-name').value.trim();
+            if(!clientName) { alert("Enter a client profile name reference before committing records."); return; }
+
+            // --- SMART BACKGROUND CLIENT AUTO-REGISTRY ---
+            const currentClients = getStoredClients();
+            const clientMatchExists = currentClients.some(c => c.name.toLowerCase() === clientName.toLowerCase());
+            
+            if (!clientMatchExists) {
+                // Silently push missing workspace contact names straight into active CRM indexes
+                currentClients.push({
+                    id: 'CLI-' + Date.now(),
+                    name: clientName,
+                    email: document.getElementById('client-email').value.trim(),
+                    phone: '',
+                    address: document.getElementById('client-address').value.trim(),
+                    createdDate: new Date().toLocaleDateString('en-GB')
+                });
+                localStorage.setItem('eny_clients', JSON.stringify(currentClients));
+            }
+
+            const calcs = calculateComprehensiveMetrics();
+            let vault = getStoredVaultRecords();
+
+            const targetRecordId = (overwriteExistingMode && currentlyEditingQuoteId) ? currentlyEditingQuoteId : 'QTE-' + Date.now();
+            const timestampString = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+
+            let currentStatus = 'Draft';
+            if (overwriteExistingMode && currentlyEditingQuoteId) {
+                const existing = vault.find(q => q.id === currentlyEditingQuoteId);
+                if (existing && existing.status) currentStatus = existing.status;
+            }
+
+            // Bind explicitly to the profile logged in at the moment of commit
+            const activeProfileID = localStorage.getItem('eny_profile_user') || 'HUGHES';
+
+            const compositeRecordObject = {
+                id: targetRecordId,
+                timestamp: timestampString,
+                status: currentStatus,
+                ownerOperatorProfileID: activeProfileID, 
+                jobName: document.getElementById('job-name').value.trim() || "Electrical Contracting Works Portfolio",
+                linkedClientId: activeLinkedClientId,
+                clientDetailsPayload: {
+                    name: clientName,
+                    email: document.getElementById('client-email').value.trim(),
+                    address: document.getElementById('client-address').value.trim()
+                },
+                laborHours: calcs.laborHours,
+                laborRate: calcs.laborRate,
+                globalMarkup: calcs.markup,
+                includeTestingCertificate: calcs.isTestingIncluded,
+                testingCostFixed: calcs.testingCostFixed,
+                financials: {
+                    netMaterials: calcs.netMaterials,
+                    markedMaterials: calcs.markedMaterials,
+                    laborCosts: calcs.laborCosts,
+                    testingCosts: calcs.computedTestingCharge,
+                    grossTotal: calcs.grossTotal
+                },
+                itemsSnapshot: [...activeAllocatedMaterials]
+            };
+
+            if (overwriteExistingMode && currentlyEditingQuoteId) {
+                const searchIdx = vault.findIndex(q => q.id === currentlyEditingQuoteId);
+                if(searchIdx !== -1) {
+                    compositeRecordObject.actuals = vault[searchIdx].actuals; 
+                    vault[searchIdx] = compositeRecordObject;
+                    alert("Historical snapshot overwrote configuration record logs successfully.");
+                } else { vault.unshift(compositeRecordObject); }
+            } else {
+                vault.unshift(compositeRecordObject);
+                alert("New sheet profile record added inside the archive vault core.");
+            }
+
+            localStorage.setItem('eny_vault', JSON.stringify(vault));
+            cancelActiveEditingSessionMode();
+            reconstructUnifiedInterfaces();
+        }
+
         // --- TEAM SYNC ENGINE EXPORTS CORE ---
         function exportSystemStateBackup() {
-            const packagePayload = { exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", generatedTimestamp: Date.now(), inventory: getStoredInventory(), clients: getStoredClients(), vault: getStoredVaultRecords(), templates: getStoredTemplates() };
+            // Package standard records, entirely excluding bank account arrays to prevent cross-over corruption
+            const packagePayload = { 
+                exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", 
+                generatedTimestamp: Date.now(), 
+                inventory: getStoredInventory(), 
+                clients: getStoredClients(), 
+                vault: getStoredVaultRecords(), 
+                templates: getStoredTemplates() 
+            };
             const dataBlob = new Blob([JSON.stringify(packagePayload, null, 2)], { type: "application/json" });
             const temporaryLinkElement = document.createElement('a');
             temporaryLinkElement.href = URL.createObjectURL(dataBlob);
