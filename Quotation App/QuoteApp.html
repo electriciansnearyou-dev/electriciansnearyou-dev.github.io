@@ -11,7 +11,7 @@
     <!-- HTML2PDF Library for Client-Side PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -1046,7 +1046,7 @@
         function filterMaterialCatalog() {
             const searchInput = document.getElementById('material-search-input');
             const searchString = searchInput ? searchInput.value.toLowerCase().trim() : "";
-            constresultsGrid = document.getElementById('catalog-results-grid');
+            const resultsGrid = document.getElementById('catalog-results-grid');
             const currentInventory = getStoredInventory();
             
             const targetedSubset = currentInventory.filter(item => {
@@ -1354,7 +1354,7 @@
                 document.getElementById('profit-net').classList.replace('text-emerald-400', 'text-red-500');
                 marginEl.classList.replace('text-amber-400', 'text-red-500');
             } else {
-                document.getElementById('profit-red-500', 'text-emerald-400');
+                document.getElementById('profit-net').classList.replace('text-red-500', 'text-emerald-400');
                 marginEl.classList.replace('text-red-500', 'text-amber-400');
             }
 
