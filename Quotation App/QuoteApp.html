@@ -52,6 +52,9 @@
                 <button onclick="switchTab('clients-tab')" id="btn-clients-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
                     <i data-lucide="users" class="w-4 h-4"></i> Client CRM
                 </button>
+                <button onclick="switchTab('settings-tab')" id="btn-settings-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                    <i data-lucide="sliders" class="w-4 h-4"></i> Settings
+                </button>
                 <button onclick="switchTab('vault-tab')" id="btn-vault-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
                     <i data-lucide="archive" class="w-4 h-4"></i> Vault & Sync
                 </button>
@@ -193,19 +196,33 @@
                         </div>
                     </div>
 
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <!-- Inventory Search and One-Off Addition Row -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-900">
                             <div>
                                 <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
-                                    <i data-lucide="package-search" class="text-amber-400 w-5 h-5"></i> Smart Inventory Search
+                                    <i data-lucide="package-search" class="text-amber-400 w-5 h-5"></i> Add Materials to Workspace
                                 </h2>
                             </div>
                             <div class="relative min-w-[240px]">
                                 <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
-                                <input type="text" id="material-search-input" oninput="filterMaterialCatalog()" placeholder="Search description, code..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                                <input type="text" id="material-search-input" oninput="filterMaterialCatalog()" placeholder="Search directory list..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
                             </div>
                         </div>
-                        <div id="category-tabs-container" class="flex flex-wrap gap-1.5 mb-4 pb-2 border-b border-slate-900"></div>
+
+                        <!-- One-Off Entry Row Widget Panel -->
+                        <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-3 grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
+                            <input type="text" id="oneoff-desc" placeholder="One-off Item Description" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            <div class="flex gap-2">
+                                <input type="number" step="1" id="oneoff-cost" placeholder="Cost (£)" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                                <input type="number" value="1" min="1" id="oneoff-qty" placeholder="Qty" class="w-16 bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white text-center focus:outline-none focus:border-amber-500">
+                            </div>
+                            <button type="button" onclick="allocateOneOffItemToQuote()" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 transition-colors border border-slate-700 rounded-lg py-2 px-3 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Insert Custom Material
+                            </button>
+                        </div>
+
+                        <div id="category-tabs-container" class="flex flex-wrap gap-1.5"></div>
                         <div id="catalog-results-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[310px] overflow-y-auto pr-2 custom-scrollbar"></div>
                     </div>
 
@@ -229,22 +246,38 @@
                         </div>
                     </div>
 
+                    <!-- Dynamic Labor Rate Matrix Interface -->
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
-                            <i data-lucide="clock" class="text-amber-400 w-5 h-5"></i> Labor & Overhead Projections
-                        </h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Total Project Hours</label>
-                                <input type="number" id="labor-hours" value="8" oninput="calculateComprehensiveMetrics()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                        <div class="flex justify-between items-center pb-2 border-b border-slate-900">
+                            <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
+                                <i data-lucide="clock" class="text-amber-400 w-5 h-5"></i> Labor Allocation Structure
+                            </h2>
+                            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 bg-slate-900 border border-slate-800 px-2 py-1 rounded-md">
+                                Model Multiplier: <span id="summary-markup-badge" class="text-amber-400">25%</span>
                             </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Hourly Labor Rate (£)</label>
-                                <input type="number" id="labor-rate" value="45" oninput="calculateComprehensiveMetrics()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Booking Format</label>
+                                <div class="grid grid-cols-3 gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                                    <button type="button" id="lbl-btn-day" onclick="setLaborBookingFormat('DAY')" class="py-2 text-xs font-bold rounded-lg transition-all text-slate-400">Full Day</button>
+                                    <button type="button" id="lbl-btn-half" onclick="setLaborBookingFormat('HALF')" class="py-2 text-xs font-bold rounded-lg transition-all text-slate-400">Half Day</button>
+                                    <button type="button" id="lbl-btn-hour" onclick="setLaborBookingFormat('HOUR')" class="py-2 text-xs font-bold rounded-lg transition-all text-slate-400">Hourly</button>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Global Markup Multiplier (%)</label>
-                                <input type="number" id="global-markup" value="25" oninput="calculateComprehensiveMetrics()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+
+                            <!-- Contextual Hours Parameter Slider Interface Container Frame -->
+                            <div id="hourly-selector-context-frame" class="invisible opacity-0 transition-opacity">
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex justify-between">
+                                    <span>Subsequent Billable Duration</span>
+                                    <span class="text-white font-mono font-bold"><span id="display-hours-count">0</span> Hours</span>
+                                </label>
+                                <div class="flex items-center gap-3 pt-1.5">
+                                    <span class="text-[11px] font-medium text-slate-500 font-mono">1st Hour (Fixed)</span>
+                                    <input type="range" id="labor-hour-slider" min="0" max="24" value="0" oninput="handleHourSliderMovementValueChange()" class="w-full accent-amber-500 bg-slate-900 h-2 rounded-lg appearance-none cursor-pointer">
+                                    <span class="text-[11px] font-medium text-slate-500 font-mono">+24h</span>
+                                </div>
                             </div>
                         </div>
 
@@ -316,14 +349,6 @@
 
         <!-- ================= TAB 2: TEMPLATES MANAGER ================= -->
         <div id="templates-tab" class="tab-content space-y-6">
-            <div id="template-edit-banner" class="hidden bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex justify-between items-center">
-                <div class="flex items-center gap-2 text-blue-400">
-                    <i data-lucide="info" class="w-4 h-4"></i>
-                    <span class="text-xs font-semibold">Editing Template: <span id="editing-template-name" class="text-white"></span></span>
-                </div>
-                <button onclick="clearTemplateForm()" class="text-[11px] text-slate-400 hover:text-white bg-slate-800 px-2 py-1 rounded">Cancel Edit</button>
-            </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
                     <div>
@@ -334,19 +359,11 @@
                         <input type="hidden" id="template-id-field">
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Template Label / Name *</label>
-                            <input type="text" id="template-name-input" required placeholder="e.g., Standard EV Charger Installation Pack" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                            <input type="text" id="template-name-input" required placeholder="e.g., Standard EV Charger Pack" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Labor Hours</label>
-                                <input type="number" id="template-hours-input" value="4" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
-                            </div>
-                            <div class="flex items-center justify-center pt-5">
-                                <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
-                                    <input type="checkbox" id="template-testing-input" class="rounded bg-slate-900 border-slate-800 text-amber-500 focus:ring-0">
-                                    Include Testing Cert
-                                </label>
-                            </div>
+                        
+                        <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl text-xs text-slate-400 space-y-1">
+                            <i data-lucide="info" class="w-3.5 h-3.5 text-amber-400 inline mr-1"></i> Template structures match operational material snap lists. Select custom metrics inside workspace build canvases upon application.
                         </div>
 
                         <div>
@@ -468,7 +485,7 @@
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
                         <div class="relative w-full">
                             <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
-                            <input type="text" id="crm-search-input" oninput="rebuildCrmProfilesInterface()" placeholder="Search clients by name, email, address, or matching job parameters..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                            <input type="text" id="crm-search-input" oninput="rebuildCrmProfilesInterface()" placeholder="Search clients by name..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
                         </div>
                         <span id="crm-count-badge" class="bg-slate-900 border border-slate-800 px-3 py-2 rounded-xl text-xs font-semibold text-amber-400 shrink-0 text-center">0 Accounts</span>
                     </div>
@@ -486,7 +503,53 @@
             </div>
         </div>
 
-        <!-- ================= TAB 5: ARCHIVE VAULT & SYNC MATRIX ================= -->
+        <!-- ================= TAB 5: CENTRAL BASELINE CONFIG TAB ================= -->
+        <div id="settings-tab" class="tab-content space-y-6">
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl mx-auto space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i data-lucide="settings text-amber-400"></i> Global Labor Model Setup
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Define your core pricing matrices below. Changing parameters updates future calculations instantly across workspaces.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Full Day Flat Rate (£)</label>
+                        <input type="number" id="set-rate-day" value="350" oninput="saveGlobalLaborConfigurationSettings()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Half Day Flat Rate (£)</label>
+                        <input type="number" id="set-rate-half" value="200" oninput="saveGlobalLaborConfigurationSettings()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-900 pt-4 space-y-4">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-amber-400">Hourly Calculation Increments Matrix</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">First Initial Hour Premium (£)</label>
+                            <input type="number" id="set-rate-hour-first" value="65" oninput="saveGlobalLaborConfigurationSettings()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500">
+                            <span class="text-[10px] text-slate-500 mt-1 block">Covers call-out allocation overhead operations.</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Subsequent Hourly Rate (£)</label>
+                            <input type="number" id="set-rate-hour-next" value="45" oninput="saveGlobalLaborConfigurationSettings()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500">
+                            <span class="text-[10px] text-slate-500 mt-1 block">Applied sequentially to durations after Hour 1.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-900 pt-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Global Materials Pricing Markup (%)</label>
+                        <input type="number" id="global-markup" value="25" oninput="saveGlobalLaborConfigurationSettings(); calculateComprehensiveMetrics();" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB 6: ARCHIVE VAULT & SYNC MATRIX ================= -->
         <div id="vault-tab" class="tab-content space-y-6">
             
             <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -661,63 +724,18 @@
 
     <!-- ================= SYSTEM ENGINE CORE JAVASCRIPT LOGIC ================= -->
     <script>
-        // Pre-seeded comprehensive 50-item catalog directly extracted and rounded from your supplier quote form
+        // Default items array seed
         const STB_SEEDED_INVENTORY = [
             { id: 'STB-1', sku: 'F3007MZ', desc: 'FUSEBOX F3007MZ 7WAY 100A SPD CON UNIT', cost: 69, category: 'Consumer Units & Protection' },
             { id: 'STB-2', sku: 'F3011MZ', desc: 'FUSEBOX F3011MZ 11WAY 100A SPD CON UNIT', cost: 76, category: 'Consumer Units & Protection' },
             { id: 'STB-3', sku: 'F3015MZ', desc: 'FUSEBOX F3015MZ 15WAY 100A SPD CON UNIT', cost: 82, category: 'Consumer Units & Protection' },
             { id: 'STB-4', sku: 'F3021MZ', desc: 'FUSEBOX F3021MZ 21WAY 100A SPD CON UNIT', cost: 91, category: 'Consumer Units & Protection' },
             { id: 'STB-5', sku: '6381Y25KIT1M', desc: '6381Y 25MM DI FLEXIBLE TAILS KIT 1M', cost: 14, category: 'Wiring & Management' },
-            { id: 'STB-6', sku: '6381Y251BLU', desc: '25MM DI FLEXIBLE TAILS BLUE 6381Y', cost: 0, category: 'Wiring & Management' },
-            { id: 'STB-7', sku: '6381Y251BR', desc: '25MM DI FLEXIBLE TAILS BROWN 6381Y', cost: 0, category: 'Wiring & Management' },
-            { id: 'STB-8', sku: '6491X161GY', desc: '16MM SINGLE G/Y EARTH 6491X', cost: 0, category: 'Wiring & Management' },
             { id: 'STB-9', sku: 'RTA060630B', desc: 'FUSEBOX RTA060630B 6A B TYPE A RCBO 6ΚΑ', cost: 12, category: 'Consumer Units & Protection' },
-            { id: 'STB-10', sku: 'MT06B061', desc: 'FUSEBOX MT06B061 6A B TYPE MCB 6KA SP', cost: 2, category: 'Consumer Units & Protection' },
-            { id: 'STB-11', sku: 'G32T', desc: 'FUSEBOX G32T 32MM IP68 TAILS GLAND CLICK SCOLMORE', cost: 3, category: 'Consumer Units & Protection' },
             { id: 'STB-12', sku: 'CMA036', desc: 'CLICK CMA036 SOCKET 2G SWITCHED 13A WHI', cost: 3, category: 'Sockets & Switches' },
             { id: 'STB-13', sku: 'CMA786', desc: 'CMA786 Socket 2G Swd & USB 13A Whi Click', cost: 20, category: 'Sockets & Switches' },
-            { id: 'STB-14', sku: 'CMA035', desc: 'CMA035 SOCKET 1G SWITCHED 13A WHI CLICK', cost: 3, category: 'Sockets & Switches' },
-            { id: 'STB-15', sku: 'CMA011', desc: 'CMA011 CLICK PLATESWITCH 1G 2W 10A WHI', cost: 2, category: 'Sockets & Switches' },
-            { id: 'STB-16', sku: 'CMA651', desc: 'CMA651 CONNECTION UNIT SWD 13A CLICK', cost: 4, category: 'Sockets & Switches' },
-            { id: 'STB-17', sku: 'CMA500', desc: 'CLICK SWITCH DP 45A WHITE CMA500', cost: 6, category: 'Sockets & Switches' },
-            { id: 'STB-18', sku: 'CMA215', desc: 'CONN UNIT COOKER OUTLET CMA215 CLICK', cost: 4, category: 'Sockets & Switches' },
-            { id: 'STB-19', sku: 'CMA081', desc: 'CLICK CMA081 PATTRESS 1GANG 25MM WHI', cost: 1, category: 'Sockets & Switches' },
-            { id: 'STB-20', sku: 'CMA082', desc: 'CLICK CMA082 PATTRESS 2GANG 25MM WHI', cost: 2, category: 'Sockets & Switches' },
-            { id: 'STB-21', sku: 'SFR1', desc: 'U/Volt SFR1 Box 1 Gang Rad Corners White', cost: 3, category: 'Sockets & Switches' },
-            { id: 'STB-22', sku: 'SFR2', desc: 'U/Volt SFR2 Box 2 Gang Rad Corners White', cost: 4, category: 'Sockets & Switches' },
-            { id: 'STB-23', sku: 'SFR1/44', desc: 'U/Volt SFR1/44 Box 1 Gang Rad Corners', cost: 5, category: 'Sockets & Switches' },
-            { id: 'STB-24', sku: 'SFR2/44', desc: 'U/Volt SFR2/44 Box 2 Gang Rad Corners', cost: 7, category: 'Sockets & Switches' },
             { id: 'STB-25', sku: 'JC1101/NB', desc: 'JCC JC1101/NB X50 LED Downlight 3/5W', cost: 11, category: 'Luminaires & Fittings' },
-            { id: 'STB-26', sku: 'JC1107/WH', desc: 'JCC JC1107/WH Downlight Bezel Whi X50', cost: 2, category: 'Luminaires & Fittings' },
-            { id: 'STB-27', sku: 'JC1101/WH10', desc: 'JCC JC1101/WH10 X50 LED D/Lgt 3/5W Pk=10', cost: 78, category: 'Luminaires & Fittings' },
-            { id: 'STB-28', sku: 'AFD600D/CCT', desc: 'Allled AFD600D/CCT LED Downlight 6W', cost: 9, category: 'Luminaires & Fittings' },
-            { id: 'STB-29', sku: '666', desc: 'BG 666 Pendant Set 6in', cost: 3, category: 'Luminaires & Fittings' },
-            { id: 'STB-30', sku: '4207-1', desc: 'Crompton 4207-1 LED BC-B22 7W 2700K Clr', cost: 6, category: 'Luminaires & Fittings' },
-            { id: 'STB-31', sku: '107139', desc: 'Saxby 107139 RularPRO Batten 5ft 39W', cost: 22, category: 'Luminaires & Fittings' },
-            { id: 'STB-32', sku: 'ADIS2/1', desc: 'Ansell ADIS2/1 B/Hd IP65 9-16W', cost: 25, category: 'Luminaires & Fittings' },
-            { id: 'STB-33', sku: 'ADIS1/1', desc: 'Ansell ADIS1/1 B/Hd IP65 4-7W', cost: 16, category: 'Luminaires & Fittings' },
-            { id: 'STB-34', sku: 'ADLED2/WV/CCT', desc: 'Ansell ADLED2/WV/CCT B/Hd LED Whi', cost: 40, category: 'Luminaires & Fittings' },
-            { id: 'STB-35', sku: '113960', desc: 'Saxby 113960 HeroULTRA B/Hd 15W 316mm', cost: 20, category: 'Luminaires & Fittings' },
-            { id: 'STB-36', sku: '16699', desc: 'Crompton 16699 LED Lamp GU10 5W 3000K', cost: 3, category: 'Luminaires & Fittings' },
-            { id: 'STB-37', sku: 'FSA2W', desc: 'Falcon FSA2W Mini Trunking 25x16mmx75m', cost: 2, category: 'Containment' },
-            { id: 'STB-38', sku: 'FSA4W', desc: 'Falcon FSA4W Mini Trunking 40x25mmx30m', cost: 3, category: 'Containment' },
-            { id: 'STB-39', sku: 'BSSH20W-LSF', desc: 'U/Volt BSSH20W-LSF Conduit 20mmx3m 100m', cost: 1, category: 'Containment' },
-            { id: 'STB-40', sku: 'FCT32W', desc: 'Falcon FCT32W Cbl Trunking 75x50mmx18m', cost: 9, category: 'Containment' },
-            { id: 'STB-41', sku: 'IE20WH', desc: 'U/Volt IE20WH InspectionElbow 20mm White', cost: 2, category: 'Containment' },
-            { id: 'STB-42', sku: 'SM20WH', desc: 'U/Volt SM20WH Coupler 20mm White', cost: 1, category: 'Containment' },
-            { id: 'STB-43', sku: 'AFT/MBS20WH', desc: 'U/Volt AFT/MBS20WH Adaptor 20mm White', cost: 1, category: 'Containment' },
-            { id: 'STB-44', sku: 'AMT/LR20WH', desc: 'U/Volt AMT/LR20WH Adaptor 20mm White', cost: 1, category: 'Containment' },
-            { id: 'STB-45', sku: 'CB20/1WH', desc: 'U/Volt CB20/1WH Terminal Box 20mm White', cost: 2, category: 'Containment' },
-            { id: 'STB-46', sku: 'CB20/AWH', desc: 'U/Volt CB20/AWH Angle Box 20mm White', cost: 2, category: 'Containment' },
-            { id: 'STB-47', sku: '207-3301', desc: 'Wago 207-3301 Wago 221-4 Junction Box', cost: 3, category: 'Sundries' },
-            { id: 'STB-48', sku: 'J803', desc: 'Hager J803 Junction Box 3Terminals 30A', cost: 5, category: 'Sundries' },
-            { id: 'STB-49', sku: 'J804', desc: 'Hager J804 Junction Box 4Terminals 20A', cost: 6, category: 'Sundries' },
-            { id: 'STB-50', sku: '034385', desc: 'Legd 034385 Earthing Clamp 12/16mm', cost: 5, category: 'Sundries' }
-        ];
-
-        const DEFAULT_SEED_TEMPLATES = [
-            { id: 'T1', name: "10-Way Consumer Unit Upgrade Kit", hours: 6, testing: true, items: [{ id: 'STB-1', qty: 1 }, { id: 'STB-9', qty: 8 }] },
-            { id: 'T2', name: "Standard Room Recessed Lighting Kit", hours: 4, testing: true, items: [{ id: 'STB-27', qty: 1 }, { id: 'STB-26', qty: 10 }] }
+            { id: 'STB-47', sku: '207-3301', desc: 'Wago 207-3301 Wago 221-4 Junction Box', cost: 3, category: 'Sundries' }
         ];
 
         let selectedCategoryFilter = "ALL";
@@ -725,13 +743,23 @@
         let activeLinkedClientId = "";
         let currentlyEditingQuoteId = null;
         let selectedVaultQuotes = new Set(); 
+        
+        // Labor format mapping system state tracking variable flags
+        let activeLaborBookingFormat = "DAY"; // "DAY", "HALF", "HOUR"
 
         document.addEventListener('DOMContentLoaded', () => {
             if (!localStorage.getItem('eny_vault')) localStorage.setItem('eny_vault', JSON.stringify([]));
             if (!localStorage.getItem('eny_clients')) localStorage.setItem('eny_clients', JSON.stringify([]));
             if (!localStorage.getItem('eny_inventory')) localStorage.setItem('eny_inventory', JSON.stringify(STB_SEEDED_INVENTORY));
-            if (!localStorage.getItem('eny_templates')) localStorage.setItem('eny_templates', JSON.stringify(DEFAULT_SEED_TEMPLATES));
+            if (!localStorage.getItem('eny_templates')) localStorage.setItem('eny_templates', JSON.stringify([]));
             
+            // Seed base configuration defaults if missing
+            if (!localStorage.getItem('eny_rate_day')) localStorage.setItem('eny_rate_day', '350');
+            if (!localStorage.getItem('eny_rate_half')) localStorage.setItem('eny_rate_half', '200');
+            if (!localStorage.getItem('eny_rate_hour_first')) localStorage.setItem('eny_rate_hour_first', '65');
+            if (!localStorage.getItem('eny_rate_hour_next')) localStorage.setItem('eny_rate_hour_next', '45');
+            if (!localStorage.getItem('eny_global_markup')) localStorage.setItem('eny_global_markup', '25');
+
             if (!localStorage.getItem('eny_profile_user')) localStorage.setItem('eny_profile_user', 'HUGHES');
             if (!localStorage.getItem('eny_bank_HUGHES')) localStorage.setItem('eny_bank_HUGHES', JSON.stringify({ name: 'HUGHES ELECTRICAL', acc: '', sort: '' }));
             if (!localStorage.getItem('eny_bank_MABBLEY')) localStorage.setItem('eny_bank_MABBLEY', JSON.stringify({ name: 'MABBLEY ELECTRICAL', acc: '', sort: '' }));
@@ -739,8 +767,10 @@
             const cachedUser = localStorage.getItem('eny_profile_user');
             document.getElementById('global-user-profile-select').value = cachedUser;
             loadCurrentProfileBankConfig();
+            loadGlobalLaborConfigurationSettings();
 
             reconstructUnifiedInterfaces();
+            setLaborBookingFormat('DAY');
             switchTab('home-tab');
         });
 
@@ -762,9 +792,170 @@
         function getStoredInventory() { return JSON.parse(localStorage.getItem('eny_inventory')) || []; }
         function getStoredClients() { return JSON.parse(localStorage.getItem('eny_clients')) || []; }
         function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
-        function getStoredTemplates() { return JSON.parse(localStorage.getItem('eny_templates')) || []; }
 
-        // --- HOME DASHBOARD LIVE COUNTERS ---
+        // --- GLOBAL CONFIG MANAGER PROCESSORS ---
+        function loadGlobalLaborConfigurationSettings() {
+            document.getElementById('set-rate-day').value = localStorage.getItem('eny_rate_day') || '350';
+            document.getElementById('set-rate-half').value = localStorage.getItem('eny_rate_half') || '200';
+            document.getElementById('set-rate-hour-first').value = localStorage.getItem('eny_rate_hour_first') || '65';
+            document.getElementById('set-rate-hour-next').value = localStorage.getItem('eny_rate_hour_next') || '45';
+            
+            const markup = localStorage.getItem('eny_global_markup') || '25';
+            document.getElementById('global-markup').value = markup;
+            document.getElementById('summary-markup-badge').innerText = markup + "%";
+        }
+
+        function saveGlobalLaborConfigurationSettings() {
+            localStorage.setItem('eny_rate_day', document.getElementById('set-rate-day').value);
+            localStorage.setItem('eny_rate_half', document.getElementById('set-rate-half').value);
+            localStorage.setItem('eny_rate_hour_first', document.getElementById('set-rate-hour-first').value);
+            localStorage.setItem('eny_rate_hour_next', document.getElementById('set-rate-hour-next').value);
+            
+            const markupVal = document.getElementById('global-markup').value;
+            localStorage.setItem('eny_global_markup', markupVal);
+            document.getElementById('summary-markup-badge').innerText = markupVal + "%";
+            calculateComprehensiveMetrics();
+        }
+
+        // --- WORKSPACE LABOR CONTROL TOGGLES ---
+        function setLaborBookingFormat(formatMode) {
+            activeLaborBookingFormat = formatMode;
+            
+            // Clean up visual selection styles
+            ['day', 'half', 'hour'].forEach(m => {
+                const el = document.getElementById(`lbl-btn-${m}`);
+                el.className = "py-2 text-xs font-bold rounded-lg transition-all text-slate-400";
+            });
+
+            const targetBtn = document.getElementById(`lbl-btn-${formatMode.toLowerCase()}`);
+            targetBtn.className = "py-2 text-xs font-bold rounded-lg transition-all bg-amber-500 text-slate-950 shadow-md";
+
+            const hourlyWidgetFrame = document.getElementById('hourly-selector-context-frame');
+            if (formatMode === 'HOUR') {
+                hourlyWidgetFrame.classList.remove('invisible', 'opacity-0');
+                hourlyWidgetFrame.classList.add('opacity-100');
+            } else {
+                hourlyWidgetFrame.classList.add('invisible', 'opacity-0');
+                hourlyWidgetFrame.classList.remove('opacity-100');
+            }
+
+            calculateComprehensiveMetrics();
+        }
+
+        function handleHourSliderMovementValueChange() {
+            const count = document.getElementById('labor-hour-slider').value;
+            document.getElementById('display-hours-count').innerText = count;
+            calculateComprehensiveMetrics();
+        }
+
+        // --- INSERT ONE-OFF CUSTOM WORKSPACE ITEMS ---
+        function allocateOneOffItemToQuote() {
+            const descInput = document.getElementById('oneoff-desc');
+            const costInput = document.getElementById('oneoff-cost');
+            const qtyInput = document.getElementById('oneoff-qty');
+
+            const desc = descInput.value.trim();
+            const cost = Math.ceil(parseFloat(costInput.value) || 0);
+            const qty = parseInt(qtyInput.value) || 1;
+
+            if (!desc) { alert("Please provide a custom material description."); return; }
+
+            // Construct localized one-off instance mapping
+            const customOneOffItem = {
+                id: 'ONEOFF-' + Date.now(),
+                sku: 'CUSTOM',
+                desc: desc + " (One-off)",
+                cost: cost,
+                category: 'Unclassified',
+                qty: qty
+            };
+
+            activeAllocatedMaterials.push(customOneOffItem);
+            rebuildAllocatedMaterialsTable();
+
+            // Reset manual interface row inputs
+            descInput.value = "";
+            costInput.value = "";
+            qtyInput.value = "1";
+        }
+
+        // --- CORE COMPREHENSIVE MATH ENGINE ---
+        function calculateComprehensiveMetrics() {
+            const netMaterials = activeAllocatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost) * curr.qty), 0);
+            const markup = parseFloat(localStorage.getItem('eny_global_markup')) || 0;
+            const markedMaterials = netMaterials * (1 + (markup / 100));
+            
+            // Calculate dynamic labor pricing structures
+            let laborCosts = 0;
+            const rateDay = parseFloat(localStorage.getItem('eny_rate_day')) || 350;
+            const rateHalf = parseFloat(localStorage.getItem('eny_rate_half')) || 200;
+            const rateHourFirst = parseFloat(localStorage.getItem('eny_rate_hour_first')) || 65;
+            const rateHourNext = parseFloat(localStorage.getItem('eny_rate_hour_next')) || 45;
+
+            if (activeLaborBookingFormat === 'DAY') {
+                laborCosts = rateDay;
+            } else if (activeLaborBookingFormat === 'HALF') {
+                laborCosts = rateHalf;
+            } else if (activeLaborBookingFormat === 'HOUR') {
+                const nextHoursCount = parseInt(document.getElementById('labor-hour-slider').value) || 0;
+                laborCosts = rateHourFirst + (nextHoursCount * rateHourNext);
+            }
+            
+            const isTestingIncluded = document.getElementById('include-testing-toggle').checked;
+            const testingCostFixed = parseFloat(document.getElementById('testing-flat-cost').value) || 0;
+            const computedTestingCharge = isTestingIncluded ? testingCostFixed : 0;
+
+            const grossTotal = markedMaterials + laborCosts + computedTestingCharge;
+
+            document.getElementById('summary-net-materials').innerText = `£${netMaterials.toFixed(2)}`;
+            document.getElementById('summary-marked-materials').innerText = `£${markedMaterials.toFixed(2)}`;
+            document.getElementById('summary-labor-costs').innerText = `£${laborCosts.toFixed(2)}`;
+            document.getElementById('summary-testing-costs').innerText = `£${computedTestingCharge.toFixed(2)}`;
+            document.getElementById('summary-gross-total').innerText = `£${grossTotal.toFixed(2)}`;
+            
+            return { netMaterials, markedMaterials, laborCosts, computedTestingCharge, grossTotal, markup, isTestingIncluded, testingCostFixed };
+        }
+
+        // --- ACCOUNT IDENTITY MANAGEMENT ROUTINES ---
+        function handleUserProfileChange() {
+            const chosenUser = document.getElementById('global-user-profile-select').value;
+            localStorage.setItem('eny_profile_user', chosenUser);
+            loadCurrentProfileBankConfig();
+        }
+
+        function loadCurrentProfileBankConfig() {
+            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
+            const bankData = JSON.parse(localStorage.getItem(`eny_bank_${user}`)) || { name: '', acc: '', sort: '' };
+            document.getElementById('cfg-bank-name').value = bankData.name || '';
+            document.getElementById('cfg-bank-acc').value = bankData.acc || '';
+            document.getElementById('cfg-bank-sort').value = bankData.sort || '';
+        }
+
+        function saveCurrentProfileBankConfig() {
+            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
+            const payload = {
+                name: document.getElementById('cfg-bank-name').value.trim(),
+                acc: document.getElementById('cfg-bank-acc').value.trim(),
+                sort: document.getElementById('cfg-bank-sort').value.trim()
+            };
+            localStorage.setItem(`eny_bank_${user}`, JSON.stringify(payload));
+        }
+
+        function switchTab(targetTabId) {
+            document.querySelectorAll('.tab-content').forEach(element => element.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+                btn.classList.add('text-slate-400', 'hover:text-white');
+            });
+            document.getElementById(targetTabId).classList.add('active');
+            const targetButton = document.getElementById(`btn-${targetTabId}`);
+            if (targetButton) {
+                targetButton.classList.remove('text-slate-400', 'hover:text-white');
+                targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+            }
+        }
+
+        // --- DASHBOARD AND METRICS BUILDERS ---
         function rebuildHomeDashboardMetrics() {
             const records = getStoredVaultRecords();
             const pendingQuotes = records.filter(r => r.status === 'Sent');
@@ -807,44 +998,90 @@
             }
         }
 
-        // --- ACCOUNT IDENTITY MANAGEMENT ROUTINES ---
-        function handleUserProfileChange() {
-            const chosenUser = document.getElementById('global-user-profile-select').value;
-            localStorage.setItem('eny_profile_user', chosenUser);
-            loadCurrentProfileBankConfig();
+        // --- MATERIAL ALLOCATION HELPERS ---
+        function allocateItemToQuote(itemId) {
+            const inventory = getStoredInventory();
+            const match = inventory.find(i => i.id === itemId);
+            const activeMatch = activeAllocatedMaterials.find(i => i.id === itemId);
+            if (activeMatch) { activeMatch.qty += 1; } else { activeAllocatedMaterials.push({ ...match, qty: 1 }); }
+            rebuildAllocatedMaterialsTable();
         }
 
-        function loadCurrentProfileBankConfig() {
-            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
-            const bankData = JSON.parse(localStorage.getItem(`eny_bank_${user}`)) || { name: '', acc: '', sort: '' };
-            document.getElementById('cfg-bank-name').value = bankData.name || '';
-            document.getElementById('cfg-bank-acc').value = bankData.acc || '';
-            document.getElementById('cfg-bank-sort').value = bankData.sort || '';
+        function updateAllocationQty(itemId, newQty) {
+            const idx = activeAllocatedMaterials.findIndex(i => i.id === itemId);
+            if(idx === -1) return;
+            const clean = parseInt(newQty);
+            if (isNaN(clean) || clean <= 0) { activeAllocatedMaterials.splice(idx, 1); } else { activeAllocatedMaterials[idx].qty = clean; }
+            rebuildAllocatedMaterialsTable();
         }
 
-        function saveCurrentProfileBankConfig() {
-            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
-            const payload = {
-                name: document.getElementById('cfg-bank-name').value.trim(),
-                acc: document.getElementById('cfg-bank-acc').value.trim(),
-                sort: document.getElementById('cfg-bank-sort').value.trim()
-            };
-            localStorage.setItem(`eny_bank_${user}`, JSON.stringify(payload));
-        }
-
-        function switchTab(targetTabId) {
-            document.querySelectorAll('.tab-content').forEach(element => element.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
-                btn.classList.add('text-slate-400', 'hover:text-white');
-            });
-            document.getElementById(targetTabId).classList.add('active');
-            const targetButton = document.getElementById(`btn-${targetTabId}`);
-            if (targetButton) {
-                targetButton.classList.remove('text-slate-400', 'hover:text-white');
-                targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+        function rebuildAllocatedMaterialsTable() {
+            const tbody = document.getElementById('allocated-materials-body');
+            if (activeAllocatedMaterials.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">No items selected.</td></tr>`;
+                calculateComprehensiveMetrics();
+                return;
             }
+            tbody.innerHTML = activeAllocatedMaterials.map(item => `
+                <tr class="border-b border-slate-900 text-xs text-slate-200">
+                    <td class="py-3 px-2"><div>${item.desc}</div><div class="text-[10px] font-mono text-slate-500 mt-0.5">${item.sku}</div></td>
+                    <td class="py-3 px-2 text-center"><input type="number" value="${item.qty}" min="1" onchange="updateAllocationQty('${item.id}', this.value)" class="w-12 bg-slate-900 border border-slate-800 text-center rounded p-1 font-mono text-white"></td>
+                    <td class="py-3 px-2 text-right font-mono">£${parseFloat(item.cost).toFixed(2)}</td>
+                    <td class="py-3 px-2 text-right font-mono font-bold text-white">£${(parseFloat(item.cost) * item.qty).toFixed(2)}</td>
+                    <td class="py-3 px-2 text-center"><button onclick="activeAllocatedMaterials=activeAllocatedMaterials.filter(i=>i.id!='${item.id}');rebuildAllocatedMaterialsTable();" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+            calculateComprehensiveMetrics();
         }
+
+        function filterMaterialCatalog() {
+            const searchInput = document.getElementById('material-search-input');
+            const searchString = searchInput ? searchInput.value.toLowerCase().trim() : "";
+            const resultsGrid = document.getElementById('catalog-results-grid');
+            const currentInventory = getStoredInventory();
+            
+            const targetedSubset = currentInventory.filter(item => {
+                const matchCategory = (selectedCategoryFilter === "ALL" || item.category === selectedCategoryFilter);
+                const matchSearch = item.desc.toLowerCase().includes(searchString) || item.sku.toLowerCase().includes(searchString);
+                return matchCategory && matchSearch;
+            });
+
+            if (targetedSubset.length === 0) { resultsGrid.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-slate-500">No matching stock items found.</div>`; return; }
+
+            resultsGrid.innerHTML = targetedSubset.map(item => `
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-slate-700 transition-colors">
+                    <div>
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-mono tracking-wider font-semibold text-amber-500">${item.sku}</span>
+                            <span class="text-[9px] text-slate-500 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800">${item.category}</span>
+                        </div>
+                        <h4 class="text-xs font-medium text-slate-200 mt-1 line-clamp-2">${item.desc}</h4>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-950">
+                        <span class="text-sm font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</span>
+                        <button type="button" onclick="allocateItemToQuote('${item.id}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 p-1.5 rounded-lg transition-all text-slate-300 cursor-pointer"><i data-lucide="plus" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderCategoryNavigationTabs() {
+            const container = document.getElementById('category-tabs-container');
+            if(!container) return;
+            const currentInventory = getStoredInventory();
+            const uniqueCategories = ["ALL", ...new Set(currentInventory.map(item => item.category).filter(Boolean))];
+            
+            if (!uniqueCategories.includes(selectedCategoryFilter)) selectedCategoryFilter = "ALL";
+
+            container.innerHTML = uniqueCategories.map(cat => {
+                const isSelected = selectedCategoryFilter === cat;
+                return `<button type="button" onclick="setCategoryFilter('${cat}')" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${isSelected ? 'bg-slate-100 text-slate-950 border-white font-semibold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'}">${cat}</button>`;
+            }).join('');
+        }
+
+        function setCategoryFilter(categoryName) { selectedCategoryFilter = categoryName; renderCategoryNavigationTabs(); filterMaterialCatalog(); }
 
         // --- SHOPPING LIST LOGIC ---
         function toggleQuoteSelection(id) {
@@ -926,21 +1163,19 @@
         function rebuildJobTemplatesDropdown() {
             const select = document.getElementById('prefilled-job-select');
             if (!select) return;
-            select.innerHTML = '<option value="">-- Blank Workspace Canvas --</option>' + getStoredTemplates().map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            select.innerHTML = '<option value="">-- Blank Workspace Canvas --</option>' + JSON.parse(localStorage.getItem('eny_templates') || '[]').map(t => `<option value="${t.id}">${t.name}</option>`).join('');
         }
 
         function applyPrefilledJobTemplate() {
             const templateId = document.getElementById('prefilled-job-select').value;
             if (!templateId) return;
 
-            const templates = getStoredTemplates();
+            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
             const inventory = getStoredInventory();
             const template = templates.find(t => t.id === templateId);
             if (!template) return;
 
             document.getElementById('job-name').value = template.name;
-            document.getElementById('labor-hours').value = template.hours;
-            document.getElementById('include-testing-toggle').checked = template.testing;
             
             activeAllocatedMaterials = [];
             template.items.forEach(ti => {
@@ -952,10 +1187,10 @@
             document.getElementById('prefilled-job-select').value = ""; 
         }
 
-        // --- CUSTOM TEMPLATE CREATION & CONFIGURATION MANAGEMENT ---
+        // --- TEMPLATES MANAGER CORES ---
         function rebuildTemplatesManagementInterface() {
             const stock = getStoredInventory();
-            const templates = getStoredTemplates();
+            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
             
             const selectorBox = document.getElementById('template-materials-selector-box');
             if (selectorBox) {
@@ -987,16 +1222,9 @@
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                         <div class="space-y-1">
                             <h3 class="text-sm font-bold text-white">${t.name}</h3>
-                            <div class="flex flex-wrap gap-3 text-[11px] text-slate-400">
-                                <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${t.hours} Hours Line</span>
-                                <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3 h-3"></i> ${t.testing ? 'Testing Certificate Appended' : 'Cert Excluded'}</span>
-                            </div>
                             <div class="text-[10px] text-slate-500 font-mono pt-1 leading-relaxed">${partsText || 'No custom materials mapped.'}</div>
                         </div>
                         <div class="flex items-center gap-2 self-end md:self-auto">
-                            <button onclick="loadTemplateForEdit('${t.id}')" class="text-xs bg-slate-800 hover:bg-slate-750 text-amber-400 px-3 py-1.5 rounded-lg border border-slate-700 font-medium transition-colors flex items-center gap-1 cursor-pointer">
-                                <i data-lucide="edit-2" class="w-3.5 h-3.5"></i> Modify
-                            </button>
                             <button onclick="deleteJobTemplatePreset('${t.id}')" class="text-slate-500 hover:text-red-400 p-2 rounded-lg transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>
@@ -1014,8 +1242,6 @@
         function saveJobTemplateConfig(event) {
             event.preventDefault();
             const name = document.getElementById('template-name-input').value.trim();
-            const hours = parseInt(document.getElementById('template-hours-input').value) || 0;
-            const testing = document.getElementById('template-testing-input').checked;
             const editId = document.getElementById('template-id-field').value;
 
             let checkedItems = [];
@@ -1025,65 +1251,40 @@
                 checkedItems.push({ id, qty });
             });
 
-            let templates = getStoredTemplates();
+            let templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
 
             if (editId) {
                 const idx = templates.findIndex(t => t.id === editId);
-                if (idx !== -1) { templates[idx] = { id: editId, name, hours, testing, items: checkedItems }; }
-            } else { templates.push({ id: 'TMPL-' + Date.now(), name, hours, testing, items: checkedItems }); }
+                if (idx !== -1) { templates[idx] = { id: editId, name, items: checkedItems }; }
+            } else { templates.push({ id: 'TMPL-' + Date.now(), name, items: checkedItems }); }
 
             localStorage.setItem('eny_templates', JSON.stringify(templates));
             clearTemplateForm();
             reconstructUnifiedInterfaces();
         }
 
-        function loadTemplateForEdit(id) {
-            const templates = getStoredTemplates();
-            const target = templates.find(t => t.id === id);
-            if (!target) return;
-
-            clearTemplateForm();
-            
-            document.getElementById('template-id-field').value = target.id;
-            document.getElementById('template-name-input').value = target.name;
-            document.getElementById('template-hours-input').value = target.hours;
-            document.getElementById('template-testing-input').checked = target.testing;
-
-            target.items.forEach(ti => {
-                const chk = document.getElementById(`chk-tmpl-mat-${ti.id}`);
-                const qtyInput = document.getElementById(`input-tmpl-qty-${ti.id}`);
-                if (chk && qtyInput) {
-                    chk.checked = true;
-                    qtyInput.value = ti.qty;
-                    qtyInput.disabled = false;
-                    qtyInput.classList.remove('hidden');
-                }
-            });
-
-            document.getElementById('template-edit-banner').classList.remove('hidden');
-            document.getElementById('editing-template-name').innerText = target.name;
-            document.getElementById('template-form-title').innerText = "Modify Template Preset";
-            document.getElementById('template-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Template Preset`;
-            lucide.createIcons();
-        }
-
         function clearTemplateForm() {
             document.getElementById('new-template-form').reset();
             document.getElementById('template-id-field').value = "";
-            document.getElementById('template-edit-banner').classList.add('hidden');
             document.getElementById('template-form-title').innerText = "Create Job Template";
-            document.getElementById('template-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job Template`;
             
             document.querySelectorAll('.tmpl-mat-checkbox').forEach(chk => { chk.checked = false; });
             document.querySelectorAll('[id^="input-tmpl-qty-"]').forEach(input => { input.disabled = true; input.classList.add('hidden'); });
             lucide.createIcons();
         }
 
-        // --- CORE RELOAD ENGINE (LOAD & EDIT) ---
+        function deleteJobTemplatePreset(id) {
+            if (!confirm("Permanently remove this template preset?")) return;
+            let templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
+            localStorage.setItem('eny_templates', JSON.stringify(templates.filter(t => t.id !== id)));
+            reconstructUnifiedInterfaces();
+        }
+
+        // --- CORE LOAD AND OVERWRITE UTILS ---
         function loadQuoteForActiveModification(quoteId) {
             const vault = getStoredVaultRecords();
             const targetedQuote = vault.find(q => q.id === quoteId);
-            if(!targetedQuote) { alert("Target file snapshot could not be accessed inside storage records."); return; }
+            if(!targetedQuote) { alert("Target document log file data could not be accessed."); return; }
 
             currentlyEditingQuoteId = targetedQuote.id;
             activeLinkedClientId = targetedQuote.linkedClientId || "";
@@ -1094,23 +1295,23 @@
             document.getElementById('client-email').value = targetedQuote.clientDetailsPayload?.email || "";
             document.getElementById('client-address').value = targetedQuote.clientDetailsPayload?.address || "";
             
-            document.getElementById('labor-hours').value = targetedQuote.laborHours !== undefined ? targetedQuote.laborHours : 8;
-            document.getElementById('labor-rate').value = targetedQuote.laborRate !== undefined ? targetedQuote.laborRate : 45;
-            document.getElementById('global-markup').value = targetedQuote.globalMarkup !== undefined ? targetedQuote.globalMarkup : 25;
+            // Restore legacy configuration schema parameters gracefully if found
+            if (targetedQuote.laborFormatBoundType) {
+                setLaborBookingFormat(targetedQuote.laborFormatBoundType);
+                if (targetedQuote.laborFormatBoundType === 'HOUR' && targetedQuote.subsequentHoursSliderCount) {
+                    document.getElementById('labor-hour-slider').value = targetedQuote.subsequentHoursSliderCount;
+                    document.getElementById('display-hours-count').innerText = targetedQuote.subsequentHoursSliderCount;
+                }
+            } else {
+                setLaborBookingFormat('DAY');
+            }
 
             const testingToggle = document.getElementById('include-testing-toggle');
             const testingCostInput = document.getElementById('testing-flat-cost');
-            
             if (targetedQuote.includeTestingCertificate === true) {
                 testingToggle.checked = true;
                 testingCostInput.value = targetedQuote.testingCostFixed !== undefined ? targetedQuote.testingCostFixed : 75.00;
             } else { testingToggle.checked = false; }
-
-            if (targetedQuote.ownerOperatorProfileID) {
-                document.getElementById('global-user-profile-select').value = targetedQuote.ownerOperatorProfileID;
-                localStorage.setItem('eny_profile_user', targetedQuote.ownerOperatorProfileID);
-                loadCurrentProfileBankConfig();
-            }
 
             document.getElementById('editing-mode-banner').classList.remove('hidden');
             document.getElementById('editing-record-id-display').innerText = targetedQuote.id;
@@ -1133,6 +1334,7 @@
             document.getElementById('client-email').value = "";
             document.getElementById('client-address').value = "";
             document.getElementById('include-testing-toggle').checked = false;
+            setLaborBookingFormat('DAY');
 
             document.getElementById('editing-mode-banner').classList.add('hidden');
             document.getElementById('standard-save-actions-wrapper').classList.remove('hidden');
@@ -1142,75 +1344,23 @@
             rebuildQuoteClientDropdown();
         }
 
-        // --- AUTOMATIC NAVIGATION MATRIX FILTERS ---
-        function renderCategoryNavigationTabs() {
-            const container = document.getElementById('category-tabs-container');
-            const currentInventory = getStoredInventory();
-            const uniqueCategories = ["ALL", ...new Set(currentInventory.map(item => item.category).filter(Boolean))];
-            
-            if (!uniqueCategories.includes(selectedCategoryFilter)) selectedCategoryFilter = "ALL";
-
-            container.innerHTML = uniqueCategories.map(cat => {
-                const isSelected = selectedCategoryFilter === cat;
-                return `<button type="button" onclick="setCategoryFilter('${cat}')" class="px-3 py-1.5 rounded-lg text-xs font-medium border transition-all cursor-pointer ${isSelected ? 'bg-slate-100 text-slate-950 border-white font-semibold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'}">${cat}</button>`;
-            }).join('');
-        }
-
-        function setCategoryFilter(categoryName) { selectedCategoryFilter = categoryName; renderCategoryNavigationTabs(); filterMaterialCatalog(); }
-
-        function filterMaterialCatalog() {
-            const searchInput = document.getElementById('material-search-input');
-            const searchString = searchInput ? searchInput.value.toLowerCase().trim() : "";
-            const resultsGrid = document.getElementById('catalog-results-grid');
-            const currentInventory = getStoredInventory();
-            
-            const targetedSubset = currentInventory.filter(item => {
-                const matchCategory = (selectedCategoryFilter === "ALL" || item.category === selectedCategoryFilter);
-                const matchSearch = item.desc.toLowerCase().includes(searchString) || item.sku.toLowerCase().includes(searchString);
-                return matchCategory && matchSearch;
-            });
-
-            if (targetedSubset.length === 0) { resultsGrid.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-slate-500">No matching stock items found.</div>`; return; }
-
-            resultsGrid.innerHTML = targetedSubset.map(item => `
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-slate-700 transition-colors">
-                    <div>
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="text-[10px] font-mono tracking-wider font-semibold text-amber-500">${item.sku}</span>
-                            <span class="text-[9px] text-slate-500 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800">${item.category}</span>
-                        </div>
-                        <h4 class="text-xs font-medium text-slate-200 mt-1 line-clamp-2">${item.desc}</h4>
-                    </div>
-                    <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-950">
-                        <span class="text-sm font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</span>
-                        <button type="button" onclick="allocateItemToQuote('${item.id}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 p-1.5 rounded-lg transition-all text-slate-300 cursor-pointer"><i data-lucide="plus" class="w-3.5 h-3.5"></i></button>
-                    </div>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        // --- STOCK DIRECTORY INTERACTIVE EDITOR ENGINE ---
+        // --- DIRECTORY STOCK MANAGER UTILS ---
         function createCustomInventoryItem(event) {
             event.preventDefault();
             const currentInventory = getStoredInventory();
             
             const providedSku = document.getElementById('stock-sku').value.trim();
             const providedDesc = document.getElementById('stock-desc').value.trim();
-            const rawCost = parseFloat(document.getElementById('stock-cost').value) || 0;
-            // Strict Rounding Constraint Parameter Implementation
-            const roundedWholeCost = Math.ceil(rawCost);
+            const roundedWholeCost = Math.ceil(parseFloat(document.getElementById('stock-cost').value) || 0);
             const providedCategory = document.getElementById('stock-category').value.trim();
             const editId = document.getElementById('stock-id-field').value;
 
             if (editId) {
-                // Modifying an existing item structure
                 const matchIdx = currentInventory.findIndex(i => i.id === editId);
                 if (matchIdx !== -1) {
                     currentInventory[matchIdx] = { id: editId, sku: providedSku, desc: providedDesc, cost: roundedWholeCost, category: providedCategory };
                 }
             } else {
-                // Appending clean entry record lines
                 if(currentInventory.some(i => i.sku.toLowerCase() === providedSku.toLowerCase())) { alert("An item with this Part Number/SKU identifier already exists."); return; }
                 currentInventory.push({ id: 'MAT-' + Date.now(), sku: providedSku, desc: providedDesc, cost: roundedWholeCost, category: providedCategory });
             }
@@ -1247,7 +1397,7 @@
         }
 
         function purgeInventoryItem(itemId, event) {
-            if(event) event.stopPropagation(); // Stop row click propagation firing
+            if(event) event.stopPropagation();
             if(!confirm("Permanently discard this item from lookup indices?")) return;
             let currentInventory = getStoredInventory();
             localStorage.setItem('eny_inventory', JSON.stringify(currentInventory.filter(i => i.id !== itemId)));
@@ -1262,7 +1412,7 @@
             if(inventory.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">Stock directory empty.</td></tr>`; return; }
             
             tbody.innerHTML = inventory.map(item => `
-                <tr onclick="loadStockItemForModification('${item.id}')" class="text-xs text-slate-300 hover:bg-slate-800/40 cursor-pointer transition-colors group">
+                <tr class="text-xs text-slate-300 hover:bg-slate-800/40 cursor-pointer transition-colors group" onclick="loadStockItemForModification('${item.id}')">
                     <td class="py-3 px-2 font-mono font-semibold text-amber-500 group-hover:text-amber-400">${item.sku}</td>
                     <td class="py-3 px-2 font-medium text-slate-100 group-hover:underline">${item.desc}</td>
                     <td class="py-3 px-2 text-slate-400"><span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800/60">${item.category}</span></td>
@@ -1276,72 +1426,10 @@
         }
 
         function rebuildDatalistAssistanceArray() {
-            const list = document.getElementById('existing-categories');
-            list.innerHTML = [...new Set(getStoredInventory().map(i => i.category).filter(Boolean))].map(c => `<option value="${c}"></option>`).join('');
+            document.getElementById('existing-categories').innerHTML = [...new Set(getStoredInventory().map(i => i.category).filter(Boolean))].map(c => `<option value="${c}"></option>`).join('');
         }
 
-        // --- CALC SHEET BUILD DATA MANAGEMENT ---
-        function allocateItemToQuote(itemId) {
-            const inventory = getStoredInventory();
-            const match = inventory.find(i => i.id === itemId);
-            const activeMatch = activeAllocatedMaterials.find(i => i.id === itemId);
-            if (activeMatch) { activeMatch.qty += 1; } else { activeAllocatedMaterials.push({ ...match, qty: 1 }); }
-            rebuildAllocatedMaterialsTable();
-        }
-
-        function updateAllocationQty(itemId, newQty) {
-            const idx = activeAllocatedMaterials.findIndex(i => i.id === itemId);
-            if(idx === -1) return;
-            const clean = parseInt(newQty);
-            if (isNaN(clean) || clean <= 0) { activeAllocatedMaterials.splice(idx, 1); } else { activeAllocatedMaterials[idx].qty = clean; }
-            rebuildAllocatedMaterialsTable();
-        }
-
-        function rebuildAllocatedMaterialsTable() {
-            const tbody = document.getElementById('allocated-materials-body');
-            if (activeAllocatedMaterials.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">No items selected.</td></tr>`;
-                calculateComprehensiveMetrics();
-                return;
-            }
-            tbody.innerHTML = activeAllocatedMaterials.map(item => `
-                <tr class="border-b border-slate-900 text-xs text-slate-200">
-                    <td class="py-3 px-2"><div>${item.desc}</div><div class="text-[10px] font-mono text-slate-500 mt-0.5">${item.sku}</div></td>
-                    <td class="py-3 px-2 text-center"><input type="number" value="${item.qty}" min="1" onchange="updateAllocationQty('${item.id}', this.value)" class="w-12 bg-slate-900 border border-slate-800 text-center rounded p-1 font-mono text-white"></td>
-                    <td class="py-3 px-2 text-right font-mono">£${parseFloat(item.cost).toFixed(2)}</td>
-                    <td class="py-3 px-2 text-right font-mono font-bold text-white">£${(parseFloat(item.cost) * item.qty).toFixed(2)}</td>
-                    <td class="py-3 px-2 text-center"><button onclick="activeAllocatedMaterials=activeAllocatedMaterials.filter(i=>i.id!='${item.id}');rebuildAllocatedMaterialsTable();" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></td>
-                </tr>
-            `).join('');
-            lucide.createIcons();
-            calculateComprehensiveMetrics();
-        }
-
-        function calculateComprehensiveMetrics() {
-            const netMaterials = activeAllocatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost) * curr.qty), 0);
-            const markup = parseFloat(document.getElementById('global-markup').value) || 0;
-            const markedMaterials = netMaterials * (1 + (markup / 100));
-            
-            const laborHours = parseFloat(document.getElementById('labor-hours').value) || 0;
-            const laborRate = parseFloat(document.getElementById('labor-rate').value) || 0;
-            const laborCosts = laborHours * laborRate;
-            
-            const isTestingIncluded = document.getElementById('include-testing-toggle').checked;
-            const testingCostFixed = parseFloat(document.getElementById('testing-flat-cost').value) || 0;
-            const computedTestingCharge = isTestingIncluded ? testingCostFixed : 0;
-
-            const grossTotal = markedMaterials + laborCosts + computedTestingCharge;
-
-            document.getElementById('summary-net-materials').innerText = `£${netMaterials.toFixed(2)}`;
-            document.getElementById('summary-marked-materials').innerText = `£${markedMaterials.toFixed(2)}`;
-            document.getElementById('summary-labor-costs').innerText = `£${laborCosts.toFixed(2)}`;
-            document.getElementById('summary-testing-costs').innerText = `£${computedTestingCharge.toFixed(2)}`;
-            document.getElementById('summary-gross-total').innerText = `£${grossTotal.toFixed(2)}`;
-            
-            return { netMaterials, markedMaterials, laborCosts, computedTestingCharge, grossTotal, laborHours, laborRate, markup, isTestingIncluded, testingCostFixed };
-        }
-
-        // --- CLIENT REGISTER CRM PROCESSORS ---
+        // --- CLIENT CRM ACCORDION ENGINE LOGIC ---
         function createNewClientProfile(event) {
             if(event) event.preventDefault();
             const clients = getStoredClients();
@@ -1383,11 +1471,7 @@
             const filterText = searchInput ? searchInput.value.toLowerCase().trim() : "";
             const clients = getStoredClients(); const records = getStoredVaultRecords();
             
-            const filteredClients = clients.filter(c => {
-                const clientJobs = records.filter(j => j.linkedClientId === c.id);
-                const matchesJobInfo = clientJobs.some(j => j.jobName.toLowerCase().includes(filterText) || j.id.toLowerCase().includes(filterText));
-                return c.name.toLowerCase().includes(filterText) || (c.email && c.email.toLowerCase().includes(filterText)) || (c.address && c.address.toLowerCase().includes(filterText)) || (c.phone && c.phone.includes(filterText)) || matchesJobInfo;
-            });
+            const filteredClients = clients.filter(c => c.name.toLowerCase().includes(filterText));
 
             document.getElementById('crm-count-badge').innerText = `${filteredClients.length} Account${filteredClients.length===1?'':'s'}`;
             if(filteredClients.length === 0) { empty.classList.remove('hidden'); wrapper.innerHTML=""; return; }
@@ -1410,29 +1494,24 @@
                             <div><span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Billing Site</span><div class="text-slate-300 leading-relaxed"><i data-lucide="map-pin" class="w-3 h-3 text-slate-500 inline mr-1"></i>${client.address || 'None'}</div></div>
                             <div><span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Linked Records History</span>
                                 <div class="max-h-36 overflow-y-auto space-y-1.5 custom-scrollbar pr-1">
-                                    ${jobs.length===0?'<span class="text-slate-500 italic">No historical sheets.</span>':jobs.map(j=> {
-                                        const itemsSummaryText = j.itemsSnapshot?.map(i => `• ${i.desc} (x${i.qty})`).join('<br>') || 'No items.';
-                                        let statusBadgeClass = j.status === 'Sent' ? 'bg-blue-500/20 text-blue-400' : (j.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400' : (j.status === 'Invoiced' ? 'bg-purple-500/20 text-purple-400' : (j.status === 'Paid' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400')));
-                                        return `
+                                    ${jobs.length===0?'<span class="text-slate-500 italic">No historical sheets.</span>':jobs.map(j=> `
                                         <div class="bg-slate-900 border border-slate-800 p-2 rounded-lg space-y-2">
                                             <div class="truncate">
-                                                <div class="flex items-center gap-2 mb-1"><span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${statusBadgeClass}">${j.status || 'Draft'}</span><span class="font-bold text-slate-200 block text-[10px] truncate">${j.jobName}</span></div>
+                                                <div class="flex items-center gap-2 mb-1"><span class="font-bold text-slate-200 block text-[10px] truncate">${j.jobName}</span></div>
                                                 <div class="flex items-center justify-between text-[9px] text-slate-400 font-mono mt-0.5"><span>${j.id}</span><span class="text-amber-400 font-bold">£${j.financials.grossTotal.toFixed(2)}</span></div>
                                             </div>
                                             <div class="grid grid-cols-2 gap-1 pt-1.5 border-t border-slate-800/60">
                                                 <button onclick="toggleInlineQuoteBreakdownFolder('crm-folder-${j.id}')" class="text-[10px] font-semibold text-slate-300 hover:text-white bg-slate-950 px-1.5 py-1 rounded border border-slate-800 flex items-center justify-center gap-1 cursor-pointer"><i data-lucide="eye" class="w-2.5 h-2.5"></i> Inspect</button>
                                                 <button onclick="loadQuoteForActiveModification('${j.id}')" class="text-[10px] font-semibold text-amber-400 hover:text-amber-300 bg-slate-950 px-1.5 py-1 rounded border border-slate-800 flex items-center justify-center gap-1 cursor-pointer"><i data-lucide="edit" class="w-2.5 h-2.5"></i> Edit</button>
                                             </div>
-                                            <div id="crm-folder-${j.id}" class="hidden pt-2 text-[10px] border-t border-dashed border-slate-800 text-slate-400 space-y-2 bg-slate-950/80 p-2 rounded">
+                                            <div id="crm-folder-${j.id}" class="hidden pt-2 text-[10px] border-t border-dashed border-slate-800 text-slate-400 bg-slate-950/80 p-2 rounded">
                                                 <div class="space-y-1">
                                                     <div class="flex justify-between"><span>Materials:</span><span class="font-mono">£${j.financials.markedMaterials.toFixed(2)}</span></div>
                                                     <div class="flex justify-between"><span>Labor:</span><span class="font-mono">£${j.financials.laborCosts.toFixed(2)}</span></div>
                                                 </div>
-                                                <div class="border-t border-slate-800 pt-1 font-bold text-slate-300">Inventory Manifest:</div>
-                                                <div class="text-[9px] leading-relaxed max-h-20 overflow-y-auto font-mono text-slate-400 custom-scrollbar pr-1">${itemsSummaryText}</div>
                                             </div>
                                         </div>
-                                    `}).join('')}
+                                    `).join('')}
                                 </div>
                             </div>
                         </div>
@@ -1442,7 +1521,6 @@
             lucide.createIcons();
         }
 
-        // --- LIFECYCLE / STATUS MACHINE ACTIONS ---
         function updateQuoteStatus(id, newStatus) {
             let vault = getStoredVaultRecords();
             let targetIdx = vault.findIndex(r => r.id === id);
@@ -1453,7 +1531,6 @@
             }
         }
 
-        // --- INVOICE RECONCILIATION MODAL LOGIC ---
         function openInvoiceReconciliation(id) {
             const vault = getStoredVaultRecords();
             const target = vault.find(r => r.id === id);
@@ -1485,7 +1562,6 @@
             }
         }
 
-        // --- PROFITABILITY MODAL LOGIC ---
         function openProfitModal(id) {
             const vault = getStoredVaultRecords();
             const target = vault.find(r => r.id === id);
@@ -1504,37 +1580,23 @@
             document.getElementById('profit-labor').innerText = `${costLab.toFixed(2)}`;
             document.getElementById('profit-testing').innerText = `${costTest.toFixed(2)}`;
             document.getElementById('profit-net').innerText = `£${netProfit.toFixed(2)}`;
-            
-            const marginEl = document.getElementById('profit-margin');
-            marginEl.innerText = `${margin}%`;
-            
-            if (netProfit < 0) {
-                document.getElementById('profit-net').classList.replace('text-emerald-400', 'text-red-500');
-                marginEl.classList.replace('text-amber-400', 'text-red-500');
-            } else {
-                document.getElementById('profit-net').classList.replace('text-red-500', 'text-emerald-400');
-                marginEl.classList.replace('text-red-500', 'text-amber-400');
-            }
-
+            document.getElementById('profit-margin').innerText = `${margin}%`;
             document.getElementById('profit-view-modal').classList.remove('hidden');
         }
 
         function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); }
 
-        // --- PDF GENERATION ENGINE ---
+        // --- PDF COMPILING GENERATION ENGINE ---
         function generateDocumentPDF(id) {
             const vault = getStoredVaultRecords();
             const target = vault.find(r => r.id === id);
             if (!target) return;
 
-            if (target.status === 'Draft' || !target.status) {
-                updateQuoteStatus(id, 'Sent');
-            }
+            if (target.status === 'Draft' || !target.status) updateQuoteStatus(id, 'Sent');
 
             const isInvoice = target.status === 'Invoiced' || target.status === 'Paid';
             const docPrefix = isInvoice ? 'Invoice' : 'Quotation';
             const clientName = target.clientDetailsPayload?.name || 'Client';
-            const headerTitle = `${docPrefix}`;
 
             const docUser = target.ownerOperatorProfileID || 'HUGHES';
             const bankConfig = JSON.parse(localStorage.getItem(`eny_bank_${docUser}`)) || { name: 'ENY Electrical', acc: 'XXXXXXXX', sort: 'XX-XX-XX' };
@@ -1543,23 +1605,22 @@
             const labourValue = target.financials.laborCosts || 0;
             const testingValue = target.includeTestingCertificate ? (target.financials.testingCosts || 0) : 0;
             const subtotalValue = materialsValue + labourValue + testingValue;
-            const totalValue = target.financials.grossTotal || 0;
 
             let itemsHtml = `
                 <tr style="background-color: #ffffff;">
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Materials</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Materials Portfolio Summary</td>
                     <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: center;">1</td>
                     <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${materialsValue.toFixed(2)}</td>
                     <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${materialsValue.toFixed(2)}</td>
                 </tr>
                 <tr style="background-color: #f8fafc;">
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Labour</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Contracting Labour Operations Allocation</td>
                     <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: center;">1</td>
                     <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${labourValue.toFixed(2)}</td>
                     <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${labourValue.toFixed(2)}</td>
                 </tr>
                 <tr style="background-color: #ffffff;">
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Testing & Certification</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Testing, Initial Verification & compliance Certification</td>
                     <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: center;">1</td>
                     <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${testingValue.toFixed(2)}</td>
                     <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${testingValue.toFixed(2)}</td>
@@ -1569,9 +1630,8 @@
             const invoiceBankBlock = isInvoice 
                 ? `<div style="margin-top: 15px; padding: 10px; background-color: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px;">
                     <strong>Bank Payment Transfer Details:</strong><br>
-                    Account Name: ${bankConfig.name || 'ENY Electrical'} &nbsp;|&nbsp; Account Number: ${bankConfig.acc || 'XXXXXXXX'} &nbsp;|&nbsp; Sort Code: ${bankConfig.sort || 'XX-XX-XX'}
-                   </div>`
-                : '';
+                    Account Name: ${bankConfig.name} &nbsp;|&nbsp; Account Number: ${bankConfig.acc} &nbsp;|&nbsp; Sort Code: ${bankConfig.sort}
+                   </div>` : '';
 
             const pdfHtml = `
                 <div style="padding: 45px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #334155; background-color: #ffffff; min-height: 842px; position: relative;">
@@ -1580,11 +1640,11 @@
                         <tr>
                             <td style="vertical-align: top;">
                                 <div style="font-size: 14px; color: #475569; font-weight: 500; tracking-wide; margin-bottom: 8px;">Electricians Near You</div>
-                                <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #1e3a8a; tracking-tight;">${headerTitle}</h1>
+                                <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #1e3a8a; tracking-tight;">${docPrefix}</h1>
                                 <div style="font-size: 11px; color: #db2777; font-weight: 600; margin-top: 4px;">Submitted on ${target.timestamp.split(' ')[0]}</div>
                             </td>
                             <td style="text-align: right; vertical-align: top;">
-                                <div style="display: inline-block; border: 2px solid #e2e8f0; border-radius: 50%; width: 72px; height: 72px; text-align: center; line-height: 68px; font-size: 18px; font-bold: 800; color: #1e3a8a; background-color: #fafafa;">ENY</div>
+                                <div style="display: inline-block; border: 2px solid #e2e8f0; border-radius: 50%; width: 72px; height: 72px; text-align: center; line-height: 68px; font-size: 18px; font-weight: 800; color: #1e3a8a; background-color: #fafafa;">ENY</div>
                             </td>
                         </tr>
                     </table>
@@ -1596,8 +1656,8 @@
                                 ${target.clientDetailsPayload?.address ? `<div style="color: #475569; line-height: 1.4; font-size: 12px;">${target.clientDetailsPayload.address}</div>` : ''}
                             </td>
                             <td style="width: 40%; vertical-align: top; line-height: 1.6; color: #475569; padding-left: 20px;">
-                                <div><strong style="color: #0f172a;">${isInvoice ? 'Invoice' : 'Quote'} #:</strong> ${target.id.slice(-5)}</div>
-                                <div style="margin-top: 4px;"><strong style="color: #0f172a;">Project:</strong></div>
+                                <div><strong style="color: #0f172a;">${docPrefix} #:</strong> ${target.id.slice(-5)}</div>
+                                <div style="margin-top: 4px;"><strong style="color: #0f172a;">Project Scope:</strong></div>
                                 <div style="color: #0f172a; font-weight: 500; font-size: 12px;">${target.jobName}</div>
                             </td>
                         </tr>
@@ -1623,12 +1683,12 @@
                             <td style="width: 40%; vertical-align: top; text-align: right;">
                                 <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                                     <tr>
-                                        <td style="padding: 6px 0; color: #1e3a8a; font-weight: 600;">Subtotal</td>
+                                        <td style="padding: 6px 0; color: #1e3a8a; font-weight: 600;">Gross Total (Net)</td>
                                         <td style="padding: 6px 0; text-align: right; font-family: monospace; font-weight: 600; color: #0f172a; width: 110px;">£${subtotalValue.toFixed(2)}</td>
                                     </tr>
                                     <tr style="border-top: 1px dashed #cbd5e1;">
-                                        <td style="padding: 12px 0 0 0; font-size: 15px; font-weight: 700; color: #0f172a;">Total Due</td>
-                                        <td style="padding: 12px 0 0 0; text-align: right; font-size: 20px; font-weight: 800; color: #db2777; font-family: monospace;">£${totalValue.toFixed(2)}</td>
+                                        <td style="padding: 12px 0 0 0; font-size: 15px; font-weight: 700; color: #0f172a;">Total Balance Due</td>
+                                        <td style="padding: 12px 0 0 0; text-align: right; font-size: 20px; font-weight: 800; color: #db2777; font-family: monospace;">£${subtotalValue.toFixed(2)}</td>
                                     </tr>
                                 </table>
                             </td>
@@ -1644,7 +1704,6 @@
                 html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-
             html2pdf().set(opt).from(pdfHtml).save();
         }
 
@@ -1658,13 +1717,8 @@
             empty.classList.add('hidden'); table.classList.remove('hidden');
 
             tbody.innerHTML = records.map(r => {
-                const itemizedListHtml = (r.itemsSnapshot && r.itemsSnapshot.length > 0) 
-                    ? r.itemsSnapshot.map(i => `<div class="flex justify-between py-1 border-b border-slate-900/60 text-slate-400"><span>• ${i.desc} (x${i.qty})</span><span class="font-mono">£${(parseFloat(i.cost)*i.qty).toFixed(2)}</span></div>`).join('')
-                    : `<div class="text-slate-500 italic">No specific materials mapped.</div>`;
-
                 const isChecked = selectedVaultQuotes.has(r.id) ? 'checked' : '';
                 const status = r.status || 'Draft';
-                
                 let statusBadgeClass = 'bg-slate-800 text-slate-400 border-slate-700';
                 let primaryActionBtn = '';
                 let extraActionBtns = '';
@@ -1680,15 +1734,12 @@
                 } else if (status === 'Invoiced') {
                     statusBadgeClass = 'bg-purple-500/20 text-purple-400 border-purple-500/30';
                     primaryActionBtn = `<button onclick="updateQuoteStatus('${r.id}', 'Paid')" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 w-full transition-colors"><i data-lucide="pound-sterling" class="w-3.5 h-3.5"></i> Mark Paid</button>`;
-                    extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="View Profit Margin"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
+                    extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
                 } else if (status === 'Paid') {
                     statusBadgeClass = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
                     primaryActionBtn = `<div class="text-amber-400 text-[11px] font-bold flex items-center justify-center gap-1.5 w-full py-1.5 border border-amber-500/20 rounded-lg bg-amber-500/10"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Settled</div>`;
-                    extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="View Profit Margin"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
+                    extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
                 }
-
-                const pdfButton = `<button onclick="generateDocumentPDF('${r.id}')" class="text-blue-400 hover:text-blue-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors" title="Download Document"><i data-lucide="file-down" class="w-4 h-4"></i></button>`;
-                const profileBadge = `<span class="bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800 text-[9px] font-mono text-slate-400 inline-block mt-1">${r.ownerOperatorProfileID || 'HUGHES'}</span>`;
 
                 return `
                     <tr class="text-xs text-slate-300 hover:bg-slate-900/40 border-b border-slate-900 transition-colors">
@@ -1698,42 +1749,31 @@
                         <td class="py-4 px-3">
                             <div class="text-[10px] text-slate-500 font-mono mb-1">${r.timestamp.split(' ')[0]}</div>
                             <span class="px-2.5 py-1 border rounded-lg text-[10px] font-bold uppercase tracking-wider ${statusBadgeClass}">${status}</span>
-                            <div>${profileBadge}</div>
                         </td>
                         <td class="py-4 px-3">
                             <div class="font-bold text-white">${r.jobName}</div>
-                            <div class="text-[10px] text-slate-400 mt-0.5"><i data-lucide="user" class="w-3 h-3 inline mr-1"></i> ${r.clientDetailsPayload?.name || 'Direct Entry'}</div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">${r.clientDetailsPayload?.name || 'Direct Entry'}</div>
                             <div class="text-[9px] text-slate-500 font-mono mt-0.5">${r.id}</div>
                         </td>
                         <td class="py-4 px-3 text-right font-mono font-bold text-white">£${r.financials.grossTotal.toFixed(2)}</td>
-                        <td class="py-4 px-3 w-32">
-                            ${primaryActionBtn}
-                        </td>
+                        <td class="py-4 px-3 w-32">${primaryActionBtn}</td>
                         <td class="py-4 px-3 text-right space-x-1 whitespace-nowrap">
                             ${extraActionBtns}
-                            ${pdfButton}
-                            <button onclick="toggleInlineQuoteBreakdownFolder('folder-${r.id}')" class="text-slate-400 hover:text-white p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Inspect"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                            <button onclick="loadQuoteForActiveModification('${r.id}')" class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Edit to Workspace"><i data-lucide="edit" class="w-4 h-4"></i></button>
-                            <button onclick="if(confirm('Delete archived sheet log?')){let v=getStoredVaultRecords().filter(x=>x.id!='${r.id}');localStorage.setItem('eny_vault',JSON.stringify(v));selectedVaultQuotes.delete('${r.id}');reconstructUnifiedInterfaces();}" class="text-slate-500 hover:text-red-400 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <button onclick="generateDocumentPDF('${r.id}')" class="text-blue-400 hover:text-blue-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors"><i data-lucide="file-down" class="w-4 h-4"></i></button>
+                            <button onclick="toggleInlineQuoteBreakdownFolder('folder-${r.id}')" class="text-slate-400 hover:text-white p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                            <button onclick="loadQuoteForActiveModification('${r.id}')" class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors"><i data-lucide="edit" class="w-4 h-4"></i></button>
+                            <button onclick="if(confirm('Delete archived sheet log?')){let v=getStoredVaultRecords().filter(x=>x.id!='${r.id}');localStorage.setItem('eny_vault',JSON.stringify(v));selectedVaultQuotes.delete('${r.id}');reconstructUnifiedInterfaces();}" class="text-slate-500 hover:text-red-400 p-1.5 rounded bg-slate-900 border border-slate-800 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </td>
                     </tr>
                     <tr id="folder-${r.id}" class="hidden bg-slate-950/60">
                         <td colspan="6" class="p-6 text-xs text-slate-300">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-950 rounded-xl p-5 border border-slate-800/80">
                                 <div class="space-y-3">
-                                    <h4 class="font-bold text-amber-400 uppercase tracking-wider text-[10px]">Financial Breakdown Profile Mapping</h4>
+                                    <h4 class="font-bold text-amber-400 uppercase tracking-wider text-[10px]">Financial Breakdown Mapping</h4>
                                     <div class="space-y-2 bg-slate-900/40 p-3 rounded-lg border border-slate-800/40">
-                                        <div class="flex justify-between"><span>Net Wholesale Cost Materials:</span><span class="font-mono">£${(r.financials.netMaterials || 0).toFixed(2)}</span></div>
-                                        <div class="flex justify-between"><span>Marked-Up Materials Sheet Cost:</span><span class="font-mono text-slate-400">£${(r.financials.markedMaterials || 0).toFixed(2)}</span></div>
-                                        <div class="flex justify-between"><span>Estimated Operational Labor (${r.laborHours || 0} hrs @ £${r.laborRate || 0}/hr):</span><span class="font-mono">£${(r.financials.laborCosts || 0).toFixed(2)}</span></div>
-                                        <div class="flex justify-between"><span>Certification & Inspection Add-On Charges:</span><span class="font-mono">${r.includeTestingCertificate ? `£${(r.financials.testingCosts || 0).toFixed(2)}` : 'Excluded'}</span></div>
+                                        <div class="flex justify-between"><span>Net wholesale Cost Materials:</span><span class="font-mono">£${r.financials.netMaterials.toFixed(2)}</span></div>
+                                        <div class="flex justify-between"><span>Gross Operational Labor Allocation cost:</span><span class="font-mono">£${r.financials.laborCosts.toFixed(2)}</span></div>
                                         <div class="border-t border-slate-800/80 pt-2 font-bold flex justify-between text-white text-sm"><span>Total Gross (Exc VAT):</span><span class="font-mono text-amber-400">£${r.financials.grossTotal.toFixed(2)}</span></div>
-                                    </div>
-                                </div>
-                                <div class="space-y-2">
-                                    <h4 class="font-bold text-amber-400 uppercase tracking-wider text-[10px]">Allocated Stock Parts Manifest</h4>
-                                    <div class="max-h-40 overflow-y-auto bg-slate-900/20 p-3 rounded-lg border border-slate-800/40 space-y-1 custom-scrollbar pr-2">
-                                        ${itemizedListHtml}
                                     </div>
                                 </div>
                             </div>
@@ -1744,29 +1784,19 @@
             lucide.createIcons();
         }
 
-        // --- COMMIT ARCHIVE ACTIONS ---
         function commitQuoteToVault(overwriteExistingMode = false) {
             const clientName = document.getElementById('client-name').value.trim();
             if(!clientName) { alert("Enter a client profile name reference before committing records."); return; }
 
             const currentClients = getStoredClients();
             const clientMatchExists = currentClients.some(c => c.name.toLowerCase() === clientName.toLowerCase());
-            
             if (!clientMatchExists) {
-                currentClients.push({
-                    id: 'CLI-' + Date.now(),
-                    name: clientName,
-                    email: document.getElementById('client-email').value.trim(),
-                    phone: '',
-                    address: document.getElementById('client-address').value.trim(),
-                    createdDate: new Date().toLocaleDateString('en-GB')
-                });
+                currentClients.push({ id: 'CLI-' + Date.now(), name: clientName, email: document.getElementById('client-email').value.trim(), phone: '', address: document.getElementById('client-address').value.trim(), createdDate: new Date().toLocaleDateString('en-GB') });
                 localStorage.setItem('eny_clients', JSON.stringify(currentClients));
             }
 
             const calcs = calculateComprehensiveMetrics();
             let vault = getStoredVaultRecords();
-
             const targetRecordId = (overwriteExistingMode && currentlyEditingQuoteId) ? currentlyEditingQuoteId : 'QTE-' + Date.now();
             const timestampString = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 
@@ -1785,23 +1815,12 @@
                 ownerOperatorProfileID: activeProfileID, 
                 jobName: document.getElementById('job-name').value.trim() || "Electrical Contracting Works Portfolio",
                 linkedClientId: activeLinkedClientId,
-                clientDetailsPayload: {
-                    name: clientName,
-                    email: document.getElementById('client-email').value.trim(),
-                    address: document.getElementById('client-address').value.trim()
-                },
-                laborHours: calcs.laborHours,
-                laborRate: calcs.laborRate,
-                globalMarkup: calcs.markup,
+                laborFormatBoundType: activeLaborBookingFormat,
+                subsequentHoursSliderCount: parseInt(document.getElementById('labor-hour-slider').value) || 0,
+                clientDetailsPayload: { name: clientName, email: document.getElementById('client-email').value.trim(), address: document.getElementById('client-address').value.trim() },
                 includeTestingCertificate: calcs.isTestingIncluded,
                 testingCostFixed: calcs.testingCostFixed,
-                financials: {
-                    netMaterials: calcs.netMaterials,
-                    markedMaterials: calcs.markedMaterials,
-                    laborCosts: calcs.laborCosts,
-                    testingCosts: calcs.computedTestingCharge,
-                    grossTotal: calcs.grossTotal
-                },
+                financials: { netMaterials: calcs.netMaterials, markedMaterials: calcs.markedMaterials, laborCosts: calcs.laborCosts, testingCosts: calcs.computedTestingCharge, grossTotal: calcs.grossTotal },
                 itemsSnapshot: [...activeAllocatedMaterials]
             };
 
@@ -1823,17 +1842,11 @@
         }
 
         function toggleInlineQuoteBreakdownFolder(rowId) { document.getElementById(rowId).classList.toggle('hidden'); }
+        function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
 
-        // --- TEAM SYNC ENGINE EXPORTS CORE ---
+        // --- TEAM SYNC ENGINE CORE BACKUPS ---
         function exportSystemStateBackup() {
-            const packagePayload = { 
-                exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", 
-                generatedTimestamp: Date.now(), 
-                inventory: getStoredInventory(), 
-                clients: getStoredClients(), 
-                vault: getStoredVaultRecords(), 
-                templates: getStoredTemplates() 
-            };
+            const packagePayload = { exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", generatedTimestamp: Date.now(), inventory: getStoredInventory(), clients: getStoredClients(), vault: getStoredVaultRecords(), templates: JSON.parse(localStorage.getItem('eny_templates') || '[]') };
             const dataBlob = new Blob([JSON.stringify(packagePayload, null, 2)], { type: "application/json" });
             const temporaryLinkElement = document.createElement('a');
             temporaryLinkElement.href = URL.createObjectURL(dataBlob);
@@ -1847,51 +1860,38 @@
             fileReader.onload = function(e) {
                 try {
                     const inboundPayload = JSON.parse(e.target.result);
-                    if (inboundPayload.exportMetadataSource !== "ENY_ELECTRICAL_CRM_SYSTEM") { alert("Malformed Format Configuration Signature Match Error."); return; }
+                    if (inboundPayload.exportMetadataSource !== "ENY_ELECTRICAL_CRM_SYSTEM") { alert("Malformed Format Configuration Signature Error."); return; }
 
-                    let localInventory = getStoredInventory(); let localClients = getStoredClients(); let localVault = getStoredVaultRecords(); let localTemplates = getStoredTemplates();
+                    let localInventory = getStoredInventory(); let localClients = getStoredClients(); let localVault = getStoredVaultRecords(); let localTemplates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
                     let stats = { stockOverwrites: 0, stockAppends: 0, clientOverwrites: 0, clientAppends: 0, quoteOverwrites: 0, quoteAppends: 0, templateOverwrites: 0, templateAppends: 0 };
 
                     if (inboundPayload.inventory) {
                         inboundPayload.inventory.forEach(inboundItem => {
                             const matchIdx = localInventory.findIndex(li => li.sku.toLowerCase() === inboundItem.sku.toLowerCase());
                             if (matchIdx !== -1) {
-                                if (confirm(`Conflict Found: Stock SKU "${inboundItem.sku}" exists.\nInbound wholesale cost: £${inboundItem.cost}\nLocal wholesale cost: £${localInventory[matchIdx].cost}\n\nOverwrite local item data?`)) { localInventory[matchIdx] = inboundItem; stats.stockOverwrites++; }
+                                if (confirm(`Conflict: Stock SKU "${inboundItem.sku}" exists.\nOverwrite local item price data?`)) { localInventory[matchIdx] = inboundItem; stats.stockOverwrites++; }
                             } else { localInventory.push(inboundItem); stats.stockAppends++; }
                         });
                     }
-
                     if (inboundPayload.clients) {
                         inboundPayload.clients.forEach(inboundClient => {
                             const matchIdx = localClients.findIndex(lc => lc.id === inboundClient.id || lc.name.toLowerCase() === inboundClient.name.toLowerCase());
-                            if (matchIdx !== -1) {
-                                if (confirm(`Conflict Found: Client Profile "${inboundClient.name}" matches an existing record.\n\nOverwrite local client contact profiles?`)) { localClients[matchIdx] = inboundClient; stats.clientOverwrites++; }
-                            } else { localClients.push(inboundClient); stats.clientAppends++; }
+                            if (matchIdx !== -1) { if (confirm(`Conflict: Client Profile "${inboundClient.name}" exists. Overwrite?`)) { localClients[matchIdx] = inboundClient; stats.clientOverwrites++; } } 
+                            else { localClients.push(inboundClient); stats.clientAppends++; }
                         });
                     }
-
                     if (inboundPayload.vault) {
                         inboundPayload.vault.forEach(inboundQuote => {
                             const matchIdx = localVault.findIndex(lv => lv.id === inboundQuote.id);
-                            if (matchIdx !== -1) {
-                                if (confirm(`Conflict Found: Vault Quote Log "${inboundQuote.id}" (${inboundQuote.jobName}) matches an existing document hash.\n\nOverwrite local log file?`)) { localVault[matchIdx] = inboundQuote; stats.quoteOverwrites++; }
-                            } else { localVault.push(inboundQuote); stats.quoteAppends++; }
-                        });
-                    }
-
-                    if (inboundPayload.templates) {
-                        inboundPayload.templates.forEach(inboundTemplate => {
-                            const matchIdx = localTemplates.findIndex(lt => lt.id === inboundTemplate.id || lt.name.toLowerCase() === inboundTemplate.name.toLowerCase());
-                            if (matchIdx !== -1) {
-                                if (confirm(`Conflict Found: Pre-filled template preset "${inboundTemplate.name}" already exists.\n\nOverwrite configuration structures?`)) { localTemplates[matchIdx] = inboundTemplate; stats.templateOverwrites++; }
-                            } else { localTemplates.push(inboundTemplate); stats.templateAppends++; }
+                            if (matchIdx !== -1) { if (confirm(`Conflict: Vault Quote "${inboundQuote.id}" exists. Overwrite log?`)) { localVault[matchIdx] = inboundQuote; stats.quoteOverwrites++; } } 
+                            else { localVault.push(inboundQuote); stats.quoteAppends++; }
                         });
                     }
 
                     localStorage.setItem('eny_inventory', JSON.stringify(localInventory)); localStorage.setItem('eny_clients', JSON.stringify(localClients)); localStorage.setItem('eny_vault', JSON.stringify(localVault)); localStorage.setItem('eny_templates', JSON.stringify(localTemplates));
                     reconstructUnifiedInterfaces();
-                    alert(`Sync Validation Engine Execution Summary:\n\n• Materials: Added ${stats.stockAppends}, Overwrote ${stats.stockOverwrites}\n• Clients: Added ${stats.clientAppends}, Overwrote ${stats.clientOverwrites}\n• Vault Records: Added ${stats.quoteAppends}, Overwrote ${stats.quoteOverwrites}\n• Job Templates: Added ${stats.templateAppends}, Overwrote ${stats.templateOverwrites}`);
-                } catch (err) { alert("Error parsing synchronization document mapping configurations."); console.error(err); }
+                    alert(`Sync Summary:\n\n• Materials: Added ${stats.stockAppends}, Overwrote ${stats.stockOverwrites}\n• Clients: Added ${stats.clientAppends}, Overwrote ${stats.clientOverwrites}\n• Vault Records: Added ${stats.quoteAppends}, Overwrote ${stats.quoteOverwrites}`);
+                } catch (err) { alert("Error parsing sync map template layout configurations."); console.error(err); }
             };
             fileReader.readAsText(uploadedFile); event.target.value = '';
         }
