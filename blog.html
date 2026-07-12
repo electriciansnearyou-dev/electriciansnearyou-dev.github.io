@@ -8,14 +8,14 @@
     <style>
         :root {
             --bg-main: #f8fafc;
-            --bg-card: rgba(255, 255, 255, 0.8);
+            --bg-card: rgba(255, 255, 255, 0.85);
             --navy-text: #0f172a;
-            --text-muted: #64748b;
+            --text-muted: #475569;
             --gold: #c59b27;
             --gold-hover: #a17c1d;
             --gold-bg: rgba(197, 155, 39, 0.08);
-            --border-color: rgba(226, 232, 240, 0.8);
-            --accent-blue: #38bdf8;
+            --border-color: rgba(226, 232, 240, 0.9);
+            --drawer-bg: rgba(255, 255, 255, 0.96);
         }
 
         * {
@@ -27,41 +27,63 @@
         }
 
         body {
-            background-color: var(--bg-main);
             color: var(--navy-text);
             line-height: 1.6;
             overflow-x: hidden;
             padding-bottom: 6rem;
+            background-color: var(--bg-main);
+            /* Premium parallax structural background layout */
+            background-image: url('https://images.unsplash.com/photo-1565538810844-1e119412e707?auto=format&fit=crop&w=1920&q=80');
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
         }
 
-        /* --- LUXURY AMBIENT BACKGROUND GLOWS (LIGHT MODE) --- */
-        .bg-glow-1 {
-            position: absolute;
-            top: -100px;
-            right: -50px;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(197, 155, 39, 0.05) 0%, transparent 70%);
-            z-index: -1;
-            pointer-events: none;
+        /* --- FIXED FIXED NAVBAR WITH EXPAND BUTTON --- */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 2rem;
         }
 
-        .bg-glow-2 {
-            position: absolute;
-            top: 500px;
-            left: -150px;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.04) 0%, transparent 70%);
-            z-index: -1;
-            pointer-events: none;
+        .btn-toggle-drawer {
+            background: var(--navy-text);
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.15);
+        }
+
+        .btn-toggle-drawer:hover {
+            background: var(--gold);
+            transform: translateY(-1px);
         }
 
         /* --- EDITORIAL HERO SECTION --- */
         header {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 6rem 1.5rem 3rem 1.5rem;
+            padding: 8rem 1.5rem 3rem 1.5rem;
             position: relative;
         }
 
@@ -77,6 +99,7 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             margin-bottom: 1.5rem;
+            backdrop-filter: blur(5px);
         }
 
         header h1 {
@@ -86,18 +109,19 @@
             line-height: 1.1;
             margin-bottom: 1.25rem;
             color: var(--navy-text);
+            text-shadow: 0 2px 10px rgba(255,255,255,0.5);
         }
 
         header p {
             color: var(--text-muted);
             font-size: 1.2rem;
             max-width: 680px;
-            font-weight: 400;
+            font-weight: 500;
         }
 
-        /* --- ENGINE LAYOUT --- */
+        /* --- CORE CONTENT WRAPPER --- */
         .main-container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 0 1.5rem;
         }
@@ -108,7 +132,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             color: var(--text-muted);
-            margin: 4.5rem 0 1.75rem 0;
+            margin: 2rem 0 1.75rem 0;
             display: flex;
             align-items: center;
             gap: 15px;
@@ -121,183 +145,33 @@
             background: linear-gradient(90deg, #e2e8f0, transparent);
         }
 
-        /* --- PREMIUM ASYMMETRIC GLASS GRID --- */
-        .calc-hub-fluid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 1.5rem;
-        }
-
-        .calc-card-premium {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 2.25rem;
-            text-decoration: none;
-            color: var(--navy-text);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        /* --- MASONRY EDITORIAL BLOCKS --- */
+        .editorial-masonry {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            box-shadow: 0 4px 30px rgba(15, 23, 42, 0.015);
-        }
-
-        /* Luxury light ray cursor effect */
-        .calc-card-premium::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(800px circle at var(--x, 0px) var(--y, 0px), rgba(197, 155, 39, 0.03), transparent 40%);
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .calc-card-premium:hover::before {
-            opacity: 1;
-        }
-
-        /* Asymmetric Weight Dimensions */
-        .size-large { grid-column: span 3; min-height: 250px; }
-        .size-medium { grid-column: span 3; min-height: 250px; }
-        .size-small { grid-column: span 2; min-height: 230px; }
-
-        @media (max-width: 900px) {
-            .size-large, .size-medium, .size-small { grid-column: span 3; }
-        }
-        @media (max-width: 600px) {
-            .calc-hub-fluid { grid-template-columns: 1fr; }
-            .size-large, .size-medium, .size-small { grid-column: span 1; }
-            header h1 { font-size: 2.4rem; }
-        }
-
-        .calc-card-premium:hover {
-            transform: translateY(-5px);
-            border-color: rgba(197, 155, 39, 0.3);
-            background: #ffffff;
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.05);
-        }
-
-        .calc-badge-top {
-            font-size: 1.5rem;
-            background: #f1f5f9;
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(0, 0, 0, 0.02);
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .calc-card-premium:hover .calc-badge-top {
-            background: var(--gold);
-            color: #fff;
-            transform: scale(1.05);
-        }
-
-        .calc-card-premium h3 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            letter-spacing: -0.4px;
-            margin-bottom: 0.5rem;
-            color: var(--navy-text);
-        }
-
-        .calc-card-premium p {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 1.5rem;
-        }
-
-        .calc-action-arrow {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--navy-text);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .calc-card-premium:hover .calc-action-arrow {
-            color: var(--gold);
-            gap: 10px;
-        }
-
-        /* --- EDITORIAL MASONRY ARTICLES --- */
-        .editorial-masonry {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
             gap: 2.5rem;
-            margin-top: 1rem;
         }
 
         .editorial-card {
-            background: transparent;
+            background: var(--bg-card);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-color);
             text-decoration: none;
             color: var(--navy-text);
             display: flex;
             flex-direction: column;
-        }
-
-        .span-7 { grid-column: span 7; }
-        .span-5 { grid-column: span 5; }
-        .span-12 { grid-column: span 12; }
-
-        @media (max-width: 850px) {
-            .span-7, .span-5 { grid-column: span 12; }
-        }
-
-        .editorial-visual-container {
-            width: 100%;
-            height: 290px;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            border-radius: 28px;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .editorial-visual-container::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(197, 155, 39, 0.04) 0%, transparent 60%);
-            top: 0; left: 0;
-            transition: transform 0.6s ease;
-        }
-
-        .editorial-card:hover .editorial-visual-container {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.04);
-            background: #ffffff;
-            border-color: rgba(197, 155, 39, 0.2);
-        }
-
-        .editorial-visual-container span {
-            font-size: 3.5rem;
-            opacity: 0.4;
+            padding: 2.25rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
             transition: all 0.3s ease;
-            z-index: 2;
         }
 
-        .editorial-card:hover .editorial-visual-container span {
-            opacity: 0.95;
-            transform: scale(1.08);
+        .editorial-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(197, 155, 39, 0.2);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+            background: #ffffff;
         }
 
         .editorial-tag {
@@ -310,12 +184,11 @@
         }
 
         .editorial-card h2 {
-            font-size: 1.45rem;
+            font-size: 1.5rem;
             font-weight: 700;
             line-height: 1.3;
             letter-spacing: -0.5px;
-            margin-bottom: 0.5rem;
-            transition: color 0.2s ease;
+            margin-bottom: 0.75rem;
         }
 
         .editorial-card:hover h2 {
@@ -327,96 +200,196 @@
             color: var(--text-muted);
             line-height: 1.6;
         }
+
+        /* --- EXPANDABLE RIGID SLIDE DRAWER (SIDEBAR) --- */
+        .drawer-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(4px);
+            z-index: 1999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .side-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 100%;
+            max-width: 380px;
+            height: 100%;
+            background: var(--drawer-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+            border-left: 1px solid var(--border-color);
+            z-index: 2000;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .side-drawer.open {
+            right: 0;
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .drawer-header h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .btn-close-drawer {
+            background: transparent;
+            border: none;
+            font-size: 1.7rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+        }
+
+        .btn-close-drawer:hover {
+            color: var(--navy-text);
+        }
+
+        /* --- MINIMALIST DRAWER LINKS --- */
+        .drawer-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-link-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 16px;
+            text-decoration: none;
+            color: var(--navy-text);
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.01);
+        }
+
+        .nav-link-item span {
+            font-size: 1.2rem;
+            background: #f1f5f9;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+        }
+
+        .nav-link-item:hover {
+            border-color: var(--gold);
+            transform: translateX(-4px);
+            box-shadow: 0 5px 15px rgba(197, 155, 39, 0.08);
+        }
+
+        .nav-link-item:hover span {
+            background: var(--gold);
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 2.3rem; }
+            header { padding-top: 6.5rem; }
+            .side-drawer { max-width: 85%; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow-1"></div>
-    <div class="bg-glow-2"></div>
+    <!-- TOP CONTROL NAVIGATION NAVBAR -->
+    <div class="top-navbar">
+        <button class="btn-toggle-drawer" onclick="toggleDrawer(true)">
+            <span>📊</span> Calculators
+        </button>
+    </div>
 
+    <!-- BACKGROUND SHADOW OVERLAY -->
+    <div class="drawer-overlay" id="overlay" onclick="toggleDrawer(false)"></div>
+
+    <!-- SLIDE DRAW CANVAS SIDEBAR -->
+    <div class="side-drawer" id="sidebar">
+        <div class="drawer-header">
+            <h2>Calculators</h2>
+            <button class="btn-close-drawer" onclick="toggleDrawer(false)">&times;</button>
+        </div>
+        <nav class="drawer-nav">
+            <a href="Calculators/Fuseboard-Calculator.html" class="nav-link-item">
+                Fuseboard Upgrade <span>⚡</span>
+            </a>
+            <a href="Calculators/EV-Calculator.html" class="nav-link-item">
+                EV Charger Install <span>🚗</span>
+            </a>
+            <a href="Calculators/Accessory-Calculator.html" class="nav-link-item">
+                Switches & Sockets <span>🔌</span>
+            </a>
+            <a href="Calculators/Lighting-Calculator.html" class="nav-link-item">
+                Lighting Networks <span>💡</span>
+            </a>
+            <a href="Calculators/EICR-Calculator.html" class="nav-link-item">
+                EICR Safety Check <span>📋</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- MAIN CANVASS TEXT INTRO -->
     <header>
-        <div class="pill-badge">Interactive Hub Platform</div>
-        <h1>Electrical Insights &<br>Dynamic Estimators</h1>
-        <p>A suite of high-fidelity calculation wizards and professional regulatory briefs built to provide transparent structural budgeting indicators.</p>
+        <div class="pill-badge">Knowledge Base & Briefs</div>
+        <h1>Electrical Insights & Advice</h1>
+        <p>Professional regulatory briefs and strategic engineering documentation to help maintain electrical infrastructure standards across residential layouts.</p>
     </header>
 
     <div class="main-container">
-
-        <div class="section-title">Select Calculation Engine</div>
-        <div class="calc-hub-fluid">
-            
-            <a href="Calculators/Fuseboard-Calculator.html" class="calc-card-premium size-large">
-                <div class="calc-badge-top">⚡</div>
-                <div>
-                    <h3>Fuseboard Upgrade</h3>
-                    <p>Price up dual RCD and premium RCBO consumers unit installations instantly.</p>
-                    <div class="calc-action-arrow">Launch Configuration Engine &rarr;</div>
-                </div>
-            </a>
-
-            <a href="Calculators/EV-Calculator.html" class="calc-card-premium size-medium">
-                <div class="calc-badge-top">🚗</div>
-                <div>
-                    <h3>EV Charger Infrastructure</h3>
-                    <p>Map structural outlays based on run paths, voids, and supply board options.</p>
-                    <div class="calc-action-arrow">Launch Configuration Engine &rarr;</div>
-                </div>
-            </a>
-
-            <a href="Calculators/Accessory-Calculator.html" class="calc-card-premium size-small">
-                <div class="calc-badge-top">🔌</div>
-                <div>
-                    <h3>Switches & Sockets</h3>
-                    <p>Itemize faceplate swap profiles across multi-room terminal assets.</p>
-                    <div class="calc-action-arrow">Run Matrix &rarr;</div>
-                </div>
-            </a>
-
-            <a href="Calculators/Lighting-Calculator.html" class="calc-card-premium size-small">
-                <div class="calc-badge-top">💡</div>
-                <div>
-                    <h3>Lighting Networks</h3>
-                    <p>Upgrades for recessed downlights, pendants, and exterior arrays.</p>
-                    <div class="calc-action-arrow">Run Matrix &rarr;</div>
-                </div>
-            </a>
-
-            <a href="Calculators/EICR-Calculator.html" class="calc-card-premium size-small">
-                <div class="calc-badge-top">📋</div>
-                <div>
-                    <h3>EICR Safety Check</h3>
-                    <p>Domestic periodic certification values calculated by circuit ways.</p>
-                    <div class="calc-action-arrow">Run Matrix &rarr;</div>
-                </div>
-            </a>
-
-        </div>
-
         <div class="section-title">Knowledge Base Briefings</div>
         <div class="editorial-masonry">
 
-            <a href="#" class="editorial-card span-7">
-                <div class="editorial-visual-container">
-                    <span>🛡️</span>
-                </div>
+            <!-- Post 1 -->
+            <a href="#" class="editorial-card">
                 <div class="editorial-tag">Regulations Compliance</div>
                 <h2>Understanding UK Consumer Unit Regulations</h2>
                 <p>An administrative breakdown highlighting safety compliance paths including mandatory Amendment 3 metal casing configurations, surge protective device integrations, and cross-floor isolation protocols.</p>
             </a>
 
-            <a href="#" class="editorial-card span-5">
-                <div class="editorial-visual-container">
-                    <span>⚠️</span>
-                </div>
+            <!-- Post 2 -->
+            <a href="#" class="editorial-card">
                 <div class="editorial-tag">Landlord Requirements</div>
                 <h2>EICR Failures: Most Common Causes</h2>
                 <p>An overview tracking the root technical anomalies that trigger immediate unsatisfactory marks on condition statements—focusing on missing identifiers and defects.</p>
             </a>
 
-            <a href="#" class="editorial-card span-12">
-                <div class="editorial-visual-container" style="height: 220px;">
-                    <span>🔥</span>
-                </div>
+            <!-- Post 3 -->
+            <a href="#" class="editorial-card">
                 <div class="editorial-tag">Energy Efficiency</div>
                 <h2>Upgrading To Recessed LED Downlights Safely</h2>
                 <p>Why selecting fire-rated and fully sealed integrated core luminaires protects structural barriers, retains structural floor thermal values, and matches up seamlessly with modern dimming architectures without light flicker risks.</p>
@@ -425,16 +398,21 @@
         </div>
     </div>
 
+    <!-- Micro-interactivity Control Logic for Drawer Canvas -->
     <script>
-        document.querySelectorAll('.calc-card-premium').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--x', `${x}px`);
-                card.style.setProperty('--y', `${y}px`);
-            });
-        });
+        function toggleDrawer(open) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            if (open) {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Freeze scrolling behind side sheet
+            } else {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
     </script>
 
 </body>
