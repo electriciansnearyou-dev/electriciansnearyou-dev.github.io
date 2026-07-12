@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual EV Charger Installation Cost Estimator | Electricians Near You</title>
+    <title>EV Charger Installation Cost Estimator | Electricians Near You</title>
     <style>
         :root {
             --navy-dark: #0a1931;
@@ -85,7 +85,7 @@
             font-size: 0.9rem;
         }
 
-        /* --- VISUAL CARDS GRID --- */
+        /* --- VISUAL OPTIONS GRID (TEXT ONLY) --- */
         .grid-options {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -102,12 +102,12 @@
             background: var(--navy-light);
             border: 2px solid var(--border-color);
             border-radius: 8px;
-            overflow: hidden;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             position: relative;
+            padding: 1.25rem;
         }
 
         .card-option:hover {
@@ -122,8 +122,8 @@
         .card-option.selected::before {
             content: '✓';
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 12px;
+            right: 12px;
             background: var(--gold);
             color: var(--navy-dark);
             width: 20px;
@@ -137,30 +137,17 @@
             z-index: 10;
         }
 
-        .card-img {
-            width: 100%;
-            height: 130px;
-            object-fit: cover;
-            background: #071426;
-        }
-
-        .card-info {
-            padding: 1rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
         .card-label {
             font-weight: bold;
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
+            font-size: 1.05rem;
+            margin-bottom: 0.5rem;
+            padding-right: 1.5rem;
         }
 
         .card-desc {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
+            line-height: 1.4;
         }
 
         /* --- STICKY SUMMARY TRAY --- */
@@ -226,7 +213,7 @@
         <a href="../blog.html" class="back-link">&larr; Back to Electrical Blog</a>
         
         <h1>EV Charger Installation Calculator</h1>
-        <p class="intro-text">Select your preferred charging setup and routing parameters below to receive a dynamic on-site budget projection.</p>
+        <p class="intro-text">Select your charging requirements below to receive a dynamic on-site budget projection instantly.</p>
 
         <div class="step-container">
             <div class="step-title">
@@ -235,18 +222,12 @@
             </div>
             <div class="grid-options">
                 <div class="card-option selected" onclick="selectCard('charger', 450, this)">
-                    <img src="/images/ev-tethered.jpg" class="card-img" alt="Tethered EV Charger">
-                    <div class="card-info">
-                        <div class="card-label">Tethered (Attached Cable)</div>
-                        <div class="card-desc">Features an integrated 5m/7m charging lead for instant plug-and-go convenience.</div>
-                    </div>
+                    <div class="card-label">Tethered (Attached Cable)</div>
+                    <div class="card-desc">Features an integrated 5m/7m charging lead for instant plug-and-go convenience.</div>
                 </div>
                 <div class="card-option" onclick="selectCard('charger', 395, this)">
-                    <img src="/images/ev-untethered.jpg" class="card-img" alt="Untethered EV Charger">
-                    <div class="card-info">
-                        <div class="card-label">Untethered (Socket Only)</div>
-                        <div class="card-desc">Clean wall aesthetic. Provides a universal socket requiring your own separate cable.</div>
-                    </div>
+                    <div class="card-label">Untethered (Socket Only)</div>
+                    <div class="card-desc">Clean wall aesthetic. Provides a universal socket requiring your own separate cable.</div>
                 </div>
             </div>
         </div>
@@ -258,25 +239,16 @@
             </div>
             <div class="grid-options">
                 <div class="card-option selected" onclick="selectCard('distance', 50, this)">
-                    <img src="/images/run-short.jpg" class="card-img" alt="Short Run">
-                    <div class="card-info">
-                        <div class="card-label">Short Run (Up to 5m)</div>
-                        <div class="card-desc">Ideal for back-to-back installs or chargers positioned right next to the meter box.</div>
-                    </div>
+                    <div class="card-label">Short Run (Up to 5m)</div>
+                    <div class="card-desc">Ideal for back-to-back installs or chargers positioned right next to the meter box.</div>
                 </div>
                 <div class="card-option" onclick="selectCard('distance', 140, this)">
-                    <img src="/images/run-medium.jpg" class="card-img" alt="Medium Run">
-                    <div class="card-info">
-                        <div class="card-label">Medium Run (5m – 15m)</div>
-                        <div class="card-desc">Standard external wrapping routing around the property brickwork.</div>
-                    </div>
+                    <div class="card-label">Medium Run (5m – 15m)</div>
+                    <div class="card-desc">Standard external wrapping routing clipped around the property brickwork.</div>
                 </div>
                 <div class="card-option" onclick="selectCard('distance', 260, this)">
-                    <img src="/images/run-long.jpg" class="card-img" alt="Long Run">
-                    <div class="card-info">
-                        <div class="card-label">Long Run (15m – 25m+)</div>
-                        <div class="card-desc">Requires heavy cross-section lines to counter electrical voltage drop.</div>
-                    </div>
+                    <div class="card-label">Long Run (15m – 25m+)</div>
+                    <div class="card-desc">Requires heavy cross-section lines to counter electrical voltage drop.</div>
                 </div>
             </div>
         </div>
@@ -288,25 +260,16 @@
             </div>
             <div class="grid-options">
                 <div class="card-option selected" onclick="selectCard('routing', 120, this)">
-                    <img src="/images/route-clip.jpg" class="card-img" alt="Surface Clipped">
-                    <div class="card-info">
-                        <div class="card-label">Standard External Wall Clip</div>
-                        <div class="card-desc">Clipped neatly along low-level external brickwork. Minimal disruption.</div>
-                    </div>
+                    <div class="card-label">Standard External Wall Clip</div>
+                    <div class="card-desc">Clipped neatly along low-level external brickwork. Minimal disruption.</div>
                 </div>
                 <div class="card-option" onclick="selectCard('routing', 220, this)">
-                    <img src="/images/route-internal.jpg" class="card-img" alt="Internal Void Routing">
-                    <div class="card-info">
-                        <div class="card-label">Internal Void Routing</div>
-                        <div class="card-desc">Requires traversing internal floor joists, cellars, or lifting boards.</div>
-                    </div>
+                    <div class="card-label">Internal Void Routing</div>
+                    <div class="card-desc">Requires traversing internal floor joists, cellars, or lifting boards.</div>
                 </div>
                 <div class="card-option" onclick="selectCard('routing', 380, this)">
-                    <img src="/images/route-trench.jpg" class="card-img" alt="Trenching Groundwork">
-                    <div class="card-info">
-                        <div class="card-label">Ground Trenching / Driveways</div>
-                        <div class="card-desc">Excavating paths through soil, lawns, or chasing up driveways for pillar mounts.</div>
-                    </div>
+                    <div class="card-label">Ground Trenching / Driveways</div>
+                    <div class="card-desc">Excavating paths through soil, lawns, or chasing up driveways for pillar mounts.</div>
                 </div>
             </div>
         </div>
@@ -318,18 +281,12 @@
             </div>
             <div class="grid-options">
                 <div class="card-option selected" onclick="selectCard('board', 40, this)">
-                    <img src="/images/metal-split-load.jpg" class="card-img" alt="Available Capacity">
-                    <div class="card-info">
-                        <div class="card-label">Spare Way Available</div>
-                        <div class="card-desc">Existing modern board has physical space for an independent 40A EV breaker.</div>
-                    </div>
+                    <div class="card-label">Spare Way Available</div>
+                    <div class="card-desc">Existing modern board has physical space for an independent 40A EV breaker.</div>
                 </div>
                 <div class="card-option" onclick="selectCard('board', 135, this)">
-                    <img src="/images/ev-mini-board.jpg" class="card-img" alt="Separate EV Board">
-                    <div class="card-info">
-                        <div class="card-label">Dedicated EV Micro-Board Needed</div>
-                        <div class="card-desc">Main board is full, old, or rewirable. Installs an independent protective mini enclosure.</div>
-                    </div>
+                    <div class="card-label">Dedicated EV Micro-Board Needed</div>
+                    <div class="card-desc">Main board is full, old, or rewirable. Installs an independent protective mini enclosure.</div>
                 </div>
             </div>
         </div>
@@ -349,7 +306,6 @@
     </div>
 
     <script>
-        // Track running cost selections
         let choices = {
             charger: 450,
             distance: 50,
