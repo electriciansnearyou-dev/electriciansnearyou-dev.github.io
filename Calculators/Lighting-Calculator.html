@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lighting Installation Cost Estimator | Electricians Near You</title>
+    <title>Lighting Installation Cost Calculator | 2026 Price Guide</title>
+    <meta name="description" content="Planning a lighting upgrade or installing new LED downlights? Use our instant interactive calculator to estimate costs for replacements and new circuit additions.">
+    <meta name="keywords" content="led downlight installation cost, cost to change light fixtures, new lighting circuit price uk, outdoor security light installation cost">
     <style>
         :root {
             --navy-dark: #0a1931;
@@ -150,7 +152,7 @@
             line-height: 1.4;
         }
 
-        /* --- QUANTITY ACCESSORY ITEM LIST --- */
+        /* --- QUANTITY ITEM LIST --- */
         .accessory-list {
             display: flex;
             flex-direction: column;
@@ -374,7 +376,6 @@
     </div>
 
     <script>
-        // Baseline costings for standard domestic lighting installations
         const itemsRates = {
             downlight:  { replacePrice: 20, addPrice: 65 },
             pendant:    { replacePrice: 25, addPrice: 75 },
@@ -431,7 +432,6 @@
                 }
             }
 
-            // Apply mobilization call-out baseline handling if items are selected
             let baselineFee = (totalItemCount > 0) ? 65 : 0;
             let finalPrice = totalPrice + baselineFee;
 
