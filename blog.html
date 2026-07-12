@@ -7,6 +7,7 @@
     <meta name="description" content="Expert electrical advice, safety tips, and instant 2026 price calculation wizards for UK homeowners and landlords.">
     <meta name="keywords" content="led downlight installation cost, cost to change light fixtures, new lighting circuit price uk, outdoor security light installation cost">
     
+    <!-- CUSTOM LOGO FILE SET AS YOUR TAB FAVICON -->
     <link rel="icon" type="image/png" href="Logo.png">
     
     <style>
@@ -60,7 +61,7 @@
             will-change: transform;
         }
 
-        /* --- CREDIBILITY BANNER TICKER (SLOWED TO HALF SPEED) --- */
+        /* --- CREDIBILITY BANNER TICKER --- */
         .top-credibility-ribbon {
             position: fixed;
             top: 0;
@@ -84,7 +85,7 @@
             display: flex;
             gap: 3rem;
             width: max-content;
-            animation: scrollTicker 50s linear infinite; /* Slowed down from 25s */
+            animation: scrollTicker 50s linear infinite;
         }
 
         .ticker-item {
@@ -94,9 +95,7 @@
             white-space: nowrap;
         }
 
-        .ticker-item span {
-            color: var(--gold);
-        }
+        .ticker-item span { color: var(--gold); }
 
         @keyframes scrollTicker {
             0% { transform: translateX(0); }
@@ -134,9 +133,7 @@
             transition: transform 0.25s ease;
         }
 
-        .main-site-logo-link:hover {
-            transform: scale(1.06);
-        }
+        .main-site-logo-link:hover { transform: scale(1.06); }
 
         .logo-img-nav {
             width: 42px;
@@ -174,16 +171,8 @@
             background: rgba(255, 255, 255, 0.03);
         }
 
-        .blog-home-text-link:hover {
-            color: var(--gold);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .nav-contact-mail-btn:hover {
-            border-color: var(--gold);
-            color: var(--gold);
-            background: rgba(197, 155, 39, 0.05);
-        }
+        .blog-home-text-link:hover { color: var(--gold); background: rgba(255, 255, 255, 0.05); }
+        .nav-contact-mail-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(197, 155, 39, 0.05); }
 
         .btn-toggle-drawer {
             background: #ffffff; 
@@ -202,15 +191,12 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .btn-toggle-drawer:hover {
-            background: #f1f5f9;
-            transform: translateY(-1px);
-        }
+        .btn-toggle-drawer:hover { background: #f1f5f9; transform: translateY(-1px); }
 
         /* --- EDITORIAL HERO COVER SECTION --- */
         header {
-            max-width: 900px;
-            margin: 11rem auto 3rem auto;
+            max-width: 1200px; /* Extended gracefully to match split container grids */
+            margin: 11rem auto 2rem auto;
             padding: 2.5rem;
             position: relative;
             background: var(--bg-dark-glass);
@@ -236,29 +222,95 @@
             margin-bottom: 1.5rem;
         }
 
-        header h1 {
-            font-size: 3.2rem;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-            line-height: 1.1;
-            margin-bottom: 1.25rem;
-            color: #ffffff;
-        }
+        header h1 { font-size: 3.2rem; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 1.25rem; color: #ffffff; }
+        header p { color: #e2e8f0; font-size: 1.15rem; max-width: 780px; font-weight: 400; }
 
-        header p {
-            color: #e2e8f0;
-            font-size: 1.15rem;
-            max-width: 780px;
-            font-weight: 400;
-        }
-
-        /* --- DISPLAY WRAPPERS --- */
+        /* --- TWO COLUMN WRAPPER CORE ASSEMBLY --- */
         .main-container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 1.5rem;
         }
 
+        .split-layout-engine {
+            display: grid;
+            grid-template-columns: 1fr 340px; /* Locks the FAQ list container firmly into the right 340px area */
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .left-content-stream {
+            width: 100%;
+        }
+
+        /* --- RIGHT ACCORDION SIDE PANEL STYLES --- */
+        .right-faq-sidebar {
+            position: sticky;
+            top: 120px; /* Locks module safely in view context during scrolling */
+            width: 100%;
+        }
+
+        .faq-block-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
+        }
+
+        .faq-accordion-item {
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+            padding: 0.85rem 0;
+        }
+
+        .faq-accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-trigger-btn {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--navy-text);
+            cursor: pointer;
+            gap: 10px;
+        }
+
+        .faq-trigger-btn:hover { color: var(--gold); }
+
+        .faq-icon-indicator {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            transition: transform 0.25s ease;
+        }
+
+        .faq-panel-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+        }
+
+        .faq-panel-answer p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            padding-top: 0.5rem;
+            line-height: 1.4;
+        }
+
+        /* Interactive toggle hook targets */
+        .faq-accordion-item.active-item .faq-icon-indicator { transform: rotate(180deg); color: var(--gold); }
+        .faq-accordion-item.active-item .faq-panel-answer { max-height: 200px; transition: max-height 0.3s cubic-bezier(1, 0, 1, 0); }
+
+        /* --- GENERAL TITLING TRACK STYLE --- */
         .section-title-wrapper {
             background: var(--bg-dark-glass);
             backdrop-filter: blur(20px);
@@ -293,38 +345,13 @@
             background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
         }
 
-        /* --- SEARCH CONTROLLER CAP-INSET --- */
-        .search-bar-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            max-width: 240px;
-            width: 100%;
-        }
-
-        .search-bar-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            padding: 0.4rem 1rem 0.4rem 2.2rem;
-            color: #ffffff;
-            font-size: 0.85rem;
-            font-weight: 500;
-            outline: none;
-            transition: all 0.25s ease;
-        }
-
-        .search-bar-input:focus {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--gold);
-            box-shadow: 0 0 10px rgba(197, 155, 39, 0.2);
-        }
-
+        .search-bar-wrapper { position: relative; display: flex; align-items: center; max-width: 240px; width: 100%; }
+        .search-bar-input { width: 100%; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50px; padding: 0.4rem 1rem 0.4rem 2.2rem; color: #ffffff; font-size: 0.85rem; font-weight: 500; outline: none; transition: all 0.25s ease; }
+        .search-bar-input:focus { background: rgba(255, 255, 255, 0.2); border-color: var(--gold); box-shadow: 0 0 10px rgba(197, 155, 39, 0.2); }
         .search-bar-input::placeholder { color: #cbd5e1; font-weight: 400; }
         .search-icon-svg { position: absolute; left: 14px; font-size: 0.85rem; color: #cbd5e1; pointer-events: none; }
 
-        /* --- CONDENSED 1/3 ULTRA-MINI LAYOUT GRID --- */
+        /* --- CONDENSED ULTRA-MINI ARTICLE TILES --- */
         .editorial-masonry {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -347,6 +374,16 @@
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             min-height: 145px;
         }
+
+        .editorial-card.hidden-item { display: none !important; }
+        .editorial-card:hover { transform: translateY(-2px); border-color: rgba(197, 155, 39, 0.3); box-shadow: 0 15px 30px rgba(15, 23, 42, 0.05); background: rgba(255, 255, 255, 0.92); }
+        .card-content-top { margin-bottom: 0.25rem; }
+        .editorial-tag { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.15rem; }
+        .editorial-card h2 { font-size: 1.05rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.2px; margin-bottom: 0.25rem; }
+        .editorial-card:hover h2 { color: var(--gold); }
+        .editorial-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .read-more-btn { font-size: 0.78rem; font-weight: 700; color: var(--gold); display: inline-flex; align-items: center; gap: 4px; margin-top: 0.35rem; transition: gap 0.2s ease; }
+        .editorial-card:hover .read-more-btn { color: var(--gold-hover); gap: 6px; }
 
         /* --- OLDER ARTICLES MATRIX ARCHIVE DISPLAY GRID --- */
         .older-articles-grid {
@@ -396,7 +433,7 @@
             color: var(--gold);
         }
 
-        /* --- AUTOMATED INFINITE SCROLLING PROJECT GALLERY (SLOWED TO HALF SPEED) --- */
+        /* --- AUTOMATED INFINITE SCROLLING PROJECT GALLERY --- */
         .gallery-container {
             width: 100%;
             overflow: hidden;
@@ -410,35 +447,11 @@
             box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
         }
 
-        .gallery-track {
-            display: flex;
-            gap: 1.5rem;
-            width: max-content;
-            animation: scrollStream 70s linear infinite; /* Slowed down from 35s */
-        }
-
-        .gallery-container:hover .gallery-track {
-            animation-play-state: paused;
-        }
-
-        .gallery-img {
-            width: 260px;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .gallery-img:hover {
-            transform: scale(1.03);
-        }
-
-        @keyframes scrollStream {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-33.33%); }
-        }
+        .gallery-track { display: flex; gap: 1.5rem; width: max-content; animation: scrollStream 70s linear infinite; }
+        .gallery-container:hover .gallery-track { animation-play-state: paused; }
+        .gallery-img { width: 260px; height: 180px; object-fit: cover; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.3s ease; }
+        .gallery-img:hover { transform: scale(1.03); }
+        @keyframes scrollStream { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
 
         /* --- EXPANDABLE SIDE BAR DRAWERS --- */
         .drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(5px); z-index: 1999; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
@@ -455,50 +468,23 @@
         .nav-link-item:hover { border-color: var(--gold); transform: translateX(-4px); box-shadow: 0 5px 15px rgba(197, 155, 39, 0.08); }
         .nav-link-item:hover span { background: var(--gold); color: #fff; }
 
-        /* --- INTELLIGENT FOOTER FLOATING BACKING --- */
-        .sticky-footer-bar {
-            position: fixed;
-            bottom: 20px;
-            z-index: 999;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-        }
+        /* --- FLOATING ACTIONS STICKY BACKING BAR --- */
+        .sticky-footer-bar { position: fixed; bottom: 20px; z-index: 999; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; }
 
         @media (max-width: 991px) {
-            .sticky-footer-bar {
-                left: 50%; transform: translateX(-50%); width: calc(100% - 2rem); max-width: 500px;
-                background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-                border: 1px solid rgba(255, 255, 255, 0.15); padding: 0.8rem 1rem; border-radius: 100px;
-            }
+            .sticky-footer-bar { left: 50%; transform: translateX(-50%); width: calc(100% - 2rem); max-width: 500px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); padding: 0.8rem 1rem; border-radius: 100px; }
             .mobile-footer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
             .desktop-footer-single { display: none; }
+            .split-layout-engine { grid-template-columns: 1fr; } /* Stack sidebar cleanly below content stream on responsive viewports */
+            .right-faq-sidebar { position: relative; top: 0; margin-top: 2rem; }
         }
 
         @media (min-width: 992px) {
-            .sticky-footer-bar {
-                right: 30px; left: auto; transform: none; width: 180px;
-                background: transparent; border: none; padding: 0; border-radius: 0; box-shadow: none;
-            }
+            .sticky-footer-bar { right: 30px; left: auto; transform: none; width: 180px; background: transparent; border: none; padding: 0; border-radius: 0; box-shadow: none; }
             .mobile-footer-grid { display: none; }
-            .desktop-footer-single {
-                display: block; width: 100%; height: 50px; border-radius: 16px;
-                border: 1px solid rgba(255, 255, 255, 0.25); cursor: pointer;
-                font-weight: 800; font-size: 0.85rem; letter-spacing: 0.2px;
-                background: var(--emergency-red); color: #ffffff;
-                box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2);
-                transition: transform 0.2s ease, background 0.2s ease;
-            }
-            .desktop-footer-single:hover {
-                background: var(--emergency-hover);
-                transform: translateY(-1px);
-            }
+            .desktop-footer-single { display: block; width: 100%; height: 50px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.25); cursor: pointer; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.2px; background: var(--emergency-red); color: #ffffff; box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2); transition: transform 0.2s ease, background 0.2s ease; }
+            .desktop-footer-single:hover { background: var(--emergency-hover); transform: translateY(-1px); }
         }
-
-        .sticky-action-btn { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 700; font-size: 0.9rem; padding: 0.8rem 1.2rem; border-radius: 50px; border: none; cursor: pointer; transition: all 0.25s ease; }
-        .btn-call-emergency { background: var(--emergency-red); color: #ffffff; }
-        .btn-call-emergency:hover { background: var(--emergency-hover); }
-        .btn-contact-general { background: #ffffff; color: var(--navy-text); }
-        .btn-contact-general:hover { background: #f1f5f9; }
 
         /* --- DESKTOP DIRECTORY DIALOG WINDOW --- */
         .modal-overlay-contact { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 2001; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
@@ -514,55 +500,12 @@
         .directory-row-item.email-card-row:hover { background: #1e293b; }
         .directory-row-item.email-card-row span { color: #94a3b8; }
 
-        /* --- HIGH-END TAILORED SITE FOOTER BLOCK --- */
-        .site-corporate-footer {
-            background: var(--bg-dark-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 3rem 2.5rem;
-            margin: 4.5rem 0 2rem 0;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            color: #ffffff;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2.5rem;
-        }
-
-        .footer-col h4 {
-            font-size: 0.9rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--gold);
-            margin-bottom: 1.25rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 0.5rem;
-        }
-
-        .footer-links-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .footer-anchor-item {
-            color: #e2e8f0;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .footer-anchor-item:hover {
-            color: var(--gold);
-            transform: translateX(3px);
-        }
+        /* --- HIGH-END CORPORATE FOOTER BLOCK --- */
+        .site-corporate-footer { background: var(--bg-dark-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 3rem 2.5rem; margin: 4.5rem 0 2rem 0; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); color: #ffffff; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+        .footer-col h4 { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem; }
+        .footer-links-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+        .footer-anchor-item { color: #e2e8f0; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; }
+        .footer-anchor-item:hover { color: var(--gold); transform: translateX(3px); }
 
         @media (max-width: 768px) {
             .editorial-masonry { grid-template-columns: 1fr; gap: 0.75rem; }
@@ -585,6 +528,7 @@
 </head>
 <body>
 
+    <!-- ACCREDITATION TICKER (SLOWED SPEED) -->
     <div class="top-credibility-ribbon">
         <div class="ticker-track">
             <div class="ticker-item"><span>⚡</span> NICEIC Certification</div>
@@ -604,6 +548,7 @@
         </div>
     </div>
 
+    <!-- NAVBAR HEADER -->
     <div class="top-navbar">
         <div class="brand-block-split">
             <a href="https://www.electriciansnearyou.uk" class="main-site-logo-link" title="Return to Main Website">
@@ -621,6 +566,7 @@
         </div>
     </div>
 
+    <!-- STICKY ACTION BUTTON FOOTER BAR -->
     <div class="sticky-footer-bar">
         <div class="mobile-footer-grid">
             <a href="tel:07711261478" class="sticky-action-btn btn-call-emergency">🚨 Emergency</a>
@@ -631,6 +577,7 @@
         </button>
     </div>
 
+    <!-- DIRECTORY WINDOW DIALOG POPUP MODAL -->
     <div class="modal-overlay-contact" id="contactModal" onclick="toggleContactModal(false)">
         <div class="directory-modal-card" onclick="event.stopPropagation()">
             <button class="modal-close-trigger" onclick="toggleContactModal(false)">&times;</button>
@@ -643,6 +590,7 @@
 
     <div class="drawer-overlay" id="overlay" onclick="toggleDrawer(false)"></div>
 
+    <!-- SIDE PANEL DRAW ROUTER CANVAS -->
     <div class="side-drawer" id="sidebar">
         <div class="drawer-header">
             <h2>Quote Calculators</h2>
@@ -657,56 +605,119 @@
         </nav>
     </div>
 
+    <!-- MAIN CANVASS TEXT INTRO -->
     <header>
         <div class="pill-badge">Articles & Tools</div>
         <h1>Electrical Insights & Advice</h1>
         <p>With our many years of experience and research we hope to provide you with knowledge and understanding to help you tackle the day to day questions the public and other professionals have like BS7671 electrical Regs, Building Regs, and emergency electrical faults.</p>
     </header>
 
+    <!-- INITIALIZE SPLIT MASTER WRAPPER CONTAINER -->
     <div class="main-container">
-        
-        <div class="section-title-wrapper">
-            <div class="section-title">Recently Published Articles</div>
-        </div>
-        
-        <div class="editorial-masonry" id="articlesGridContainer">
-            <a href="Articles/consumer-unit-regulations.html" class="editorial-card">
-                <div class="card-content-top">
-                    <div class="editorial-tag">Regulations Compliance</div>
-                    <h2>Understanding UK Consumer Unit Regulations</h2>
-                    <p>An administrative breakdown highlighting safety compliance paths including mandatory Amendment 3 metal casing configurations, surge protective device integrations, and cross-floor isolation protocols.</p>
+        <div class="split-layout-engine">
+            
+            <!-- LEFT CONTENT COLUMN SECTION -->
+            <div class="left-content-stream">
+                
+                <div class="section-title-wrapper">
+                    <div class="section-title">Recently Published Articles</div>
                 </div>
-                <div class="read-more-btn">Read Article &rarr;</div>
-            </a>
+                
+                <div class="editorial-masonry" id="articlesGridContainer">
+                    <a href="Articles/consumer-unit-regulations.html" class="editorial-card">
+                        <div class="card-content-top">
+                            <div class="editorial-tag">Regulations Compliance</div>
+                            <h2>Understanding UK Consumer Unit Regulations</h2>
+                            <p>An administrative breakdown highlighting safety compliance paths including mandatory Amendment 3 metal casing configurations, surge protective device integrations, and cross-floor isolation protocols.</p>
+                        </div>
+                        <div class="read-more-btn">Read Article &rarr;</div>
+                    </a>
 
-            <a href="Articles/eicr-failures-causes.html" class="editorial-card">
-                <div class="card-content-top">
-                    <div class="editorial-tag">Landlord Requirements</div>
-                    <h2>EICR Failures: Most Common Causes</h2>
-                    <p>An overview tracking the root technical anomalies that trigger immediate unsatisfactory marks on condition statements—focusing on missing identifiers and defects.</p>
+                    <a href="Articles/eicr-failures-causes.html" class="editorial-card">
+                        <div class="card-content-top">
+                            <div class="editorial-tag">Landlord Requirements</div>
+                            <h2>EICR Failures: Most Common Causes</h2>
+                            <p>An overview tracking the root technical anomalies that trigger immediate unsatisfactory marks on condition statements—focusing on missing identifiers and defects.</p>
+                        </div>
+                        <div class="read-more-btn">Read Article &rarr;</div>
+                    </a>
+
+                    <a href="Articles/led-downlights-safety.html" class="editorial-card">
+                        <div class="card-content-top">
+                            <div class="editorial-tag">Energy Efficiency</div>
+                            <h2>Upgrading To Recessed LED Downlights Safely</h2>
+                            <p>Why selecting fire-rated and fully sealed integrated core luminaires protects structural barriers, retains structural floor thermal values, and matches up seamlessly with modern dimming architectures without light flicker risks.</p>
+                        </div>
+                        <div class="read-more-btn">Read Article &rarr;</div>
+                    </a>
+
+                    <a href="Articles/smart-home-automation.html" class="editorial-card">
+                        <div class="card-content-top">
+                            <div class="editorial-tag">Future Technology</div>
+                            <h2>Smart Home Automation Power Infrastructures</h2>
+                            <p>A comprehensive setup architectural manual analyzing the structured localized wiring distribution frameworks needed to power automated systems cleanly without loop signals.</p>
+                        </div>
+                        <div class="read-more-btn">Read Article &rarr;</div>
+                    </a>
                 </div>
-                <div class="read-more-btn">Read Article &rarr;</div>
-            </a>
 
-            <a href="Articles/led-downlights-safety.html" class="editorial-card">
-                <div class="card-content-top">
-                    <div class="editorial-tag">Energy Efficiency</div>
-                    <h2>Upgrading To Recessed LED Downlights Safely</h2>
-                    <p>Why selecting fire-rated and fully sealed integrated core luminaires protects structural barriers, retains structural floor thermal values, and matches up seamlessly with modern dimming architectures without light flicker risks.</p>
+            </div>
+
+            <!-- RIGHT FAQ ACCORDION PANEL COLUMN SECTION -->
+            <div class="right-faq-sidebar">
+                
+                <div class="section-title-wrapper">
+                    <div class="section-title">Common FAQs</div>
                 </div>
-                <div class="read-more-btn">Read Article &rarr;</div>
-            </a>
+                
+                <div class="faq-block-card">
+                    
+                    <!-- Item 1 -->
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            What is an EICR? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>An Electrical Installation Condition Report is a structured safety check verifying the integrity of your property's underlying electrical wiring, connections, and circuits.</p>
+                        </div>
+                    </div>
 
-            <a href="Articles/smart-home-automation.html" class="editorial-card">
-                <div class="card-content-top">
-                    <div class="editorial-tag">Future Technology</div>
-                    <h2>Smart Home Automation Power Infrastructures</h2>
-                    <p>A comprehensive setup architectural manual analyzing the structured localized wiring distribution frameworks needed to power automated systems cleanly without loop signals.</p>
+                    <!-- Item 2 -->
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            How often is an EICR needed? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>For rental properties and commercial spaces across the UK, safety inspections are legally required every 5 years or at the start of any brand new tenancy layout shift.</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            What is an Amendment 3 board? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>It refers to consumer units wrapped in non-combustible metal casing arrays specifically designed to contain localized internal fire tracking faults within domestic consumer unit boxes.</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            Do you cover emergencies? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>Yes, we operate a dedicated 24/7 call-out deployment engine tracking and rectifying power grid drops, burning anomalies, and tripping hazard faults across the region.</p>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="read-more-btn">Read Article &rarr;</div>
-            </a>
-        </div>
+            </div>
 
+        </div> <!-- END OF SPLIT LAYOUT ENGINE -->
+
+        <!-- FULL SPAN HORIZONTAL RUNNERS CONTINUING BELOW THE SPLIT SHIFT FRAMEWORK -->
         <hr class="section-barrier">
 
         <div class="section-title-wrapper">
@@ -741,6 +752,7 @@
             <div class="older-empty-block" data-title="Archive Slot Twelve empty layout slot placeholder">Slot Archive #12</div>
         </div>
 
+        <!-- CORPORATE CONNECTIONS LINKS FOOTER -->
         <footer class="site-corporate-footer">
             <div class="footer-col">
                 <h4>Quote Calculators</h4>
@@ -771,6 +783,7 @@
 
     </div>
 
+    <!-- Core Interactive Logic Modules -->
     <script>
         function toggleDrawer(open) {
             const sidebar = document.getElementById('sidebar');
@@ -796,15 +809,28 @@
         }
 
         // =================================================================
-        // ARCHIVE LIVE SEARCH INTERACTION LOGIC
+        // FAQS INTERACTIVE ACCORDION SLIDE DISPATCHER
         // =================================================================
+        function toggleFaqAccordion(buttonElement) {
+            const parentItem = buttonElement.parentElement;
+            const isAlreadyActive = parentItem.classList.contains('active-item');
+            
+            // Wipe active classes from any other active open loops to keep layout neat
+            document.querySelectorAll('.faq-accordion-item').forEach(item => {
+                item.classList.remove('active-item');
+            });
+            
+            // Toggle local targeted selection index state values
+            if (!isAlreadyActive) {
+                parentItem.classList.add('active-item');
+            }
+        }
+
         function executeLiveSearch() {
             const query = document.getElementById('articleSearchInput').value.toLowerCase().trim();
-            // Targets older archived block cells exclusively as requested
             const archiveBlocks = document.querySelectorAll('#olderArchiveContainer .older-empty-block');
             
             archiveBlocks.forEach(block => {
-                // Scans the visual string text or custom meta tags assigned to slots
                 const innerTextContent = block.innerText.toLowerCase();
                 const metaAttributeContent = block.getAttribute('data-title') ? block.getAttribute('data-title').toLowerCase() : '';
                 
