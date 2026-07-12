@@ -274,7 +274,7 @@
         }
 
         .metric-value {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: var(--gold);
         }
@@ -492,10 +492,6 @@
                     <span class="metric-label">Est. Budget</span>
                     <span class="metric-value" id="total-price">£0</span>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">Est. Time</span>
-                    <span class="metric-value" style="color: white;" id="total-time">0.0 hrs</span>
-                </div>
             </div>
             <a href="tel:07711261478" class="btn-book" style="display: inline-block; text-align: center; line-height: 1.2;">Book Survey<br><span style="font-size: 0.8rem; font-weight: normal; opacity: 0.9;">07711 261478</span></a>
         </div>
@@ -503,14 +499,14 @@
 
     <script>
         const itemsRates = {
-            single_socket:    { replacePrice: 15,  addPrice: 60,  replaceTime: 0.20, addTime: 1.20 },
-            double_socket:    { replacePrice: 18,  addPrice: 70,  replaceTime: 0.25, addTime: 1.30 },
-            light_switch:     { replacePrice: 14,  addPrice: 55,  replaceTime: 0.20, addTime: 1.15 },
-            dimmer_switch:    { replacePrice: 28,  addPrice: 75,  replaceTime: 0.30, addTime: 1.30 },
-            fused_spur:       { replacePrice: 22,  addPrice: 65,  replaceTime: 0.25, addTime: 1.30 },
-            switch_20a:       { replacePrice: 24,  addPrice: 68,  replaceTime: 0.25, addTime: 1.30 },
-            isolation_switch: { replacePrice: 38,  addPrice: 110, replaceTime: 0.40, addTime: 2.00 },
-            pullcord:         { replacePrice: 20,  addPrice: 60,  replaceTime: 0.30, addTime: 1.45 }
+            single_socket:    { replacePrice: 15,  addPrice: 60 },
+            double_socket:    { replacePrice: 18,  addPrice: 70 },
+            light_switch:     { replacePrice: 14,  addPrice: 55 },
+            dimmer_switch:    { replacePrice: 28,  addPrice: 75 },
+            fused_spur:       { replacePrice: 22,  addPrice: 65 },
+            switch_20a:       { replacePrice: 24,  addPrice: 68 },
+            isolation_switch: { replacePrice: 38,  addPrice: 110 },
+            pullcord:         { replacePrice: 20,  addPrice: 60 }
         };
 
         let state = {
@@ -559,7 +555,6 @@
 
         function calculateTotals() {
             let totalPrice = 0;
-            let totalTime = 0;
             let totalItemCount = 0;
 
             for (const [key, quantity] of Object.entries(state.quantities)) {
@@ -569,10 +564,8 @@
                     
                     if (state.workProfile === 'replace') {
                         totalPrice += quantity * (rates.replacePrice + state.finishPremiumPerItem);
-                        totalTime += quantity * rates.replaceTime;
                     } else {
                         totalPrice += quantity * (rates.addPrice + state.finishPremiumPerItem);
-                        totalTime += quantity * rates.addTime;
                     }
                 }
             }
@@ -581,7 +574,6 @@
             let dynamicFinalPrice = totalPrice + baselineFee;
 
             document.getElementById('total-price').innerText = '£' + dynamicFinalPrice;
-            document.getElementById('total-time').innerText = totalTime.toFixed(1) + ' hrs';
         }
     </script>
 </body>
