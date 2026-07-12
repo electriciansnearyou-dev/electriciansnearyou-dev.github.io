@@ -7,7 +7,6 @@
     <meta name="description" content="Expert electrical advice, safety tips, and instant 2026 price calculation wizards for UK homeowners and landlords.">
     <meta name="keywords" content="led downlight installation cost, cost to change light fixtures, new lighting circuit price uk, outdoor security light installation cost">
     
-    <!-- CUSTOM LOGO FILE SET AS YOUR TAB FAVICON -->
     <link rel="icon" type="image/png" href="Logo.png">
     
     <style>
@@ -239,7 +238,6 @@
             align-items: start;
         }
 
-        /* FIXED THE STRETCH BUG: min-width 0 forces the grid track to compute content width properly */
         .left-content-stream {
             width: 100%;
             min-width: 0; 
@@ -283,6 +281,7 @@
             color: var(--navy-text);
             cursor: pointer;
             gap: 10px;
+            line-height: 1.3;
         }
 
         .faq-trigger-btn:hover { color: var(--gold); }
@@ -308,7 +307,7 @@
 
         /* Interactive toggle hook targets */
         .faq-accordion-item.active-item .faq-icon-indicator { transform: rotate(180deg); color: var(--gold); }
-        .faq-accordion-item.active-item .faq-panel-answer { max-height: 200px; transition: max-height 0.3s cubic-bezier(1, 0, 1, 0); }
+        .faq-accordion-item.active-item .faq-panel-answer { max-height: 250px; transition: max-height 0.3s cubic-bezier(1, 0, 1, 0); }
 
         /* --- GENERAL TITLING TRACK STYLE --- */
         .section-title-wrapper {
@@ -531,7 +530,6 @@
 </head>
 <body>
 
-    <!-- ACCREDITATION TICKER (SLOWED SPEED) -->
     <div class="top-credibility-ribbon">
         <div class="ticker-track">
             <div class="ticker-item"><span>⚡</span> NICEIC Certification</div>
@@ -551,7 +549,6 @@
         </div>
     </div>
 
-    <!-- NAVBAR HEADER -->
     <div class="top-navbar">
         <div class="brand-block-split">
             <a href="https://www.electriciansnearyou.uk" class="main-site-logo-link" title="Return to Main Website">
@@ -569,7 +566,6 @@
         </div>
     </div>
 
-    <!-- STICKY ACTION BUTTON FOOTER BAR -->
     <div class="sticky-footer-bar">
         <div class="mobile-footer-grid">
             <a href="tel:07711261478" class="sticky-action-btn btn-call-emergency">🚨 Emergency</a>
@@ -580,7 +576,6 @@
         </button>
     </div>
 
-    <!-- CONTACT DETAILS DISPLAY PANEL MODAL -->
     <div class="modal-overlay-contact" id="contactModal" onclick="toggleContactModal(false)">
         <div class="directory-modal-card" onclick="event.stopPropagation()">
             <button class="modal-close-trigger" onclick="toggleContactModal(false)">&times;</button>
@@ -593,7 +588,6 @@
 
     <div class="drawer-overlay" id="overlay" onclick="toggleDrawer(false)"></div>
 
-    <!-- SIDE SLIDE ACTION WIDGET DRAWER -->
     <div class="side-drawer" id="sidebar">
         <div class="drawer-header">
             <h2>Quote Calculators</h2>
@@ -608,18 +602,15 @@
         </nav>
     </div>
 
-    <!-- MAIN CANVASS TEXT INTRO -->
     <header>
         <div class="pill-badge">Articles & Tools</div>
         <h1>Electrical Insights & Advice</h1>
         <p>With our many years of experience and research we hope to provide you with knowledge and understanding to help you tackle the day to day questions the public and other professionals have like BS7671 electrical Regs, Building Regs, and emergency electrical faults.</p>
     </header>
 
-    <!-- MAIN GRID SHELL CONSOLE -->
     <div class="main-container">
         <div class="split-layout-engine">
             
-            <!-- LEFT COLUMN: HOLDS ALL STREAMS (70%) -->
             <div class="left-content-stream">
                 
                 <div class="section-title-wrapper first-wrapper">
@@ -700,7 +691,6 @@
 
             </div>
 
-            <!-- RIGHT COLUMN: DEDICATED ENTIRELY TO FAQs (30%) -->
             <div class="right-faq-sidebar">
                 
                 <div class="section-title-wrapper first-wrapper">
@@ -763,13 +753,64 @@
                         </div>
                     </div>
 
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            What is the cost of an electrician per hour? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>Hourly rates across the UK typically vary by region, but standard professional rates average £45 to £80 per hour. Minor dynamic tasking or diagnostic operations are often priced as fixed layout components.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            How long does a house rewiring take? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>A full domestic home rewire typically takes between 2 to 5 days depending on the house size, room layouts, wall material structures, and whether the property is fully occupied during construction.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            What is an emergency call-out fee? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>Emergency out-of-hours tracking dispatches carry a variable base attendance fee covering immediate response isolation safety tasking. Specific fault repairs are fully quoted on-site after parsing anomalies.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            How long does an EICR certificate take? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>The physical testing tracking inspection usually takes 2 to 4 hours. Once the raw circuit field log values are processed, the final formal PDF certificate is generated and emailed within 24 to 48 hours.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            Do downlights need to be fire rated? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>Yes, UK building regulations require fire-rated recessed spot luminaires whenever cutting ceiling holes. They use heat-activated materials to seal apertures during thermal faults, preserving structural safety barrier thresholds.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            Are you Part P registered? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>Yes. All structural domestic electrical modifications follow strict Part P building control compliance paths, and safety notifications are handled cleanly through authorized scheme notification databases.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-        </div> <!-- END OF SPLIT LAYOUT ENGINE -->
-
-        <!-- CORPORATE CONNECTIONS LINKS FOOTER -->
-        <footer class="site-corporate-footer">
+        </div> <footer class="site-corporate-footer">
             <div class="footer-col">
                 <h4>Quote Calculators</h4>
                 <ul class="footer-links-list">
@@ -799,7 +840,6 @@
 
     </div>
 
-    <!-- Core Interactive Logic Modules -->
     <script>
         function toggleDrawer(open) {
             const sidebar = document.getElementById('sidebar');
