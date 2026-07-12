@@ -279,10 +279,6 @@
             color: var(--gold);
         }
 
-        .metric-value time {
-            color: #fff;
-        }
-
         .btn-book {
             background: var(--success-green);
             color: white;
@@ -311,21 +307,21 @@
             </div>
             <div class="grid-options">
                 <div class="card-option selected" onclick="selectFinish(this, 0)">
-                    <img src="/images/finish-white.jpg" class="card-img" alt="White Plastic Finish">
+                    <img src="/images/single-socket.jpg" class="card-img" alt="White Plastic Finish">
                     <div class="card-info">
                         <div class="card-label">Standard White Plastic</div>
                         <div class="card-desc">Budget-friendly, durable traditional plates.</div>
                     </div>
                 </div>
                 <div class="card-option" onclick="selectFinish(this, 10)">
-                    <img src="/images/finish-chrome.jpg" class="card-img" alt="Brushed Chrome Finish">
+                    <img src="/images/brushed-chrome.jpg" class="card-img" alt="Brushed Chrome Finish">
                     <div class="card-info">
                         <div class="card-label">Brushed Chrome / Metal</div>
                         <div class="card-desc">Modern metallic design. Requires earthing point verification.</div>
                     </div>
                 </div>
                 <div class="card-option" onclick="selectFinish(this, 18)">
-                    <img src="/images/finish-black.jpg" class="card-img" alt="Matt Black Premium Finish">
+                    <img src="/images/black-finish.jpg.png" class="card-img" alt="Matt Black Premium Finish">
                     <div class="card-info">
                         <div class="card-label">Matt Black / Premium</div>
                         <div class="card-desc">High-end contemporary aesthetics for feature rooms.</div>
@@ -366,7 +362,7 @@
                 
                 <div class="accessory-item" data-id="single_socket">
                     <div class="item-details">
-                        <img src="/images/acc-single-socket.jpg" class="item-thumb" alt="Single Socket">
+                        <img src="/images/single-socket.jpg" class="item-thumb" alt="Single Socket">
                         <div class="item-text">
                             <h4>Single Plug Socket</h4>
                             <p>Standard single outlet terminal module</p>
@@ -381,7 +377,7 @@
 
                 <div class="accessory-item" data-id="double_socket">
                     <div class="item-details">
-                        <img src="/images/acc-double-socket.jpg" class="item-thumb" alt="Double Socket">
+                        <img src="/images/double-socket.jpg" class="item-thumb" alt="Double Socket">
                         <div class="item-text">
                             <h4>Double Plug Socket</h4>
                             <p>Standard twin outlet terminal block configuration</p>
@@ -396,7 +392,7 @@
 
                 <div class="accessory-item" data-id="light_switch">
                     <div class="item-details">
-                        <img src="/images/acc-light-switch.jpg" class="item-thumb" alt="Light Switch">
+                        <img src="/images/light-switch.jpg" class="item-thumb" alt="Light Switch">
                         <div class="item-text">
                             <h4>Standard Light Switch (1-3 Gang)</h4>
                             <p>Wall switch panel for standard lighting loops</p>
@@ -411,7 +407,7 @@
 
                 <div class="accessory-item" data-id="dimmer_switch">
                     <div class="item-details">
-                        <img src="/images/acc-dimmer-switch.jpg" class="item-thumb" alt="Dimmer Switch">
+                        <img src="/images/light-dimmer.jpg" class="item-thumb" alt="Dimmer Switch">
                         <div class="item-text">
                             <h4>Dimmer Controller Switch</h4>
                             <p>Trailing-edge dimmer adjustment interfaces</p>
@@ -426,7 +422,7 @@
 
                 <div class="accessory-item" data-id="fused_spur">
                     <div class="item-details">
-                        <img src="/images/acc-fused-spur.jpg" class="item-thumb" alt="Fused Spur">
+                        <img src="/images/fused-switch.jpg" class="item-thumb" alt="Fused Spur">
                         <div class="item-text">
                             <h4>Fused Switch Spur (FCU)</h4>
                             <p>Dedicated isolation modules for boilers and local appliances</p>
@@ -441,7 +437,7 @@
 
                 <div class="accessory-item" data-id="switch_20a">
                     <div class="item-details">
-                        <img src="/images/acc-20a-switch.jpg" class="item-thumb" alt="20A Switch">
+                        <img src="/images/20a-dp.jpg" class="item-thumb" alt="20A Switch">
                         <div class="item-text">
                             <h4>20A Double Pole Switch</h4>
                             <p>Heavy-duty load switch control modules</p>
@@ -456,7 +452,7 @@
 
                 <div class="accessory-item" data-id="isolation_switch">
                     <div class="item-details">
-                        <img src="/images/acc-isolation-switch.jpg" class="item-thumb" alt="Isolation Switch">
+                        <img src="/images/cooker-switch.jpg" class="item-thumb" alt="Isolation Switch">
                         <div class="item-text">
                             <h4>Cooker / Shower Isolation Switch</h4>
                             <p>High amperage 45A/50A safety isolation units</p>
@@ -471,7 +467,7 @@
 
                 <div class="accessory-item" data-id="pullcord">
                     <div class="item-details">
-                        <img src="/images/acc-pullcord.jpg" class="item-thumb" alt="Light Pullcord">
+                        <img src="/images/light-pullcord.jpg" class="item-thumb" alt="Light Pullcord">
                         <div class="item-text">
                             <h4>Bathroom Light Pullcord Switch</h4>
                             <p>Zone-safe ceiling mounted pull switches</p>
@@ -498,7 +494,7 @@
                 </div>
                 <div class="metric">
                     <span class="metric-label">Est. Time</span>
-                    <span class="metric-value" style="color: white;" id="total-time">0 hrs</span>
+                    <span class="metric-value" style="color: white;" id="total-time">0.0 hrs</span>
                 </div>
             </div>
             <a href="tel:07711261478" class="btn-book" style="display: inline-block; text-align: center; line-height: 1.2;">Book Survey<br><span style="font-size: 0.8rem; font-weight: normal; opacity: 0.9;">07711 261478</span></a>
@@ -506,7 +502,6 @@
     </div>
 
     <script>
-        // Itemized Base Costings and Durations (Straight Replacement Reference Matrix)
         const itemsRates = {
             single_socket:    { replacePrice: 15,  addPrice: 60,  replaceTime: 0.20, addTime: 1.20 },
             double_socket:    { replacePrice: 18,  addPrice: 70,  replaceTime: 0.25, addTime: 1.30 },
@@ -518,7 +513,6 @@
             pullcord:         { replacePrice: 20,  addPrice: 60,  replaceTime: 0.30, addTime: 1.45 }
         };
 
-        // Reactive Application State Object
         let state = {
             finishPremiumPerItem: 0,
             workProfile: 'replace',
@@ -568,7 +562,6 @@
             let totalTime = 0;
             let totalItemCount = 0;
 
-            // Iterate over all active item selections
             for (const [key, quantity] of Object.entries(state.quantities)) {
                 if (quantity > 0) {
                     totalItemCount += quantity;
@@ -578,14 +571,12 @@
                         totalPrice += quantity * (rates.replacePrice + state.finishPremiumPerItem);
                         totalTime += quantity * rates.replaceTime;
                     } else {
-                        // Adding new installation circuitry
                         totalPrice += quantity * (rates.addPrice + state.finishPremiumPerItem);
                         totalTime += quantity * rates.addTime;
                     }
                 }
             }
 
-            // Apply a base minimal travel / mobilization labor threshold if items exist
             let baselineFee = (totalItemCount > 0) ? 60 : 0;
             let dynamicFinalPrice = totalPrice + baselineFee;
 
