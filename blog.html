@@ -7,7 +7,6 @@
     <meta name="description" content="Expert electrical advice, safety tips, and instant 2026 price calculation wizards for UK homeowners and landlords.">
     <meta name="keywords" content="led downlight installation cost, cost to change light fixtures, new lighting circuit price uk, outdoor security light installation cost">
     
-    <!-- CUSTOM LOGO FILE SET AS YOUR TAB FAVICON -->
     <link rel="icon" type="image/png" href="Logo.png">
     
     <style>
@@ -39,7 +38,7 @@
             color: var(--navy-text);
             line-height: 1.6;
             overflow-x: hidden;
-            padding-bottom: 8rem;
+            padding-bottom: 2rem;
             background-color: var(--bg-main);
         }
 
@@ -223,10 +222,6 @@
             color: #ffffff;
         }
 
-        body > header {
-            margin-top: 9rem;
-        }
-
         .pill-badge {
             display: inline-block;
             background: rgba(255, 192, 0, 0.15);
@@ -298,7 +293,6 @@
             background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
         }
 
-        /* --- SEARCH CONTROLLER CAP-INSET --- */
         .search-bar-wrapper {
             position: relative;
             display: flex;
@@ -326,18 +320,8 @@
             box-shadow: 0 0 10px rgba(197, 155, 39, 0.2);
         }
 
-        .search-bar-input::placeholder {
-            color: #cbd5e1;
-            font-weight: 400;
-        }
-
-        .search-icon-svg {
-            position: absolute;
-            left: 14px;
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            pointer-events: none;
-        }
+        .search-bar-input::placeholder { color: #cbd5e1; font-weight: 400; }
+        .search-icon-svg { position: absolute; left: 14px; font-size: 0.85rem; color: #cbd5e1; pointer-events: none; }
 
         /* --- CONDENSED 1/3 ULTRA-MINI LAYOUT GRID --- */
         .editorial-masonry {
@@ -363,9 +347,7 @@
             min-height: 145px;
         }
 
-        .editorial-card.hidden-item {
-            display: none !important;
-        }
+        .editorial-card.hidden-item { display: none !important; }
 
         .editorial-card:hover {
             transform: translateY(-2px);
@@ -374,61 +356,18 @@
             background: rgba(255, 255, 255, 0.92);
         }
 
-        .card-content-top {
-            margin-bottom: 0.25rem;
-        }
-
-        .editorial-tag {
-            font-size: 0.6rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--gold);
-            margin-bottom: 0.15rem;
-        }
-
-        .editorial-card h2 {
-            font-size: 1.05rem;
-            font-weight: 700;
-            line-height: 1.25;
-            letter-spacing: -0.2px;
-            margin-bottom: 0.25rem;
-        }
-
-        .editorial-card:hover h2 {
-            color: var(--gold);
-        }
-
-        .editorial-card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.35;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .read-more-btn {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--gold);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 0.35rem;
-            transition: gap 0.2s ease;
-        }
-
-        .editorial-card:hover .read-more-btn {
-            color: var(--gold-hover);
-            gap: 6px;
-        }
+        .card-content-top { margin-bottom: 0.25rem; }
+        .editorial-tag { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.15rem; }
+        .editorial-card h2 { font-size: 1.05rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.2px; margin-bottom: 0.25rem; }
+        .editorial-card:hover h2 { color: var(--gold); }
+        .editorial-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .read-more-btn { font-size: 0.78rem; font-weight: 700; color: var(--gold); display: inline-flex; align-items: center; gap: 4px; margin-top: 0.35rem; transition: gap 0.2s ease; }
+        .editorial-card:hover .read-more-btn { color: var(--gold-hover); gap: 6px; }
 
         /* --- OLDER ARTICLES MATRIX ARCHIVE DISPLAY GRID --- */
         .older-articles-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* Clean 4x3 desktop geometry matrix */
+            grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
         }
 
@@ -450,10 +389,7 @@
             transition: all 0.25s ease;
         }
 
-        .older-empty-block:hover {
-            background: rgba(255, 255, 255, 0.65);
-            border-color: var(--gold);
-        }
+        .older-empty-block:hover { background: rgba(255, 255, 255, 0.65); border-color: var(--gold); }
 
         /* --- SECTION BOUNDARY BARRIER SEGMENT --- */
         .section-barrier {
@@ -467,8 +403,7 @@
         .section-barrier::after {
             content: "⚡";
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             background: #f1f5f9;
             padding: 0 10px;
@@ -490,96 +425,28 @@
             box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
         }
 
-        .gallery-track {
-            display: flex;
-            gap: 1.5rem;
-            width: max-content;
-            animation: scrollStream 35s linear infinite;
-        }
-
-        .gallery-container:hover .gallery-track {
-            animation-play-state: paused;
-        }
-
-        .gallery-img {
-            width: 260px;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
-        }
-
-        .gallery-img:hover {
-            transform: scale(1.03);
-        }
-
-        @keyframes scrollStream {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-33.33%); }
-        }
+        .gallery-track { display: flex; gap: 1.5rem; width: max-content; animation: scrollStream 35s linear infinite; }
+        .gallery-container:hover .gallery-track { animation-play-state: paused; }
+        .gallery-img { width: 260px; height: 180px; object-fit: cover; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.3s ease; }
+        .gallery-img:hover { transform: scale(1.03); }
+        @keyframes scrollStream { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
 
         /* --- EXPANDABLE SIDE BAR DRAWERS --- */
-        .drawer-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.3);
-            backdrop-filter: blur(5px);
-            z-index: 1999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-        }
-
+        .drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(5px); z-index: 1999; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
         .drawer-overlay.active { opacity: 1; pointer-events: auto; }
-
-        .side-drawer {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 100%;
-            max-width: 380px;
-            height: 100%;
-            background: var(--drawer-bg);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.12);
-            border-left: 1px solid var(--border-color);
-            z-index: 2000;
-            padding: 2.5rem 2rem;
-            display: flex;
-            flex-direction: column;
-            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
+        .side-drawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 380px; height: 100%; background: var(--drawer-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); box-shadow: -10px 0 40px rgba(0, 0, 0, 0.12); border-left: 1px solid var(--border-color); z-index: 2000; padding: 2.5rem 2rem; display: flex; flex-direction: column; transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .side-drawer.open { right: 0; }
         .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
         .drawer-header h2 { font-weight: 800; text-transform: uppercase; font-size: 1.1rem; color: var(--text-muted); letter-spacing: 1px; }
         .btn-close-drawer { background: transparent; border: none; font-size: 1.7rem; cursor: pointer; color: var(--text-muted); line-height: 1; }
         .btn-close-drawer:hover { color: var(--navy-text); }
         .drawer-nav { display: flex; flex-direction: column; gap: 1rem; }
-        
-        .nav-link-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            padding: 1.25rem;
-            border-radius: 16px;
-            text-decoration: none;
-            color: var(--navy-text);
-            font-weight: 600;
-            font-size: 1.05rem;
-            transition: all 0.25s ease;
-        }
-
+        .nav-link-item { display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 16px; text-decoration: none; color: var(--navy-text); font-weight: 600; font-size: 1.05rem; transition: all 0.25s ease; }
         .nav-link-item span { font-size: 1.2rem; background: #f1f5f9; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.25s ease; }
         .nav-link-item:hover { border-color: var(--gold); transform: translateX(-4px); box-shadow: 0 5px 15px rgba(197, 155, 39, 0.08); }
         .nav-link-item:hover span { background: var(--gold); color: #fff; }
 
-        /* --- INTELLIGENT FOOTER FLOATING BACKING (RESIZED TO 1/3) --- */
+        /* --- INTELLIGENT FOOTER FLOATING BACKING --- */
         .sticky-footer-bar {
             position: fixed;
             bottom: 20px;
@@ -588,56 +455,35 @@
             transition: all 0.3s ease;
         }
 
-        /* Mobile layout styling variables */
         @media (max-width: 991px) {
             .sticky-footer-bar {
-                left: 50%;
-                transform: translateX(-50%);
-                width: calc(100% - 2rem);
-                max-width: 500px;
-                background: rgba(15, 23, 42, 0.85);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                border: 1px solid rgba(255, 255, 255, 0.15);
-                padding: 0.8rem 1rem;
-                border-radius: 100px;
+                left: 50%; transform: translateX(-50%); width: calc(100% - 2rem); max-width: 500px;
+                background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.15); padding: 0.8rem 1rem; border-radius: 100px;
             }
             .mobile-footer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
             .desktop-footer-single { display: none; }
         }
 
-        /* Desktop layout overrides: Scaled down to 1/3 size and pinned smoothly to the right corner */
         @media (min-width: 992px) {
             .sticky-footer-bar {
-                right: 30px;
-                left: auto;
-                transform: none;
-                width: 180px; /* Reduced to compact 1/3 size viewport */
-                background: transparent;
-                border: none;
-                padding: 0;
-                border-radius: 0;
-                box-shadow: none;
+                right: 30px; left: auto; transform: none; width: 180px;
+                background: transparent; border: none; padding: 0; border-radius: 0; box-shadow: none;
             }
             .mobile-footer-grid { display: none; }
             .desktop-footer-single {
-                display: block;
-                width: 100%;
-                height: 50px;
-                border-radius: 16px;
-                border: 1px solid rgba(255, 255, 255, 0.25);
-                cursor: pointer;
-                overflow: hidden;
-                font-weight: 800;
-                font-size: 0.82rem;
-                letter-spacing: 0.2px;
-                background: linear-gradient(135deg, #dc2626 0%, #dc2626 50%, #ffffff 50%, #ffffff 100%);
-                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                display: block; width: 100%; height: 50px; border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.25); cursor: pointer;
+                font-weight: 800; font-size: 0.85rem; letter-spacing: 0.2px;
+                background: var(--emergency-red); color: #ffffff;
+                box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2);
+                transition: transform 0.2s ease, background 0.2s ease;
+            }
+            .desktop-footer-single:hover {
+                background: var(--emergency-hover);
+                transform: translateY(-1px);
             }
         }
-
-        .split-text-left { position: absolute; left: 0; top: 0; bottom: 0; width: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; padding-right: 8px; }
-        .split-text-right { position: absolute; right: 0; top: 0; bottom: 0; width: 50%; display: flex; align-items: center; justify-content: center; color: #0f172a; padding-left: 8px; }
 
         .sticky-action-btn { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 700; font-size: 0.9rem; padding: 0.8rem 1.2rem; border-radius: 50px; border: none; cursor: pointer; transition: all 0.25s ease; }
         .btn-call-emergency { background: var(--emergency-red); color: #ffffff; }
@@ -659,11 +505,62 @@
         .directory-row-item.email-card-row:hover { background: #1e293b; }
         .directory-row-item.email-card-row span { color: #94a3b8; }
 
+        /* --- HIGH-END TAILORED SITE FOOTER BLOCK --- */
+        .site-corporate-footer {
+            background: var(--bg-dark-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            margin: 4.5rem 0 2rem 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            color: #ffffff;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+        }
+
+        .footer-col h4 {
+            font-size: 0.9rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--gold);
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-links-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-anchor-item {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .footer-anchor-item:hover {
+            color: var(--gold);
+            transform: translateX(3px);
+        }
+
         @media (max-width: 768px) {
             .editorial-masonry { grid-template-columns: 1fr; gap: 0.75rem; }
             .older-articles-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
             .section-title-wrapper { flex-direction: column; align-items: flex-start; padding: 1rem; }
             .search-bar-wrapper { max-width: 100%; }
+            .site-corporate-footer { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.5rem; }
         }
 
         @media (max-width: 600px) {
@@ -679,7 +576,6 @@
 </head>
 <body>
 
-    <!-- HIGH-CREDIBILITY SLIDING ACCREDITATION TICKER -->
     <div class="top-credibility-ribbon">
         <div class="ticker-track">
             <div class="ticker-item"><span>⚡</span> NICEIC Certification</div>
@@ -689,7 +585,6 @@
             <div class="ticker-item"><span>⚡</span> 24/7 Service</div>
             <div class="ticker-item"><span>⚡</span> Emergency CallOuts Available</div>
             <div class="ticker-item"><span>⚡</span> Contact Us Today</div>
-            <!-- Duplicated sequence to prevent layout blank gaps on infinite loops -->
             <div class="ticker-item"><span>⚡</span> NICEIC Certification</div>
             <div class="ticker-item"><span>⚡</span> City & Guilds</div>
             <div class="ticker-item"><span>⚡</span> EAL Accredited</div>
@@ -700,7 +595,6 @@
         </div>
     </div>
 
-    <!-- TOP CONTROL NAVIGATION NAVBAR -->
     <div class="top-navbar">
         <div class="brand-block-split">
             <a href="https://www.electriciansnearyou.uk" class="main-site-logo-link" title="Return to Main Website">
@@ -718,22 +612,17 @@
         </div>
     </div>
 
-    <!-- PERSISTENT SCROLL FLOATING COMMUNICATIONS BAR (1/3 SCALED ON DESKTOP) -->
     <div class="sticky-footer-bar">
-        <!-- Mobile Dual Trigger Layout -->
         <div class="mobile-footer-grid">
             <a href="tel:07711261478" class="sticky-action-btn btn-call-emergency">🚨 Emergency</a>
             <button class="sticky-action-btn btn-contact-general" onclick="toggleContactModal(true)">📬 Contact</button>
         </div>
         
-        <!-- Desktop Compact Ribbon Trigger -->
         <button class="desktop-footer-single" onclick="toggleContactModal(true)">
-            <span class="split-text-left">🚨 Emerg</span>
-            <span class="split-text-right">📬 24/7</span>
+            🚨 24/7 Contact
         </button>
     </div>
 
-    <!-- DESKTOP POP-UP COMMUNICATIONS MODAL -->
     <div class="modal-overlay-contact" id="contactModal" onclick="toggleContactModal(false)">
         <div class="directory-modal-card" onclick="event.stopPropagation()">
             <button class="modal-close-trigger" onclick="toggleContactModal(false)">&times;</button>
@@ -751,10 +640,8 @@
         </div>
     </div>
 
-    <!-- BACKGROUND SHADOW OVERLAY -->
     <div class="drawer-overlay" id="overlay" onclick="toggleDrawer(false)"></div>
 
-    <!-- SLIDE DRAW CANVAS SIDEBAR -->
     <div class="side-drawer" id="sidebar">
         <div class="drawer-header">
             <h2>Quote Calculators</h2>
@@ -769,7 +656,6 @@
         </nav>
     </div>
 
-    <!-- MAIN CANVASS TEXT INTRO -->
     <header>
         <div class="pill-badge">Articles & Tools</div>
         <h1>Electrical Insights & Advice</h1>
@@ -778,7 +664,6 @@
 
     <div class="main-container">
         
-        <!-- HEADER WITH LIVE INLINE SEARCH BAR SYSTEM -->
         <div class="section-title-wrapper">
             <div class="section-title">Recently Published Articles</div>
             <div class="search-bar-wrapper">
@@ -827,7 +712,6 @@
 
         <hr class="section-barrier">
 
-        <!-- INTERACTIVE LIVE PHOTO STREAMING MODULE -->
         <div class="section-title-wrapper">
             <div class="section-title">On-Site Project Stream</div>
         </div>
@@ -837,12 +721,10 @@
 
         <hr class="section-barrier">
 
-        <!-- NEW ARCHIVE SECTION HEADER -->
         <div class="section-title-wrapper">
             <div class="section-title">Older Articles</div>
         </div>
 
-        <!-- 12 EMPTY MINI-BLOCK SLOTS PREPPED FOR FUTURE PROJECTS -->
         <div class="older-articles-grid">
             <div class="older-empty-block">Slot Archive #1</div>
             <div class="older-empty-block">Slot Archive #2</div>
@@ -858,9 +740,40 @@
             <div class="older-empty-block">Slot Archive #12</div>
         </div>
 
+        <footer class="site-corporate-footer">
+            
+            <div class="footer-col">
+                <h4>Quote Calculators</h4>
+                <ul class="footer-links-list">
+                    <li><a href="Calculators/Fuseboard-Calculator.html" class="footer-anchor-item">⚡ Fuseboard Upgrade</a></li>
+                    <li><a href="Calculators/EV-Calculator.html" class="footer-anchor-item">🚗 EV Charger Install</a></li>
+                    <li><a href="Calculators/Accessory-Calculator.html" class="footer-anchor-item">🔌 Switches & Sockets</a></li>
+                    <li><a href="Calculators/Lighting-Calculator.html" class="footer-anchor-item">💡 Lighting Networks</a></li>
+                    <li><a href="Calculators/EICR-Calculator.html" class="footer-anchor-item">📋 EICR Safety Check</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Page Links</h4>
+                <ul class="footer-links-list">
+                    <li><a href="https://www.electriciansnearyou.uk" class="footer-anchor-item" target="_blank">🌐 Main Website</a></li>
+                    <li><a href="https://g.page/r/CR0naPwKfXB_EBM/review" class="footer-anchor-item" target="_blank">⭐ Write A Review</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Contact Links</h4>
+                <ul class="footer-links-list">
+                    <li><a href="tel:07711261478" class="footer-anchor-item">📞 Call Us (07711261478)</a></li>
+                    <li><a href="mailto:electriciansnearyou@gmail.com" class="footer-anchor-item">📧 Email Us</a></li>
+                    <li><a href="https://www.electriciansnearyou.uk/#contact" class="footer-anchor-item" target="_blank">💬 Request A Call</a></li>
+                </ul>
+            </div>
+
+        </footer>
+
     </div>
 
-    <!-- Core Interactive Logic Modules -->
     <script>
         function toggleDrawer(open) {
             const sidebar = document.getElementById('sidebar');
@@ -885,9 +798,6 @@
             }
         }
 
-        // =================================================================
-        // DYNAMIC REAL-TIME ARTICLE SEARCH FILTER
-        // =================================================================
         function executeLiveSearch() {
             const query = document.getElementById('articleSearchInput').value.toLowerCase().trim();
             const cards = document.querySelectorAll('#articlesGridContainer .editorial-card');
@@ -897,7 +807,6 @@
                 const tagText = card.querySelector('.editorial-tag').innerText.toLowerCase();
                 const bodyText = card.querySelector('p').innerText.toLowerCase();
                 
-                // If query is found inside heading, tag, or description summary, display card item
                 if (headingText.includes(query) || tagText.includes(query) || bodyText.includes(query)) {
                     card.classList.remove('hidden-item');
                 } else {
