@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Accessory Swap & Installation Estimator | Electricians Near You</title>
+    <style>
+        :root {
+            --navy-dark: #0a1931;
+            --navy-light: #15305b;
+            --gold: #ffc000;
+            --gold-hover: #e0a800;
+            --text-light: #ffffff;
+            --text-muted: #b0c4de;
+            --bg-card: #112240;
+            --border-color: #1e3d73;
+            --success-green: #00cc66;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--navy-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding-bottom: 8rem;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .back-link {
+            color: var(--gold);
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .intro-text {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .step-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-number {
+            background: var(--gold);
+            color: var(--navy-dark);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* --- VISUAL CARDS GRID --- */
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .grid-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-option {
+            background: var(--navy-light);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-option:hover {
+            border-color: var(--gold-hover);
+        }
+
+        .card-option.selected {
+            border-color: var(--gold);
+            background: rgba(255, 192, 0, 0.05);
+        }
+
+        .card-option.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--gold);
+            color: var(--navy-dark);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.75rem;
+            z-index: 10;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            background: #071426;
+        }
+
+        .card-info {
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-label {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* --- QUANTITY ACCESSORY ITEM LIST --- */
+        .accessory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .accessory-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--navy-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .item-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .item-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #071426;
+            flex-shrink: 0;
+        }
+
+        .item-text h4 {
+            font-size: 1rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .item-text p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* --- COUNTER CONTROLS --- */
+        .counter-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-qty {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: var(--navy-dark);
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-val {
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-width: 25px;
+            text-align: center;
+        }
+
+        /* --- STICKY SUMMARY TRAY --- */
+        .summary-tray {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #060f1e;
+            border-top: 3px solid var(--gold);
+            padding: 1.25rem 1rem;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .tray-content {
+            max-width: 750px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-group {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .metric-value time {
+            color: #fff;
+        }
+
+        .btn-book {
+            background: var(--success-green);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="../blog.html" class="back-link">&larr; Back to Electrical Blog</a>
+        
+        <h1>Accessory Installation Cost Calculator</h1>
+        <p class="intro-text">Select your preferred architectural finish style, specify the nature of your installation, and adjust quantities to view live pricing.</p>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">1</div>
+                <h3>Choose Fitting Finish Style</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" onclick="selectFinish(this, 0)">
+                    <img src="/images/finish-white.jpg" class="card-img" alt="White Plastic Finish">
+                    <div class="card-info">
+                        <div class="card-label">Standard White Plastic</div>
+                        <div class="card-desc">Budget-friendly, durable traditional plates.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectFinish(this, 10)">
+                    <img src="/images/finish-chrome.jpg" class="card-img" alt="Brushed Chrome Finish">
+                    <div class="card-info">
+                        <div class="card-label">Brushed Chrome / Metal</div>
+                        <div class="card-desc">Modern metallic design. Requires earthing point verification.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectFinish(this, 18)">
+                    <img src="/images/finish-black.jpg" class="card-img" alt="Matt Black Premium Finish">
+                    <div class="card-info">
+                        <div class="card-label">Matt Black / Premium</div>
+                        <div class="card-desc">High-end contemporary aesthetics for feature rooms.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">2</div>
+                <h3>Select Work Profile</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" onclick="selectWorkProfile(this, 'replace')">
+                    <img src="/images/profile-replace.jpg" class="card-img" alt="Straight Replacement">
+                    <div class="card-info">
+                        <div class="card-label">Straight Replacement Only</div>
+                        <div class="card-desc">Swapping faceplates over existing compatible backboxes. Faster execution.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectWorkProfile(this, 'add')">
+                    <img src="/images/profile-add.jpg" class="card-img" alt="New Addition Installation">
+                    <div class="card-info">
+                        <div class="card-label">New Circuit Additions</div>
+                        <div class="card-desc">Extending paths, routing lines, and installing new hardware configurations.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">3</div>
+                <h3>Fittings & Quantities</h3>
+            </div>
+            <div class="accessory-list">
+                
+                <div class="accessory-item" data-id="single_socket">
+                    <div class="item-details">
+                        <img src="/images/acc-single-socket.jpg" class="item-thumb" alt="Single Socket">
+                        <div class="item-text">
+                            <h4>Single Plug Socket</h4>
+                            <p>Standard single outlet terminal module</p>
+                        </div>
+                    </div>
+                    <div class="counter-controls">
+                        <button class="btn-qty" onclick="adjustQty('single_socket', -1)">&minus;</button>
+                        <span class="qty-val" id="qty-single_socket">0</span>
+                        <button class="btn-qty" onclick="adjustQty('single_socket', 1)">&plus;</button>
+                    </div>
+                </div>
+
+                <div class="accessory-item" data-id="double_socket">
+                    <div class="item-details">
+                        <img src="/images/acc-double-socket.jpg" class="item-thumb" alt="Double Socket">
+                        <div class="item-text">
+                            <h4>Double Plug Socket</h4>
+                            <p>Standard twin outlet terminal block configuration</p>
+                        </div>
+                    </div>
+                    <div class="counter-controls">
+                        <button class="btn-qty" onclick="adjustQty('double_socket', -1)">&minus;</button>
+                        <span class="qty-val" id="qty-double_socket">0</span>
+                        <button class="btn-qty" onclick="adjustQty('double_socket', 1)">&plus;</button>
+                    </div>
+                </div>
+
+                <div class="accessory-item" data-id="light_switch">
+                    <div class="item-details">
+                        <img src="/images/acc-light-switch.jpg" class="item-thumb" alt="Light Switch">
+                        <div class="item-text">
+                            <h4>Standard Light Switch (1-3 Gang)</h4>
+                            <p>Wall switch panel for standard lighting loops</p>
+                        </div>
+                    </div>
+                    <div class="counter-controls">
+                        <button class="btn-qty" onclick="adjustQty('light_switch', -1)">&minus;</button>
+                        <span class="qty-val" id="qty-light_switch">0</span>
+                        <button class="btn-qty" onclick="adjustQty('light_switch', 1)">&plus;</button>
+                    </div>
+                </div>
+
+                <div class="accessory-item" data-id="dimmer_switch">
+                    <div class="item-details">
+                        <img src="/images/acc-dimmer-switch.jpg" class="item-thumb" alt="Dimmer Switch">
+                        <div class="item-text">
+                            <h4>Dimmer Controller Switch</h4>
+                            <p>Trailing-edge dimmer adjustment interfaces</p>
+                        </div>
+                    </div>
+                    <div class="counter-controls">
+                        <button class="btn-qty" onclick="adjustQty('dimmer_switch', -1)">&minus;</button>
+                        <span class="qty-val" id="qty-dimmer_switch">0</span>
+                        <button class="btn-qty" onclick="adjustQty('dimmer_switch', 1)">&plus;</button>
+                    </div>
+                </div>
+
+                <div class="accessory-item" data-id="fused_spur">
+                    <div class="item-details">
+                        <img src="/images/acc-fused-spur.jpg" class="item-thumb" alt="Fused Spur">
+                        <div class="item-text">
+                            <h4>Fused Switch Spur (FCU)</h4>
+                            <p>Dedicated isolation modules for boilers and local appliances</p>
+                        </div>
+                    </div>
+                    <div class="counter-controls">
+                        <button class="btn-qty" onclick="adjustQty('fused_spur', -1)">&minus;</button>
+                        <span class="qty-val" id="qty-fused_spur">0</span>
+                        <button class="btn-qty" onclick="adjustQty('fused_spur', 1)">&plus;</button>
+                    </div>
+                </div>
+
+                <div class="accessory-item" data-id="switch_20a">
+                    <div class="item-details">
+                        <img src="/images/acc-20a-switch.jpg" class="item-thumb" alt="20A Switch">
+                        <div class="item-text">
+                            <h4>20A Double Pole Switch</h4>
+                            <p>Heavy-duty load switch control modules</p>
+                        </div>
+                    </div>
+                    <div class="counter-controls">
+                        <button class="btn-qty" onclick="adjustQty('switch_20a', -1)">&minus;</button>
+                        <span class="qty-val" id="qty-switch_20a">0</span>
+                        <button class="btn-qty" onclick="adjustQty('switch_20a', 1)">&plus;</button>
+                    </div>
+                </div>
+
+                <div class="accessory-item" data-id="isolation_switch">
+                    <div class="item-details">
+                        <img src="/images/acc-isolation-switch.jpg" class="item-thumb" alt="Isolation Switch">
+                        <div class="item-text">
+                            <h4>Cooker / Shower Isolation Switch</h4>
+                            <p>High amperage 45A/50A safety isolation units</p>
+                        </div>
+                    </div>
+                    <div class="counter-controls">
+                        <button class="btn-qty" onclick="adjustQty('isolation_switch', -1)">&minus;</button>
+                        <span class="qty-val" id="qty-isolation_switch">0</span>
+                        <button class="btn-qty" onclick="adjustQty('isolation_switch', 1)">&plus;</button>
+                    </div>
+                </div>
+
+                <div class="accessory-item" data-id="pullcord">
+                    <div class="item-details">
+                        <img src="/images/acc-pullcord.jpg" class="item-thumb" alt="Light Pullcord">
+                        <div class="item-text">
+                            <h4>Bathroom Light Pullcord Switch</h4>
+                            <p>Zone-safe ceiling mounted pull switches</p>
+                        </div>
+                    </div>
+                    <div class="counter-controls">
+                        <button class="btn-qty" onclick="adjustQty('pullcord', -1)">&minus;</button>
+                        <span class="qty-val" id="qty-pullcord">0</span>
+                        <button class="btn-qty" onclick="adjustQty('pullcord', 1)">&plus;</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="summary-tray">
+        <div class="tray-content">
+            <div class="metric-group">
+                <div class="metric">
+                    <span class="metric-label">Est. Budget</span>
+                    <span class="metric-value" id="total-price">£0</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Est. Time</span>
+                    <span class="metric-value" style="color: white;" id="total-time">0 hrs</span>
+                </div>
+            </div>
+            <a href="tel:07711261478" class="btn-book" style="display: inline-block; text-align: center; line-height: 1.2;">Book Survey<br><span style="font-size: 0.8rem; font-weight: normal; opacity: 0.9;">07711 261478</span></a>
+        </div>
+    </div>
+
+    <script>
+        // Itemized Base Costings and Durations (Straight Replacement Reference Matrix)
+        const itemsRates = {
+            single_socket:    { replacePrice: 15,  addPrice: 60,  replaceTime: 0.20, addTime: 1.20 },
+            double_socket:    { replacePrice: 18,  addPrice: 70,  replaceTime: 0.25, addTime: 1.30 },
+            light_switch:     { replacePrice: 14,  addPrice: 55,  replaceTime: 0.20, addTime: 1.15 },
+            dimmer_switch:    { replacePrice: 28,  addPrice: 75,  replaceTime: 0.30, addTime: 1.30 },
+            fused_spur:       { replacePrice: 22,  addPrice: 65,  replaceTime: 0.25, addTime: 1.30 },
+            switch_20a:       { replacePrice: 24,  addPrice: 68,  replaceTime: 0.25, addTime: 1.30 },
+            isolation_switch: { replacePrice: 38,  addPrice: 110, replaceTime: 0.40, addTime: 2.00 },
+            pullcord:         { replacePrice: 20,  addPrice: 60,  replaceTime: 0.30, addTime: 1.45 }
+        };
+
+        // Reactive Application State Object
+        let state = {
+            finishPremiumPerItem: 0,
+            workProfile: 'replace',
+            quantities: {
+                single_socket: 0,
+                double_socket: 0,
+                light_switch: 0,
+                dimmer_switch: 0,
+                fused_spur: 0,
+                switch_20a: 0,
+                isolation_switch: 0,
+                pullcord: 0
+            }
+        };
+
+        function selectFinish(element, premium) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+
+            state.finishPremiumPerItem = premium;
+            calculateTotals();
+        }
+
+        function selectWorkProfile(element, profile) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+
+            state.workProfile = profile;
+            calculateTotals();
+        }
+
+        function adjustQty(itemId, change) {
+            let currentQty = state.quantities[itemId];
+            let targetQty = currentQty + change;
+            
+            if (targetQty >= 0 && targetQty <= 100) {
+                state.quantities[itemId] = targetQty;
+                document.getElementById('qty-' + itemId).innerText = targetQty;
+                calculateTotals();
+            }
+        }
+
+        function calculateTotals() {
+            let totalPrice = 0;
+            let totalTime = 0;
+            let totalItemCount = 0;
+
+            // Iterate over all active item selections
+            for (const [key, quantity] of Object.entries(state.quantities)) {
+                if (quantity > 0) {
+                    totalItemCount += quantity;
+                    const rates = itemsRates[key];
+                    
+                    if (state.workProfile === 'replace') {
+                        totalPrice += quantity * (rates.replacePrice + state.finishPremiumPerItem);
+                        totalTime += quantity * rates.replaceTime;
+                    } else {
+                        // Adding new installation circuitry
+                        totalPrice += quantity * (rates.addPrice + state.finishPremiumPerItem);
+                        totalTime += quantity * rates.addTime;
+                    }
+                }
+            }
+
+            // Apply a base minimal travel / mobilization labor threshold if items exist
+            let baselineFee = (totalItemCount > 0) ? 60 : 0;
+            let dynamicFinalPrice = totalPrice + baselineFee;
+
+            document.getElementById('total-price').innerText = '£' + dynamicFinalPrice;
+            document.getElementById('total-time').innerText = totalTime.toFixed(1) + ' hrs';
+        }
+    </script>
+</body>
+</html>
