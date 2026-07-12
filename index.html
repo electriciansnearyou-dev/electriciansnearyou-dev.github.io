@@ -74,25 +74,25 @@
     }
     body {
       font-family: "Inter", sans-serif;
-      background-color: #f1f5f9;
+      background-color: #0f172a;
     }
     .top-navbar {
-      background: rgba(30, 41, 59, 0.85);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     .glass-card {
-      background: rgba(255, 255, 255, 0.78);
+      background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .dark-glass-card {
       background: rgba(30, 41, 59, 0.78);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
     
     @media (max-width: 991px) {
@@ -105,7 +105,7 @@
         .mobile-action-circle {
             width: 54px; height: 54px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; font-size: 1.35rem;
-            cursor: pointer; pointer-events: auto; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
+            cursor: pointer; pointer-events: auto; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.2); transition: transform 0.2s ease;
             text-decoration: none;
         }
@@ -119,20 +119,20 @@
         .desktop-footer-single {
             display: block; width: 100%; height: 50px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.25); cursor: pointer;
             font-weight: 800; font-size: 0.85rem; letter-spacing: 0.2px; background: #dc2626; color: #ffffff;
-            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2); transition: all 0.2s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); transition: all 0.2s ease;
         }
         .desktop-footer-single:hover { background: #b91c1c; transform: translateY(-1px); }
     }
   </style>
 </head>
-<body class="text-gray-900">
+<body class="text-slate-100">
 
   <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5MJVXSNN"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
 
-  <!-- FIXED NAVBAR LAYER -->
+  <!-- FIXED NAVBAR -->
   <header class="top-navbar fixed top-0 left-0 right-0 h-[70px] z-50 flex items-center shadow-lg">
     <div class="w-full max-w-7xl mx-auto px-4 flex items-center justify-between">
       <a href="#" class="text-xl lg:text-2xl font-extrabold text-white tracking-tight">
@@ -165,50 +165,50 @@
     </div>
   </header>
 
-  <!-- RESPONSIVE MOBILE ACCESSIBLE DRAWER HOOK -->
-  <div id="mobile-nav" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex-col items-center justify-start pt-28 px-6">
-    <div class="relative bg-white rounded-2xl shadow-2xl p-8 flex flex-col gap-5 text-xl font-bold w-full max-w-sm text-center max-h-[75vh] overflow-y-auto">
-      <button id="close-menu" class="absolute top-4 right-4 text-3xl font-bold text-gray-500 hover:text-black">&times;</button>
+  <!-- MOBILE NAVIGATION DRAWER -->
+  <div id="mobile-nav" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex-col items-center justify-start pt-28 px-6">
+    <div class="relative bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 flex flex-col gap-5 text-xl font-bold w-full max-w-sm text-center max-h-[75vh] overflow-y-auto text-white">
+      <button id="close-menu" class="absolute top-4 right-4 text-3xl font-bold text-slate-400 hover:text-white">&times;</button>
       
-      <a href="emergency-electrician.html" class="mobile-link text-red-600 font-extrabold">🚨 Emergency Electrician</a>
-      <a href="#pricing" class="mobile-link text-gray-800 hover:text-[#c59b27]">Pricing</a>
-      <a href="#services" class="mobile-link text-gray-800 hover:text-[#c59b27]">Services</a>
-      <a href="#about" class="mobile-link text-gray-800 hover:text-[#c59b27]">About</a>
-      <a href="#why" class="mobile-link text-gray-800 hover:text-[#c59b27]">Why Us</a>
-      <a href="#reviews" class="mobile-link text-gray-800 hover:text-[#c59b27]">Reviews</a>
-      <a href="#areas" class="mobile-link text-gray-800 hover:text-[#c59b27]">Coverage</a>
-      <a href="#contact" class="mobile-link text-gray-800 hover:text-[#c59b27]">Contact</a>
-      <a href="blog.html" class="mobile-link bg-slate-900 text-white py-2.5 rounded-xl text-md shadow">📚 Read Blog Insights</a>
+      <a href="emergency-electrician.html" class="mobile-link text-red-500 font-extrabold">🚨 Emergency Electrician</a>
+      <a href="#pricing" class="mobile-link hover:text-[#c59b27]">Pricing</a>
+      <a href="#services" class="mobile-link hover:text-[#c59b27]">Services</a>
+      <a href="#about" class="mobile-link hover:text-[#c59b27]">About</a>
+      <a href="#why" class="mobile-link hover:text-[#c59b27]">Why Us</a>
+      <a href="#reviews" class="mobile-link hover:text-[#c59b27]">Reviews</a>
+      <a href="#areas" class="mobile-link hover:text-[#c59b27]">Coverage</a>
+      <a href="#contact" class="mobile-link hover:text-[#c59b27]">Contact</a>
+      <a href="blog.html" class="mobile-link bg-slate-800 text-white py-2.5 rounded-xl text-md shadow border border-slate-700">📚 Read Blog Insights</a>
     </div>
   </div>
 
-  <!-- MODERN CIRCULAR MOBILE CONTROLS MATRIX -->
+  <!-- MOBILE ACTION CONTROLS -->
   <div class="mobile-footer-grid">
     <a href="tel:07711261478" class="mobile-action-circle circle-btn-emergency">🚨</a>
     <div class="mobile-action-circle circle-btn-contact" onclick="toggleDesktopContactModal(true)">📬</div>
   </div>
 
-  <!-- DESKTOP STICKY SUPPORT BAR WIDGET -->
+  <!-- DESKTOP STICKY BUTTON -->
   <div class="sticky-footer-bar">
     <button class="desktop-footer-single" onclick="toggleDesktopContactModal(true)">
         🚨 24/7 Contact
     </button>
   </div>
 
-  <!-- DESKTOP POP-UP CONTACT MODAL -->
-  <div class="modal-overlay-contact fixed inset-0 bg-black/40 backdrop-blur-md z-[2001] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" id="contactModal" onclick="toggleDesktopContactModal(false)">
-    <div class="bg-white/95 backdrop-blur rounded-3xl border border-gray-200 w-full max-w-[440px] p-8 shadow-2xl relative" onclick="event.stopPropagation()">
-        <button class="absolute top-5 right-5 text-2xl text-gray-400 hover:text-gray-900" onclick="toggleDesktopContactModal(false)">&times;</button>
-        <h3 class="text-xl font-extrabold mb-5 border-b pb-3 flex items-center gap-2">⚡ 24/7 Contacts</h3>
-        <a href="tel:07711261478" class="flex justify-between items-center bg-white border p-4 rounded-xl mb-3 font-semibold hover:border-[#c59b27] hover:bg-slate-50 transition">Jordan H. <span class="text-sm text-gray-500">07711261478</span></a>
-        <a href="tel:07907056422" class="flex justify-between items-center bg-white border p-4 rounded-xl mb-4 font-semibold hover:border-[#c59b27] hover:bg-slate-50 transition">Jordan M. <span class="text-sm text-gray-500">07907056422</span></a>
-        <a href="mailto:electriciansnearyou@gmail.com" class="flex justify-between items-center bg-slate-900 text-white p-4 rounded-xl font-semibold hover:bg-slate-800 transition">Email Desk <span class="text-xs text-slate-400">electriciansnearyou@gmail.com</span></a>
+  <!-- CONTACT OVERLAY PANEL MODAL -->
+  <div class="modal-overlay-contact fixed inset-0 bg-black/60 backdrop-blur-md z-[2001] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" id="contactModal" onclick="toggleDesktopContactModal(false)">
+    <div class="bg-slate-900/95 backdrop-blur rounded-3xl border border-slate-800 w-full max-w-[440px] p-8 shadow-2xl relative text-white" onclick="event.stopPropagation()">
+        <button class="absolute top-5 right-5 text-2xl text-slate-400 hover:text-white" onclick="toggleDesktopContactModal(false)">&times;</button>
+        <h3 class="text-xl font-extrabold mb-5 border-b border-slate-800 pb-3 flex items-center gap-2 text-[#c59b27]">⚡ 24/7 Contacts</h3>
+        <a href="tel:07711261478" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-3 font-semibold hover:border-[#c59b27] hover:bg-slate-800 transition">Jordan H. <span class="text-sm text-slate-400">07711261478</span></a>
+        <a href="tel:07907056422" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-4 font-semibold hover:border-[#c59b27] hover:bg-slate-800 transition">Jordan M. <span class="text-sm text-slate-400">07907056422</span></a>
+        <a href="mailto:electriciansnearyou@gmail.com" class="flex justify-between items-center bg-white text-slate-950 p-4 rounded-xl font-bold hover:bg-gray-100 transition">Email Desk <span class="text-xs text-slate-600 font-semibold">electriciansnearyou@gmail.com</span></a>
     </div>
   </div>
 
-  <!-- HERO SECTION -->
+  <!-- HERO HEADER SECTION -->
   <section class="relative min-h-[90vh] flex items-center text-white bg-cover bg-center" style="background-image: url('Assets/20240412_212651.jpg');">
-    <div class="absolute inset-0 bg-black/65"></div>
+    <div class="absolute inset-0 bg-black/70"></div>
     <div class="relative z-10 container mx-auto px-4 py-32 text-center">
       <div class="inline-block bg-red-600 px-5 py-2 rounded-full font-bold text-sm mb-6 shadow animate-pulse">
         24/7 Emergency Electrician Available Today
@@ -216,17 +216,17 @@
       <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight">
         Local Electricians in<br><span class="text-[#c59b27]">Poole, Bournemouth & Christchurch</span>
       </h1>
-      <p class="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-gray-200 font-medium">
+      <p class="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-gray-300 font-medium">
         Our fully qualified and insured electricians provide NICEIC certification, emergency callouts, rewiring, fuse board upgrades, EV charger installation, and landlord safety surveys across Dorset.
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-        <a href="#contact" class="bg-white text-slate-900 hover:bg-gray-100 px-8 py-4 rounded-full font-bold text-lg shadow-lg transition">Get Free Quote</a>
-        <a href="tel:07711261478" class="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-full font-bold text-lg shadow-lg transition">Call Now</a>
+        <a href="#contact" class="bg-white text-slate-950 hover:bg-gray-100 px-8 py-4 rounded-full font-bold text-lg shadow-lg transition">Get Free Quote</a>
+        <a href="tel:07711261478" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg transition">Call Now</a>
       </div>
       <div class="flex flex-wrap justify-center gap-6 font-bold text-sm md:text-base text-gray-100">
-        <div class="bg-white/10 px-4 py-2 rounded-full backdrop-blur">✅ NICEIC Certification</div>
-        <div class="bg-white/10 px-4 py-2 rounded-full backdrop-blur">✅ Fully Insured</div>
-        <div class="bg-white/10 px-4 py-2 rounded-full backdrop-blur">✅ 24/7 Emergency Service</div>
+        <div class="bg-white/10 px-4 py-2 rounded-full backdrop-blur border border-white/5">✅ NICEIC Certification</div>
+        <div class="bg-white/10 px-4 py-2 rounded-full backdrop-blur border border-white/5">✅ Fully Insured</div>
+        <div class="bg-white/10 px-4 py-2 rounded-full backdrop-blur border border-white/5">✅ 24/7 Emergency Service</div>
       </div>
       <div class="mt-8">
         <a href="https://g.page/r/CR0naPwKfXB_EBE" target="_blank" rel="noopener" class="inline-flex flex-col sm:flex-row items-center gap-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-full font-semibold text-sm transition backdrop-blur border border-white/10">
@@ -237,13 +237,13 @@
     </div>
   </section>
 
-  <!-- SECTION 1: MARKETING INTRODUCTION BACKGROUND -->
-  <section class="py-20 bg-white">
+  <!-- SECTION 1: MARKETING INTRODUCTION BACKGROUND (DEEP NAVY) -->
+  <section class="py-20 bg-slate-900 border-b border-slate-800">
     <div class="container mx-auto px-4 max-w-4xl">
-      <h2 class="text-3xl font-extrabold text-center mb-10 tracking-tight text-slate-900">
+      <h2 class="text-3xl font-extrabold text-center mb-10 tracking-tight text-white">
         Electricians Covering Poole, Bournemouth, Christchurch & Dorset
       </h2>
-      <div class="space-y-6 text-md md:text-lg text-gray-600 leading-relaxed font-medium">
+      <div class="space-y-6 text-md md:text-lg text-slate-300 leading-relaxed font-medium">
         <p>ElectriciansNearYou provides professional electrical services across Poole, Bournemouth, Christchurch and surrounding Dorset areas. Whether you need an emergency electrician, fuse board upgrade, EV charger installation, EICR certificate, lighting installation or a complete house rewire, our qualified electricians deliver safe, reliable and fully compliant electrical work for domestic and commercial customers.</p>
         <p>We understand that electrical faults can happen at any time, which is why we offer rapid response emergency electrician services throughout Dorset. From tripping electrics and power outages to fault finding and urgent repairs, our experienced team works quickly to identify problems and restore power safely while ensuring all work complies with current BS7671 wiring regulations.</p>
         <p>Our electricians work with homeowners, landlords, letting agents and businesses throughout Poole, Bournemouth, Christchurch, Wimborne, Ferndown and Ringwood. We pride ourselves on transparent pricing, professional workmanship and excellent customer service, providing free quotations and practical electrical solutions tailored to your property and requirements.</p>
@@ -251,22 +251,22 @@
     </div>
   </section>
 
-  <!-- SECTION 2: SERVICES GRID BACKGROUND -->
-  <section id="services" class="py-24 bg-slate-50 border-t border-b border-gray-200/50">
+  <!-- SECTION 2: SERVICES GRID BACKGROUND (CHARCOAL BLUE) -->
+  <section id="services" class="py-24 bg-slate-950 border-b border-slate-900">
     <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-extrabold text-center mb-16 tracking-tight text-slate-900">Our Professional Electrical Services</h2>
+      <h2 class="text-3xl font-extrabold text-center mb-16 tracking-tight text-white">Our Professional Electrical Services</h2>
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
         
         <!-- CARD 1 -->
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">⚡</div>
-            <h3 class="font-bold text-slate-900 text-xl mb-2">Emergency Electricians</h3>
-            <p class="text-gray-600 mb-5 text-sm font-medium">Fast response emergency electrical fault corrections across Dorset.</p>
+            <h3 class="font-bold text-white text-xl mb-2">Emergency Electricians</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Fast response emergency electrical fault corrections across Dorset.</p>
           </div>
           <div>
-            <button class="service-toggle bg-slate-900 hover:bg-slate-800 text-white w-full py-2.5 rounded-xl font-semibold transition">Learn More</button>
-            <div class="service-content hidden mt-4 pt-4 border-t border-gray-200/60 text-sm text-gray-600 font-medium leading-relaxed">
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
               Available 24/7 for electrical emergencies including power outages, tripping electrics, burning smells, faulty fuse boards and urgent repairs.<br><br><strong>Note:</strong> To arrange a callout please call us directly rather than submitting a web form.
             </div>
           </div>
@@ -276,12 +276,12 @@
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">🔋</div>
-            <h3 class="font-bold text-slate-900 text-xl mb-2">EV Charger Installation</h3>
-            <p class="text-gray-600 mb-5 text-sm font-medium">Professional EV charger supply and installation services.</p>
+            <h3 class="font-bold text-white text-xl mb-2">EV Charger Installation</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Professional EV charger supply and installation services.</p>
           </div>
           <div>
-            <button class="service-toggle bg-slate-900 hover:bg-slate-800 text-white w-full py-2.5 rounded-xl font-semibold transition">Learn More</button>
-            <div class="service-content hidden mt-4 pt-4 border-t border-gray-200/60 text-sm text-gray-600 font-medium leading-relaxed">
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
               Professional installation of home EV charging systems with safe, compliant wiring and testing. We currently install high-quality Ohme and BG chargers.
             </div>
           </div>
@@ -291,12 +291,12 @@
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">🏠</div>
-            <h3 class="font-bold text-slate-900 text-xl mb-2">House Rewiring</h3>
-            <p class="text-gray-600 mb-5 text-sm font-medium">Full and partial rewiring options for homes and renovations.</p>
+            <h3 class="font-bold text-white text-xl mb-2">House Rewiring</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Full and partial rewiring options for homes and renovations.</p>
           </div>
           <div>
-            <button class="service-toggle bg-slate-900 hover:bg-slate-800 text-white w-full py-2.5 rounded-xl font-semibold transition">Learn More</button>
-            <div class="service-content hidden mt-4 pt-4 border-t border-gray-200/60 text-sm text-gray-600 font-medium leading-relaxed">
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
               Complete or partial rewiring services to improve safety, efficiency and compliance with the latest regulations. Contact us to check if your system truly needs a partial or full upgrade.
             </div>
           </div>
@@ -306,12 +306,12 @@
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">🛡️</div>
-            <h3 class="font-bold text-slate-900 text-xl mb-2">Fuse Board Upgrades</h3>
-            <p class="text-gray-600 mb-5 text-sm font-medium">Modern consumer unit upgrades with full built-in SPDs.</p>
+            <h3 class="font-bold text-white text-xl mb-2">Fuse Board Upgrades</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Modern consumer unit upgrades with full built-in SPDs.</p>
           </div>
           <div>
-            <button class="service-toggle bg-slate-900 hover:bg-slate-800 text-white w-full py-2.5 rounded-xl font-semibold transition">Learn More</button>
-            <div class="service-content hidden mt-4 pt-4 border-t border-gray-200/60 text-sm text-gray-600 font-medium leading-relaxed">
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
               Replacement of old boards with Amendment 3 metal consumer units packed with individual circuit RCBO switches and built-in surge protective devices.
             </div>
           </div>
@@ -321,12 +321,12 @@
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">💡</div>
-            <h3 class="font-bold text-slate-900 text-xl mb-2">Lighting Installation</h3>
-            <p class="text-gray-600 mb-5 text-sm font-medium">Indoor, outdoor, LED downlights and security beams.</p>
+            <h3 class="font-bold text-white text-xl mb-2">Lighting Installation</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Indoor, outdoor, LED downlights and security beams.</p>
           </div>
           <div>
-            <button class="service-toggle bg-slate-900 hover:bg-slate-800 text-white w-full py-2.5 rounded-xl font-semibold transition">Learn More</button>
-            <div class="service-content hidden mt-4 pt-4 border-t border-gray-200/60 text-sm text-gray-600 font-medium leading-relaxed">
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
               Installation and replacement of ceiling lights, spotlights, LED upgrades, garden configurations, and external security lights tailored around your premises.
             </div>
           </div>
@@ -336,12 +336,12 @@
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">🔌</div>
-            <h3 class="font-bold text-slate-900 text-xl mb-2">Accessory Replacements</h3>
-            <p class="text-gray-600 mb-5 text-sm font-medium">Sockets, switches, isolators, and cooker points.</p>
+            <h3 class="font-bold text-white text-xl mb-2">Accessory Replacements</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Sockets, switches, isolators, and cooker points.</p>
           </div>
           <div>
-            <button class="service-toggle bg-slate-900 hover:bg-slate-800 text-white w-full py-2.5 rounded-xl font-semibold transition">Learn More</button>
-            <div class="service-content hidden mt-4 pt-4 border-t border-gray-200/60 text-sm text-gray-600 font-medium leading-relaxed">
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
               Replacing old or broken fittings safely. We also offer Air Flow testing to improve air quality and help keep damp and humidity out of your property.
             </div>
           </div>
@@ -351,30 +351,30 @@
     </div>
   </section>
 
-  <!-- SECTION 3: TEAM BIOGRAPHIES BACKGROUND -->
-  <section id="about" class="py-24 bg-white">
+  <!-- SECTION 3: TEAM BIOGRAPHIES BACKGROUND (MID SLATE BLUE) -->
+  <section id="about" class="py-24 bg-slate-900 border-b border-slate-950">
     <div class="container mx-auto px-4 max-w-6xl">
       <div class="grid lg:grid-cols-2 gap-12 items-center">
         <div>
-          <h2 class="text-3xl font-extrabold text-slate-900 mb-6 tracking-tight">About Our Team</h2>
+          <h2 class="text-3xl font-extrabold text-white mb-6 tracking-tight">About Our Team</h2>
           <div class="space-y-5 mb-8">
             
             <div class="glass-card p-5 rounded-2xl shadow-sm">
-              <h3 class="text-xl font-extrabold text-slate-900 mb-1">Jordan H.</h3>
+              <h3 class="text-xl font-extrabold text-white mb-1">Jordan H.</h3>
               <div class="inline-flex flex-col text-xs font-bold text-[#c59b27] uppercase tracking-wider mb-3">
                 <span>Co Founder</span>
-                <span class="text-gray-400 font-semibold normal-case tracking-normal">Electrical Tech</span>
+                <span class="text-slate-300 font-semibold normal-case tracking-normal">Electrical Tech</span>
               </div>
-              <p class="text-sm text-gray-600 leading-relaxed font-medium">I have over 10 years of experience in the trade. I focus on emergency callouts, fault finding, and electrical safety inspections (EICRs). I have a deep understanding of current UK wiring regulations, helping landlords and homeowners keep their properties safe and fully compliant.</p>
+              <p class="text-sm text-slate-300 leading-relaxed font-medium">I have over 10 years of experience in the trade. I focus on emergency callouts, fault finding, and electrical safety inspections (EICRs). I have a deep understanding of current UK wiring regulations, helping landlords and homeowners keep their properties safe and fully compliant.</p>
             </div>
 
             <div class="glass-card p-5 rounded-2xl shadow-sm">
-              <h3 class="text-xl font-extrabold text-slate-900 mb-1">Jordan M.</h3>
+              <h3 class="text-xl font-extrabold text-white mb-1">Jordan M.</h3>
               <div class="inline-flex flex-col text-xs font-bold text-[#c59b27] uppercase tracking-wider mb-3">
                 <span>Co Founder</span>
-                <span class="text-gray-400 font-semibold normal-case tracking-normal">Electrical Installer</span>
+                <span class="text-slate-300 font-semibold normal-case tracking-normal">Electrical Installer</span>
               </div>
-              <p class="text-sm text-gray-600 leading-relaxed font-medium">I've been working as a qualified domestic and commercial electrician for over 6 years. I handle our large installation projects, including house rewires, general maintenance, and disabled adaptations. I pride myself on neat, reliable work that stands the test of time.</p>
+              <p class="text-sm text-slate-300 leading-relaxed font-medium">I've been working as a qualified domestic and commercial electrician for over 6 years. I handle our large installation projects, including house rewires, general maintenance, and disabled adaptations. I pride myself on neat, reliable work that stands the test of time.</p>
             </div>
 
           </div>
@@ -383,36 +383,36 @@
           <div class="grid grid-cols-2 gap-4">
             <div class="dark-glass-card p-5 rounded-xl text-center text-white">
               <div class="text-3xl font-black text-[#c59b27] mb-1">16+</div>
-              <div class="text-xs font-bold uppercase tracking-wider text-slate-300">Years Combined Experience</div>
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Years Combined Experience</div>
             </div>
             <div class="dark-glass-card p-5 rounded-xl text-center text-white">
               <div class="text-3xl font-black text-[#c59b27] mb-1">200+</div>
-              <div class="text-xs font-bold uppercase tracking-wider text-slate-300">Happy Local Clients</div>
+              <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Happy Local Clients</div>
             </div>
           </div>
         </div>
 
         <div>
-          <img loading="lazy" src="Assets/5dcc1858-12dd-4535-a424-6c99e8aca480.png" alt="Jordan and team professional electricians" class="rounded-3xl shadow-xl border border-gray-200" />
+          <img loading="lazy" src="Assets/5dcc1858-12dd-4535-a424-6c99e8aca480.png" alt="Jordan and team professional electricians" class="rounded-3xl shadow-xl border border-slate-800" />
         </div>
       </div>
     </div>
   </section>
 
-  <!-- SECTION 4: WHY CHOOSE US BACKGROUND -->
-  <section id="why" class="py-24 bg-slate-900 text-white">
+  <!-- SECTION 4: WHY CHOOSE US BACKGROUND (DEEP CHARCOAL SLATE) -->
+  <section id="why" class="py-24 bg-slate-950 border-b border-slate-900">
     <div class="container mx-auto px-4 max-w-5xl">
-      <h2 class="text-3xl font-extrabold text-center mb-12 tracking-tight">Why Choose Us?</h2>
+      <h2 class="text-3xl font-extrabold text-center mb-12 tracking-tight text-white">Why Choose Us?</h2>
       <div class="grid gap-6 md:grid-cols-3">
-        <div class="bg-slate-800/60 border border-slate-700 p-6 rounded-xl">
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-xl">
           <h3 class="font-bold text-lg text-[#c59b27] mb-2">⚡ Fast Response Times</h3>
           <p class="text-sm text-slate-300 leading-relaxed font-medium">We know how stressful electrical faults can be. Our engineers are local, allowing us to respond quickly to emergency callouts across Dorset.</p>
         </div>
-        <div class="bg-slate-800/60 border border-slate-700 p-6 rounded-xl">
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-xl">
           <h3 class="font-bold text-lg text-[#c59b27] mb-2">📋 NICEIC Registered</h3>
           <p class="text-sm text-slate-300 leading-relaxed font-medium">All our work is fully qualified, completely insured, and signed off with official certificates that follow current UK building regulations.</p>
         </div>
-        <div class="bg-slate-800/60 border border-slate-700 p-6 rounded-xl">
+        <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-xl">
           <h3 class="font-bold text-lg text-[#c59b27] mb-2">💰 Honest Upfront Pricing</h3>
           <p class="text-sm text-slate-300 leading-relaxed font-medium">No hidden fees or surprise costs. We provide clear, itemized quotes before any work starts so you know exactly where you stand.</p>
         </div>
@@ -420,86 +420,86 @@
     </div>
   </section>
 
-  <!-- SECTION 5: REVIEWS MODULE BACKGROUND -->
-  <section id="reviews" class="py-24 bg-slate-50 border-b border-gray-200/50">
+  <!-- SECTION 5: REVIEWS MODULE BACKGROUND (MID NAVY) -->
+  <section id="reviews" class="py-24 bg-slate-900 border-b border-slate-950">
     <div class="container mx-auto px-4 max-w-4xl">
-      <h2 class="text-3xl font-extrabold text-center mb-12 tracking-tight text-slate-900">What Our Customers Say</h2>
-      <div class="rounded-3xl bg-white p-4 shadow-xl border border-gray-200 overflow-hidden">
-        <iframe src="https://widgets.sociablekit.com/google-reviews/iframe/25684459" frameborder="0" width="100%" height="520" loading="lazy" title="Google Reviews Dashboard Module"></iframe>
+      <h2 class="text-3xl font-extrabold text-center mb-12 tracking-tight text-white">What Our Customers Say</h2>
+      <div class="rounded-3xl bg-slate-950 p-4 shadow-xl border border-slate-800 overflow-hidden">
+        <iframe src="https://widgets.sociablekit.com/google-reviews/iframe/25684459" frameborder="0" width="100%" height="520" loading="lazy" title="Google Reviews Module"></iframe>
       </div>
     </div>
   </section>
 
-  <!-- SECTION 6: PRICING HUB AND NEW QUOTATION TOOLS BACKGROUND -->
-  <section id="pricing" class="py-24 bg-white">
+  <!-- SECTION 6: PRICING HUB AND NEW QUOTATION TOOLS BACKGROUND (CHARCOAL NAVY) -->
+  <section id="pricing" class="py-24 bg-slate-950 border-b border-slate-900">
     <div class="container mx-auto px-4 max-w-5xl">
-      <h2 class="text-3xl font-extrabold text-center mb-3 tracking-tight text-slate-900">Estimated Electrical Pricing</h2>
-      <p class="text-center text-sm md:text-md text-gray-500 max-w-2xl mx-auto mb-16 font-medium">Below are standard estimate guidelines including VAT for common electrical jobs across Poole and Bournemouth.</p>
+      <h2 class="text-3xl font-extrabold text-center mb-3 tracking-tight text-white">Estimated Electrical Pricing</h2>
+      <p class="text-center text-sm md:text-md text-slate-400 max-w-2xl mx-auto mb-16 font-medium">Below are standard estimate guidelines including VAT for common electrical jobs across Poole and Bournemouth.</p>
       
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-20">
-        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-gray-200">
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-slate-800">
           <div>
-            <h4 class="font-bold text-slate-900 text-lg mb-1">Emergency Callout</h4>
-            <div class="text-2xl font-black text-blue-700 mb-3">From £100</div>
-            <p class="text-xs text-gray-600 font-medium leading-relaxed">Fast response for fault finding, tripping switches, power cuts, and urgent safety fixes.</p>
+            <h4 class="font-bold text-white text-lg mb-1">Emergency Callout</h4>
+            <div class="text-2xl font-black text-[#c59b27] mb-3">From £100</div>
+            <p class="text-xs text-slate-300 font-medium leading-relaxed">Fast response for fault finding, tripping switches, power cuts, and urgent safety fixes.</p>
           </div>
         </div>
-        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-gray-200">
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-slate-800">
           <div>
-            <h4 class="font-bold text-slate-900 text-lg mb-1">Fuseboard Upgrade</h4>
-            <div class="text-2xl font-black text-blue-700 mb-3">From £450</div>
-            <p class="text-xs text-gray-600 font-medium leading-relaxed">Modern metal consumer unit installations matching current rules with built-in surge protection.</p>
+            <h4 class="font-bold text-white text-lg mb-1">Fuseboard Upgrade</h4>
+            <div class="text-2xl font-black text-[#c59b27] mb-3">From £450</div>
+            <p class="text-xs text-slate-300 font-medium leading-relaxed">Modern metal consumer unit installations matching current rules with built-in surge protection.</p>
           </div>
         </div>
-        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-gray-200">
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-slate-800">
           <div>
-            <h4 class="font-bold text-slate-900 text-lg mb-1">EV Charger Install</h4>
-            <div class="text-2xl font-black text-blue-700 mb-3">From £850</div>
-            <p class="text-xs text-gray-600 font-medium leading-relaxed">Supply and safe installation of home electric vehicle charging sockets with full certs.</p>
+            <h4 class="font-bold text-white text-lg mb-1">EV Charger Install</h4>
+            <div class="text-2xl font-black text-[#c59b27] mb-3">From £850</div>
+            <p class="text-xs text-slate-300 font-medium leading-relaxed">Supply and safe installation of home electric vehicle charging sockets with full certs.</p>
           </div>
         </div>
-        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-gray-200">
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-slate-800">
           <div>
-            <h4 class="font-bold text-slate-900 text-lg mb-1">EICR Certificate</h4>
-            <div class="text-2xl font-black text-blue-700 mb-3">From £140</div>
-            <p class="text-xs text-gray-600 font-medium leading-relaxed">Landlord and homeowner electrical condition testing reports and safety stamps.</p>
+            <h4 class="font-bold text-white text-lg mb-1">EICR Certificate</h4>
+            <div class="text-2xl font-black text-[#c59b27] mb-3">From £140</div>
+            <p class="text-xs text-slate-300 font-medium leading-relaxed">Landlord and homeowner electrical condition testing reports and safety stamps.</p>
           </div>
         </div>
-        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-gray-200">
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-slate-800">
           <div>
-            <h4 class="font-bold text-slate-900 text-lg mb-1">Accessory Fitting</h4>
-            <div class="text-2xl font-black text-blue-700 mb-3">From £60</div>
-            <p class="text-xs text-gray-600 font-medium leading-relaxed">Replacing old, faulty or cracked socket plates, light switches, and light fittings.</p>
+            <h4 class="font-bold text-white text-lg mb-1">Accessory Fitting</h4>
+            <div class="text-2xl font-black text-[#c59b27] mb-3">From £60</div>
+            <p class="text-xs text-slate-300 font-medium leading-relaxed">Replacing old, faulty or cracked socket plates, light switches, and light fittings.</p>
           </div>
         </div>
-        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-gray-200">
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-slate-800">
           <div>
-            <h4 class="font-bold text-slate-900 text-lg mb-1">Full House Rewire</h4>
-            <div class="text-2xl font-black text-blue-700 mb-3">From £3,500</div>
-            <p class="text-xs text-gray-600 font-medium leading-relaxed">Complete rewiring for old properties, home renovations, and major safety upgrades.</p>
+            <h4 class="font-bold text-white text-lg mb-1">Full House Rewire</h4>
+            <div class="text-2xl font-black text-[#c59b27] mb-3">From £3,500</div>
+            <p class="text-xs text-slate-300 font-medium leading-relaxed">Complete rewiring for old properties, home renovations, and major safety upgrades.</p>
           </div>
         </div>
       </div>
 
-      <!-- NEW CHOSEN LAYOUT MATRIX: USE OUR FREE QUOTATION TOOLS -->
-      <div class="border-t border-gray-200 pt-16 max-w-4xl mx-auto">
-        <h3 class="text-2xl font-extrabold text-center mb-2 text-slate-900 tracking-tight">Use Our Free Quotation Tools</h3>
-        <p class="text-center text-xs text-gray-500 mb-10 font-medium">Select a calculator tool below to quickly estimate budget guidelines for your property layout projects.</p>
+      <!-- FREE QUOTATION TOOLS MATRIX -->
+      <div class="border-t border-slate-800 pt-16 max-w-4xl mx-auto">
+        <h3 class="text-2xl font-extrabold text-center mb-2 text-white tracking-tight">Use Our Free Quotation Tools</h3>
+        <p class="text-center text-xs text-slate-400 mb-10 font-medium">Select a calculator tool below to quickly estimate budget guidelines for your property layout projects.</p>
         
         <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 justify-center">
-          <a href="Calculators/Fuseboard-Calculator.html" class="flex items-center justify-between p-4 bg-slate-50 border border-gray-200 hover:border-[#c59b27] rounded-xl font-bold text-sm text-slate-900 hover:bg-slate-900 hover:text-white transition shadow-sm">
+          <a href="Calculators/Fuseboard-Calculator.html" class="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 hover:border-[#c59b27] rounded-xl font-bold text-sm text-white hover:bg-white hover:text-slate-950 transition shadow-sm">
             <span>Consumer Unit Upgrade</span> <span class="text-md">⚡</span>
           </a>
-          <a href="Calculators/EV-Calculator.html" class="flex items-center justify-between p-4 bg-slate-50 border border-gray-200 hover:border-[#c59b27] rounded-xl font-bold text-sm text-slate-900 hover:bg-slate-900 hover:text-white transition shadow-sm">
+          <a href="Calculators/EV-Calculator.html" class="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 hover:border-[#c59b27] rounded-xl font-bold text-sm text-white hover:bg-white hover:text-slate-950 transition shadow-sm">
             <span>EV Charger Point</span> <span class="text-md">🚗</span>
           </a>
-          <a href="Calculators/Accessory-Calculator.html" class="flex items-center justify-between p-4 bg-slate-50 border border-gray-200 hover:border-[#c59b27] rounded-xl font-bold text-sm text-slate-900 hover:bg-slate-900 hover:text-white transition shadow-sm">
+          <a href="Calculators/Accessory-Calculator.html" class="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 hover:border-[#c59b27] rounded-xl font-bold text-sm text-white hover:bg-white hover:text-slate-950 transition shadow-sm">
             <span>Switches & Sockets</span> <span class="text-md">🔌</span>
           </a>
-          <a href="Calculators/Lighting-Calculator.html" class="flex items-center justify-between p-4 bg-slate-50 border border-gray-200 hover:border-[#c59b27] rounded-xl font-bold text-sm text-slate-900 hover:bg-slate-900 hover:text-white transition shadow-sm">
+          <a href="Calculators/Lighting-Calculator.html" class="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 hover:border-[#c59b27] rounded-xl font-bold text-sm text-white hover:bg-white hover:text-slate-950 transition shadow-sm">
             <span>Lighting Indoor/Outdoor</span> <span class="text-md">💡</span>
           </a>
-          <a href="Calculators/EICR-Calculator.html" class="flex items-center justify-between p-4 bg-slate-50 border border-gray-200 hover:border-[#c59b27] rounded-xl font-bold text-sm text-slate-900 hover:bg-slate-900 hover:text-white transition shadow-sm sm:col-span-2 md:col-span-1">
+          <a href="Calculators/EICR-Calculator.html" class="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 hover:border-[#c59b27] rounded-xl font-bold text-sm text-white hover:bg-white hover:text-slate-950 transition shadow-sm sm:col-span-2 md:col-span-1">
             <span>EICR Safety Check</span> <span class="text-md">📋</span>
           </a>
         </div>
@@ -508,27 +508,27 @@
     </div>
   </section>
 
-  <!-- SECTION 7: SERVICE footprint MAP CHIPS BACKGROUND -->
-  <section id="areas" class="py-24 bg-slate-50 border-t border-b border-gray-200/50 text-center">
+  <!-- SECTION 7: SERVICE COVERAGE MAP FOOTPRINT BACKGROUND (MID SLATE NAVY) -->
+  <section id="areas" class="py-24 bg-slate-900 border-b border-slate-950 text-center">
     <div class="container mx-auto px-4 max-w-4xl">
-      <h2 class="text-3xl font-extrabold mb-10 tracking-tight text-slate-900">Our Service Areas</h2>
+      <h2 class="text-3xl font-extrabold mb-10 tracking-tight text-white">Our Service Areas</h2>
       <div class="flex flex-wrap justify-center gap-3">
-        <a href="electrician-poole.html" class="bg-white hover:bg-slate-900 hover:text-white text-slate-800 px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Poole</a>
-        <a href="electrician-bournemouth.html" class="bg-white hover:bg-slate-900 hover:text-white text-slate-800 px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Bournemouth</a>
-        <a href="electrician-christchurch.html" class="bg-white hover:bg-slate-900 hover:text-white text-slate-800 px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Christchurch</a>
-        <a href="electrician-wimborne.html" class="bg-white hover:bg-slate-900 hover:text-white text-slate-800 px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Wimborne</a>
-        <a href="electrician-ferndown.html" class="bg-white hover:bg-slate-900 hover:text-white text-slate-800 px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Ferndown</a>
-        <a href="electrician-ringwood.html" class="bg-white hover:bg-slate-900 hover:text-white text-slate-800 px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Ringwood</a>
+        <a href="electrician-poole.html" class="bg-slate-800 border border-slate-700 hover:bg-[#c59b27] hover:text-slate-950 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Poole</a>
+        <a href="electrician-bournemouth.html" class="bg-slate-800 border border-slate-700 hover:bg-[#c59b27] hover:text-slate-950 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Bournemouth</a>
+        <a href="electrician-christchurch.html" class="bg-slate-800 border border-slate-700 hover:bg-[#c59b27] hover:text-slate-950 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Christchurch</a>
+        <a href="electrician-wimborne.html" class="bg-slate-800 border border-slate-700 hover:bg-[#c59b27] hover:text-slate-950 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Wimborne</a>
+        <a href="electrician-ferndown.html" class="bg-slate-800 border border-slate-700 hover:bg-[#c59b27] hover:text-slate-950 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Ferndown</a>
+        <a href="electrician-ringwood.html" class="bg-slate-800 border border-slate-700 hover:bg-[#c59b27] hover:text-slate-950 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-sm transition">Ringwood</a>
       </div>
     </div>
   </section>
 
-  <!-- SECTION 8: LEAD FORM WRAPPER BACKGROUND -->
-  <section id="contact" class="py-24 bg-white">
+  <!-- SECTION 8: LEAD FORM WRAPPER BACKGROUND (DEEP SLATE NAVY) -->
+  <section id="contact" class="py-24 bg-slate-950">
     <div class="container mx-auto px-4 max-w-3xl">
       <div class="dark-glass-card rounded-3xl p-8 md:p-10 shadow-2xl text-white">
         <h2 class="text-3xl font-black text-center mb-2 tracking-tight">Request a Free Quote</h2>
-        <p class="text-center text-xs text-slate-300 mb-8 font-medium">Fill out your details below and we'll get back to you shortly with a free estimate.</p>
+        <p class="text-center text-xs text-slate-400 mb-8 font-medium">Fill out your details below and we'll get back to you shortly with a free estimate.</p>
         
         <form action="https://formspree.io/f/mlgvwwpv" method="POST" class="space-y-5">
           <input type="text" name="_gotcha" style="display:none" />
@@ -536,52 +536,52 @@
 
           <div class="grid sm:grid-cols-2 gap-4">
             <div>
-              <input type="text" name="name" required placeholder="Full Name" class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-800/80 text-white placeholder-slate-400 focus:outline-none focus:border-[#c59b27] text-sm font-medium" />
+              <input type="text" name="name" required placeholder="Full Name" class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-[#c59b27] text-sm font-medium" />
             </div>
             <div>
-              <input type="email" name="email" required placeholder="Email Address" class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-800/80 text-white placeholder-slate-400 focus:outline-none focus:border-[#c59b27] text-sm font-medium" />
+              <input type="email" name="email" required placeholder="Email Address" class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-[#c59b27] text-sm font-medium" />
             </div>
           </div>
 
           <div class="grid sm:grid-cols-2 gap-4">
             <div>
-              <input type="tel" name="phone" required placeholder="Phone Number" class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-800/80 text-white placeholder-slate-400 focus:outline-none focus:border-[#c59b27] text-sm font-medium" />
+              <input type="tel" name="phone" required placeholder="Phone Number" class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-[#c59b27] text-sm font-medium" />
             </div>
             <div>
-              <select name="service" required class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-800/80 text-white focus:outline-none focus:border-[#c59b27] text-sm font-medium">
-                <option value="" class="text-slate-900">Select Electrical Service</option>
-                <option class="text-slate-900">Emergency Electricians</option>
-                <option class="text-slate-900">EV Charger Installation</option>
-                <option class="text-slate-900">House Rewiring</option>
-                <option class="text-slate-900">Fuse Board Upgrades</option>
-                <option class="text-slate-900">EICR Certificates</option>
-                <option class="text-slate-900">Lighting Install/Maintenance</option>
-                <option class="text-slate-900">Accessory Install/Maintenance</option>
-                <option class="text-slate-900">External Power Install/Maintenance</option>
-                <option class="text-slate-900">Heating Install/Maintenance</option>
-                <option class="text-slate-900">Commercial Operations</option>
+              <select name="service" required class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white focus:outline-none focus:border-[#c59b27] text-sm font-medium">
+                <option value="" class="text-slate-400">Select Electrical Service</option>
+                <option class="text-white bg-slate-900">Emergency Electricians</option>
+                <option class="text-white bg-slate-900">EV Charger Installation</option>
+                <option class="text-white bg-slate-900">House Rewiring</option>
+                <option class="text-white bg-slate-900">Fuse Board Upgrades</option>
+                <option class="text-white bg-slate-900">EICR Certificates</option>
+                <option class="text-white bg-slate-900">Lighting Install/Maintenance</option>
+                <option class="text-white bg-slate-900">Accessory Install/Maintenance</option>
+                <option class="text-white bg-slate-900">External Power Install/Maintenance</option>
+                <option class="text-white bg-slate-900">Heating Install/Maintenance</option>
+                <option class="text-white bg-slate-900">Commercial Operations</option>
               </select>
             </div>
           </div>
 
           <div>
-            <textarea name="message" rows="4" required placeholder="Tell us about the job you need doing..." class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-800/80 text-white placeholder-slate-400 focus:outline-none focus:border-[#c59b27] text-sm font-medium"></textarea>
+            <textarea name="message" rows="4" required placeholder="Tell us about the job you need doing..." class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-[#c59b27] text-sm font-medium"></textarea>
           </div>
 
           <button type="submit" class="w-full bg-[#c59b27] hover:bg-[#a17c1d] text-slate-950 py-4 rounded-xl font-black tracking-wider shadow-lg transition duration-200 text-md uppercase">Send Form Request</button>
         </form>
 
-        <div class="mt-8 pt-8 border-t border-slate-700/60 text-center text-xs md:text-sm text-slate-300 space-y-1.5 font-medium">
+        <div class="mt-8 pt-8 border-t border-slate-800 text-center text-xs md:text-sm text-slate-400 space-y-1.5 font-medium">
           <div>Jordan H: <a href="tel:07711261478" class="text-[#c59b27] hover:underline">07711261478</a></div>
           <div>Jordan M: <a href="tel:07907056422" class="text-[#c59b27] hover:underline">07907056422</a></div>
           <div>Office Email: <a href="mailto:electriciansnearyou@gmail.com" class="text-[#c59b27] hover:underline">electriciansnearyou@gmail.com</a></div>
-          <div class="pt-2 text-slate-400">Regular Desk Hours: Mon - Fri (08:00 - 18:00) | Out-Of-Hours Emergency Callouts: 24 Hours</div>
+          <div class="pt-2 text-slate-500">Regular Desk Hours: Mon - Fri (08:00 - 18:00) | Out-Of-Hours Emergency Callouts: 24 Hours</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- MASTER SYSTEM FOOTER (CLEANED OF PRIVACY LINKS) -->
+  <!-- MASTER SYSTEM FOOTER (CLEANED) -->
   <footer class="dark-glass-card rounded-t-[32px] text-white py-16 border-b-0">
     <div class="container mx-auto px-4 max-w-6xl grid md:grid-cols-3 gap-10">
       <div>
@@ -590,7 +590,7 @@
       </div>
 
       <div>
-        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-200 mb-4 border-b border-slate-700 pb-1">Quick Links</h4>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-200 mb-4 border-b border-slate-800 pb-1">Quick Links</h4>
         <div class="space-y-2.5 text-sm font-semibold">
           <a href="#services" class="block text-slate-300 hover:text-[#c59b27] transition">Our Services</a>
           <a href="#about" class="block text-slate-300 hover:text-[#c59b27] transition">Team Bios</a>
@@ -600,7 +600,7 @@
       </div>
 
       <div>
-        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-200 mb-4 border-b border-slate-700 pb-1">Areas Covered</h4>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-200 mb-4 border-b border-slate-800 pb-1">Areas Covered</h4>
         <div class="space-y-2 text-xs font-medium text-slate-300 grid grid-cols-2 gap-x-2">
           <a href="electrician-poole.html" class="hover:text-[#c59b27] transition">Poole</a>
           <a href="electrician-bournemouth.html" class="hover:text-[#c59b27] transition">Bournemouth</a>
@@ -612,7 +612,7 @@
       </div>
     </div>
 
-    <div class="text-center text-slate-400 mt-14 text-xs font-medium tracking-wide">
+    <div class="text-center text-slate-500 mt-14 text-xs font-medium tracking-wide">
       &copy; 2026 ElectriciansNearYou. All Rights Reserved. Fully Certified BS7671 Systems.
     </div>
   </footer>
@@ -650,7 +650,7 @@
       });
     });
 
-    // Desktop Directory Modal Wrapper Functions
+    // Contact Directory Overlay Functions
     function toggleDesktopContactModal(open) {
         const modal = document.getElementById('contactModal');
         if (open) {
