@@ -14,7 +14,7 @@
         :root {
             --bg-main: #f1f5f9;
             --bg-card: rgba(255, 255, 255, 0.78);
-            /* Translucent dark grey option for inverted contrast text modules */
+            /* Translucent dark grey choice for consistent aesthetic grouping */
             --bg-dark-glass: rgba(30, 41, 59, 0.78);
             --navy-text: #0f172a;
             --text-muted: #475569;
@@ -41,7 +41,7 @@
             background-color: var(--bg-main);
         }
 
-        /* --- SOLID MOBILE BACKGROUND ENGINE --- */
+        /* --- IMMOVABLE SOLID MOBILE BACKGROUND ENGINE --- */
         body::before {
             content: "";
             position: fixed;
@@ -59,23 +59,23 @@
             will-change: transform;
         }
 
-        /* --- FIXED NAVBAR WITH INDEPENDENT LINK ROUTING --- */
+        /* --- FIXED NAVBAR: DARK GREY WITH HIGH-CONTRAST WHITE BUTTON --- */
         .top-navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             height: 70px;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(30, 41, 59, 0.85);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 1.5rem;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
         }
 
         .brand-block-split {
@@ -107,7 +107,7 @@
         .blog-home-text-link {
             font-size: 1.2rem;
             font-weight: 800;
-            color: var(--navy-text);
+            color: #ffffff;
             letter-spacing: -0.4px;
             text-decoration: none;
             transition: color 0.2s ease;
@@ -117,12 +117,13 @@
 
         .blog-home-text-link:hover {
             color: var(--gold);
-            background: rgba(0, 0, 0, 0.02);
+            background: rgba(255, 255, 255, 0.05);
         }
 
+        /* High-contrast dark text inside a clean solid white capsule button layout */
         .btn-toggle-drawer {
-            background: var(--navy-text);
-            color: #fff;
+            background: #ffffff; 
+            color: #0f172a; 
             border: none;
             padding: 0.65rem 1.3rem;
             border-radius: 50px;
@@ -134,11 +135,11 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .btn-toggle-drawer:hover {
-            background: var(--gold);
+            background: #f1f5f9;
             transform: translateY(-1px);
         }
 
@@ -198,7 +199,7 @@
             padding: 0 1.5rem;
         }
 
-        /* --- NEW TITLING TRACK STYLE (GREY GLASS WITH WHITE TEXT) --- */
+        /* --- TITLING TRACK STYLE (GREY GLASS WITH WHITE TEXT) --- */
         .section-title-wrapper {
             background: var(--bg-dark-glass);
             backdrop-filter: blur(20px);
@@ -235,7 +236,6 @@
             gap: 1.5rem;
         }
 
-        /* Adjusted card height configuration to look compact and clean */
         .editorial-card {
             background: var(--bg-card);
             backdrop-filter: blur(20px);
@@ -290,7 +290,6 @@
             line-height: 1.5;
         }
 
-        /* Added interactive inline action trigger row */
         .read-more-btn {
             font-size: 0.85rem;
             font-weight: 700;
@@ -326,6 +325,50 @@
             padding: 0 10px;
             font-size: 0.9rem;
             color: var(--gold);
+        }
+
+        /* --- AUTOMATED INFINITE SCROLLING PROJECT GALLERY --- */
+        .gallery-container {
+            width: 100%;
+            overflow: hidden;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 24px;
+            padding: 1.5rem 0;
+            margin-top: 1.5rem;
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+        }
+
+        .gallery-track {
+            display: flex;
+            gap: 1.5rem;
+            width: max-content;
+            animation: scrollStream 35s linear infinite;
+        }
+
+        .gallery-container:hover .gallery-track {
+            animation-play-state: paused;
+        }
+
+        .gallery-img {
+            width: 260px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-img:hover {
+            transform: scale(1.03);
+        }
+
+        @keyframes scrollStream {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-33.33%); }
         }
 
         /* --- EXPANDABLE SIDE BAR DRAWERS --- */
@@ -447,7 +490,7 @@
             body > header { padding: 1.5rem; margin: 6.5rem 1rem 2rem 1rem; }
             .side-drawer { max-width: 85%; }
             .blog-home-text-link { font-size: 1.05rem; }
-            .section-title-wrapper { margin: 3rem 1rem 1.25rem 1rem; }
+            .section-title-wrapper { margin: 3rem 0 1.25rem 0; }
         }
     </style>
 </head>
@@ -456,16 +499,13 @@
     <!-- TOP CONTROL NAVIGATION NAVBAR -->
     <div class="top-navbar">
         <div class="brand-block-split">
-            <!-- Left Side Action: Logo routes to your main target corporate domain -->
             <a href="https://www.electriciansnearyou.uk" class="main-site-logo-link" title="Return to Main Website">
                 <img src="Logo.png" alt="Electricians Near You Corporate Logo" class="logo-img-nav">
             </a>
-            <!-- Right Side Action: Title text brings you straight back to the local blog index stream -->
             <a href="blog.html" class="blog-home-text-link" title="Return to Blog Home">
                 Bright Spark
             </a>
         </div>
-        <!-- Updated anchor tag labeling identifier to Quote Calculators -->
         <button class="btn-toggle-drawer" onclick="toggleDrawer(true)">
             <span>📊</span> Quote Calculators
         </button>
@@ -510,7 +550,6 @@
 
     <div class="main-container">
         
-        <!-- NEW SECTION CONTAINER WRAPPER PROVIDING SOLID BACKGROUND SHADING OVERLAYS -->
         <div class="section-title-wrapper">
             <div class="section-title">Recently Published Articles</div>
         </div>
@@ -518,7 +557,7 @@
         <div class="editorial-masonry">
 
             <!-- Post 1 -->
-            <a href="#" class="editorial-card">
+            <a href="Articles/consumer-unit-regulations.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Regulations Compliance</div>
                     <h2>Understanding UK Consumer Unit Regulations</h2>
@@ -528,7 +567,7 @@
             </a>
 
             <!-- Post 2 -->
-            <a href="#" class="editorial-card">
+            <a href="Articles/eicr-failures-causes.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Landlord Requirements</div>
                     <h2>EICR Failures: Most Common Causes</h2>
@@ -538,7 +577,7 @@
             </a>
 
             <!-- Post 3 -->
-            <a href="#" class="editorial-card">
+            <a href="Articles/led-downlights-safety.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Energy Efficiency</div>
                     <h2>Upgrading To Recessed LED Downlights Safely</h2>
@@ -549,12 +588,21 @@
 
         </div>
 
-        <!-- NEW STRUCTURAL DIVISION LINE FOR INTERFACE WRAPPING SEGMENTS -->
         <hr class="section-barrier">
+
+        <!-- INTERACTIVE LIVE PHOTO STREAMING MODULE -->
+        <div class="section-title-wrapper">
+            <div class="section-title">On-Site Project Stream</div>
+        </div>
+        <div class="gallery-container">
+            <div class="gallery-track" id="photo-stream-track">
+                <!-- Javascript auto-generates your raw file name strings below -->
+            </div>
+        </div>
 
     </div>
 
-    <!-- Micro-interactivity Control Logic for Drawer Canvas -->
+    <!-- Micro-interactivity & Dynamic Gallery Logic Block -->
     <script>
         function toggleDrawer(open) {
             const sidebar = document.getElementById('sidebar');
@@ -568,6 +616,31 @@
                 overlay.classList.remove('active');
                 document.body.style.overflow = '';
             }
+        }
+
+        // =================================================================
+        // DYNAMIC PHOTO STREAM MANAGER (NO RENAMING REQUIRED)
+        // =================================================================
+        // Drop any image into your "blog-gallery" folder, then type its exact filename below!
+        const myUploadedPhotos = [
+            'IMG_4829.jpg',
+            'consumer-unit-finish.png',
+            'DCIM_0082.jpeg',
+            'ev-tesla-charger.webp',
+            'IMG_9912.jpg'
+        ];
+
+        const galleryTrack = document.getElementById('photo-stream-track');
+        let imgNodesHTML = '';
+
+        // Safely generate template structures mapping directly to raw names
+        myUploadedPhotos.forEach(fileName => {
+            imgNodesHTML += `<img src="blog-gallery/${fileName}" alt="On-Site Project Image" class="gallery-img" onerror="this.style.display='none'">`;
+        });
+        
+        // Triple duplicates array elements to maintain continuous carousel scroll sequences
+        if(myUploadedPhotos.length > 0) {
+            galleryTrack.innerHTML = imgNodesHTML + imgNodesHTML + imgNodesHTML;
         }
     </script>
 
