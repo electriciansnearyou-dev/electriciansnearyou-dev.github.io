@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual EICR Safety Inspection Cost Estimator | Electricians Near You</title>
+    <style>
+        :root {
+            --navy-dark: #0a1931;
+            --navy-light: #15305b;
+            --gold: #ffc000;
+            --gold-hover: #e0a800;
+            --text-light: #ffffff;
+            --text-muted: #b0c4de;
+            --bg-card: #112240;
+            --border-color: #1e3d73;
+            --success-green: #00cc66;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--navy-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding-bottom: 8rem;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .back-link {
+            color: var(--gold);
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .intro-text {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .step-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-number {
+            background: var(--gold);
+            color: var(--navy-dark);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* --- VISUAL CARDS GRID --- */
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .grid-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-option {
+            background: var(--navy-light);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-option:hover {
+            border-color: var(--gold-hover);
+        }
+
+        .card-option.selected {
+            border-color: var(--gold);
+            background: rgba(255, 192, 0, 0.05);
+        }
+
+        .card-option.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--gold);
+            color: var(--navy-dark);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.75rem;
+            z-index: 10;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            background: #071426;
+        }
+
+        .card-info {
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-label {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* --- SUB-GRID BEDROOM SELECTION --- */
+        .bedroom-selector {
+            margin-top: 1.25rem;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .bedroom-selector label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bedroom-btn-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+
+        .bed-btn {
+            background: var(--navy-dark);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .bed-btn.selected {
+            background: var(--gold);
+            color: var(--navy-dark);
+            border-color: var(--gold);
+        }
+
+        /* --- COUNTER --- */
+        .counter-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 1rem;
+            background: var(--navy-light);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .counter-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: var(--navy-dark);
+            border: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .counter-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* --- STICKY SUMMARY TRAY --- */
+        .summary-tray {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #060f1e;
+            border-top: 3px solid var(--gold);
+            padding: 1.25rem 1rem;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .tray-content {
+            max-width: 750px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-group {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .metric-value.time {
+            color: #fff;
+        }
+
+        .btn-book {
+            background: var(--success-green);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="../blog.html" class="back-link">&larr; Back to Electrical Blog</a>
+        
+        <h1>EICR Electrical Safety Test Calculator</h1>
+        <p class="intro-text">Select your options below to get an instant budget estimate and duration mapping for a full domestic Electrical Installation Condition Report.</p>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">1</div>
+                <h3>Property Configuration</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" data-type="flat" onclick="selectPropertyShape(this, 'flat')">
+                    <img src="/images/flat.jpg" class="card-img" alt="Flat / Apartment">
+                    <div class="card-info">
+                        <div class="card-label">Flat / Apartment</div>
+                        <div class="card-desc">Concentrated, single-level distribution networks.</div>
+                    </div>
+                </div>
+                <div class="card-option" data-type="bungalow" onclick="selectPropertyShape(this, 'bungalow')">
+                    <img src="/images/bungalow.jpg" class="card-img" alt="Bungalow">
+                    <div class="card-info">
+                        <div class="card-label">Bungalow</div>
+                        <div class="card-desc">Single level layout, requiring attic/loft visual audits.</div>
+                    </div>
+                </div>
+                <div class="card-option" data-type="house" onclick="selectPropertyShape(this, 'house')">
+                    <img src="/images/house.jpg" class="card-img" alt="House">
+                    <div class="card-info">
+                        <div class="card-label">House</div>
+                        <div class="card-desc">Multi-story verification spanning cross-floor lines.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bedroom-selector">
+                <label>Number of Bedrooms</label>
+                <div class="bedroom-btn-group">
+                    <button class="bed-btn selected" data-beds="1-2" onclick="selectBedrooms(this, '1-2')">1 - 2 Beds</button>
+                    <button class="bed-btn" data-beds="2-3" onclick="selectBedrooms(this, '2-3')">2 - 3 Beds</button>
+                    <button class="bed-btn" data-beds="4+" onclick="selectBedrooms(this, '4+')">4+ Beds</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">2</div>
+                <h3>Number of Fuseboard Ways / Circuits</h3>
+            </div>
+            <div class="counter-box">
+                <button class="counter-btn" onclick="adjustBreakers(-1)">&minus;</button>
+                <div class="counter-value" id="breaker-display">6</div>
+                <button class="counter-btn" onclick="adjustBreakers(1)">&plus;</button>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">3</div>
+                <h3>Age & Type of Existing Board</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" onclick="selectCard('existingBoard', 0, 0, this)">
+                    <img src="/images/modern-plastic.jpg" class="card-img" alt="Modern-ish Plastic">
+                    <div class="card-info">
+                        <div class="card-label">Modern-ish Plastic</div>
+                        <div class="card-desc">Standard dual RCD board. Easy logging terminals.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('existingBoard', 0, 0, this)">
+                    <img src="/images/metal-split-load.jpg" class="card-img" alt="Modern Metal Split Load">
+                    <div class="card-info">
+                        <div class="card-label">Modern Metal Split Load</div>
+                        <div class="card-desc">Clean, structured layouts. Accessible test points.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('existingBoard', 15, 0.25, this)">
+                    <img src="/images/crabtree-mcb.jpg" class="card-img" alt="MCBs Only / No RCD">
+                    <div class="card-info">
+                        <div class="card-label">MCBs Only (No RCD)</div>
+                        <div class="card-desc">Requires deeper cross-referencing on earthing loops.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('existingBoard', 35, 0.5, this)">
+                    <img src="/images/rewireable-fuses.jpg" class="card-img" alt="Old Re-wirable Fuses">
+                    <div class="card-info">
+                        <div class="card-label">Old Re-wirable Fuses</div>
+                        <div class="card-desc">Demands delicate manual carrier extraction and asbestos handling care.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="summary-tray">
+        <div class="tray-content">
+            <div class="metric-group">
+                <div class="metric">
+                    <span class="metric-label">Est. Budget</span>
+                    <span class="metric-value" id="total-price">£150</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Est. Time</span>
+                    <span class="metric-value time" id="total-time">2.5 hrs</span>
+                </div>
+            </div>
+            <a href="tel:07711261478" class="btn-book" style="display: inline-block; text-align: center; line-height: 1.2;">Book Survey<br><span style="font-size: 0.8rem; font-weight: normal; opacity: 0.9;">07711 261478</span></a>
+        </div>
+    </div>
+
+    <script>
+        // Baseline mapping for EICR fixed management cost overheads
+        const configurationMatrix = {
+            flat: {
+                "1-2": { price: 60, time: 1.0 },
+                "2-3": { price: 70, time: 1.25 },
+                "4+": { price: 85, time: 1.5 }
+            },
+            bungalow: {
+                "1-2": { price: 65, time: 1.25 },
+                "2-3": { price: 75, time: 1.5 },
+                "4+": { price: 90, time: 1.75 }
+            },
+            house: {
+                "1-2": { price: 70, time: 1.5 },
+                "2-3": { price: 85, time: 1.75 },
+                "4+": { price: 105, time: 2.25 }
+            }
+        };
+
+        // Standard UK EICR metrics per circuit test way
+        const COST_PER_CIRCUIT = 15;
+        const TIME_PER_CIRCUIT = 0.20; // 12 minutes per loop/insulation test cycle
+
+        let currentShape = 'flat';
+        let currentBeds = '1-2';
+
+        let choices = {
+            propertyBase: { price: 60, time: 1.0 },
+            existingBoard: { price: 0, time: 0 },
+            breakers: 6
+        };
+
+        function selectPropertyShape(element, shape) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            currentShape = shape;
+            updatePropertyBaseData();
+        }
+
+        function selectBedrooms(button, bedRange) {
+            const parent = button.parentElement;
+            parent.querySelectorAll('.bed-btn').forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            
+            currentBeds = bedRange;
+            updatePropertyBaseData();
+        }
+
+        function updatePropertyBaseData() {
+            const matrixTarget = configurationMatrix[currentShape][currentBeds];
+            choices.propertyBase.price = matrixTarget.price;
+            choices.propertyBase.time = matrixTarget.time;
+            calculateTotals();
+        }
+
+        function selectCard(category, priceModifier, timeModifier, element) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+
+            choices[category].price = priceModifier;
+            choices[category].time = timeModifier;
+            calculateTotals();
+        }
+
+        function adjustBreakers(change) {
+            let newVal = choices.breakers + change;
+            if (newVal >= 2 && newVal <= 30) {
+                choices.breakers = newVal;
+                document.getElementById('breaker-display').innerText = newVal;
+                calculateTotals();
+            }
+        }
+
+        function calculateTotals() {
+            let priceTotal = choices.propertyBase.price + 
+                             choices.existingBoard.price + 
+                             (choices.breakers * COST_PER_CIRCUIT);
+
+            let timeTotal = choices.propertyBase.time + 
+                            choices.existingBoard.time + 
+                            (choices.breakers * TIME_PER_CIRCUIT);
+
+            document.getElementById('total-price').innerText = '£' + priceTotal;
+            document.getElementById('total-time').innerText = timeTotal.toFixed(1) + ' hrs';
+        }
+    </script>
+</body>
+</html>
+
