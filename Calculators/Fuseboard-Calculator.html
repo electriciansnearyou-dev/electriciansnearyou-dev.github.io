@@ -272,13 +272,9 @@
         }
 
         .metric-value {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: var(--gold);
-        }
-
-        .metric-value.time {
-            color: #fff;
         }
 
         .btn-book {
@@ -300,9 +296,8 @@
         <a href="../blog.html" class="back-link">&larr; Back to Electrical Blog</a>
         
         <h1>Fuseboard Upgrade Cost Calculator</h1>
-        <p class="intro-text">Select your options below to get an instant budget price and physical installation time estimate for a modern consumer unit replacement.</p>
+        <p class="intro-text">Select your options below to get an instant budget price estimate for a modern consumer unit replacement.</p>
 
-        <!-- STEP 1: PROPERTY & BEDROOMS -->
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">1</div>
@@ -332,7 +327,6 @@
                 </div>
             </div>
 
-            <!-- Bedroom Sub-Selection -->
             <div class="bedroom-selector">
                 <label>Number of Bedrooms</label>
                 <div class="bedroom-btn-group">
@@ -343,35 +337,34 @@
             </div>
         </div>
 
-        <!-- STEP 2: EXISTING BOARD TYPE -->
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">2</div>
                 <h3>Age & Type of Existing Board</h3>
             </div>
             <div class="grid-options">
-                <div class="card-option selected" onclick="selectCard('existingBoard', 0, 0, this)">
+                <div class="card-option selected" onclick="selectCard('existingBoard', 0, this)">
                     <img src="/images/modern-plastic.jpg" class="card-img" alt="Modern-ish Plastic">
                     <div class="card-info">
                         <div class="card-label">Modern-ish Plastic</div>
                         <div class="card-desc">Dual RCD setup. Basic earthing infrastructure present.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard('existingBoard', -30, -0.5, this)">
+                <div class="card-option" onclick="selectCard('existingBoard', -30, this)">
                     <img src="/images/metal-split-load.jpg" class="card-img" alt="Modern Metal Split Load">
                     <div class="card-info">
                         <div class="card-label">Modern Metal Split Load</div>
                         <div class="card-desc">Compliant enclosure. Easier layout migration path.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard('existingBoard', 50, 0.5, this)">
+                <div class="card-option" onclick="selectCard('existingBoard', 50, this)">
                     <img src="/images/crabtree-mcb.jpg" class="card-img" alt="MCBs Only / No RCD">
                     <div class="card-info">
                         <div class="card-label">MCBs Only (No RCD)</div>
                         <div class="card-desc">Lacks shock prevention. Risk of uncovering underlying earth leaks.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard('existingBoard', 120, 1.5, this)">
+                <div class="card-option" onclick="selectCard('existingBoard', 120, this)">
                     <img src="/images/rewireable-fuses.jpg" class="card-img" alt="Old Re-wirable Fuses">
                     <div class="card-info">
                         <div class="card-label">Old Re-wirable Fuses</div>
@@ -381,7 +374,6 @@
             </div>
         </div>
 
-        <!-- STEP 3: AMOUNT OF BREAKERS -->
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">3</div>
@@ -394,21 +386,20 @@
             </div>
         </div>
 
-        <!-- STEP 4: WHAT PROTECTION WOULD YOU LIKE? -->
         <div class="step-container">
             <div class="step-title">
                 <div class="step-number">4</div>
                 <h3>What Protection Would You Like?</h3>
             </div>
             <div class="grid-options">
-                <div class="card-option selected" onclick="selectCard('protection', 350, 2, this)">
+                <div class="card-option selected" onclick="selectCard('protection', 350, this)">
                     <img src="/images/dual-rcd-metal.jpg" class="card-img" alt="Dual RCD Metal Board">
                     <div class="card-info">
                         <div class="card-label">Dual RCD Metal Board</div>
                         <div class="card-desc">Standard split protection. Reg-compliant metal enclosure.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard('protection', 550, 3, this)">
+                <div class="card-option" onclick="selectCard('protection', 550, this)">
                     <img src="/images/rcbo-metal.jpg" class="card-img" alt="Premium RCBO Board">
                     <div class="card-info">
                         <div class="card-label">Premium RCBO & SPD Board</div>
@@ -420,17 +411,12 @@
 
     </div>
 
-    <!-- STICKY SUMMARY TRAY -->
     <div class="summary-tray">
         <div class="tray-content">
             <div class="metric-group">
                 <div class="metric">
                     <span class="metric-label">Est. Budget</span>
                     <span class="metric-value" id="total-price">£530</span>
-                </div>
-                <div class="metric">
-                    <span class="metric-label">Est. Time</span>
-                    <span class="metric-value time" id="total-time">4.5 hrs</span>
                 </div>
             </div>
             <a href="tel:07711261478" class="btn-book" style="display: inline-block; text-align: center; line-height: 1.2;">Book Survey<br><span style="font-size: 0.8rem; font-weight: normal; opacity: 0.9;">07711 261478</span></a>
@@ -440,33 +426,32 @@
     <script>
         const configurationMatrix = {
             flat: {
-                "1-2": { price: 0, time: 3.0 },
-                "2-3": { price: 40, time: 3.5 },
-                "4+": { price: 90, time: 4.5 }
+                "1-2": { price: 0 },
+                "2-3": { price: 40 },
+                "4+": { price: 90 }
             },
             bungalow: {
-                "1-2": { price: 30, time: 3.5 },
-                "2-3": { price: 70, time: 4.0 },
-                "4+": { price: 120, time: 5.0 }
+                "1-2": { price: 30 },
+                "2-3": { price: 70 },
+                "4+": { price: 120 }
             },
             house: {
-                "1-2": { price: 50, time: 4.0 },
-                "2-3": { price: 95, time: 4.5 },
-                "4+": { price: 150, time: 5.5 }
+                "1-2": { price: 50 },
+                "2-3": { price: 95 },
+                "4+": { price: 150 }
             }
         };
 
         const COST_PER_BREAKER = 30;
-        const TIME_PER_BREAKER = 0.25;
 
         let currentShape = 'flat';
         let currentBeds = '1-2';
 
         let choices = {
-            propertyBase: { price: 0, time: 3.0 },
-            existingBoard: { price: 0, time: 0 },
+            propertyBase: { price: 0 },
+            existingBoard: { price: 0 },
             breakers: 6,
-            protection: { price: 350, time: 2.0 }
+            protection: { price: 350 }
         };
 
         function selectPropertyShape(element, shape) {
@@ -490,17 +475,15 @@
         function updatePropertyBaseData() {
             const matrixTarget = configurationMatrix[currentShape][currentBeds];
             choices.propertyBase.price = matrixTarget.price;
-            choices.propertyBase.time = matrixTarget.time;
             calculateTotals();
         }
 
-        function selectCard(category, priceModifier, timeModifier, element) {
+        function selectCard(category, priceModifier, element) {
             const parent = element.parentElement;
             parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
             element.classList.add('selected');
 
             choices[category].price = priceModifier;
-            choices[category].time = timeModifier;
             calculateTotals();
         }
 
@@ -519,13 +502,7 @@
                              choices.protection.price + 
                              (choices.breakers * COST_PER_BREAKER);
 
-            let timeTotal = choices.propertyBase.time + 
-                            choices.existingBoard.time + 
-                            choices.protection.time + 
-                            (choices.breakers * TIME_PER_BREAKER);
-
             document.getElementById('total-price').innerText = '£' + priceTotal;
-            document.getElementById('total-time').innerText = timeTotal.toFixed(1) + ' hrs';
         }
     </script>
 </body>
