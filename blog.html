@@ -13,7 +13,8 @@
     <style>
         :root {
             --bg-main: #f8fafc;
-            --bg-card: rgba(255, 255, 255, 0.9);
+            /* Made the default card background more opaque as requested */
+            --bg-card: rgba(255, 255, 255, 0.96);
             --navy-text: #0f172a;
             --text-muted: #475569;
             --gold: #c59b27;
@@ -132,12 +133,24 @@
             transform: translateY(-1px);
         }
 
-        /* --- EDITORIAL HERO COVER SECTION --- */
+        /* --- EDITORIAL HERO COVER SECTION (WITH OPAQUE GLASS BACKING) --- */
         header {
             max-width: 900px;
-            margin: 0 auto;
-            padding: 9rem 1.5rem 3rem 1.5rem;
+            margin: 9rem auto 3rem auto;
+            padding: 2.5rem;
             position: relative;
+            /* Premium opaque white backing wrapper for text isolation readability */
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+        }
+
+        /* Fix desktop positioning spacing context */
+        body > header {
+            margin-top: 9rem;
         }
 
         .pill-badge {
@@ -152,8 +165,6 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             margin-bottom: 1.5rem;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
         }
 
         header h1 {
@@ -163,15 +174,13 @@
             line-height: 1.1;
             margin-bottom: 1.25rem;
             color: var(--navy-text);
-            text-shadow: 0 2px 12px rgba(255, 255, 255, 0.75);
         }
 
         header p {
-            color: var(--navy-text);
-            font-size: 1.2rem;
-            max-width: 680px;
-            font-weight: 600;
-            text-shadow: 0 1px 8px rgba(255, 255, 255, 0.9);
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            max-width: 780px;
+            font-weight: 500;
         }
 
         /* --- DISPLAY WRAPPERS --- */
@@ -374,7 +383,7 @@
 
         @media (max-width: 600px) {
             header h1 { font-size: 2.4rem; }
-            header { padding-top: 7rem; }
+            body > header { padding: 1.5rem; margin: 6.5rem 1rem 2rem 1rem; }
             .side-drawer { max-width: 85%; }
             .blog-home-text-link { font-size: 1.05rem; }
         }
