@@ -195,7 +195,7 @@
 
         /* --- EDITORIAL HERO COVER SECTION --- */
         header {
-            max-width: 1200px; /* Extended gracefully to match split container grids */
+            max-width: 1200px;
             margin: 11rem auto 2rem auto;
             padding: 2.5rem;
             position: relative;
@@ -225,7 +225,7 @@
         header h1 { font-size: 3.2rem; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 1.25rem; color: #ffffff; }
         header p { color: #e2e8f0; font-size: 1.15rem; max-width: 780px; font-weight: 400; }
 
-        /* --- TWO COLUMN WRAPPER CORE ASSEMBLY --- */
+        /* --- TWO COLUMN WRAPPER FULL PAGE LAYOUT --- */
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -234,7 +234,7 @@
 
         .split-layout-engine {
             display: grid;
-            grid-template-columns: 1fr 340px; /* Locks the FAQ list container firmly into the right 340px area */
+            grid-template-columns: 1fr 340px; /* Entire left container gets 70%+, side section locks right at 340px */
             gap: 2rem;
             align-items: start;
         }
@@ -243,10 +243,8 @@
             width: 100%;
         }
 
-        /* --- RIGHT ACCORDION SIDE PANEL STYLES --- */
+        /* --- RIGHT SIDEBAR FULL FAQ MATRIX SYSTEM --- */
         .right-faq-sidebar {
-            position: sticky;
-            top: 120px; /* Locks module safely in view context during scrolling */
             width: 100%;
         }
 
@@ -326,6 +324,10 @@
             gap: 20px;
         }
 
+        .section-title-wrapper.first-wrapper {
+            margin-top: 0; /* Align top smoothly with the right column faq wrapper */
+        }
+
         .section-title {
             font-size: 0.85rem;
             font-weight: 700;
@@ -388,7 +390,7 @@
         /* --- OLDER ARTICLES MATRIX ARCHIVE DISPLAY GRID --- */
         .older-articles-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr); /* Snug down smoothly into a clean 3-wide map to sit correctly next to the faq sidebar */
             gap: 1rem;
         }
 
@@ -415,7 +417,7 @@
 
         /* --- SECTION BOUNDARY BARRIER SEGMENT --- */
         .section-barrier {
-            margin: 4.5rem 0 2rem 0;
+            margin: 4rem 0 2rem 0;
             border: none;
             height: 1px;
             background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.15) 20%, rgba(197, 155, 39, 0.4) 50%, rgba(15, 23, 42, 0.15) 80%, transparent);
@@ -449,7 +451,7 @@
 
         .gallery-track { display: flex; gap: 1.5rem; width: max-content; animation: scrollStream 70s linear infinite; }
         .gallery-container:hover .gallery-track { animation-play-state: paused; }
-        .gallery-img { width: 260px; height: 180px; object-fit: cover; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.3s ease; }
+        .gallery-img { width: 220px; height: 150px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.3s ease; }
         .gallery-img:hover { transform: scale(1.03); }
         @keyframes scrollStream { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
 
@@ -475,8 +477,10 @@
             .sticky-footer-bar { left: 50%; transform: translateX(-50%); width: calc(100% - 2rem); max-width: 500px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); padding: 0.8rem 1rem; border-radius: 100px; }
             .mobile-footer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
             .desktop-footer-single { display: none; }
-            .split-layout-engine { grid-template-columns: 1fr; } /* Stack sidebar cleanly below content stream on responsive viewports */
-            .right-faq-sidebar { position: relative; top: 0; margin-top: 2rem; }
+            .split-layout-engine { grid-template-columns: 1fr; } /* Re-stack sidebar fluidly under columns on smaller devices */
+            .older-articles-grid { grid-template-columns: repeat(2, 1fr); }
+            .right-faq-sidebar { margin-top: 2rem; }
+            .section-title-wrapper.first-wrapper { margin-top: 4rem; }
         }
 
         @media (min-width: 992px) {
@@ -501,18 +505,16 @@
         .directory-row-item.email-card-row span { color: #94a3b8; }
 
         /* --- HIGH-END CORPORATE FOOTER BLOCK --- */
-        .site-corporate-footer { background: var(--bg-dark-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 3rem 2.5rem; margin: 4.5rem 0 2rem 0; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); color: #ffffff; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+        .site-corporate-footer { background: var(--bg-dark-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 3rem 2.5rem; margin: 4.5rem 0 2rem 0; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); color: #ffffff; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; width: 100%; }
         .footer-col h4 { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem; }
         .footer-links-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
         .footer-anchor-item { color: #e2e8f0; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; }
         .footer-anchor-item:hover { color: var(--gold); transform: translateX(3px); }
 
         @media (max-width: 768px) {
-            .editorial-masonry { grid-template-columns: 1fr; gap: 0.75rem; }
-            .older-articles-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .site-corporate-footer { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.5rem; }
             .section-title-wrapper { flex-direction: column; align-items: flex-start; padding: 1rem; }
             .search-bar-wrapper { max-width: 100%; }
-            .site-corporate-footer { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.5rem; }
         }
 
         @media (max-width: 600px) {
@@ -520,7 +522,6 @@
             body > header { padding: 1.5rem; margin: 6.5rem 1rem 2rem 1rem; }
             .side-drawer { max-width: 85%; }
             .blog-home-text-link { font-size: 1.05rem; }
-            .section-title-wrapper { margin: 3rem 0 1.25rem 0; }
             .top-navbar { top: 32px; padding: 0 1rem; }
             .nav-contact-mail-btn { display: none; }
         }
@@ -577,7 +578,7 @@
         </button>
     </div>
 
-    <!-- DIRECTORY WINDOW DIALOG POPUP MODAL -->
+    <!-- CONTACT DETAILS DISPLAY PANEL MODAL -->
     <div class="modal-overlay-contact" id="contactModal" onclick="toggleContactModal(false)">
         <div class="directory-modal-card" onclick="event.stopPropagation()">
             <button class="modal-close-trigger" onclick="toggleContactModal(false)">&times;</button>
@@ -590,7 +591,7 @@
 
     <div class="drawer-overlay" id="overlay" onclick="toggleDrawer(false)"></div>
 
-    <!-- SIDE PANEL DRAW ROUTER CANVAS -->
+    <!-- SIDE SLIDE ACTION WIDGET DRAWER -->
     <div class="side-drawer" id="sidebar">
         <div class="drawer-header">
             <h2>Quote Calculators</h2>
@@ -612,14 +613,14 @@
         <p>With our many years of experience and research we hope to provide you with knowledge and understanding to help you tackle the day to day questions the public and other professionals have like BS7671 electrical Regs, Building Regs, and emergency electrical faults.</p>
     </header>
 
-    <!-- INITIALIZE SPLIT MASTER WRAPPER CONTAINER -->
+    <!-- INITIALIZE SPLIT MASTER WRAPPER CONTAINER (70 / 30 CORE OVER ALL BLOCKS) -->
     <div class="main-container">
         <div class="split-layout-engine">
             
-            <!-- LEFT CONTENT COLUMN SECTION -->
+            <!-- LEFT COLUMN: HOLDS ALL CORE INTERFACE STREAMS (70%) -->
             <div class="left-content-stream">
                 
-                <div class="section-title-wrapper">
+                <div class="section-title-wrapper first-wrapper">
                     <div class="section-title">Recently Published Articles</div>
                 </div>
                 
@@ -661,18 +662,51 @@
                     </a>
                 </div>
 
+                <hr class="section-barrier">
+
+                <div class="section-title-wrapper">
+                    <div class="section-title">On-Site Project Stream</div>
+                </div>
+                <div class="gallery-container">
+                    <div class="gallery-track" id="photo-stream-track"></div>
+                </div>
+
+                <hr class="section-barrier">
+
+                <div class="section-title-wrapper">
+                    <div class="section-title">Older Articles</div>
+                    <div class="search-bar-wrapper">
+                        <span class="search-icon-svg">🔍</span>
+                        <input type="text" class="search-bar-input" id="articleSearchInput" onkeyup="executeLiveSearch()" placeholder="Search archive...">
+                    </div>
+                </div>
+
+                <div class="older-articles-grid" id="olderArchiveContainer">
+                    <div class="older-empty-block" data-title="Archive Slot One empty layout slot placeholder">Slot Archive #1</div>
+                    <div class="older-empty-block" data-title="Archive Slot Two empty layout slot placeholder">Slot Archive #2</div>
+                    <div class="older-empty-block" data-title="Archive Slot Three empty layout slot placeholder">Slot Archive #3</div>
+                    <div class="older-empty-block" data-title="Archive Slot Four empty layout slot placeholder">Slot Archive #4</div>
+                    <div class="older-empty-block" data-title="Archive Slot Five empty layout slot placeholder">Slot Archive #5</div>
+                    <div class="older-empty-block" data-title="Archive Slot Six empty layout slot placeholder">Slot Archive #6</div>
+                    <div class="older-empty-block" data-title="Archive Slot Seven empty layout slot placeholder">Slot Archive #7</div>
+                    <div class="older-empty-block" data-title="Archive Slot Eight empty layout slot placeholder">Slot Archive #8</div>
+                    <div class="older-empty-block" data-title="Archive Slot Nine empty layout slot placeholder">Slot Archive #9</div>
+                    <div class="older-empty-block" data-title="Archive Slot Ten empty layout slot placeholder">Slot Archive #10</div>
+                    <div class="older-empty-block" data-title="Archive Slot Eleven empty layout slot placeholder">Slot Archive #11</div>
+                    <div class="older-empty-block" data-title="Archive Slot Twelve empty layout slot placeholder">Slot Archive #12</div>
+                </div>
+
             </div>
 
-            <!-- RIGHT FAQ ACCORDION PANEL COLUMN SECTION -->
+            <!-- RIGHT COLUMN: DEDICATED ENTIRELY TO FAQs (30%) -->
             <div class="right-faq-sidebar">
                 
-                <div class="section-title-wrapper">
+                <div class="section-title-wrapper first-wrapper">
                     <div class="section-title">Common FAQs</div>
                 </div>
                 
                 <div class="faq-block-card">
                     
-                    <!-- Item 1 -->
                     <div class="faq-accordion-item">
                         <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
                             What is an EICR? <span class="faq-icon-indicator">&#9662;</span>
@@ -682,7 +716,6 @@
                         </div>
                     </div>
 
-                    <!-- Item 2 -->
                     <div class="faq-accordion-item">
                         <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
                             How often is an EICR needed? <span class="faq-icon-indicator">&#9662;</span>
@@ -692,7 +725,6 @@
                         </div>
                     </div>
 
-                    <!-- Item 3 -->
                     <div class="faq-accordion-item">
                         <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
                             What is an Amendment 3 board? <span class="faq-icon-indicator">&#9662;</span>
@@ -702,7 +734,6 @@
                         </div>
                     </div>
 
-                    <!-- Item 4 -->
                     <div class="faq-accordion-item">
                         <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
                             Do you cover emergencies? <span class="faq-icon-indicator">&#9662;</span>
@@ -712,45 +743,28 @@
                         </div>
                     </div>
 
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            What causes circuits to trip? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>Circuit breakers usually trip due to overloaded outlets, short circuits from faulty appliances, or temporary ground faults inside specialized wiring distributions.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-accordion-item">
+                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">
+                            Are your quotes fully binding? <span class="faq-icon-indicator">&#9662;</span>
+                        </button>
+                        <div class="faq-panel-answer">
+                            <p>Our interactive digital price wizards provide instant estimate guidelines based on standard materials. Exact quotes are finalized once on-site conditions are confirmed.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
         </div> <!-- END OF SPLIT LAYOUT ENGINE -->
-
-        <!-- FULL SPAN HORIZONTAL RUNNERS CONTINUING BELOW THE SPLIT SHIFT FRAMEWORK -->
-        <hr class="section-barrier">
-
-        <div class="section-title-wrapper">
-            <div class="section-title">On-Site Project Stream</div>
-        </div>
-        <div class="gallery-container">
-            <div class="gallery-track" id="photo-stream-track"></div>
-        </div>
-
-        <hr class="section-barrier">
-
-        <div class="section-title-wrapper">
-            <div class="section-title">Older Articles</div>
-            <div class="search-bar-wrapper">
-                <span class="search-icon-svg">🔍</span>
-                <input type="text" class="search-bar-input" id="articleSearchInput" onkeyup="executeLiveSearch()" placeholder="Search archive...">
-            </div>
-        </div>
-
-        <div class="older-articles-grid" id="olderArchiveContainer">
-            <div class="older-empty-block" data-title="Archive Slot One empty layout slot placeholder">Slot Archive #1</div>
-            <div class="older-empty-block" data-title="Archive Slot Two empty layout slot placeholder">Slot Archive #2</div>
-            <div class="older-empty-block" data-title="Archive Slot Three empty layout slot placeholder">Slot Archive #3</div>
-            <div class="older-empty-block" data-title="Archive Slot Four empty layout slot placeholder">Slot Archive #4</div>
-            <div class="older-empty-block" data-title="Archive Slot Five empty layout slot placeholder">Slot Archive #5</div>
-            <div class="older-empty-block" data-title="Archive Slot Six empty layout slot placeholder">Slot Archive #6</div>
-            <div class="older-empty-block" data-title="Archive Slot Seven empty layout slot placeholder">Slot Archive #7</div>
-            <div class="older-empty-block" data-title="Archive Slot Eight empty layout slot placeholder">Slot Archive #8</div>
-            <div class="older-empty-block" data-title="Archive Slot Nine empty layout slot placeholder">Slot Archive #9</div>
-            <div class="older-empty-block" data-title="Archive Slot Ten empty layout slot placeholder">Slot Archive #10</div>
-            <div class="older-empty-block" data-title="Archive Slot Eleven empty layout slot placeholder">Slot Archive #11</div>
-            <div class="older-empty-block" data-title="Archive Slot Twelve empty layout slot placeholder">Slot Archive #12</div>
-        </div>
 
         <!-- CORPORATE CONNECTIONS LINKS FOOTER -->
         <footer class="site-corporate-footer">
@@ -808,19 +822,14 @@
             }
         }
 
-        // =================================================================
-        // FAQS INTERACTIVE ACCORDION SLIDE DISPATCHER
-        // =================================================================
         function toggleFaqAccordion(buttonElement) {
             const parentItem = buttonElement.parentElement;
             const isAlreadyActive = parentItem.classList.contains('active-item');
             
-            // Wipe active classes from any other active open loops to keep layout neat
             document.querySelectorAll('.faq-accordion-item').forEach(item => {
                 item.classList.remove('active-item');
             });
             
-            // Toggle local targeted selection index state values
             if (!isAlreadyActive) {
                 parentItem.classList.add('active-item');
             }
