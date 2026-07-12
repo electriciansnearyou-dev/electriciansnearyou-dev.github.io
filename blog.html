@@ -3,19 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electrical Insights & Interactive Estimators Price Hub</title>
+    <title>Bright Spark | Electrical Insights & Interactive Estimators Price Hub</title>
     <meta name="description" content="Expert electrical advice, safety tips, and instant 2026 price calculation wizards for UK homeowners and landlords.">
+    <meta name="keywords" content="led downlight installation cost, cost to change light fixtures, new lighting circuit price uk, outdoor security light installation cost">
+    
+    <!-- HIGH-END CUSTOM ENY BRAND FAVICON IMPLEMENTATION -->
+    <link rel="icon" type="image/png" href="Logo.png">
+    
     <style>
         :root {
             --bg-main: #f8fafc;
-            --bg-card: rgba(255, 255, 255, 0.88);
+            --bg-card: rgba(255, 255, 255, 0.9);
             --navy-text: #0f172a;
             --text-muted: #475569;
             --gold: #c59b27;
             --gold-hover: #a17c1d;
             --gold-bg: rgba(197, 155, 39, 0.08);
-            --border-color: rgba(226, 232, 240, 0.9);
-            --drawer-bg: rgba(255, 255, 255, 0.96);
+            --border-color: rgba(226, 232, 240, 0.95);
+            --drawer-bg: rgba(255, 255, 255, 0.98);
         }
 
         * {
@@ -31,71 +36,85 @@
             line-height: 1.6;
             overflow-x: hidden;
             padding-bottom: 6rem;
-            background-color: var(--bg-main);
-            /* Premium parallax architectural structural background layout */
-            background-image: url('https://images.unsplash.com/photo-1558441719-ff3405522067?q=80&w=2000&auto=format&fit=crop');
+            background-color: #f1f5f9;
+            
+            /* PREMIUM PRODUCTION-GRADE PARALLAX INTERIOR DESIGN ARCHITECTURE BACKGROUND */
+            background-image: linear-gradient(rgba(248, 250, 252, 0.4), rgba(248, 250, 252, 0.45)), 
+                              url('https://images.cdn.editorialge.com/wp-content/uploads/2021/01/recessed-lighting.jpg');
             background-attachment: fixed;
             background-size: cover;
-            background-position: center;
+            background-position: center center;
+            background-repeat: no-repeat;
         }
 
-        /* --- FIXED FIXED NAVBAR WITH BRANDING & LOGO --- */
+        /* --- FIXED NAVBAR WITH SEPARATED ROUTING ACTION ZONES --- */
         .top-navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             height: 70px;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border-bottom: 1px solid var(--border-color);
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 1.5rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
         }
 
-        .brand-block {
+        .brand-block-split {
             display: flex;
             align-items: center;
             gap: 12px;
-            text-decoration: none;
         }
 
-        /* High-end minimalist vector lightbulb logo fallback badge */
-        .mini-logo {
-            width: 38px;
-            height: 38px;
-            background: var(--navy-text);
-            border-radius: 10px;
+        /* External Main Domain Anchor Link */
+        .main-site-logo-link {
             display: flex;
             align-items: center;
-            justify-content: center;
+            transition: transform 0.25s ease;
+        }
+
+        .main-site-logo-link:hover {
+            transform: scale(1.06);
+        }
+
+        .logo-img-nav {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            object-fit: contain;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        }
+
+        /* Internal Local Blog Reset Anchor Link */
+        .blog-home-text-link {
             font-size: 1.2rem;
-            color: var(--gold);
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
-            transition: transform 0.2s ease;
-        }
-
-        .brand-block:hover .mini-logo {
-            transform: scale(1.05);
-        }
-
-        .brand-title {
-            font-size: 1.15rem;
             font-weight: 800;
             color: var(--navy-text);
-            letter-spacing: -0.3px;
+            letter-spacing: -0.4px;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .blog-home-text-link:hover {
+            color: var(--gold);
+            background: rgba(0, 0, 0, 0.02);
         }
 
         .btn-toggle-drawer {
             background: var(--navy-text);
             color: #fff;
             border: none;
-            padding: 0.6rem 1.2rem;
+            padding: 0.65rem 1.3rem;
             border-radius: 50px;
             font-weight: 700;
             font-size: 0.85rem;
@@ -113,11 +132,11 @@
             transform: translateY(-1px);
         }
 
-        /* --- EDITORIAL HERO SECTION --- */
+        /* --- EDITORIAL HERO COVER SECTION --- */
         header {
             max-width: 900px;
             margin: 0 auto;
-            padding: 8rem 1.5rem 3rem 1.5rem;
+            padding: 9rem 1.5rem 3rem 1.5rem;
             position: relative;
         }
 
@@ -134,6 +153,7 @@
             text-transform: uppercase;
             margin-bottom: 1.5rem;
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         header h1 {
@@ -143,16 +163,18 @@
             line-height: 1.1;
             margin-bottom: 1.25rem;
             color: var(--navy-text);
+            text-shadow: 0 2px 12px rgba(255, 255, 255, 0.75);
         }
 
         header p {
-            color: var(--text-muted);
+            color: var(--navy-text);
             font-size: 1.2rem;
             max-width: 680px;
-            font-weight: 500;
+            font-weight: 600;
+            text-shadow: 0 1px 8px rgba(255, 255, 255, 0.9);
         }
 
-        /* --- CORE CONTENT WRAPPER --- */
+        /* --- DISPLAY CANVASS MODULE WRAPPERS --- */
         .main-container {
             max-width: 900px;
             margin: 0 auto;
@@ -164,18 +186,19 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: var(--text-muted);
+            color: var(--navy-text);
             margin: 2rem 0 1.75rem 0;
             display: flex;
             align-items: center;
             gap: 15px;
+            text-shadow: 0 1px 4px rgba(255,255,255,0.8);
         }
 
         .section-title::after {
             content: '';
             flex-grow: 1;
             height: 1px;
-            background: linear-gradient(90deg, #e2e8f0, transparent);
+            background: linear-gradient(90deg, rgba(15,23,42,0.2), transparent);
         }
 
         /* --- MASONRY EDITORIAL BLOCKS --- */
@@ -194,16 +217,16 @@
             color: var(--navy-text);
             display: flex;
             flex-direction: column;
-            padding: 2.25rem;
+            padding: 2.5rem;
             border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.02);
-            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.04);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .editorial-card:hover {
             transform: translateY(-4px);
-            border-color: rgba(197, 155, 39, 0.2);
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+            border-color: rgba(197, 155, 39, 0.3);
+            box-shadow: 0 25px 45px rgba(15, 23, 42, 0.08);
             background: #ffffff;
         }
 
@@ -217,7 +240,7 @@
         }
 
         .editorial-card h2 {
-            font-size: 1.5rem;
+            font-size: 1.55rem;
             font-weight: 700;
             line-height: 1.3;
             letter-spacing: -0.5px;
@@ -229,17 +252,17 @@
         }
 
         .editorial-card p {
-            font-size: 1rem;
+            font-size: 1.05rem;
             color: var(--text-muted);
             line-height: 1.6;
         }
 
-        /* --- EXPANDABLE RIGID SLIDE DRAWER (SIDEBAR) --- */
+        /* --- EXPANDABLE SIDE BAR OVERLAYS & CONTAINER DRAWERS --- */
         .drawer-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.25);
-            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(5px);
             z-index: 1999;
             opacity: 0;
             pointer-events: none;
@@ -261,7 +284,7 @@
             background: var(--drawer-bg);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
-            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.1);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.12);
             border-left: 1px solid var(--border-color);
             z-index: 2000;
             padding: 2.5rem 2rem;
@@ -304,7 +327,7 @@
             color: var(--navy-text);
         }
 
-        /* --- MINIMALIST DRAWER LINKS --- */
+        /* --- DRAWER LINKS --- */
         .drawer-nav {
             display: flex;
             flex-direction: column;
@@ -350,10 +373,10 @@
         }
 
         @media (max-width: 600px) {
-            header h1 { font-size: 2.3rem; }
-            header { padding-top: 6.5rem; }
+            header h1 { font-size: 2.4rem; }
+            header { padding-top: 7rem; }
             .side-drawer { max-width: 85%; }
-            .brand-title { font-size: 1rem; }
+            .blog-home-text-link { font-size: 1.05rem; }
         }
     </style>
 </head>
@@ -361,10 +384,16 @@
 
     <!-- TOP CONTROL NAVIGATION NAVBAR -->
     <div class="top-navbar">
-        <a href="https://www.electriciansnearyou.uk" class="brand-block">
-            <div class="mini-logo">⚡</div>
-            <span class="brand-title">Bright Spark</span>
-        </a>
+        <div class="brand-block-split">
+            <!-- Left Side Route: Takes user completely off the blog framework onto your primary landing domain -->
+            <a href="https://www.electriciansnearyou.uk" class="main-site-logo-link" title="Return to Main Website">
+                <img src="Logo.png" alt="Electricians Near You Corporate Logo" class="logo-img-nav">
+            </a>
+            <!-- Right Side Route: Resets the user instantly to your core local Blog index layout view -->
+            <a href="blog.html" class="blog-home-text-link" title="Reset Blog Stream">
+                Bright Spark
+            </a>
+        </div>
         <button class="btn-toggle-drawer" onclick="toggleDrawer(true)">
             <span>📊</span> Calculators
         </button>
