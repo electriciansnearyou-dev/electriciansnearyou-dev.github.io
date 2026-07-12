@@ -63,64 +63,6 @@
   }
   </script>
 
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "serviceType": "Electrical Services",
-    "provider": {
-      "@type": "Electrician",
-      "name": "ElectriciansNearYou",
-      "telephone": "+447711261478",
-      "url": "https://electriciansnearyou.uk"
-    },
-    "areaServed": ["Poole", "Bournemouth", "Christchurch", "Wimborne", "Ferndown", "Ringwood"],
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name": "Electrical Services",
-      "itemListElement": [
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Emergency Electrician" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "EV Charger Installation" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "House Rewiring" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Fuse Board Upgrades" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "EICR Certificates" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Lighting Installation" } }
-      ]
-    }
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Electrician",
-    "name": "ElectriciansNearYou",
-    "url": "https://electriciansnearyou.uk",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5.0",
-      "reviewCount": "17",
-      "bestRating": "5",
-      "worstRating": "5"
-    }
-  }
-  </script>
-  
-  <script type="application/ld+json">
-  {
-   "@context":"https://schema.org",
-   "@type":"BreadcrumbList",
-   "itemListElement":[
-    {
-     "@type":"ListItem",
-     "position":1,
-     "name":"Home",
-     "item":"https://electriciansnearyou.uk"
-    }
-   ]
-  }
-  </script>
-
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -223,7 +165,7 @@
     </div>
   </header>
 
-  <!-- MOBILE NAVIGATION DRAWER -->
+  <!-- RESPONSIVE MOBILE ACCESSIBLE DRAWER HOOK -->
   <div id="mobile-nav" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex-col items-center justify-start pt-28 px-6">
     <div class="relative bg-white rounded-2xl shadow-2xl p-8 flex flex-col gap-5 text-xl font-bold w-full max-w-sm text-center max-h-[75vh] overflow-y-auto">
       <button id="close-menu" class="absolute top-4 right-4 text-3xl font-bold text-gray-500 hover:text-black">&times;</button>
@@ -240,20 +182,20 @@
     </div>
   </div>
 
-  <!-- MOBILE ACTIONS -->
+  <!-- MODERN CIRCULAR MOBILE CONTROLS MATRIX -->
   <div class="mobile-footer-grid">
     <a href="tel:07711261478" class="mobile-action-circle circle-btn-emergency">🚨</a>
     <div class="mobile-action-circle circle-btn-contact" onclick="toggleDesktopContactModal(true)">📬</div>
   </div>
 
-  <!-- DESKTOP STICKY SUPPORT BUTTON -->
+  <!-- DESKTOP STICKY SUPPORT BAR WIDGET -->
   <div class="sticky-footer-bar">
     <button class="desktop-footer-single" onclick="toggleDesktopContactModal(true)">
         🚨 24/7 Contact
     </button>
   </div>
 
-  <!-- DIRECTORY DIALOG WINDOW POPUP MODAL -->
+  <!-- DESKTOP POP-UP CONTACT MODAL -->
   <div class="modal-overlay-contact fixed inset-0 bg-black/40 backdrop-blur-md z-[2001] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" id="contactModal" onclick="toggleDesktopContactModal(false)">
     <div class="bg-white/95 backdrop-blur rounded-3xl border border-gray-200 w-full max-w-[440px] p-8 shadow-2xl relative" onclick="event.stopPropagation()">
         <button class="absolute top-5 right-5 text-2xl text-gray-400 hover:text-gray-900" onclick="toggleDesktopContactModal(false)">&times;</button>
@@ -295,7 +237,7 @@
     </div>
   </section>
 
-  <!-- MARKETING DESCRIPTIVE OVERVIEW -->
+  <!-- SECTION 1: MARKETING INTRODUCTION BACKGROUND -->
   <section class="py-20 bg-white">
     <div class="container mx-auto px-4 max-w-4xl">
       <h2 class="text-3xl font-extrabold text-center mb-10 tracking-tight text-slate-900">
@@ -309,8 +251,8 @@
     </div>
   </section>
 
-  <!-- SERVICES CARDS SECTION -->
-  <section id="services" class="py-24 bg-slate-100">
+  <!-- SECTION 2: SERVICES GRID BACKGROUND -->
+  <section id="services" class="py-24 bg-slate-50 border-t border-b border-gray-200/50">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-extrabold text-center mb-16 tracking-tight text-slate-900">Our Professional Electrical Services</h2>
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
@@ -409,7 +351,7 @@
     </div>
   </section>
 
-  <!-- NATURAL REWORDED ABOUT SECTION -->
+  <!-- SECTION 3: TEAM BIOGRAPHIES BACKGROUND -->
   <section id="about" class="py-24 bg-white">
     <div class="container mx-auto px-4 max-w-6xl">
       <div class="grid lg:grid-cols-2 gap-12 items-center">
@@ -418,12 +360,20 @@
           <div class="space-y-5 mb-8">
             
             <div class="glass-card p-5 rounded-2xl shadow-sm">
-              <h3 class="text-xl font-extrabold text-slate-900 mb-2">Jordan H. <span class="text-xs text-[#c59b27] uppercase tracking-widest block font-bold mt-1">Lead Electrician</span></h3>
+              <h3 class="text-xl font-extrabold text-slate-900 mb-1">Jordan H.</h3>
+              <div class="inline-flex flex-col text-xs font-bold text-[#c59b27] uppercase tracking-wider mb-3">
+                <span>Co Founder</span>
+                <span class="text-gray-400 font-semibold normal-case tracking-normal">Electrical Tech</span>
+              </div>
               <p class="text-sm text-gray-600 leading-relaxed font-medium">I have over 10 years of experience in the trade. I focus on emergency callouts, fault finding, and electrical safety inspections (EICRs). I have a deep understanding of current UK wiring regulations, helping landlords and homeowners keep their properties safe and fully compliant.</p>
             </div>
 
             <div class="glass-card p-5 rounded-2xl shadow-sm">
-              <h3 class="text-xl font-extrabold text-slate-900 mb-2">Jordan M. <span class="text-xs text-[#c59b27] uppercase tracking-widest block font-bold mt-1">Qualified Electrician</span></h3>
+              <h3 class="text-xl font-extrabold text-slate-900 mb-1">Jordan M.</h3>
+              <div class="inline-flex flex-col text-xs font-bold text-[#c59b27] uppercase tracking-wider mb-3">
+                <span>Co Founder</span>
+                <span class="text-gray-400 font-semibold normal-case tracking-normal">Electrical Installer</span>
+              </div>
               <p class="text-sm text-gray-600 leading-relaxed font-medium">I've been working as a qualified domestic and commercial electrician for over 6 years. I handle our large installation projects, including house rewires, general maintenance, and disabled adaptations. I pride myself on neat, reliable work that stands the test of time.</p>
             </div>
 
@@ -449,8 +399,8 @@
     </div>
   </section>
 
-  <!-- REWORDED WHY CHOOSE US FOUNDATIONS SECTION -->
-  <section id="why" class="py-20 bg-slate-900 text-white">
+  <!-- SECTION 4: WHY CHOOSE US BACKGROUND -->
+  <section id="why" class="py-24 bg-slate-900 text-white">
     <div class="container mx-auto px-4 max-w-5xl">
       <h2 class="text-3xl font-extrabold text-center mb-12 tracking-tight">Why Choose Us?</h2>
       <div class="grid gap-6 md:grid-cols-3">
@@ -470,8 +420,8 @@
     </div>
   </section>
 
-  <!-- REVIEWS MODULE -->
-  <section id="reviews" class="py-24 bg-slate-100">
+  <!-- SECTION 5: REVIEWS MODULE BACKGROUND -->
+  <section id="reviews" class="py-24 bg-slate-50 border-b border-gray-200/50">
     <div class="container mx-auto px-4 max-w-4xl">
       <h2 class="text-3xl font-extrabold text-center mb-12 tracking-tight text-slate-900">What Our Customers Say</h2>
       <div class="rounded-3xl bg-white p-4 shadow-xl border border-gray-200 overflow-hidden">
@@ -480,13 +430,13 @@
     </div>
   </section>
 
-  <!-- ESTIMATED PRICING REFERENCE HUB -->
+  <!-- SECTION 6: PRICING HUB AND NEW QUOTATION TOOLS BACKGROUND -->
   <section id="pricing" class="py-24 bg-white">
     <div class="container mx-auto px-4 max-w-5xl">
       <h2 class="text-3xl font-extrabold text-center mb-3 tracking-tight text-slate-900">Estimated Electrical Pricing</h2>
       <p class="text-center text-sm md:text-md text-gray-500 max-w-2xl mx-auto mb-16 font-medium">Below are standard estimate guidelines including VAT for common electrical jobs across Poole and Bournemouth.</p>
       
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-20">
         <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-gray-200">
           <div>
             <h4 class="font-bold text-slate-900 text-lg mb-1">Emergency Callout</h4>
@@ -530,14 +480,36 @@
           </div>
         </div>
       </div>
-      <div class="text-center mt-12">
-        <a href="#contact" class="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 rounded-full font-bold shadow-lg inline-block">Get Your Free Quote</a>
+
+      <!-- NEW CHOSEN LAYOUT MATRIX: USE OUR FREE QUOTATION TOOLS -->
+      <div class="border-t border-gray-200 pt-16 max-w-4xl mx-auto">
+        <h3 class="text-2xl font-extrabold text-center mb-2 text-slate-900 tracking-tight">Use Our Free Quotation Tools</h3>
+        <p class="text-center text-xs text-gray-500 mb-10 font-medium">Select a calculator tool below to quickly estimate budget guidelines for your property layout projects.</p>
+        
+        <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 justify-center">
+          <a href="Calculators/Fuseboard-Calculator.html" class="flex items-center justify-between p-4 bg-slate-50 border border-gray-200 hover:border-[#c59b27] rounded-xl font-bold text-sm text-slate-900 hover:bg-slate-900 hover:text-white transition shadow-sm">
+            <span>Consumer Unit Upgrade</span> <span class="text-md">⚡</span>
+          </a>
+          <a href="Calculators/EV-Calculator.html" class="flex items-center justify-between p-4 bg-slate-50 border border-gray-200 hover:border-[#c59b27] rounded-xl font-bold text-sm text-slate-900 hover:bg-slate-900 hover:text-white transition shadow-sm">
+            <span>EV Charger Point</span> <span class="text-md">🚗</span>
+          </a>
+          <a href="Calculators/Accessory-Calculator.html" class="flex items-center justify-between p-4 bg-slate-50 border border-gray-200 hover:border-[#c59b27] rounded-xl font-bold text-sm text-slate-900 hover:bg-slate-900 hover:text-white transition shadow-sm">
+            <span>Switches & Sockets</span> <span class="text-md">🔌</span>
+          </a>
+          <a href="Calculators/Lighting-Calculator.html" class="flex items-center justify-between p-4 bg-slate-50 border border-gray-200 hover:border-[#c59b27] rounded-xl font-bold text-sm text-slate-900 hover:bg-slate-900 hover:text-white transition shadow-sm">
+            <span>Lighting Indoor/Outdoor</span> <span class="text-md">💡</span>
+          </a>
+          <a href="Calculators/EICR-Calculator.html" class="flex items-center justify-between p-4 bg-slate-50 border border-gray-200 hover:border-[#c59b27] rounded-xl font-bold text-sm text-slate-900 hover:bg-slate-900 hover:text-white transition shadow-sm sm:col-span-2 md:col-span-1">
+            <span>EICR Safety Check</span> <span class="text-md">📋</span>
+          </a>
+        </div>
       </div>
+
     </div>
   </section>
 
-  <!-- AREA COVERAGE CHIPS -->
-  <section id="areas" class="py-24 bg-slate-100 text-center">
+  <!-- SECTION 7: SERVICE footprint MAP CHIPS BACKGROUND -->
+  <section id="areas" class="py-24 bg-slate-50 border-t border-b border-gray-200/50 text-center">
     <div class="container mx-auto px-4 max-w-4xl">
       <h2 class="text-3xl font-extrabold mb-10 tracking-tight text-slate-900">Our Service Areas</h2>
       <div class="flex flex-wrap justify-center gap-3">
@@ -551,7 +523,7 @@
     </div>
   </section>
 
-  <!-- SECURE LEAD FORMS INTAKE SECTION (DARK SLATE GLASS ACCENT) -->
+  <!-- SECTION 8: LEAD FORM WRAPPER BACKGROUND -->
   <section id="contact" class="py-24 bg-white">
     <div class="container mx-auto px-4 max-w-3xl">
       <div class="dark-glass-card rounded-3xl p-8 md:p-10 shadow-2xl text-white">
@@ -599,20 +571,19 @@
           <button type="submit" class="w-full bg-[#c59b27] hover:bg-[#a17c1d] text-slate-950 py-4 rounded-xl font-black tracking-wider shadow-lg transition duration-200 text-md uppercase">Send Form Request</button>
         </form>
 
-        <!-- Dynamic Contacts Summary Footer Inversion -->
         <div class="mt-8 pt-8 border-t border-slate-700/60 text-center text-xs md:text-sm text-slate-300 space-y-1.5 font-medium">
           <div>Jordan H: <a href="tel:07711261478" class="text-[#c59b27] hover:underline">07711261478</a></div>
           <div>Jordan M: <a href="tel:07907056422" class="text-[#c59b27] hover:underline">07907056422</a></div>
           <div>Office Email: <a href="mailto:electriciansnearyou@gmail.com" class="text-[#c59b27] hover:underline">electriciansnearyou@gmail.com</a></div>
-          <div class="pt-2 text-slate-400">Regular Desk Hours: Mon - Fri (08:00 - 18:00) | Out-Of-Hours Emergency Emergency Callouts: 24 Hours</div>
+          <div class="pt-2 text-slate-400">Regular Desk Hours: Mon - Fri (08:00 - 18:00) | Out-Of-Hours Emergency Callouts: 24 Hours</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CLEAN COHESIVE SYSTEM FOOTER BLOCK -->
+  <!-- MASTER SYSTEM FOOTER (CLEANED OF PRIVACY LINKS) -->
   <footer class="dark-glass-card rounded-t-[32px] text-white py-16 border-b-0">
-    <div class="container mx-auto px-4 max-w-6xl grid md:grid-cols-4 gap-10">
+    <div class="container mx-auto px-4 max-w-6xl grid md:grid-cols-3 gap-10">
       <div>
         <h3 class="text-xl font-black mb-3 text-[#c59b27]">ElectriciansNearYou</h3>
         <p class="text-xs text-slate-400 leading-relaxed font-medium">Professional electrical services, repairs, and compliance certifications handled across Poole, Bournemouth, and nearby areas.</p>
@@ -637,14 +608,6 @@
           <a href="electrician-wimborne.html" class="hover:text-[#c59b27] transition">Wimborne</a>
           <a href="electrician-ferndown.html" class="hover:text-[#c59b27] transition">Ferndown</a>
           <a href="electrician-ringwood.html" class="hover:text-[#c59b27] transition">Ringwood</a>
-        </div>
-      </div>
-
-      <div>
-        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-200 mb-4 border-b border-slate-700 pb-1">Legal Privacy</h4>
-        <div class="space-y-2.5 text-sm font-semibold">
-          <a href="privacy-policy.html" class="block text-slate-300 hover:text-[#c59b27] transition">Privacy Policy</a>
-          <a href="terms.html" class="block text-slate-300 hover:text-[#c59b27] transition">Terms & Conditions</a>
         </div>
       </div>
     </div>
@@ -678,7 +641,7 @@
       link.addEventListener("click", closeMobileMenu);
     });
 
-    // Service Toggle Boxes
+    // Service Description Accordions
     document.querySelectorAll(".service-toggle").forEach(button => {
       button.addEventListener("click", () => {
         const content = button.nextElementSibling;
@@ -687,7 +650,7 @@
       });
     });
 
-    // Contact Directory Open Overlay functions
+    // Desktop Directory Modal Wrapper Functions
     function toggleDesktopContactModal(open) {
         const modal = document.getElementById('contactModal');
         if (open) {
