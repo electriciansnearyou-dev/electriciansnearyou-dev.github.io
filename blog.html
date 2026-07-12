@@ -7,22 +7,22 @@
     <meta name="description" content="Expert electrical advice, safety tips, and instant 2026 price calculation wizards for UK homeowners and landlords.">
     <style>
         :root {
-            --navy-dark: #0a1931;
-            --navy-light: #15305b;
+            --navy-dark: #07111e;
+            --navy-light: #0d1f35;
+            --navy-card: rgba(17, 34, 64, 0.65);
             --gold: #ffc000;
-            --gold-hover: #e0a800;
+            --gold-glow: rgba(255, 192, 0, 0.15);
             --text-light: #ffffff;
-            --text-muted: #b0c4de;
-            --bg-card: #112240;
-            --border-color: #1e3d73;
-            --success-green: #00cc66;
+            --text-muted: #94a3b8;
+            --border-glow: rgba(30, 61, 115, 0.4);
+            --accent-blue: #00f2fe;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -30,293 +30,421 @@
             background-color: var(--navy-dark);
             color: var(--text-light);
             line-height: 1.6;
-            padding-bottom: 4rem;
+            overflow-x: hidden;
+            padding-bottom: 6rem;
         }
 
+        /* --- HIGH-END HERO BACKGROUND GLOWS --- */
+        .bg-glow-1 {
+            position: absolute;
+            top: -100px;
+            right: -50px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255, 192, 0, 0.08) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-glow-2 {
+            position: absolute;
+            top: 400px;
+            left: -150px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 242, 254, 0.05) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- HERO INTRO SECTION --- */
         header {
-            background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-light) 100%);
-            border-bottom: 3px solid var(--gold);
-            padding: 3rem 1rem;
-            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 5rem 1.5rem 3rem 1.5rem;
+            position: relative;
         }
 
-        .header-container {
-            max-width: 1100px;
-            margin: 0 auto;
+        .pill-badge {
+            display: inline-block;
+            background: rgba(255, 192, 0, 0.1);
+            border: 1px solid rgba(255, 192, 0, 0.25);
+            color: var(--gold);
+            padding: 0.35rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
         }
 
         header h1 {
-            font-size: 2.2rem;
-            color: #fff;
-            margin-bottom: 0.75rem;
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 40%, var(--text-muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         header p {
             color: var(--text-muted);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
+            font-size: 1.15rem;
+            max-width: 650px;
         }
 
+        /* --- CORE WRAPPER --- */
         .main-container {
-            max-width: 1100px;
-            margin: 3rem auto;
-            padding: 0 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
         }
 
         .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .section-title span {
-            color: var(--gold);
-        }
-
-        /* --- CALCULATOR MENU HUB GRID --- */
-        .calc-hub-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 4rem;
-        }
-
-        .calc-menu-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 1.5rem;
-            text-decoration: none;
-            color: var(--text-light);
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .calc-menu-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--gold);
-            box-shadow: 0 8px 25px rgba(255, 192, 0, 0.1);
-        }
-
-        .calc-icon {
-            font-size: 1.8rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .calc-menu-card h3 {
-            font-size: 1.1rem;
-            color: #fff;
-            margin-bottom: 0.5rem;
-        }
-
-        .calc-menu-card p {
             font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-            margin-bottom: 1.25rem;
-        }
-
-        .calc-btn-label {
-            color: var(--gold);
-            font-size: 0.85rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .calc-menu-card:hover .calc-btn-label {
-            color: #fff;
-        }
-
-        /* --- STANDARD BLOG POSTS LIST --- */
-        .blog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-        }
-
-        .blog-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .blog-card:hover {
-            border-color: var(--border-color);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        .blog-content {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            flex-grow: 1;
-        }
-
-        .blog-meta {
-            font-size: 0.75rem;
-            color: var(--gold);
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin: 3rem 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border-color), transparent);
+        }
+
+        /* --- PREMIUM ASYMMETRIC CALCULATOR HUB --- */
+        .calc-hub-fluid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1.5rem;
+        }
+
+        .calc-card-premium {
+            background: var(--navy-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 61, 115, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            text-decoration: none;
+            color: var(--text-light);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ambient hover card light injection */
+        .calc-card-premium::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(800px circle at var(--x, 0px) var(--y, 0px), rgba(255,255,255,0.06), transparent 40%);
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .calc-card-premium:hover::before {
+            opacity: 1;
+        }
+
+        /* Asymmetric Layout Sizing Weights */
+        .size-large { grid-column: span 3; min-height: 240px; }
+        .size-medium { grid-column: span 3; min-height: 240px; }
+        .size-small { grid-column: span 2; min-height: 220px; }
+
+        @media (max-width: 900px) {
+            .size-large, .size-medium, .size-small { grid-column: span 3; }
+        }
+        @media (max-width: 600px) {
+            .calc-hub-fluid { grid-template-columns: 1fr; }
+            .size-large, .size-medium, .size-small { grid-column: span 1; }
+            header h1 { font-size: 2.2rem; }
+        }
+
+        .calc-card-premium:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 192, 0, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 25px rgba(255, 192, 0, 0.03);
+        }
+
+        .calc-badge-top {
+            font-size: 1.7rem;
+            background: rgba(255, 255, 255, 0.03);
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .calc-card-premium:hover .calc-badge-top {
+            background: var(--gold);
+            color: var(--navy-dark);
+            transform: scale(1.05);
+        }
+
+        .calc-card-premium h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
             margin-bottom: 0.5rem;
         }
 
-        .blog-card h2 {
-            font-size: 1.3rem;
-            color: #fff;
-            margin-bottom: 0.75rem;
-            line-height: 1.3;
-        }
-
-        .blog-card p {
+        .calc-card-premium p {
             font-size: 0.9rem;
             color: var(--text-muted);
+            line-height: 1.5;
             margin-bottom: 1.5rem;
         }
 
-        .read-more {
+        .calc-action-arrow {
+            font-size: 0.85rem;
+            font-weight: 700;
             color: var(--text-light);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            transition: gap 0.2s ease;
         }
 
-        .read-more:hover {
+        .calc-card-premium:hover .calc-action-arrow {
+            color: var(--gold);
+            gap: 10px;
+        }
+
+        /* --- FINE ARTIFACT MASONRY BLOG DESIGN --- */
+        .editorial-masonry {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .editorial-card {
+            background: transparent;
+            text-decoration: none;
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .span-7 { grid-column: span 7; }
+        .span-5 { grid-column: span 5; }
+        .span-12 { grid-column: span 12; }
+
+        @media (max-width: 850px) {
+            .span-7, .span-5 { grid-column: span 12; }
+        }
+
+        .editorial-visual-container {
+            width: 100%;
+            height: 280px;
+            background: linear-gradient(45deg, #09162a, #1a365d);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Abstract Premium Geometric Accents For Luxury Texture */
+        .editorial-visual-container::after {
+            content: '';
+            position: absolute;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle, rgba(255, 192, 0, 0.05) 0%, transparent 60%);
+            top: -20%; left: -20%;
+            transition: transform 0.6s ease;
+        }
+
+        .editorial-card:hover .editorial-visual-container::after {
+            transform: scale(1.15) translate(5%, 5%);
+        }
+
+        .editorial-visual-container span {
+            font-size: 3.5rem;
+            opacity: 0.25;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .editorial-card:hover .editorial-visual-container span {
+            opacity: 0.6;
+            transform: scale(1.08);
+        }
+
+        .editorial-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .editorial-card h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.3;
+            letter-spacing: -0.4px;
+            margin-bottom: 0.5rem;
+            transition: color 0.2s ease;
+        }
+
+        .editorial-card:hover h2 {
             color: var(--gold);
         }
 
-        @media (max-width: 600px) {
-            header h1 { font-size: 1.75rem; }
-            .blog-grid { grid-template-columns: 1fr; }
+        .editorial-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
 
-    <!-- MASTER SITE HEADER -->
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <!-- HEADER INTERFACE -->
     <header>
-        <div class="header-container">
-            <h1>Electrical Knowledge Hub</h1>
-            <p>Professional pricing insights, regulations advice, and instant budgeting calculator utilities tailored for UK homes.</p>
-        </div>
+        <div class="pill-badge">Interactive Hub Platform</div>
+        <h1>Electrical Insights &<br>Dynamic Estimators</h1>
+        <p>A suite of high-fidelity calculation wizards and professional regulatory briefs built to provide transparent structural budgeting indicators.</p>
     </header>
 
     <div class="main-container">
 
-        <!-- INTERACTIVE CALCULATORS QUICK-HUB NAVIGATION MENU -->
-        <h2 class="section-title">Interactive <span>Price Estimators</span></h2>
-        <div class="calc-hub-grid">
+        <!-- CALCULATORS SECTION -->
+        <div class="section-title">Select Calculation Engine</div>
+        <div class="calc-hub-fluid">
             
-            <!-- Fuseboard Upgrade -->
-            <a href="../Calculators/Fuseboard-Calculator.html" class="calc-menu-card">
+            <!-- Card 1: Fuseboard -->
+            <a href="../Calculators/Fuseboard-Calculator.html" class="calc-card-premium size-large">
+                <div class="calc-badge-top">⚡</div>
                 <div>
-                    <div class="calc-icon">⚡</div>
                     <h3>Fuseboard Upgrade</h3>
-                    <p>Price up dual RCD and premium RCBO consumers unit installations instantly.</p>
+                    <p>Price out dual RCD and premium RCBO consumers unit installations instantly.</p>
+                    <div class="calc-action-arrow">Launch Configuration Engine &rarr;</div>
                 </div>
-                <div class="calc-btn-label">Launch Calculator &rarr;</div>
             </a>
 
-            <!-- Accessory Swap -->
-            <a href="../Calculators/Accessory-Calculator.html" class="calc-menu-card">
+            <!-- Card 2: EV Charging -->
+            <a href="../Calculators/EV-Calculator.html" class="calc-card-premium size-medium">
+                <div class="calc-badge-top">🚗</div>
                 <div>
-                    <div class="calc-icon">🔌</div>
-                    <h3>Switches & Sockets</h3>
-                    <p>Itemize faceplate swap profiles or additions across multiple asset modules.</p>
-                </div>
-                <div class="calc-btn-label">Launch Calculator &rarr;</div>
-            </a>
-
-            <!-- Lighting Installation -->
-            <a href="../Calculators/Lighting-Calculator.html" class="calc-menu-card">
-                <div>
-                    <div class="calc-icon">💡</div>
-                    <h3>Lighting Systems</h3>
-                    <p>Calculate upgrades for downlights, pendants, and external security floodlighting.</p>
-                </div>
-                <div class="calc-btn-label">Launch Calculator &rarr;</div>
-            </a>
-
-            <!-- EICR Certificate -->
-            <a href="../Calculators/EICR-Calculator.html" class="calc-menu-card">
-                <div>
-                    <div class="calc-icon">📋</div>
-                    <h3>EICR Safety Check</h3>
-                    <p>Instantly estimate full domestic periodic certification values by circuit counts.</p>
-                </div>
-                <div class="calc-btn-label">Launch Calculator &rarr;</div>
-            </a>
-
-            <!-- EV Charging -->
-            <a href="../Calculators/EV-Calculator.html" class="calc-menu-card">
-                <div>
-                    <div class="calc-icon">🚗</div>
-                    <h3>EV Charger Install</h3>
+                    <h3>EV Charger Infrastructure</h3>
                     <p>Map structural outlays based on run paths, voids, and supply board options.</p>
+                    <div class="calc-action-arrow">Launch Configuration Engine &rarr;</div>
                 </div>
-                <div class="calc-btn-label">Launch Calculator &rarr;</div>
+            </a>
+
+            <!-- Card 3: Accessory Swap -->
+            <a href="../Calculators/Accessory-Calculator.html" class="calc-card-premium size-small">
+                <div class="calc-badge-top">🔌</div>
+                <div>
+                    <h3>Switches & Sockets</h3>
+                    <p>Itemize faceplate swap profiles across multi-room terminal assets.</p>
+                    <div class="calc-action-arrow">Run Matrix &rarr;</div>
+                </div>
+            </a>
+
+            <!-- Card 4: Lighting Systems -->
+            <a href="../Calculators/Lighting-Calculator.html" class="calc-card-premium size-small">
+                <div class="calc-badge-top">💡</div>
+                <div>
+                    <h3>Lighting Networks</h3>
+                    <p>Upgrades for recessed downlights, pendants, and exterior arrays.</p>
+                    <div class="calc-action-arrow">Run Matrix &rarr;</div>
+                </div>
+            </a>
+
+            <!-- Card 5: EICR Certificate -->
+            <a href="../Calculators/EICR-Calculator.html" class="calc-card-premium size-small">
+                <div class="calc-badge-top">📋</div>
+                <div>
+                    <h3>EICR Safety Check</h3>
+                    <p>Domestic periodic certification values calculated by circuit ways.</p>
+                    <div class="calc-action-arrow">Run Matrix &rarr;</div>
+                </div>
             </a>
 
         </div>
 
-        <!-- MAIN KNOWLEDGE REPOSITORY ARTICLES LIST -->
-        <h2 class="section-title">Latest <span>Articles & Advice</span></h2>
-        <div class="blog-grid">
+        <!-- REPOSITORY EDITORIAL CARDS -->
+        <div class="section-title">Knowledge Base Briefings</div>
+        <div class="editorial-masonry">
 
-            <!-- Card 1 -->
-            <article class="blog-card">
-                <div class="blog-content">
-                    <div>
-                        <div class="blog-meta">Regulations Compliance</div>
-                        <h2>Understanding UK Consumer Unit Regulations</h2>
-                        <p>A comprehensive review covering mandatory Amendment 3 metal enclosures, fire protection configurations, and surge device additions.</p>
-                    </div>
-                    <a href="#" class="read-more">Read Full Guide &rarr;</a>
+            <!-- Editorial Item 1 -->
+            <a href="#" class="editorial-card span-7">
+                <div class="editorial-visual-container">
+                    <span>🛡️</span>
                 </div>
-            </article>
+                <div class="editorial-tag">Regulations Compliance</div>
+                <h2>Understanding UK Consumer Unit Regulations</h2>
+                <p>An administrative breakdown highlighting safety compliance paths including mandatory Amendment 3 metal casing configurations, surge protective device integrations, and cross-floor isolation protocols.</p>
+            </a>
 
-            <!-- Card 2 -->
-            <article class="blog-card">
-                <div class="blog-content">
-                    <div>
-                        <div class="blog-meta">Landlord Requirements</div>
-                        <h2>EICR Failures: Most Common Causes Explained</h2>
-                        <p>Learn the top technical infrastructure flaws that trigger an unsatisfactory rating on electrical safety reports and how to fix them efficiently.</p>
-                    </div>
-                    <a href="#" class="read-more">Read Full Guide &rarr;</a>
+            <!-- Editorial Item 2 -->
+            <a href="#" class="editorial-card span-5">
+                <div class="editorial-visual-container">
+                    <span>⚠️</span>
                 </div>
-            </article>
+                <div class="editorial-tag">Landlord Requirements</div>
+                <h2>EICR Failures: Most Common Causes</h2>
+                <p>An overview tracking the root technical anomalies that trigger immediate unsatisfactory marks on condition statements—focusing on missing identifiers and latent thermal stress points.</p>
+            </a>
 
-            <!-- Card 3 -->
-            <article class="blog-card">
-                <div class="blog-content">
-                    <div>
-                        <div class="blog-meta">Energy Efficiency</div>
-                        <h2>Upgrading To Recessed LED Downlights Safely</h2>
-                        <p>Why choosing fire-rated, moisture-resistant downlights is essential for home safety and insulation preservation during ceiling renovations.</p>
-                    </div>
-                    <a href="#" class="read-more">Read Full Guide &rarr;</a>
+            <!-- Editorial Item 3 -->
+            <a href="#" class="editorial-card span-12">
+                <div class="editorial-visual-container" style="height: 220px;">
+                    <span>🔥</span>
                 </div>
-            </article>
+                <div class="editorial-tag">Energy Efficiency</div>
+                <h2>Upgrading To Recessed LED Downlights Safely</h2>
+                <p>Why selecting fire-rated and fully sealed integrated core luminaires protects structural barriers, retains structural floor thermal values, and matches up seamlessly with modern dimming architectures without light flicker risks.</p>
+            </a>
 
         </div>
     </div>
+
+    <!-- Mouse Light Tracking Logic for Premium Glassmorphic Cards -->
+    <script>
+        document.querySelectorAll('.calc-card-premium').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--x', `${x}px`);
+                card.style.setProperty('--y', `${y}px`);
+            });
+        });
+    </script>
 
 </body>
 </html>
