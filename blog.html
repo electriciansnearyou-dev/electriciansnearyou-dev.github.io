@@ -39,7 +39,7 @@
             color: var(--navy-text);
             line-height: 1.6;
             overflow-x: hidden;
-            padding-bottom: 8rem; /* Expanded to make space for sticky bottom bar */
+            padding-bottom: 8rem;
             background-color: var(--bg-main);
         }
 
@@ -104,10 +104,10 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* --- FIXED NAVBAR: DARK GREY WITH HIGH-CONTRAST WHITE BUTTON --- */
+        /* --- FIXED NAVBAR --- */
         .top-navbar {
             position: fixed;
-            top: 32px; /* Pushed down smoothly by the banner ticker */
+            top: 32px;
             left: 0;
             right: 0;
             height: 70px;
@@ -208,10 +208,10 @@
             transform: translateY(-1px);
         }
 
-        /* --- EDITORIAL HERO COVER SECTION (GREY GLASS WITH WHITE TEXT) --- */
+        /* --- EDITORIAL HERO COVER SECTION --- */
         header {
             max-width: 900px;
-            margin: 11rem auto 3rem auto; /* Incremented to offset structural spacing from tracking ribbon */
+            margin: 11rem auto 3rem auto;
             padding: 2.5rem;
             position: relative;
             background: var(--bg-dark-glass);
@@ -550,25 +550,70 @@
             color: #fff;
         }
 
-        /* --- FLOATING CONTROLS CONSOLE STICKY BACKING --- */
+        /* --- INTELLIGENT ADAPTIVE CONTROLS FOOTER BACKING --- */
         .sticky-footer-bar {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             width: calc(100% - 2rem);
-            max-width: 600px;
+            max-width: 500px;
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.15);
             padding: 0.8rem 1rem;
             border-radius: 100px;
+            z-index: 999;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Mobile layout displays dual configurations side by side */
+        .mobile-footer-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            z-index: 999;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            width: 100%;
+        }
+
+        /* Premium Desktop UI layout: Aggregated 50-50 Diagonal Ribbon Button */
+        .desktop-footer-single {
+            display: none;
+            width: 100%;
+            height: 48px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            overflow: hidden;
+            font-weight: 800;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            /* Injected diagonal split background configuration */
+            background: linear-gradient(135deg, #dc2626 0%, #dc2626 50%, #ffffff 50%, #ffffff 100%);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .desktop-footer-single:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25);
+        }
+
+        /* Left Side Callout text layer */
+        .split-text-left {
+            position: absolute;
+            left: 0; top: 0; bottom: 0; width: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #ffffff; padding-right: 15px;
+        }
+
+        /* Right Side Callout text layer */
+        .split-text-right {
+            position: absolute;
+            right: 0; top: 0; bottom: 0; width: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #0f172a; padding-left: 15px;
         }
 
         .sticky-action-btn {
@@ -586,23 +631,10 @@
             transition: all 0.25s ease;
         }
 
-        .btn-call-emergency {
-            background: var(--emergency-red);
-            color: #ffffff;
-        }
-
-        .btn-call-emergency:hover {
-            background: var(--emergency-hover);
-        }
-
-        .btn-contact-general {
-            background: #ffffff;
-            color: var(--navy-text);
-        }
-
-        .btn-contact-general:hover {
-            background: #f1f5f9;
-        }
+        .btn-call-emergency { background: var(--emergency-red); color: #ffffff; }
+        .btn-call-emergency:hover { background: var(--emergency-hover); }
+        .btn-contact-general { background: #ffffff; color: var(--navy-text); }
+        .btn-contact-general:hover { background: #f1f5f9; }
 
         /* --- DESKTOP DIRECTORY DIALOG WINDOW --- */
         .modal-overlay-contact {
@@ -619,10 +651,7 @@
             transition: opacity 0.3s ease;
         }
 
-        .modal-overlay-contact.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .modal-overlay-contact.active { opacity: 1; pointer-events: auto; }
 
         .directory-modal-card {
             background: rgba(255, 255, 255, 0.96);
@@ -638,70 +667,20 @@
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .modal-overlay-contact.active .directory-modal-card {
-            transform: scale(1);
-        }
+        .modal-overlay-contact.active .directory-modal-card { transform: scale(1); }
+        .modal-close-trigger { position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
+        .directory-modal-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; }
+        .directory-row-item { display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid var(--border-color); padding: 1rem 1.25rem; border-radius: 14px; margin-bottom: 0.75rem; text-decoration: none; color: var(--navy-text); font-weight: 600; transition: all 0.2s ease; }
+        .directory-row-item:hover { border-color: var(--gold); background: #f8fafc; }
+        .directory-row-item span { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+        .directory-row-item.email-card-row { margin-top: 1.25rem; background: var(--navy-text); color: #ffffff; }
+        .directory-row-item.email-card-row:hover { background: #1e293b; }
+        .directory-row-item.email-card-row span { color: #94a3b8; }
 
-        .modal-close-trigger {
-            position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            background: transparent;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-
-        .directory-modal-card h3 {
-            font-size: 1.3rem;
-            font-weight: 800;
-            margin-bottom: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.75rem;
-        }
-
-        .directory-row-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            padding: 1rem 1.25rem;
-            border-radius: 14px;
-            margin-bottom: 0.75rem;
-            text-decoration: none;
-            color: var(--navy-text);
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .directory-row-item:hover {
-            border-color: var(--gold);
-            background: #f8fafc;
-        }
-
-        .directory-row-item span {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .directory-row-item.email-card-row {
-            margin-top: 1.25rem;
-            background: var(--navy-text);
-            color: #ffffff;
-        }
-
-        .directory-row-item.email-card-row:hover {
-            background: #1e293b;
-        }
-
-        .directory-row-item.email-card-row span {
-            color: #94a3b8;
+        /* Responsive Visibility Switches */
+        @media (min-width: 992px) {
+            .mobile-footer-grid { display: none; }
+            .desktop-footer-single { display: block; }
         }
 
         @media (max-width: 768px) {
@@ -710,12 +689,12 @@
 
         @media (max-width: 600px) {
             header h1 { font-size: 2.4rem; }
-            body > header { padding: 1.5rem; margin: 7.5rem 1rem 2rem 1rem; }
+            body > header { padding: 1.5rem; margin: 6.5rem 1rem 2rem 1rem; }
             .side-drawer { max-width: 85%; }
             .blog-home-text-link { font-size: 1.05rem; }
             .section-title-wrapper { margin: 3rem 0 1.25rem 0; }
             .top-navbar { top: 32px; padding: 0 1rem; }
-            .nav-contact-mail-btn { display: none; } /* Kept clean on micro mobile screens */
+            .nav-contact-mail-btn { display: none; }
         }
     </style>
 </head>
@@ -724,7 +703,7 @@
     <!-- HIGH-CREDIBILITY SLIDING ACCREDITATION TICKER -->
     <div class="top-credibility-ribbon">
         <div class="ticker-track">
-            <div class="ticker-item"><span>⚡</span> NICEIC Logo</div>
+            <div class="ticker-item"><span>⚡</span> NICEIC Certification</div>
             <div class="ticker-item"><span>⚡</span> City & Guilds</div>
             <div class="ticker-item"><span>⚡</span> EAL Accredited</div>
             <div class="ticker-item"><span>⚡</span> BS7671 Certified</div>
@@ -732,7 +711,7 @@
             <div class="ticker-item"><span>⚡</span> Emergency CallOuts Available</div>
             <div class="ticker-item"><span>⚡</span> Contact Us Today</div>
             <!-- Duplicated sequence to prevent layout blank gaps on infinite loops -->
-            <div class="ticker-item"><span>⚡</span> NICEIC Logo</div>
+            <div class="ticker-item"><span>⚡</span> NICEIC Certification</div>
             <div class="ticker-item"><span>⚡</span> City & Guilds</div>
             <div class="ticker-item"><span>⚡</span> EAL Accredited</div>
             <div class="ticker-item"><span>⚡</span> BS7671 Certified</div>
@@ -762,15 +741,20 @@
 
     <!-- PERSISTENT SCROLL FLOATING COMMUNICATIONS BAR -->
     <div class="sticky-footer-bar">
-        <a href="tel:07711261478" class="sticky-action-btn btn-call-emergency" onclick="handleSmartCall(event)">
-            🚨 Emergency
-        </a>
-        <button class="sticky-action-btn btn-contact-general" onclick="toggleContactModal(true)">
-            📬 Contact Us
+        <!-- Mobile Dual Trigger Configuration -->
+        <div class="mobile-footer-grid">
+            <a href="tel:07711261478" class="sticky-action-btn btn-call-emergency">🚨 Emergency</a>
+            <button class="sticky-action-btn btn-contact-general" onclick="toggleContactModal(true)">📬 Contact</button>
+        </div>
+        
+        <!-- Desktop Unified Dynamic Diagonal Split Button Trigger -->
+        <button class="desktop-footer-single" onclick="toggleContactModal(true)">
+            <span class="split-text-left">🚨 Emergency</span>
+            <span class="split-text-right">📬 24/7 Contact</span>
         </button>
     </div>
 
-    <!-- INTEL DESKTOP POP-UP COMMUNICATIONS HUB -->
+    <!-- DESKTOP POP-UP COMMUNICATIONS MODAL -->
     <div class="modal-overlay-contact" id="contactModal" onclick="toggleContactModal(false)">
         <div class="directory-modal-card" onclick="event.stopPropagation()">
             <button class="modal-close-trigger" onclick="toggleContactModal(false)">&times;</button>
@@ -798,21 +782,11 @@
             <button class="btn-close-drawer" onclick="toggleDrawer(false)">&times;</button>
         </div>
         <nav class="drawer-nav">
-            <a href="Calculators/Fuseboard-Calculator.html" class="nav-link-item">
-                Fuseboard Upgrade <span>⚡</span>
-            </a>
-            <a href="Calculators/EV-Calculator.html" class="nav-link-item">
-                EV Charger Install <span>🚗</span>
-            </a>
-            <a href="Calculators/Accessory-Calculator.html" class="nav-link-item">
-                Switches & Sockets <span>🔌</span>
-            </a>
-            <a href="Calculators/Lighting-Calculator.html" class="nav-link-item">
-                Lighting Indoor & Outdoor <span>💡</span>
-            </a>
-            <a href="Calculators/EICR-Calculator.html" class="nav-link-item">
-                EICR Electrical Safety Check Landlord and Private<span>📋</span>
-            </a>
+            <a href="Calculators/Fuseboard-Calculator.html" class="nav-link-item">Fuseboard Upgrade <span>⚡</span></a>
+            <a href="Calculators/EV-Calculator.html" class="nav-link-item">EV Charger Install <span>🚗</span></a>
+            <a href="Calculators/Accessory-Calculator.html" class="nav-link-item">Switches & Sockets <span>🔌</span></a>
+            <a href="Calculators/Lighting-Calculator.html" class="nav-link-item">Lighting Indoor & Outdoor <span>💡</span></a>
+            <a href="Calculators/EICR-Calculator.html" class="nav-link-item">EICR Electrical Safety Check<span>📋</span></a>
         </nav>
     </div>
 
@@ -820,9 +794,7 @@
     <header>
         <div class="pill-badge">Articles & Tools</div>
         <h1>Electrical Insights & Advice</h1>
-        <p>With our many years of experience and research we hope to provide you with knowledge and understanding
-            to help you tackle the day to day questions the public and other professionals have like BS7671 electrical Regs,
-            Building Regs, and emergency electrical faults.</p>
+        <p>With our many years of experience and research we hope to provide you with knowledge and understanding to help you tackle the day to day questions the public and other professionals have like BS7671 electrical Regs, Building Regs, and emergency electrical faults.</p>
     </header>
 
     <div class="main-container">
@@ -832,8 +804,6 @@
         </div>
         
         <div class="editorial-masonry">
-
-            <!-- Square Card 1 -->
             <a href="Articles/consumer-unit-regulations.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Regulations Compliance</div>
@@ -843,7 +813,6 @@
                 <div class="read-more-btn">Read Article &rarr;</div>
             </a>
 
-            <!-- Square Card 2 -->
             <a href="Articles/eicr-failures-causes.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Landlord Requirements</div>
@@ -853,7 +822,6 @@
                 <div class="read-more-btn">Read Article &rarr;</div>
             </a>
 
-            <!-- Square Card 3 -->
             <a href="Articles/led-downlights-safety.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Energy Efficiency</div>
@@ -863,7 +831,6 @@
                 <div class="read-more-btn">Read Article &rarr;</div>
             </a>
 
-            <!-- Balanced Grid Slot 4 -->
             <a href="Articles/smart-home-automation.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Future Technology</div>
@@ -872,24 +839,20 @@
                 </div>
                 <div class="read-more-btn">Read Article &rarr;</div>
             </a>
-
         </div>
 
         <hr class="section-barrier">
 
-        <!-- INTERACTIVE LIVE PHOTO STREAMING MODULE -->
         <div class="section-title-wrapper">
             <div class="section-title">On-Site Project Stream</div>
         </div>
         <div class="gallery-container">
-            <div class="gallery-track" id="photo-stream-track">
-                <!-- Javascript loops names array dynamically inside here -->
-            </div>
+            <div class="gallery-track" id="photo-stream-track"></div>
         </div>
 
     </div>
 
-    <!-- Micro-interactivity & Custom Communications Routing Logic Block -->
+    <!-- Core Interactive Logic Modules -->
     <script>
         function toggleDrawer(open) {
             const sidebar = document.getElementById('sidebar');
@@ -905,15 +868,6 @@
             }
         }
 
-        // CONTROL HANDLER FOR PREVENTING TEL ERROR LOOPS ON DESKTOP SCREENS
-        function handleSmartCall(event) {
-            // Check if device width represents desktop scaling values
-            if (window.innerWidth > 991) {
-                event.preventDefault(); // Lock native trigger action pathing
-                toggleContactModal(true); // Fire up structured desktop window directory modal instead
-            }
-        }
-
         function toggleContactModal(open) {
             const modal = document.getElementById('contactModal');
             if (open) {
@@ -924,7 +878,7 @@
         }
 
         // =================================================================
-        // DYNAMIC PHOTO STREAM MANAGER (NO RENAMING REQUIRED)
+        // DYNAMIC PHOTO STREAM TRACK ENGINE
         // =================================================================
         const myUploadedPhotos = [
             '20240412_212651.jpg',
