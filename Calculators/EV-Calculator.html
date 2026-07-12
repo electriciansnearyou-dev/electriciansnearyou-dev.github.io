@@ -5,334 +5,140 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EV Charger Installation Cost Estimator | Instant Home Charging Quote</title>
     <meta name="description" content="Calculate your home electric vehicle charging point installation cost. Get a tailored budget price based on cable runs, routing, and board capacity.">
-    <meta name="keywords" content="ev charger installation cost, home ev charging point price uk, install electric car charger cost">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --navy-dark: #0a1931;
-            --navy-light: #15305b;
-            --gold: #ffc000;
-            --gold-hover: #e0a800;
-            --text-light: #ffffff;
-            --text-muted: #b0c4de;
-            --bg-card: #112240;
-            --border-color: #1e3d73;
-            --success-green: #00cc66;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--navy-dark);
-            color: var(--text-light);
-            line-height: 1.6;
-            padding-bottom: 8rem;
-        }
-
-        .container {
-            max-width: 750px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .back-link {
-            color: var(--gold);
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            font-weight: bold;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .intro-text {
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-        }
-
-        .step-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .step-title {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .step-number {
-            background: var(--gold);
-            color: var(--navy-dark);
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        /* --- VISUAL OPTIONS GRID (TEXT ONLY) --- */
-        .grid-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        @media (max-width: 480px) {
-            .grid-options {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card-option {
-            background: var(--navy-light);
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            padding: 1.25rem;
-        }
-
-        .card-option:hover {
-            border-color: var(--gold-hover);
-        }
-
-        .card-option.selected {
-            border-color: var(--gold);
-            background: rgba(255, 192, 0, 0.05);
-        }
-
-        .card-option.selected::before {
-            content: '✓';
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--gold);
-            color: var(--navy-dark);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.75rem;
-            z-index: 10;
-        }
-
-        .card-label {
-            font-weight: bold;
-            font-size: 1.05rem;
-            margin-bottom: 0.5rem;
-            padding-right: 1.5rem;
-        }
-
-        .card-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-
-        /* --- STICKY SUMMARY TRAY --- */
-        .summary-tray {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #060f1e;
-            border-top: 3px solid var(--gold);
-            padding: 1.25rem 1rem;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-            z-index: 2000;
-        }
-
-        .tray-content {
-            max-width: 750px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .metric-group {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .metric {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .metric-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-        }
-
-        .metric-value {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--gold);
-        }
-
-        .btn-book {
-            background: var(--success-green);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            font-weight: bold;
-            font-size: 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            text-decoration: none;
-        }
+        body { font-family: "Inter", sans-serif; background-color: #0f172a; color: #f8fafc; padding-bottom: 10rem; }
+        .glass-card { background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .dark-glass-card { background: rgba(30, 41, 59, 0.75); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .card-option { background: rgba(255, 255, 255, 0.03); border: 2px solid rgba(255, 255, 255, 0.08); transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; padding: 1.25rem; border-radius: 12px; }
+        .card-option.selected { border-color: #c59b27; background: rgba(197, 155, 39, 0.1); }
+        .card-option.selected::before { content: '✓'; position: absolute; top: 12px; right: 12px; background: #c59b27; color: #0f172a; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; }
+        .summary-tray { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); border-top: 3px solid #c59b27; z-index: 1000; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 2001; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <a href="../blog.html" class="back-link">&larr; Back to Electrical Blog</a>
+    <div class="max-w-3xl mx-auto px-4 py-8">
+        <div class="flex flex-wrap gap-3 mb-8">
+            <a href="../index.html" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-white border border-slate-700">🏡 Back to Main Site</a>
+            <a href="../blog.html" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-white border border-slate-700">📚 Back to Blog Hub</a>
+        </div>
         
-        <h1>EV Charger Installation Calculator</h1>
-        <p class="intro-text">Select your charging requirements below to receive a dynamic on-site budget projection instantly.</p>
+        <h1 class="text-3xl font-extrabold tracking-tight mb-2 text-white">EV Charger Installation Calculator</h1>
+        <p class="text-sm text-slate-400 mb-8 font-medium">Select your requirements below to receive a dynamic on-site budget projection.</p>
 
-        <!-- STEP 1: CHARGER TYPE -->
-        <div class="step-container">
-            <div class="step-title">
-                <div class="step-number">1</div>
-                <h3>Select Charger Interface Style</h3>
-            </div>
-            <div class="grid-options">
-                <div class="card-option selected" onclick="selectCard('charger', 450, this)">
-                    <div class="card-label">Tethered (Attached Cable)</div>
-                    <div class="card-desc">Features an integrated 5m/7m charging lead for instant plug-and-go convenience.</div>
+        <div class="glass-card rounded-2xl p-6 mb-6">
+            <h3 class="text-lg font-bold text-white mb-5 flex items-center gap-3"><span class="bg-[#c59b27] text-slate-950 w-7 h-7 rounded-full flex items-center justify-center font-black text-sm">1</span> Select Charger Style</h3>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="card-option selected relative" onclick="selectCard(this, 'charger', 450, 'Tethered')">
+                    <div class="font-bold text-sm text-white mb-1">Tethered (Attached Cable)</div>
+                    <div class="text-xs text-slate-400">Integrated 5m-7m lead for plug-and-go convenience.</div>
                 </div>
-                <div class="card-option" onclick="selectCard('charger', 395, this)">
-                    <div class="card-label">Untethered (Socket Only)</div>
-                    <div class="card-desc">Clean wall aesthetic. Provides a universal socket requiring your own separate cable.</div>
+                <div class="card-option relative" onclick="selectCard(this, 'charger', 395, 'Untethered')">
+                    <div class="font-bold text-sm text-white mb-1">Untethered (Socket Only)</div>
+                    <div class="text-xs text-slate-400">Universal socket. Requires your own charging cable.</div>
                 </div>
             </div>
         </div>
 
-        <!-- STEP 2: CABLE RUN DISTANCE -->
-        <div class="step-container">
-            <div class="step-title">
-                <div class="step-number">2</div>
-                <h3>Approximate Cable Run Distance</h3>
-            </div>
-            <div class="grid-options">
-                <div class="card-option selected" onclick="selectCard('distance', 50, this)">
-                    <div class="card-label">Short Run (Up to 5m)</div>
-                    <div class="card-desc">Ideal for back-to-back installs or chargers positioned right next to the meter box.</div>
+        <div class="glass-card rounded-2xl p-6 mb-6">
+            <h3 class="text-lg font-bold text-white mb-5 flex items-center gap-3"><span class="bg-[#c59b27] text-slate-950 w-7 h-7 rounded-full flex items-center justify-center font-black text-sm">2</span> Cable Distance</h3>
+            <div class="grid gap-4 sm:grid-cols-3">
+                <div class="card-option selected relative" onclick="selectCard(this, 'distance', 50, 'Short Run')">
+                    <div class="font-bold text-sm text-white mb-1">Short (0-5m)</div>
                 </div>
-                <div class="card-option" onclick="selectCard('distance', 140, this)">
-                    <div class="card-label">Medium Run (5m – 15m)</div>
-                    <div class="card-desc">Standard external wrapping routing clipped around the property brickwork.</div>
+                <div class="card-option relative" onclick="selectCard(this, 'distance', 140, 'Medium Run')">
+                    <div class="font-bold text-sm text-white mb-1">Medium (5-15m)</div>
                 </div>
-                <div class="card-option" onclick="selectCard('distance', 260, this)">
-                    <div class="card-label">Long Run (15m – 25m+)</div>
-                    <div class="card-desc">Requires heavy cross-section lines to counter electrical voltage drop.</div>
+                <div class="card-option relative" onclick="selectCard(this, 'distance', 260, 'Long Run')">
+                    <div class="font-bold text-sm text-white mb-1">Long (15m+)</div>
                 </div>
             </div>
         </div>
 
-        <!-- STEP 3: ROUTING PROFILE -->
-        <div class="step-container">
-            <div class="step-title">
-                <div class="step-number">3</div>
-                <h3>Cable Routing & Groundwork</h3>
-            </div>
-            <div class="grid-options">
-                <div class="card-option selected" onclick="selectCard('routing', 120, this)">
-                    <div class="card-label">Standard External Wall Clip</div>
-                    <div class="card-desc">Clipped neatly along low-level external brickwork. Minimal disruption.</div>
+        <div class="glass-card rounded-2xl p-6 mb-6">
+            <h3 class="text-lg font-bold text-white mb-5 flex items-center gap-3"><span class="bg-[#c59b27] text-slate-950 w-7 h-7 rounded-full flex items-center justify-center font-black text-sm">3</span> Routing</h3>
+            <div class="grid gap-4 sm:grid-cols-3">
+                <div class="card-option selected relative" onclick="selectCard(this, 'routing', 120, 'External Wall')">
+                    <div class="font-bold text-sm text-white mb-1">External Clip</div>
                 </div>
-                <div class="card-option" onclick="selectCard('routing', 220, this)">
-                    <div class="card-label">Internal Void Routing</div>
-                    <div class="card-desc">Requires traversing internal floor joists, cellars, or lifting boards.</div>
+                <div class="card-option relative" onclick="selectCard(this, 'routing', 220, 'Internal Void')">
+                    <div class="font-bold text-sm text-white mb-1">Internal Void</div>
                 </div>
-                <div class="card-option" onclick="selectCard('routing', 380, this)">
-                    <div class="card-label">Ground Trenching / Driveways</div>
-                    <div class="card-desc">Excavating paths through soil, lawns, or chasing up driveways for pillar mounts.</div>
+                <div class="card-option relative" onclick="selectCard(this, 'routing', 380, 'Ground Trench')">
+                    <div class="font-bold text-sm text-white mb-1">Trench/Driveway</div>
                 </div>
             </div>
         </div>
 
-        <!-- STEP 4: CONSUMER UNIT INFRASTRUCTURE -->
-        <div class="step-container">
-            <div class="step-title">
-                <div class="step-number">4</div>
-                <h3>Existing Consumer Unit Capacity</h3>
-            </div>
-            <div class="grid-options">
-                <div class="card-option selected" onclick="selectCard('board', 40, this)">
-                    <div class="card-label">Spare Way Available</div>
-                    <div class="card-desc">Existing modern board has physical space for an independent 40A EV breaker.</div>
+        <div class="glass-card rounded-2xl p-6 mb-6">
+            <h3 class="text-lg font-bold text-white mb-5 flex items-center gap-3"><span class="bg-[#c59b27] text-slate-950 w-7 h-7 rounded-full flex items-center justify-center font-black text-sm">4</span> Consumer Unit</h3>
+            <div class="grid gap-4 sm:grid-cols-2">
+                <div class="card-option selected relative" onclick="selectCard(this, 'board', 40, 'Spare Way')">
+                    <div class="font-bold text-sm text-white mb-1">Spare Way Available</div>
                 </div>
-                <div class="card-option" onclick="selectCard('board', 135, this)">
-                    <div class="card-label">Dedicated EV Micro-Board Needed</div>
-                    <div class="card-desc">Main board is full, old, or rewirable. Installs an independent protective mini enclosure.</div>
+                <div class="card-option relative" onclick="selectCard(this, 'board', 135, 'New Micro-Board')">
+                    <div class="font-bold text-sm text-white mb-1">New Mini-Board Needed</div>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- STICKY SUMMARY TRAY -->
     <div class="summary-tray">
-        <div class="tray-content">
-            <div class="metric-group">
-                <div class="metric">
-                    <span class="metric-label">Est. Budget</span>
-                    <span class="metric-value" id="total-price">£730</span>
-                </div>
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div>
+                <span class="text-[10px] text-slate-400 uppercase font-bold">Est. Total</span>
+                <div class="text-2xl font-black text-[#c59b27]" id="total-price">£660</div>
             </div>
-            <a href="tel:07711261478" class="btn-book" style="display: inline-block; text-align: center; line-height: 1.2;">Book Survey<br><span style="font-size: 0.8rem; font-weight: normal; opacity: 0.9;">07711 261478</span></a>
+            <div class="flex gap-2">
+                <button onclick="toggleModal(true)" class="bg-blue-600 text-white font-bold text-xs px-4 py-3 rounded-xl">📬 Send Results</button>
+                <a href="tel:07711261478" class="bg-emerald-600 text-white font-bold text-xs px-4 py-3 rounded-xl">Book Survey</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="leadsOverlay" onclick="toggleModal(false)">
+        <div class="dark-glass-card w-full max-w-[440px] p-6 rounded-3xl text-white shadow-2xl relative border border-slate-800" onclick="event.stopPropagation()">
+            <h3 class="text-lg font-black mb-1 text-[#c59b27]">Send Your Estimate</h3>
+            <form action="https://formspree.io/f/xpqvavoe" method="POST" class="space-y-4">
+                <input type="hidden" name="Final_Price" id="hiddenPrice">
+                <input type="hidden" name="Selected_Setup" id="hiddenSetup">
+                <input type="text" name="name" required placeholder="Name" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm">
+                <input type="tel" name="phone" required placeholder="Phone" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm">
+                <input type="text" name="address" required placeholder="Address" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm">
+                <button type="submit" class="w-full bg-[#c59b27] text-slate-950 py-3 rounded-xl font-black text-sm uppercase">Submit Details</button>
+            </form>
         </div>
     </div>
 
     <script>
-        let choices = {
-            charger: 450,
-            distance: 50,
-            routing: 120,
-            board: 40
-        };
+        let config = { charger: 450, distance: 50, routing: 120, board: 40 };
+        let labels = { charger: 'Tethered', distance: 'Short Run', routing: 'External Wall', board: 'Spare Way' };
 
-        function selectCard(category, costModifier, element) {
-            const parent = element.parentElement;
-            parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
-            element.classList.add('selected');
-
-            choices[category] = costModifier;
-            calculateTotals();
+        function selectCard(el, cat, val, label) {
+            el.parentElement.querySelectorAll('.card-option').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            config[cat] = val;
+            labels[cat] = label;
+            updateUI();
         }
 
-        function calculateTotals() {
-            let priceTotal = choices.charger + choices.distance + choices.routing + choices.board;
-            document.getElementById('total-price').innerText = '£' + priceTotal;
+        function updateUI() {
+            let total = Object.values(config).reduce((a, b) => a + b, 0);
+            document.getElementById('total-price').innerText = '£' + total;
+            document.getElementById('hiddenPrice').value = '£' + total;
+            document.getElementById('hiddenSetup').value = JSON.stringify(labels);
         }
+
+        function toggleModal(open) {
+            document.getElementById('leadsOverlay').classList.toggle('active', open);
+        }
+        
+        updateUI();
     </script>
 </body>
 </html>
