@@ -7,7 +7,6 @@
     <meta name="description" content="Expert electrical advice, safety tips, and instant 2026 price calculation wizards for UK homeowners and landlords.">
     <meta name="keywords" content="led downlight installation cost, cost to change light fixtures, new lighting circuit price uk, outdoor security light installation cost">
     
-    <!-- CUSTOM LOGO FILE SET AS YOUR TAB FAVICON -->
     <link rel="icon" type="image/png" href="Logo.png">
     
     <style>
@@ -496,7 +495,6 @@
 </head>
 <body>
 
-    <!-- TOP CONTROL NAVIGATION NAVBAR -->
     <div class="top-navbar">
         <div class="brand-block-split">
             <a href="https://www.electriciansnearyou.uk" class="main-site-logo-link" title="Return to Main Website">
@@ -511,10 +509,8 @@
         </button>
     </div>
 
-    <!-- BACKGROUND SHADOW OVERLAY -->
     <div class="drawer-overlay" id="overlay" onclick="toggleDrawer(false)"></div>
 
-    <!-- SLIDE DRAW CANVAS SIDEBAR -->
     <div class="side-drawer" id="sidebar">
         <div class="drawer-header">
             <h2>Quote Calculators</h2>
@@ -539,7 +535,6 @@
         </nav>
     </div>
 
-    <!-- MAIN CANVASS TEXT INTRO -->
     <header>
         <div class="pill-badge">Articles & Tools</div>
         <h1>Electrical Insights & Advice</h1>
@@ -556,7 +551,6 @@
         
         <div class="editorial-masonry">
 
-            <!-- Post 1 -->
             <a href="Articles/consumer-unit-regulations.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Regulations Compliance</div>
@@ -566,7 +560,6 @@
                 <div class="read-more-btn">Read Full Article &rarr;</div>
             </a>
 
-            <!-- Post 2 -->
             <a href="Articles/eicr-failures-causes.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Landlord Requirements</div>
@@ -576,7 +569,6 @@
                 <div class="read-more-btn">Read Full Article &rarr;</div>
             </a>
 
-            <!-- Post 3 -->
             <a href="Articles/led-downlights-safety.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Energy Efficiency</div>
@@ -590,19 +582,16 @@
 
         <hr class="section-barrier">
 
-        <!-- INTERACTIVE LIVE PHOTO STREAMING MODULE -->
         <div class="section-title-wrapper">
             <div class="section-title">On-Site Project Stream</div>
         </div>
         <div class="gallery-container">
             <div class="gallery-track" id="photo-stream-track">
-                <!-- Javascript auto-generates your raw file name strings below -->
-            </div>
+                </div>
         </div>
 
     </div>
 
-    <!-- Micro-interactivity & Dynamic Gallery Logic Block -->
     <script>
         function toggleDrawer(open) {
             const sidebar = document.getElementById('sidebar');
@@ -621,7 +610,6 @@
         // =================================================================
         // DYNAMIC PHOTO STREAM MANAGER (NO RENAMING REQUIRED)
         // =================================================================
-        // Drop any image into your "blog-gallery" folder, then type its exact filename below!
         const myUploadedPhotos = [
             '20240412_212651.jpg',
             '20241211_100613.jpg',
@@ -635,19 +623,18 @@
             'Messenger_creation_53365FE9-D2E3-4854-A2C8-E38933D05373.jpeg',
             'Messenger_creation_799276988210282.jpeg',
             'Screenshot_20260412_122340_Photos.jpg',
-            'Screenshot_20260412_122900_Photos.jpg',
-            '',
+            'Screenshot_20260412_122900_Photos.jpg'
         ];
 
         const galleryTrack = document.getElementById('photo-stream-track');
         let imgNodesHTML = '';
 
-        // Safely generate template structures mapping directly to raw names
         myUploadedPhotos.forEach(fileName => {
-            imgNodesHTML += `<img src="blog-gallery/${fileName}" alt="On-Site Project Image" class="gallery-img" onerror="this.style.display='none'">`;
+            if (fileName.trim() !== '') {
+                imgNodesHTML += `<img src="blog-gallery/${fileName}" alt="On-Site Project Image" class="gallery-img" onerror="this.style.display='none'">`;
+            }
         });
         
-        // Triple duplicates array elements to maintain continuous carousel scroll sequences
         if(myUploadedPhotos.length > 0) {
             galleryTrack.innerHTML = imgNodesHTML + imgNodesHTML + imgNodesHTML;
         }
