@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg-main: #f8fafc;
-            --bg-card: rgba(255, 255, 255, 0.85);
+            --bg-card: rgba(255, 255, 255, 0.88);
             --navy-text: #0f172a;
             --text-muted: #475569;
             --gold: #c59b27;
@@ -32,29 +32,63 @@
             overflow-x: hidden;
             padding-bottom: 6rem;
             background-color: var(--bg-main);
-            /* Premium parallax structural background layout */
-            background-image: url('https://images.unsplash.com/photo-1565538810844-1e119412e707?auto=format&fit=crop&w=1920&q=80');
+            /* Premium parallax architectural structural background layout */
+            background-image: url('https://images.unsplash.com/photo-1558441719-ff3405522067?q=80&w=2000&auto=format&fit=crop');
             background-attachment: fixed;
             background-size: cover;
             background-position: center;
         }
 
-        /* --- FIXED FIXED NAVBAR WITH EXPAND BUTTON --- */
+        /* --- FIXED FIXED NAVBAR WITH BRANDING & LOGO --- */
         .top-navbar {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             height: 70px;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
             z-index: 1000;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
-            padding: 0 2rem;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+        }
+
+        .brand-block {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        /* High-end minimalist vector lightbulb logo fallback badge */
+        .mini-logo {
+            width: 38px;
+            height: 38px;
+            background: var(--navy-text);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--gold);
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .brand-block:hover .mini-logo {
+            transform: scale(1.05);
+        }
+
+        .brand-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--navy-text);
+            letter-spacing: -0.3px;
         }
 
         .btn-toggle-drawer {
@@ -71,7 +105,7 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.15);
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.12);
         }
 
         .btn-toggle-drawer:hover {
@@ -109,7 +143,6 @@
             line-height: 1.1;
             margin-bottom: 1.25rem;
             color: var(--navy-text);
-            text-shadow: 0 2px 10px rgba(255,255,255,0.5);
         }
 
         header p {
@@ -163,7 +196,7 @@
             flex-direction: column;
             padding: 2.25rem;
             border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.02);
             transition: all 0.3s ease;
         }
 
@@ -205,7 +238,7 @@
         .drawer-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.3);
+            background: rgba(15, 23, 42, 0.25);
             backdrop-filter: blur(4px);
             z-index: 1999;
             opacity: 0;
@@ -228,7 +261,7 @@
             background: var(--drawer-bg);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
-            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.1);
             border-left: 1px solid var(--border-color);
             z-index: 2000;
             padding: 2.5rem 2rem;
@@ -251,9 +284,7 @@
         }
 
         .drawer-header h2 {
-            font-size: 1.4rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
             text-transform: uppercase;
             font-size: 1.1rem;
             color: var(--text-muted);
@@ -293,7 +324,6 @@
             font-weight: 600;
             font-size: 1.05rem;
             transition: all 0.25s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.01);
         }
 
         .nav-link-item span {
@@ -323,6 +353,7 @@
             header h1 { font-size: 2.3rem; }
             header { padding-top: 6.5rem; }
             .side-drawer { max-width: 85%; }
+            .brand-title { font-size: 1rem; }
         }
     </style>
 </head>
@@ -330,6 +361,10 @@
 
     <!-- TOP CONTROL NAVIGATION NAVBAR -->
     <div class="top-navbar">
+        <a href="https://www.electriciansnearyou.uk" class="brand-block">
+            <div class="mini-logo">⚡</div>
+            <span class="brand-title">Bright Spark</span>
+        </a>
         <button class="btn-toggle-drawer" onclick="toggleDrawer(true)">
             <span>📊</span> Calculators
         </button>
