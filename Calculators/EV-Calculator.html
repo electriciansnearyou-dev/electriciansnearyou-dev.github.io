@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual EV Charger Installation Cost Estimator | Electricians Near You</title>
+    <style>
+        :root {
+            --navy-dark: #0a1931;
+            --navy-light: #15305b;
+            --gold: #ffc000;
+            --gold-hover: #e0a800;
+            --text-light: #ffffff;
+            --text-muted: #b0c4de;
+            --bg-card: #112240;
+            --border-color: #1e3d73;
+            --success-green: #00cc66;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--navy-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding-bottom: 8rem;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .back-link {
+            color: var(--gold);
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .intro-text {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .step-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-number {
+            background: var(--gold);
+            color: var(--navy-dark);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* --- VISUAL CARDS GRID --- */
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .grid-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-option {
+            background: var(--navy-light);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-option:hover {
+            border-color: var(--gold-hover);
+        }
+
+        .card-option.selected {
+            border-color: var(--gold);
+            background: rgba(255, 192, 0, 0.05);
+        }
+
+        .card-option.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--gold);
+            color: var(--navy-dark);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.75rem;
+            z-index: 10;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            background: #071426;
+        }
+
+        .card-info {
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-label {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* --- STICKY SUMMARY TRAY --- */
+        .summary-tray {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #060f1e;
+            border-top: 3px solid var(--gold);
+            padding: 1.25rem 1rem;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .tray-content {
+            max-width: 750px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-group {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .btn-book {
+            background: var(--success-green);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-weight: bold;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="../blog.html" class="back-link">&larr; Back to Electrical Blog</a>
+        
+        <h1>EV Charger Installation Calculator</h1>
+        <p class="intro-text">Select your preferred charging setup and routing parameters below to receive a dynamic on-site budget projection.</p>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">1</div>
+                <h3>Select Charger Interface Style</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" onclick="selectCard('charger', 450, this)">
+                    <img src="/images/ev-tethered.jpg" class="card-img" alt="Tethered EV Charger">
+                    <div class="card-info">
+                        <div class="card-label">Tethered (Attached Cable)</div>
+                        <div class="card-desc">Features an integrated 5m/7m charging lead for instant plug-and-go convenience.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('charger', 395, this)">
+                    <img src="/images/ev-untethered.jpg" class="card-img" alt="Untethered EV Charger">
+                    <div class="card-info">
+                        <div class="card-label">Untethered (Socket Only)</div>
+                        <div class="card-desc">Clean wall aesthetic. Provides a universal socket requiring your own separate cable.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">2</div>
+                <h3>Approximate Cable Run Distance</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" onclick="selectCard('distance', 50, this)">
+                    <img src="/images/run-short.jpg" class="card-img" alt="Short Run">
+                    <div class="card-info">
+                        <div class="card-label">Short Run (Up to 5m)</div>
+                        <div class="card-desc">Ideal for back-to-back installs or chargers positioned right next to the meter box.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('distance', 140, this)">
+                    <img src="/images/run-medium.jpg" class="card-img" alt="Medium Run">
+                    <div class="card-info">
+                        <div class="card-label">Medium Run (5m – 15m)</div>
+                        <div class="card-desc">Standard external wrapping routing around the property brickwork.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('distance', 260, this)">
+                    <img src="/images/run-long.jpg" class="card-img" alt="Long Run">
+                    <div class="card-info">
+                        <div class="card-label">Long Run (15m – 25m+)</div>
+                        <div class="card-desc">Requires heavy cross-section lines to counter electrical voltage drop.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">3</div>
+                <h3>Cable Routing & Groundwork</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" onclick="selectCard('routing', 120, this)">
+                    <img src="/images/route-clip.jpg" class="card-img" alt="Surface Clipped">
+                    <div class="card-info">
+                        <div class="card-label">Standard External Wall Clip</div>
+                        <div class="card-desc">Clipped neatly along low-level external brickwork. Minimal disruption.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('routing', 220, this)">
+                    <img src="/images/route-internal.jpg" class="card-img" alt="Internal Void Routing">
+                    <div class="card-info">
+                        <div class="card-label">Internal Void Routing</div>
+                        <div class="card-desc">Requires traversing internal floor joists, cellars, or lifting boards.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('routing', 380, this)">
+                    <img src="/images/route-trench.jpg" class="card-img" alt="Trenching Groundwork">
+                    <div class="card-info">
+                        <div class="card-label">Ground Trenching / Driveways</div>
+                        <div class="card-desc">Excavating paths through soil, lawns, or chasing up driveways for pillar mounts.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-container">
+            <div class="step-title">
+                <div class="step-number">4</div>
+                <h3>Existing Consumer Unit Capacity</h3>
+            </div>
+            <div class="grid-options">
+                <div class="card-option selected" onclick="selectCard('board', 40, this)">
+                    <img src="/images/metal-split-load.jpg" class="card-img" alt="Available Capacity">
+                    <div class="card-info">
+                        <div class="card-label">Spare Way Available</div>
+                        <div class="card-desc">Existing modern board has physical space for an independent 40A EV breaker.</div>
+                    </div>
+                </div>
+                <div class="card-option" onclick="selectCard('board', 135, this)">
+                    <img src="/images/ev-mini-board.jpg" class="card-img" alt="Separate EV Board">
+                    <div class="card-info">
+                        <div class="card-label">Dedicated EV Micro-Board Needed</div>
+                        <div class="card-desc">Main board is full, old, or rewirable. Installs an independent protective mini enclosure.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="summary-tray">
+        <div class="tray-content">
+            <div class="metric-group">
+                <div class="metric">
+                    <span class="metric-label">Est. Budget</span>
+                    <span class="metric-value" id="total-price">£730</span>
+                </div>
+            </div>
+            <a href="tel:07711261478" class="btn-book" style="display: inline-block; text-align: center; line-height: 1.2;">Book Survey<br><span style="font-size: 0.8rem; font-weight: normal; opacity: 0.9;">07711 261478</span></a>
+        </div>
+    </div>
+
+    <script>
+        // Track running cost selections
+        let choices = {
+            charger: 450,
+            distance: 50,
+            routing: 120,
+            board: 40
+        };
+
+        function selectCard(category, costModifier, element) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+
+            choices[category] = costModifier;
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            let priceTotal = choices.charger + choices.distance + choices.routing + choices.board;
+            document.getElementById('total-price').innerText = '£' + priceTotal;
+        }
+    </script>
+</body>
+</html>
