@@ -7,6 +7,7 @@
     <meta name="description" content="Expert electrical advice, safety tips, and instant 2026 price calculation wizards for UK homeowners and landlords.">
     <meta name="keywords" content="led downlight installation cost, cost to change light fixtures, new lighting circuit price uk, outdoor security light installation cost">
     
+    <!-- CUSTOM LOGO FILE SET AS YOUR TAB FAVICON -->
     <link rel="icon" type="image/png" href="Logo.png">
     
     <style>
@@ -40,7 +41,7 @@
             background-color: var(--bg-main);
         }
 
-        /* --- SOLID MOBILE BACKGROUND ENGINE --- */
+        /* --- IMMOVABLE SOLID MOBILE BACKGROUND ENGINE --- */
         body::before {
             content: "";
             position: fixed;
@@ -227,11 +228,11 @@
             background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
         }
 
-        /* --- PREMIUM SQUARE MASONRY CORES --- */
+        /* --- CONDENSED 1/3 ULTRA-MINI LAYOUT GRID --- */
         .editorial-masonry {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Forms a symmetric 2x2 shape on desktops */
-            gap: 1.25rem;
+            grid-template-columns: repeat(2, 1fr); /* Clean 2-column balancing framework */
+            gap: 1rem;
         }
 
         .editorial-card {
@@ -244,39 +245,39 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 1.5rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
+            padding: 1.15rem; /* Reduced padding to streamline card scale */
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.01);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            min-height: 210px; /* Locks matching structural square height values */
+            min-height: 145px; /* Perfect 1/3 custom scaled depth target */
         }
 
         .editorial-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             border-color: rgba(197, 155, 39, 0.3);
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 15px 30px rgba(15, 23, 42, 0.05);
             background: rgba(255, 255, 255, 0.92);
         }
 
         .card-content-top {
-            margin-bottom: 0.5rem;
-        }
-
-        .editorial-tag {
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--gold);
             margin-bottom: 0.25rem;
         }
 
-        .editorial-card h2 {
-            font-size: 1.15rem;
+        .editorial-tag {
+            font-size: 0.6rem;
             font-weight: 700;
-            line-height: 1.3;
-            letter-spacing: -0.3px;
-            margin-bottom: 0.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold);
+            margin-bottom: 0.15rem;
+        }
+
+        .editorial-card h2 {
+            font-size: 1.05rem; /* Downsized heading sizes to fit compact framing */
+            font-weight: 700;
+            line-height: 1.25;
+            letter-spacing: -0.2px;
+            margin-bottom: 0.25rem;
         }
 
         .editorial-card:hover h2 {
@@ -284,30 +285,29 @@
         }
 
         .editorial-card p {
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            line-height: 1.4;
-            /* Clamps long copy strings gracefully inside standard blocks */
+            line-height: 1.35;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2; /* Limit text to two lines to prevent card growth */
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
         .read-more-btn {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
             color: var(--gold);
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            margin-top: 0.5rem;
+            margin-top: 0.35rem;
             transition: gap 0.2s ease;
         }
 
         .editorial-card:hover .read-more-btn {
             color: var(--gold-hover);
-            gap: 8px;
+            gap: 6px;
         }
 
         /* --- SECTION BOUNDARY BARRIER SEGMENT --- */
@@ -490,7 +490,7 @@
         }
 
         @media (max-width: 768px) {
-            .editorial-masonry { grid-template-columns: 1fr; } /* Fluidly collapses into single squares on touch mobiles */
+            .editorial-masonry { grid-template-columns: 1fr; gap: 0.75rem; }
         }
 
         @media (max-width: 600px) {
@@ -504,6 +504,7 @@
 </head>
 <body>
 
+    <!-- TOP CONTROL NAVIGATION NAVBAR -->
     <div class="top-navbar">
         <div class="brand-block-split">
             <a href="https://www.electriciansnearyou.uk" class="main-site-logo-link" title="Return to Main Website">
@@ -518,8 +519,10 @@
         </button>
     </div>
 
+    <!-- BACKGROUND SHADOW OVERLAY -->
     <div class="drawer-overlay" id="overlay" onclick="toggleDrawer(false)"></div>
 
+    <!-- SLIDE DRAW CANVAS SIDEBAR -->
     <div class="side-drawer" id="sidebar">
         <div class="drawer-header">
             <h2>Quote Calculators</h2>
@@ -544,6 +547,7 @@
         </nav>
     </div>
 
+    <!-- MAIN CANVASS TEXT INTRO -->
     <header>
         <div class="pill-badge">Articles & Tools</div>
         <h1>Electrical Insights & Advice</h1>
@@ -558,8 +562,10 @@
             <div class="section-title">Recently Published Articles</div>
         </div>
         
+        <!-- COMPACT ULTRA-MINI LAYOUT STRUCTURE -->
         <div class="editorial-masonry">
 
+            <!-- Square Card 1 -->
             <a href="Articles/consumer-unit-regulations.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Regulations Compliance</div>
@@ -569,6 +575,7 @@
                 <div class="read-more-btn">Read Article &rarr;</div>
             </a>
 
+            <!-- Square Card 2 -->
             <a href="Articles/eicr-failures-causes.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Landlord Requirements</div>
@@ -578,6 +585,7 @@
                 <div class="read-more-btn">Read Article &rarr;</div>
             </a>
 
+            <!-- Square Card 3 -->
             <a href="Articles/led-downlights-safety.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Energy Efficiency</div>
@@ -587,6 +595,7 @@
                 <div class="read-more-btn">Read Article &rarr;</div>
             </a>
 
+            <!-- Balanced Grid Slot 4 -->
             <a href="Articles/smart-home-automation.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Future Technology</div>
@@ -600,16 +609,19 @@
 
         <hr class="section-barrier">
 
+        <!-- INTERACTIVE LIVE PHOTO STREAMING MODULE -->
         <div class="section-title-wrapper">
             <div class="section-title">On-Site Project Stream</div>
         </div>
         <div class="gallery-container">
             <div class="gallery-track" id="photo-stream-track">
-                </div>
+                <!-- Javascript loops names array dynamically inside here -->
+            </div>
         </div>
 
     </div>
 
+    <!-- Micro-interactivity & Dynamic Gallery Logic Block -->
     <script>
         function toggleDrawer(open) {
             const sidebar = document.getElementById('sidebar');
