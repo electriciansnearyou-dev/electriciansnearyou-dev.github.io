@@ -223,6 +223,10 @@
             color: #ffffff;
         }
 
+        body > header {
+            margin-top: 9rem;
+        }
+
         .pill-badge {
             display: inline-block;
             background: rgba(255, 192, 0, 0.15);
@@ -269,6 +273,10 @@
             padding: 0.75rem 1.5rem;
             margin: 4rem 0 1.75rem 0;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
         }
 
         .section-title {
@@ -280,6 +288,7 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-grow: 1;
         }
 
         .section-title::after {
@@ -287,6 +296,47 @@
             flex-grow: 1;
             height: 1px;
             background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        /* --- SEARCH CONTROLLER CAP-INSET --- */
+        .search-bar-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            max-width: 240px;
+            width: 100%;
+        }
+
+        .search-bar-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 0.4rem 1rem 0.4rem 2.2rem;
+            color: #ffffff;
+            font-size: 0.85rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .search-bar-input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(197, 155, 39, 0.2);
+        }
+
+        .search-bar-input::placeholder {
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .search-icon-svg {
+            position: absolute;
+            left: 14px;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            pointer-events: none;
         }
 
         /* --- CONDENSED 1/3 ULTRA-MINI LAYOUT GRID --- */
@@ -311,6 +361,10 @@
             box-shadow: 0 4px 20px rgba(15, 23, 42, 0.01);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             min-height: 145px;
+        }
+
+        .editorial-card.hidden-item {
+            display: none !important;
         }
 
         .editorial-card:hover {
@@ -369,6 +423,36 @@
         .editorial-card:hover .read-more-btn {
             color: var(--gold-hover);
             gap: 6px;
+        }
+
+        /* --- OLDER ARTICLES MATRIX ARCHIVE DISPLAY GRID --- */
+        .older-articles-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* Clean 4x3 desktop geometry matrix */
+            gap: 1rem;
+        }
+
+        .older-empty-block {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px dashed rgba(15, 23, 42, 0.15);
+            border-radius: 14px;
+            min-height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.25s ease;
+        }
+
+        .older-empty-block:hover {
+            background: rgba(255, 255, 255, 0.65);
+            border-color: var(--gold);
         }
 
         /* --- SECTION BOUNDARY BARRIER SEGMENT --- */
@@ -448,10 +532,7 @@
             transition: opacity 0.4s ease;
         }
 
-        .drawer-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .drawer-overlay.active { opacity: 1; pointer-events: auto; }
 
         .side-drawer {
             position: fixed;
@@ -472,46 +553,13 @@
             transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .side-drawer.open {
-            right: 0;
-        }
-
-        .drawer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
-        }
-
-        .drawer-header h2 {
-            font-weight: 800;
-            text-transform: uppercase;
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-        }
-
-        .btn-close-drawer {
-            background: transparent;
-            border: none;
-            font-size: 1.7rem;
-            cursor: pointer;
-            color: var(--text-muted);
-            line-height: 1;
-        }
-
-        .btn-close-drawer:hover {
-            color: var(--navy-text);
-        }
-
-        .drawer-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
+        .side-drawer.open { right: 0; }
+        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .drawer-header h2 { font-weight: 800; text-transform: uppercase; font-size: 1.1rem; color: var(--text-muted); letter-spacing: 1px; }
+        .btn-close-drawer { background: transparent; border: none; font-size: 1.7rem; cursor: pointer; color: var(--text-muted); line-height: 1; }
+        .btn-close-drawer:hover { color: var(--navy-text); }
+        .drawer-nav { display: flex; flex-direction: column; gap: 1rem; }
+        
         .nav-link-item {
             display: flex;
             align-items: center;
@@ -527,146 +575,80 @@
             transition: all 0.25s ease;
         }
 
-        .nav-link-item span {
-            font-size: 1.2rem;
-            background: #f1f5f9;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.25s ease;
-        }
+        .nav-link-item span { font-size: 1.2rem; background: #f1f5f9; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.25s ease; }
+        .nav-link-item:hover { border-color: var(--gold); transform: translateX(-4px); box-shadow: 0 5px 15px rgba(197, 155, 39, 0.08); }
+        .nav-link-item:hover span { background: var(--gold); color: #fff; }
 
-        .nav-link-item:hover {
-            border-color: var(--gold);
-            transform: translateX(-4px);
-            box-shadow: 0 5px 15px rgba(197, 155, 39, 0.08);
-        }
-
-        .nav-link-item:hover span {
-            background: var(--gold);
-            color: #fff;
-        }
-
-        /* --- INTELLIGENT ADAPTIVE CONTROLS FOOTER BACKING --- */
+        /* --- INTELLIGENT FOOTER FLOATING BACKING (RESIZED TO 1/3) --- */
         .sticky-footer-bar {
             position: fixed;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 2rem);
-            max-width: 500px;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 0.8rem 1rem;
-            border-radius: 100px;
             z-index: 999;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
         }
 
-        /* Mobile layout displays dual configurations side by side */
-        .mobile-footer-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            width: 100%;
+        /* Mobile layout styling variables */
+        @media (max-width: 991px) {
+            .sticky-footer-bar {
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 2rem);
+                max-width: 500px;
+                background: rgba(15, 23, 42, 0.85);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                padding: 0.8rem 1rem;
+                border-radius: 100px;
+            }
+            .mobile-footer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
+            .desktop-footer-single { display: none; }
         }
 
-        /* Premium Desktop UI layout: Aggregated 50-50 Diagonal Ribbon Button */
-        .desktop-footer-single {
-            display: none;
-            width: 100%;
-            height: 48px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            overflow: hidden;
-            font-weight: 800;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            position: relative;
-            /* Injected diagonal split background configuration */
-            background: linear-gradient(135deg, #dc2626 0%, #dc2626 50%, #ffffff 50%, #ffffff 100%);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        /* Desktop layout overrides: Scaled down to 1/3 size and pinned smoothly to the right corner */
+        @media (min-width: 992px) {
+            .sticky-footer-bar {
+                right: 30px;
+                left: auto;
+                transform: none;
+                width: 180px; /* Reduced to compact 1/3 size viewport */
+                background: transparent;
+                border: none;
+                padding: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .mobile-footer-grid { display: none; }
+            .desktop-footer-single {
+                display: block;
+                width: 100%;
+                height: 50px;
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                cursor: pointer;
+                overflow: hidden;
+                font-weight: 800;
+                font-size: 0.82rem;
+                letter-spacing: 0.2px;
+                background: linear-gradient(135deg, #dc2626 0%, #dc2626 50%, #ffffff 50%, #ffffff 100%);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            }
         }
 
-        .desktop-footer-single:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25);
-        }
+        .split-text-left { position: absolute; left: 0; top: 0; bottom: 0; width: 50%; display: flex; align-items: center; justify-content: center; color: #ffffff; padding-right: 8px; }
+        .split-text-right { position: absolute; right: 0; top: 0; bottom: 0; width: 50%; display: flex; align-items: center; justify-content: center; color: #0f172a; padding-left: 8px; }
 
-        /* Left Side Callout text layer */
-        .split-text-left {
-            position: absolute;
-            left: 0; top: 0; bottom: 0; width: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: #ffffff; padding-right: 15px;
-        }
-
-        /* Right Side Callout text layer */
-        .split-text-right {
-            position: absolute;
-            right: 0; top: 0; bottom: 0; width: 50%;
-            display: flex; align-items: center; justify-content: center;
-            color: #0f172a; padding-left: 15px;
-        }
-
-        .sticky-action-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 0.9rem;
-            padding: 0.8rem 1.2rem;
-            border-radius: 50px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-
+        .sticky-action-btn { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 700; font-size: 0.9rem; padding: 0.8rem 1.2rem; border-radius: 50px; border: none; cursor: pointer; transition: all 0.25s ease; }
         .btn-call-emergency { background: var(--emergency-red); color: #ffffff; }
         .btn-call-emergency:hover { background: var(--emergency-hover); }
         .btn-contact-general { background: #ffffff; color: var(--navy-text); }
         .btn-contact-general:hover { background: #f1f5f9; }
 
         /* --- DESKTOP DIRECTORY DIALOG WINDOW --- */
-        .modal-overlay-contact {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.4);
-            backdrop-filter: blur(8px);
-            z-index: 2001;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
+        .modal-overlay-contact { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 2001; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay-contact.active { opacity: 1; pointer-events: auto; }
-
-        .directory-modal-card {
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            width: calc(100% - 2rem);
-            max-width: 440px;
-            border-radius: 24px;
-            padding: 2rem;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-            position: relative;
-            transform: scale(0.95);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
+        .directory-modal-card { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(20px); border: 1px solid var(--border-color); width: calc(100% - 2rem); max-width: 440px; border-radius: 24px; padding: 2rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); position: relative; transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .modal-overlay-contact.active .directory-modal-card { transform: scale(1); }
         .modal-close-trigger { position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
         .directory-modal-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; }
@@ -677,14 +659,11 @@
         .directory-row-item.email-card-row:hover { background: #1e293b; }
         .directory-row-item.email-card-row span { color: #94a3b8; }
 
-        /* Responsive Visibility Switches */
-        @media (min-width: 992px) {
-            .mobile-footer-grid { display: none; }
-            .desktop-footer-single { display: block; }
-        }
-
         @media (max-width: 768px) {
             .editorial-masonry { grid-template-columns: 1fr; gap: 0.75rem; }
+            .older-articles-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+            .section-title-wrapper { flex-direction: column; align-items: flex-start; padding: 1rem; }
+            .search-bar-wrapper { max-width: 100%; }
         }
 
         @media (max-width: 600px) {
@@ -739,18 +718,18 @@
         </div>
     </div>
 
-    <!-- PERSISTENT SCROLL FLOATING COMMUNICATIONS BAR -->
+    <!-- PERSISTENT SCROLL FLOATING COMMUNICATIONS BAR (1/3 SCALED ON DESKTOP) -->
     <div class="sticky-footer-bar">
-        <!-- Mobile Dual Trigger Configuration -->
+        <!-- Mobile Dual Trigger Layout -->
         <div class="mobile-footer-grid">
             <a href="tel:07711261478" class="sticky-action-btn btn-call-emergency">🚨 Emergency</a>
             <button class="sticky-action-btn btn-contact-general" onclick="toggleContactModal(true)">📬 Contact</button>
         </div>
         
-        <!-- Desktop Unified Dynamic Diagonal Split Button Trigger -->
+        <!-- Desktop Compact Ribbon Trigger -->
         <button class="desktop-footer-single" onclick="toggleContactModal(true)">
-            <span class="split-text-left">🚨 Emergency</span>
-            <span class="split-text-right">📬 24/7 Contact</span>
+            <span class="split-text-left">🚨 Emerg</span>
+            <span class="split-text-right">📬 24/7</span>
         </button>
     </div>
 
@@ -799,11 +778,16 @@
 
     <div class="main-container">
         
+        <!-- HEADER WITH LIVE INLINE SEARCH BAR SYSTEM -->
         <div class="section-title-wrapper">
             <div class="section-title">Recently Published Articles</div>
+            <div class="search-bar-wrapper">
+                <span class="search-icon-svg">🔍</span>
+                <input type="text" class="search-bar-input" id="articleSearchInput" onkeyup="executeLiveSearch()" placeholder="Search articles...">
+            </div>
         </div>
         
-        <div class="editorial-masonry">
+        <div class="editorial-masonry" id="articlesGridContainer">
             <a href="Articles/consumer-unit-regulations.html" class="editorial-card">
                 <div class="card-content-top">
                     <div class="editorial-tag">Regulations Compliance</div>
@@ -843,11 +827,35 @@
 
         <hr class="section-barrier">
 
+        <!-- INTERACTIVE LIVE PHOTO STREAMING MODULE -->
         <div class="section-title-wrapper">
             <div class="section-title">On-Site Project Stream</div>
         </div>
         <div class="gallery-container">
             <div class="gallery-track" id="photo-stream-track"></div>
+        </div>
+
+        <hr class="section-barrier">
+
+        <!-- NEW ARCHIVE SECTION HEADER -->
+        <div class="section-title-wrapper">
+            <div class="section-title">Older Articles</div>
+        </div>
+
+        <!-- 12 EMPTY MINI-BLOCK SLOTS PREPPED FOR FUTURE PROJECTS -->
+        <div class="older-articles-grid">
+            <div class="older-empty-block">Slot Archive #1</div>
+            <div class="older-empty-block">Slot Archive #2</div>
+            <div class="older-empty-block">Slot Archive #3</div>
+            <div class="older-empty-block">Slot Archive #4</div>
+            <div class="older-empty-block">Slot Archive #5</div>
+            <div class="older-empty-block">Slot Archive #6</div>
+            <div class="older-empty-block">Slot Archive #7</div>
+            <div class="older-empty-block">Slot Archive #8</div>
+            <div class="older-empty-block">Slot Archive #9</div>
+            <div class="older-empty-block">Slot Archive #10</div>
+            <div class="older-empty-block">Slot Archive #11</div>
+            <div class="older-empty-block">Slot Archive #12</div>
         </div>
 
     </div>
@@ -875,6 +883,27 @@
             } else {
                 modal.classList.remove('active');
             }
+        }
+
+        // =================================================================
+        // DYNAMIC REAL-TIME ARTICLE SEARCH FILTER
+        // =================================================================
+        function executeLiveSearch() {
+            const query = document.getElementById('articleSearchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('#articlesGridContainer .editorial-card');
+            
+            cards.forEach(card => {
+                const headingText = card.querySelector('h2').innerText.toLowerCase();
+                const tagText = card.querySelector('.editorial-tag').innerText.toLowerCase();
+                const bodyText = card.querySelector('p').innerText.toLowerCase();
+                
+                // If query is found inside heading, tag, or description summary, display card item
+                if (headingText.includes(query) || tagText.includes(query) || bodyText.includes(query)) {
+                    card.classList.remove('hidden-item');
+                } else {
+                    card.classList.add('hidden-item');
+                }
+            });
         }
 
         // =================================================================
