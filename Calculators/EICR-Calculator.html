@@ -272,13 +272,9 @@
         }
 
         .metric-value {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: var(--gold);
-        }
-
-        .metric-value.time {
-            color: #fff;
         }
 
         .btn-book {
@@ -300,7 +296,7 @@
         <a href="../blog.html" class="back-link">&larr; Back to Electrical Blog</a>
         
         <h1>EICR Electrical Safety Test Calculator</h1>
-        <p class="intro-text">Select your options below to get an instant budget estimate and duration mapping for a full domestic Electrical Installation Condition Report.</p>
+        <p class="intro-text">Select your options below to get an instant budget estimate for a full domestic Electrical Installation Condition Report.</p>
 
         <div class="step-container">
             <div class="step-title">
@@ -359,28 +355,28 @@
                 <h3>Age & Type of Existing Board</h3>
             </div>
             <div class="grid-options">
-                <div class="card-option selected" onclick="selectCard('existingBoard', 0, 0, this)">
+                <div class="card-option selected" onclick="selectCard('existingBoard', 0, this)">
                     <img src="/images/modern-plastic.jpg" class="card-img" alt="Modern-ish Plastic">
                     <div class="card-info">
                         <div class="card-label">Modern-ish Plastic</div>
                         <div class="card-desc">Standard dual RCD board. Easy logging terminals.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard('existingBoard', 0, 0, this)">
+                <div class="card-option" onclick="selectCard('existingBoard', 0, this)">
                     <img src="/images/metal-split-load.jpg" class="card-img" alt="Modern Metal Split Load">
                     <div class="card-info">
                         <div class="card-label">Modern Metal Split Load</div>
                         <div class="card-desc">Clean, structured layouts. Accessible test points.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard('existingBoard', 15, 0.25, this)">
+                <div class="card-option" onclick="selectCard('existingBoard', 15, this)">
                     <img src="/images/crabtree-mcb.jpg" class="card-img" alt="MCBs Only / No RCD">
                     <div class="card-info">
                         <div class="card-label">MCBs Only (No RCD)</div>
                         <div class="card-desc">Requires deeper cross-referencing on earthing loops.</div>
                     </div>
                 </div>
-                <div class="card-option" onclick="selectCard('existingBoard', 35, 0.5, this)">
+                <div class="card-option" onclick="selectCard('existingBoard', 35, this)">
                     <img src="/images/rewireable-fuses.jpg" class="card-img" alt="Old Re-wirable Fuses">
                     <div class="card-info">
                         <div class="card-label">Old Re-wirable Fuses</div>
@@ -399,45 +395,38 @@
                     <span class="metric-label">Est. Budget</span>
                     <span class="metric-value" id="total-price">£150</span>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">Est. Time</span>
-                    <span class="metric-value time" id="total-time">2.5 hrs</span>
-                </div>
             </div>
             <a href="tel:07711261478" class="btn-book" style="display: inline-block; text-align: center; line-height: 1.2;">Book Survey<br><span style="font-size: 0.8rem; font-weight: normal; opacity: 0.9;">07711 261478</span></a>
         </div>
     </div>
 
     <script>
-        // Baseline mapping for EICR fixed management cost overheads
         const configurationMatrix = {
             flat: {
-                "1-2": { price: 60, time: 1.0 },
-                "2-3": { price: 70, time: 1.25 },
-                "4+": { price: 85, time: 1.5 }
+                "1-2": { price: 60 },
+                "2-3": { price: 70 },
+                "4+": { price: 85 }
             },
             bungalow: {
-                "1-2": { price: 65, time: 1.25 },
-                "2-3": { price: 75, time: 1.5 },
-                "4+": { price: 90, time: 1.75 }
+                "1-2": { price: 65 },
+                "2-3": { price: 75 },
+                "4+": { price: 90 }
             },
             house: {
-                "1-2": { price: 70, time: 1.5 },
-                "2-3": { price: 85, time: 1.75 },
-                "4+": { price: 105, time: 2.25 }
+                "1-2": { price: 70 },
+                "2-3": { price: 85 },
+                "4+": { price: 105 }
             }
         };
 
-        // Standard UK EICR metrics per circuit test way
         const COST_PER_CIRCUIT = 15;
-        const TIME_PER_CIRCUIT = 0.20; // 12 minutes per loop/insulation test cycle
 
         let currentShape = 'flat';
         let currentBeds = '1-2';
 
         let choices = {
-            propertyBase: { price: 60, time: 1.0 },
-            existingBoard: { price: 0, time: 0 },
+            propertyBase: { price: 60 },
+            existingBoard: { price: 0 },
             breakers: 6
         };
 
@@ -462,17 +451,15 @@
         function updatePropertyBaseData() {
             const matrixTarget = configurationMatrix[currentShape][currentBeds];
             choices.propertyBase.price = matrixTarget.price;
-            choices.propertyBase.time = matrixTarget.time;
             calculateTotals();
         }
 
-        function selectCard(category, priceModifier, timeModifier, element) {
+        function selectCard(category, priceModifier, element) {
             const parent = element.parentElement;
             parent.querySelectorAll('.card-option').forEach(card => card.classList.remove('selected'));
             element.classList.add('selected');
 
             choices[category].price = priceModifier;
-            choices[category].time = timeModifier;
             calculateTotals();
         }
 
@@ -490,14 +477,8 @@
                              choices.existingBoard.price + 
                              (choices.breakers * COST_PER_CIRCUIT);
 
-            let timeTotal = choices.propertyBase.time + 
-                            choices.existingBoard.time + 
-                            (choices.breakers * TIME_PER_CIRCUIT);
-
             document.getElementById('total-price').innerText = '£' + priceTotal;
-            document.getElementById('total-time').innerText = timeTotal.toFixed(1) + ' hrs';
         }
     </script>
 </body>
 </html>
-
