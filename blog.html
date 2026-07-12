@@ -13,8 +13,9 @@
     <style>
         :root {
             --bg-main: #f1f5f9;
-            /* Lightened both the main banner and cards for elegant translucency */
             --bg-card: rgba(255, 255, 255, 0.78);
+            /* Translucent dark grey option for inverted contrast text modules */
+            --bg-dark-glass: rgba(30, 41, 59, 0.78);
             --navy-text: #0f172a;
             --text-muted: #475569;
             --gold: #c59b27;
@@ -40,7 +41,7 @@
             background-color: var(--bg-main);
         }
 
-        /* --- IMMOVABLE SOLID MOBILE BACKGROUND ENGINE --- */
+        /* --- SOLID MOBILE BACKGROUND ENGINE --- */
         body::before {
             content: "";
             position: fixed;
@@ -48,8 +49,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            /* Combined overlay shading gradient layer inside the image element hook */
-            background-image: linear-gradient(rgba(248, 250, 252, 0.35), rgba(248, 250, 252, 0.4)), 
+            background-image: linear-gradient(rgba(248, 250, 252, 0.2), rgba(248, 250, 252, 0.25)), 
                               url('background.jpg');
             background-size: cover;
             background-position: center center;
@@ -84,7 +84,6 @@
             gap: 12px;
         }
 
-        /* Clicking your logo takes users back to your main marketing domain */
         .main-site-logo-link {
             display: flex;
             align-items: center;
@@ -105,7 +104,6 @@
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
         }
 
-        /* Clicking the text button link re-triggers the index of the blog stream */
         .blog-home-text-link {
             font-size: 1.2rem;
             font-weight: 800;
@@ -144,19 +142,19 @@
             transform: translateY(-1px);
         }
 
-        /* --- EDITORIAL HERO COVER SECTION (WITH NEW SEMI-TRANSPARENT GLASS) --- */
+        /* --- EDITORIAL HERO COVER SECTION (GREY GLASS WITH WHITE TEXT) --- */
         header {
             max-width: 900px;
             margin: 9rem auto 3rem auto;
             padding: 2.5rem;
             position: relative;
-            /* Balanced opacity mix for clear word-isolation mapping */
-            background: var(--bg-card);
+            background: var(--bg-dark-glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.04);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            color: #ffffff;
         }
 
         body > header {
@@ -165,8 +163,8 @@
 
         .pill-badge {
             display: inline-block;
-            background: var(--gold-bg);
-            border: 1px solid rgba(197, 155, 39, 0.2);
+            background: rgba(255, 192, 0, 0.15);
+            border: 1px solid rgba(255, 192, 0, 0.3);
             color: var(--gold);
             padding: 0.4rem 1.1rem;
             border-radius: 100px;
@@ -183,14 +181,14 @@
             letter-spacing: -1.5px;
             line-height: 1.1;
             margin-bottom: 1.25rem;
-            color: var(--navy-text);
+            color: #ffffff;
         }
 
         header p {
-            color: var(--text-muted);
+            color: #e2e8f0;
             font-size: 1.15rem;
             max-width: 780px;
-            font-weight: 500;
+            font-weight: 400;
         }
 
         /* --- DISPLAY WRAPPERS --- */
@@ -200,33 +198,44 @@
             padding: 0 1.5rem;
         }
 
+        /* --- NEW TITLING TRACK STYLE (GREY GLASS WITH WHITE TEXT) --- */
+        .section-title-wrapper {
+            background: var(--bg-dark-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 0.75rem 1.5rem;
+            margin: 4rem 0 1.75rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
         .section-title {
             font-size: 0.85rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: var(--navy-text);
-            margin: 2rem 0 1.75rem 0;
+            color: #ffffff;
             display: flex;
             align-items: center;
             gap: 15px;
-            text-shadow: 0 1px 4px rgba(255,255,255,0.8);
         }
 
         .section-title::after {
             content: '';
             flex-grow: 1;
             height: 1px;
-            background: linear-gradient(90deg, rgba(15,23,42,0.2), transparent);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
         }
 
         /* --- MASONRY EDITORIAL BLOCKS --- */
         .editorial-masonry {
             display: flex;
             flex-direction: column;
-            gap: 2.5rem;
+            gap: 1.5rem;
         }
 
+        /* Adjusted card height configuration to look compact and clean */
         .editorial-card {
             background: var(--bg-card);
             backdrop-filter: blur(20px);
@@ -236,34 +245,39 @@
             color: var(--navy-text);
             display: flex;
             flex-direction: column;
-            padding: 2.5rem;
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.04);
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .editorial-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             border-color: rgba(197, 155, 39, 0.3);
-            box-shadow: 0 25px 45px rgba(15, 23, 42, 0.08);
-            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .card-content-top {
+            margin-bottom: 0.75rem;
         }
 
         .editorial-tag {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             color: var(--gold);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .editorial-card h2 {
-            font-size: 1.55rem;
+            font-size: 1.3rem;
             font-weight: 700;
             line-height: 1.3;
-            letter-spacing: -0.5px;
-            margin-bottom: 0.75rem;
+            letter-spacing: -0.4px;
+            margin-bottom: 0.4rem;
         }
 
         .editorial-card:hover h2 {
@@ -271,9 +285,47 @@
         }
 
         .editorial-card p {
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
-            line-height: 1.6;
+            line-height: 1.5;
+        }
+
+        /* Added interactive inline action trigger row */
+        .read-more-btn {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--gold);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 0.5rem;
+            transition: gap 0.2s ease;
+        }
+
+        .editorial-card:hover .read-more-btn {
+            color: var(--gold-hover);
+            gap: 8px;
+        }
+
+        /* --- SECTION BOUNDARY BARRIER SEGMENT --- */
+        .section-barrier {
+            margin: 4.5rem 0 2rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.15) 20%, rgba(197, 155, 39, 0.4) 50%, rgba(15, 23, 42, 0.15) 80%, transparent);
+            position: relative;
+        }
+
+        .section-barrier::after {
+            content: "⚡";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #f1f5f9;
+            padding: 0 10px;
+            font-size: 0.9rem;
+            color: var(--gold);
         }
 
         /* --- EXPANDABLE SIDE BAR DRAWERS --- */
@@ -346,7 +398,6 @@
             color: var(--navy-text);
         }
 
-        /* --- DRAWER LINKS --- */
         .drawer-nav {
             display: flex;
             flex-direction: column;
@@ -396,6 +447,7 @@
             body > header { padding: 1.5rem; margin: 6.5rem 1rem 2rem 1rem; }
             .side-drawer { max-width: 85%; }
             .blog-home-text-link { font-size: 1.05rem; }
+            .section-title-wrapper { margin: 3rem 1rem 1.25rem 1rem; }
         }
     </style>
 </head>
@@ -413,8 +465,9 @@
                 Bright Spark
             </a>
         </div>
+        <!-- Updated anchor tag labeling identifier to Quote Calculators -->
         <button class="btn-toggle-drawer" onclick="toggleDrawer(true)">
-            <span>📊</span> Calculators
+            <span>📊</span> Quote Calculators
         </button>
     </div>
 
@@ -424,7 +477,7 @@
     <!-- SLIDE DRAW CANVAS SIDEBAR -->
     <div class="side-drawer" id="sidebar">
         <div class="drawer-header">
-            <h2>Calculators</h2>
+            <h2>Quote Calculators</h2>
             <button class="btn-close-drawer" onclick="toggleDrawer(false)">&times;</button>
         </div>
         <nav class="drawer-nav">
@@ -456,31 +509,49 @@
     </header>
 
     <div class="main-container">
-        <div class="section-title">Recently Published Articles</div>
+        
+        <!-- NEW SECTION CONTAINER WRAPPER PROVIDING SOLID BACKGROUND SHADING OVERLAYS -->
+        <div class="section-title-wrapper">
+            <div class="section-title">Recently Published Articles</div>
+        </div>
+        
         <div class="editorial-masonry">
 
             <!-- Post 1 -->
             <a href="#" class="editorial-card">
-                <div class="editorial-tag">Regulations Compliance</div>
-                <h2>Understanding UK Consumer Unit Regulations</h2>
-                <p>An administrative breakdown highlighting safety compliance paths including mandatory Amendment 3 metal casing configurations, surge protective device integrations, and cross-floor isolation protocols.</p>
+                <div class="card-content-top">
+                    <div class="editorial-tag">Regulations Compliance</div>
+                    <h2>Understanding UK Consumer Unit Regulations</h2>
+                    <p>An administrative breakdown highlighting safety compliance paths including mandatory Amendment 3 metal casing configurations, surge protective device integrations, and cross-floor isolation protocols.</p>
+                </div>
+                <div class="read-more-btn">Read Full Article &rarr;</div>
             </a>
 
             <!-- Post 2 -->
             <a href="#" class="editorial-card">
-                <div class="editorial-tag">Landlord Requirements</div>
-                <h2>EICR Failures: Most Common Causes</h2>
-                <p>An overview tracking the root technical anomalies that trigger immediate unsatisfactory marks on condition statements—focusing on missing identifiers and defects.</p>
+                <div class="card-content-top">
+                    <div class="editorial-tag">Landlord Requirements</div>
+                    <h2>EICR Failures: Most Common Causes</h2>
+                    <p>An overview tracking the root technical anomalies that trigger immediate unsatisfactory marks on condition statements—focusing on missing identifiers and defects.</p>
+                </div>
+                <div class="read-more-btn">Read Full Article &rarr;</div>
             </a>
 
             <!-- Post 3 -->
             <a href="#" class="editorial-card">
-                <div class="editorial-tag">Energy Efficiency</div>
-                <h2>Upgrading To Recessed LED Downlights Safely</h2>
-                <p>Why selecting fire-rated and fully sealed integrated core luminaires protects structural barriers, retains structural floor thermal values, and matches up seamlessly with modern dimming architectures without light flicker risks.</p>
+                <div class="card-content-top">
+                    <div class="editorial-tag">Energy Efficiency</div>
+                    <h2>Upgrading To Recessed LED Downlights Safely</h2>
+                    <p>Why selecting fire-rated and fully sealed integrated core luminaires protects structural barriers, retains structural floor thermal values, and matches up seamlessly with modern dimming architectures without light flicker risks.</p>
+                </div>
+                <div class="read-more-btn">Read Full Article &rarr;</div>
             </a>
 
         </div>
+
+        <!-- NEW STRUCTURAL DIVISION LINE FOR INTERFACE WRAPPING SEGMENTS -->
+        <hr class="section-barrier">
+
     </div>
 
     <!-- Micro-interactivity Control Logic for Drawer Canvas -->
