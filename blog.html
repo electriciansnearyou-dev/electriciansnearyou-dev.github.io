@@ -234,13 +234,15 @@
 
         .split-layout-engine {
             display: grid;
-            grid-template-columns: 1fr 340px; /* Entire left container gets 70%+, side section locks right at 340px */
+            grid-template-columns: 1fr 340px;
             gap: 2rem;
             align-items: start;
         }
 
+        /* FIXED THE STRETCH BUG: min-width 0 forces the grid track to compute content width properly */
         .left-content-stream {
             width: 100%;
+            min-width: 0; 
         }
 
         /* --- RIGHT SIDEBAR FULL FAQ MATRIX SYSTEM --- */
@@ -325,7 +327,7 @@
         }
 
         .section-title-wrapper.first-wrapper {
-            margin-top: 0; /* Align top smoothly with the right column faq wrapper */
+            margin-top: 0;
         }
 
         .section-title {
@@ -390,7 +392,7 @@
         /* --- OLDER ARTICLES MATRIX ARCHIVE DISPLAY GRID --- */
         .older-articles-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* Snug down smoothly into a clean 3-wide map to sit correctly next to the faq sidebar */
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
         }
 
@@ -477,7 +479,7 @@
             .sticky-footer-bar { left: 50%; transform: translateX(-50%); width: calc(100% - 2rem); max-width: 500px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); padding: 0.8rem 1rem; border-radius: 100px; }
             .mobile-footer-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; }
             .desktop-footer-single { display: none; }
-            .split-layout-engine { grid-template-columns: 1fr; } /* Re-stack sidebar fluidly under columns on smaller devices */
+            .split-layout-engine { grid-template-columns: 1fr; } 
             .older-articles-grid { grid-template-columns: repeat(2, 1fr); }
             .right-faq-sidebar { margin-top: 2rem; }
             .section-title-wrapper.first-wrapper { margin-top: 4rem; }
@@ -613,11 +615,11 @@
         <p>With our many years of experience and research we hope to provide you with knowledge and understanding to help you tackle the day to day questions the public and other professionals have like BS7671 electrical Regs, Building Regs, and emergency electrical faults.</p>
     </header>
 
-    <!-- INITIALIZE SPLIT MASTER WRAPPER CONTAINER (70 / 30 CORE OVER ALL BLOCKS) -->
+    <!-- MAIN GRID SHELL CONSOLE -->
     <div class="main-container">
         <div class="split-layout-engine">
             
-            <!-- LEFT COLUMN: HOLDS ALL CORE INTERFACE STREAMS (70%) -->
+            <!-- LEFT COLUMN: HOLDS ALL STREAMS (70%) -->
             <div class="left-content-stream">
                 
                 <div class="section-title-wrapper first-wrapper">
