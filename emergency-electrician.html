@@ -1,295 +1,473 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-5MJVXSNN');</script>
+  <!-- End Google Tag Manager -->
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>24/7 Emergency Electrician | Emergency Electrical Repairs</title>
+  <meta name="description" content="24/7 emergency electricians covering Poole, Bournemouth, Christchurch, Wimborne, Ferndown and Ringwood. Fast response for power outages, tripping electrics, burning smells and urgent electrical faults.">
+  <link rel="canonical" href="https://electriciansnearyou.uk/emergency-electrician.html">
 
-<title>24/7 Emergency Electrician | Emergency Electrical Repairs</title>
+  <link rel="icon" type="image/png" href="Logo.png">
 
-<meta name="description"
-content="24/7 emergency electricians covering Poole, Bournemouth, Christchurch, Wimborne, Ferndown and Ringwood. Fast response for power outages, tripping electrics, burning smells and urgent electrical faults.">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
-<link rel="canonical"
-href="https://electriciansnearyou.uk/emergency-electrician.html">
+  <script type="application/ld+json">
+  {
+   "@context":"https://schema.org",
+   "@type":"Service",
+   "name":"Emergency Electrician",
+   "provider":{
+     "@type":"Electrician",
+     "name":"ElectriciansNearYou",
+     "telephone":"+447711261478",
+     "url":"https://electriciansnearyou.uk"
+   },
+   "serviceType":"Emergency Electrical Repairs",
+   "areaServed":[
+     "Poole",
+     "Bournemouth",
+     "Christchurch",
+     "Wimborne",
+     "Ferndown",
+     "Ringwood"
+   ]
+  }
+  </script>
 
-<script src="https://cdn.tailwindcss.com"></script>
-
-<script type="application/ld+json">
-{
- "@context":"https://schema.org",
- "@type":"Service",
- "name":"Emergency Electrician",
- "provider":{
-   "@type":"Electrician",
-   "name":"ElectriciansNearYou",
-   "telephone":"+447711261478",
-   "url":"https://electriciansnearyou.uk"
- },
- "serviceType":"Emergency Electrical Repairs",
- "areaServed":[
-   "Poole",
-   "Bournemouth",
-   "Christchurch",
-   "Wimborne",
-   "Ferndown",
-   "Ringwood"
- ]
-}
-</script>
-
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: "Inter", sans-serif;
+      background-color: #0f172a;
+    }
+    .top-navbar {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .dark-glass-card {
+      background: rgba(30, 41, 59, 0.78);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    @media (max-width: 991px) {
+        .mobile-footer-grid {
+            position: fixed;
+            bottom: 24px; left: 0; right: 0; width: 100%;
+            padding: 0 24px; display: flex; justify-content: space-between; align-items: center;
+            pointer-events: none; z-index: 1005;
+        }
+        .mobile-action-circle {
+            width: 54px; height: 54px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.35rem;
+            cursor: pointer; pointer-events: auto; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2); transition: transform 0.2s ease;
+            text-decoration: none;
+        }
+        .circle-btn-emergency { background: #dc2626; border-color: rgba(255, 255, 255, 0.15); }
+        .circle-btn-contact { background: rgba(255, 255, 255, 0.9); border-color: rgba(15, 23, 42, 0.05); }
+        .desktop-footer-single { display: none; }
+    }
+    @media (min-width: 992px) {
+        .sticky-footer-bar { position: fixed; bottom: 20px; right: 30px; width: 180px; z-index: 999; }
+        .mobile-footer-grid { display: none; }
+        .desktop-footer-single {
+            display: block; width: 100%; height: 50px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.25); cursor: pointer;
+            font-weight: 800; font-size: 0.85rem; letter-spacing: 0.2px; background: #dc2626; color: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); transition: all 0.2s ease;
+        }
+        .desktop-footer-single:hover { background: #b91c1c; transform: translateY(-1px); }
+    }
+  </style>
 </head>
-
-<body class="bg-white text-gray-900">
-
-<!-- HEADER -->
-
-<header class="bg-white shadow sticky top-0 z-50">
-
-<div class="container mx-auto px-4 py-4 flex justify-between items-center">
-
-<a href="index.html" class="text-2xl font-extrabold text-blue-700">
-ElectriciansNearYou
-</a>
-
-<nav class="hidden md:flex gap-6 font-semibold">
-<a href="index.html">Home</a>
-<a href="index.html#services">Services</a>
-<a href="index.html#pricing">Pricing</a>
-<a href="index.html#contact">Contact</a>
-</nav>
-
-</div>
-
-</header>
-
-<!-- HERO -->
-
-<section class="bg-blue-900 text-white py-20">
-
-<div class="container mx-auto px-4 text-center">
-
-<div class="inline-block bg-red-600 px-5 py-2 rounded-full font-bold mb-6 animate-pulse">
-24/7 Emergency Electrician Available
-</div>
-
-<h1 class="text-5xl font-bold mb-6">
-Emergency Electricians Available Today
-</h1>
-
-<p class="text-xl max-w-4xl mx-auto mb-10">
-Fast emergency electrical repairs throughout Poole, Bournemouth,
-Christchurch, Wimborne, Ferndown, Ringwood and surrounding areas.
-</p>
-
-<a href="tel:07711261478"
-class="bg-white text-blue-700 px-8 py-4 rounded-full font-bold text-lg">
-📞 Call 07711 261478
-</a>
-
-</div>
-
-</section>
-
-<!-- CONTENT -->
-
-<section class="py-16">
-
-<div class="container mx-auto px-4 max-w-5xl">
-
-<h2 class="text-3xl font-bold mb-8">
-Emergency Electrical Repairs
-</h2>
-
-<p class="mb-6 text-lg">
-Electrical emergencies can happen at any time. Whether you have
-lost power, have a burning smell coming from a fuse board,
-repeatedly tripping electrics or exposed wiring, our emergency
-electricians can help.
-</p>
-
-<p class="mb-6 text-lg">
-We provide rapid fault finding and emergency electrical repairs
-throughout Dorset for homeowners, landlords and businesses.
-</p>
-
-<p class="text-lg">
-All work is carried out safely and in accordance with current
-BS7671 wiring regulations.
-</p>
-
-</div>
-
-</section>
-
-<!-- COMMON EMERGENCIES -->
-
-<section class="bg-gray-50 py-16">
-
-<div class="container mx-auto px-4 max-w-6xl">
-
-<h2 class="text-3xl font-bold text-center mb-12">
-Common Electrical Emergencies
-</h2>
-
-<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-<div class="bg-white p-6 rounded-xl shadow">
-<h3 class="font-bold text-xl mb-3">Power Outages</h3>
-<p>Emergency fault finding and repairs.</p>
-</div>
-
-<div class="bg-white p-6 rounded-xl shadow">
-<h3 class="font-bold text-xl mb-3">Tripping Electrics</h3>
-<p>Diagnosing circuits causing breakers to trip.</p>
-</div>
-
-<div class="bg-white p-6 rounded-xl shadow">
-<h3 class="font-bold text-xl mb-3">Burning Smells</h3>
-<p>Urgent investigation of overheating equipment.</p>
-</div>
-
-<div class="bg-white p-6 rounded-xl shadow">
-<h3 class="font-bold text-xl mb-3">Faulty Fuse Boards</h3>
-<p>Consumer unit repairs and upgrades.</p>
-</div>
-
-<div class="bg-white p-6 rounded-xl shadow">
-<h3 class="font-bold text-xl mb-3">Exposed Wiring</h3>
-<p>Making dangerous installations safe.</p>
-</div>
-
-<div class="bg-white p-6 rounded-xl shadow">
-<h3 class="font-bold text-xl mb-3">Electrical Fault Finding</h3>
-<p>Fast diagnosis and repair of faults.</p>
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- EMERGENCY COVERAGE PAGES -->
-
-<section class="py-16">
-
-<div class="container mx-auto px-4 max-w-6xl">
-
-<h2 class="text-3xl font-bold text-center mb-4">
-Emergency Electrician Coverage Areas
-</h2>
-
-<p class="text-center text-gray-700 mb-12">
-Choose your location below.
-</p>
-
-<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-<a href="emergency-electrician-poole.html"
-class="bg-white hover:bg-blue-700 hover:text-white transition shadow rounded-xl p-6 text-center font-bold">
-⚡ Emergency Electrician Poole
-</a>
-
-<a href="emergency-electrician-bournemouth.html"
-class="bg-white hover:bg-blue-700 hover:text-white transition shadow rounded-xl p-6 text-center font-bold">
-⚡ Emergency Electrician Bournemouth
-</a>
-
-<a href="emergency-electrician-christchurch.html"
-class="bg-white hover:bg-blue-700 hover:text-white transition shadow rounded-xl p-6 text-center font-bold">
-⚡ Emergency Electrician Christchurch
-</a>
-
-<a href="emergency-electrician-wimborne.html"
-class="bg-white hover:bg-blue-700 hover:text-white transition shadow rounded-xl p-6 text-center font-bold">
-⚡ Emergency Electrician Wimborne
-</a>
-
-<a href="emergency-electrician-ferndown.html"
-class="bg-white hover:bg-blue-700 hover:text-white transition shadow rounded-xl p-6 text-center font-bold">
-⚡ Emergency Electrician Ferndown
-</a>
-
-<a href="emergency-electrician-ringwood.html"
-class="bg-white hover:bg-blue-700 hover:text-white transition shadow rounded-xl p-6 text-center font-bold">
-⚡ Emergency Electrician Ringwood
-</a>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- CTA -->
-
-<section class="bg-blue-900 text-white py-20">
-
-<div class="container mx-auto px-4 text-center">
-
-<h2 class="text-4xl font-bold mb-6">
-Need An Emergency Electrician?
-</h2>
-
-<p class="text-xl mb-8">
-Call now for immediate assistance.
-</p>
-
-<a href="tel:07711261478"
-class="bg-white text-blue-700 px-10 py-5 rounded-full font-bold text-xl">
-📞 07711 261478
-</a>
-
-</div>
-
-</section>
-
-<!-- FOOTER -->
-
-<footer class="bg-blue-950 text-white py-12">
-
-<div class="container mx-auto px-4 grid md:grid-cols-3 gap-10">
-
-<div>
-<h3 class="font-bold text-xl mb-4">Coverage Areas</h3>
-
-<div class="space-y-2">
-<a href="electrician-poole.html" class="block hover:underline">Electrician Poole</a>
-<a href="electrician-bournemouth.html" class="block hover:underline">Electrician Bournemouth</a>
-<a href="electrician-christchurch.html" class="block hover:underline">Electrician Christchurch</a>
-<a href="electrician-wimborne.html" class="block hover:underline">Electrician Wimborne</a>
-<a href="electrician-ferndown.html" class="block hover:underline">Electrician Ferndown</a>
-<a href="electrician-ringwood.html" class="block hover:underline">Electrician Ringwood</a>
-</div>
-</div>
-
-<div>
-<h3 class="font-bold text-xl mb-4">Emergency Areas</h3>
-
-<div class="space-y-2">
-<a href="emergency-electrician-poole.html" class="block hover:underline">Emergency Electrician Poole</a>
-<a href="emergency-electrician-bournemouth.html" class="block hover:underline">Emergency Electrician Bournemouth</a>
-<a href="emergency-electrician-christchurch.html" class="block hover:underline">Emergency Electrician Christchurch</a>
-<a href="emergency-electrician-wimborne.html" class="block hover:underline">Emergency Electrician Wimborne</a>
-<a href="emergency-electrician-ferndown.html" class="block hover:underline">Emergency Electrician Ferndown</a>
-<a href="emergency-electrician-ringwood.html" class="block hover:underline">Emergency Electrician Ringwood</a>
-</div>
-</div>
-
-<div>
-<h3 class="font-bold text-xl mb-4">Contact</h3>
-<p>📞 07711 261478</p>
-<p>✉ electriciansnearyou@gmail.com</p>
-</div>
-
-</div>
-
-<div class="text-center text-blue-200 mt-10 text-sm">
-© 2026 ElectriciansNearYou. All Rights Reserved.
-</div>
-
-</footer>
-
+<body class="text-slate-100">
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5MJVXSNN"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <!-- FIXED NAVBAR -->
+  <header class="top-navbar fixed top-0 left-0 right-0 h-[70px] z-50 flex items-center shadow-lg">
+    <div class="w-full max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <a href="index.html" class="text-xl lg:text-2xl font-extrabold text-white tracking-tight">
+        ElectriciansNearYou
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-5 lg:gap-6 font-bold text-sm lg:text-base text-white/90">
+        <a href="emergency-electrician.html" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full font-bold text-sm shadow transition">
+          🚨 Emergency Hub
+        </a>
+        <a href="index.html#pricing" class="hover:text-[#c59b27] transition">Pricing</a>
+        <a href="#faults" class="hover:text-[#c59b27] transition">Common Faults</a>
+        <a href="#regions" class="hover:text-[#c59b27] transition">Coverage Grid</a>
+        <a href="#contact" class="hover:text-[#c59b27] transition">Contact</a>
+        <a href="blog.html" class="border border-[#c59b27]/40 bg-[#c59b27]/10 hover:bg-[#c59b27] text-white px-4 py-1.5 rounded-lg text-sm transition">
+          📚 Blog Hub
+        </a>
+      </nav>
+
+      <!-- Mobile Button Trigger -->
+      <button id="menu-btn" class="md:hidden p-2 text-white" aria-label="Open Menu">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- MOBILE NAVIGATION DRAWER -->
+  <div id="mobile-nav" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex-col items-center justify-start pt-28 px-6">
+    <div class="relative bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 flex flex-col gap-5 text-xl font-bold w-full max-w-sm text-center max-h-[75vh] overflow-y-auto text-white">
+      <button id="close-menu" class="absolute top-4 right-4 text-3xl font-bold text-slate-400 hover:text-white">&times;</button>
+      
+      <a href="emergency-electrician.html" class="mobile-link text-red-500 font-extrabold">🚨 Emergency Electrician</a>
+      <a href="index.html#pricing" class="mobile-link hover:text-[#c59b27]">Pricing</a>
+      <a href="#faults" class="mobile-link hover:text-[#c59b27]">Common Faults</a>
+      <a href="#regions" class="mobile-link hover:text-[#c59b27]">Coverage Grid</a>
+      <a href="#contact" class="mobile-link hover:text-[#c59b27]">Contact</a>
+      <a href="blog.html" class="mobile-link bg-slate-800 text-white py-2.5 rounded-xl text-md shadow border border-slate-700">📚 Read Blog Insights</a>
+    </div>
+  </div>
+
+  <!-- FLOATING SHORTCUT CONTROLS MOBILE -->
+  <div class="mobile-footer-grid">
+    <a href="tel:07711261478" class="mobile-action-circle circle-btn-emergency">🚨</a>
+    <div class="mobile-action-circle circle-btn-contact" onclick="toggleDesktopContactModal(true)">📬</div>
+  </div>
+
+  <!-- FIXED SIDE PANEL BUTTON DESKTOP -->
+  <div class="sticky-footer-bar">
+    <button class="desktop-footer-single" onclick="toggleDesktopContactModal(true)">
+        🚨 24/7 Callout
+    </button>
+  </div>
+
+  <!-- CONTACT MODAL INTERFACE WINDOW -->
+  <div class="modal-overlay-contact fixed inset-0 bg-black/60 backdrop-blur-md z-[2001] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" id="contactModal" onclick="toggleDesktopContactModal(false)">
+    <div class="bg-slate-900/95 backdrop-blur rounded-3xl border border-slate-800 w-full max-w-[440px] p-8 shadow-2xl relative text-white" onclick="event.stopPropagation()">
+        <button class="absolute top-5 right-5 text-2xl text-slate-400 hover:text-white font-bold transition" onclick="toggleDesktopContactModal(false)">&times;</button>
+        <h3 class="text-xl font-extrabold mb-5 border-b border-slate-800 pb-3 flex items-center gap-2 text-[#c59b27]">⚡ 24/7 Emergency Lines</h3>
+        <a href="tel:07711261478" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-3 font-semibold hover:border-[#c59b27] hover:bg-slate-800 transition">Jordan H. <span class="text-sm text-slate-400">07711261478</span></a>
+        <a href="tel:07907056422" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-4 font-semibold hover:border-[#c59b27] hover:bg-slate-800 transition">Jordan M. <span class="text-sm text-slate-400">07907056422</span></a>
+        <a href="mailto:electriciansnearyou@gmail.com" class="flex justify-between items-center bg-white text-slate-950 p-4 rounded-xl font-bold hover:bg-gray-100 transition">Email Desk <span class="text-xs text-slate-600 font-semibold">electriciansnearyou@gmail.com</span></a>
+    </div>
+  </div>
+
+  <!-- HERO PANEL HEADER -->
+  <section class="relative min-h-[75vh] flex items-center text-white bg-cover bg-center" style="background-image: url('Assets/20240412_212651.jpg');">
+    <div class="absolute inset-0 bg-black/70"></div>
+    <div class="relative z-10 container mx-auto px-4 py-32 text-center">
+      <div class="inline-block bg-red-600 px-5 py-2 rounded-full font-bold text-sm mb-6 shadow animate-pulse">
+        24/7 Out-Of-Hours Regional Emergency Cover
+      </div>
+      <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight leading-tight">
+        Emergency Electricians Available Today
+      </h1>
+      <p class="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-gray-300 font-medium">
+        Fast, professional emergency electrical repairs throughout Poole, Bournemouth, Christchurch, Wimborne, Ferndown, Ringwood, and surrounding areas.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="tel:07711261478" class="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg transition">📞 Call Jordan H: 07711 261478</a>
+        <a href="tel:07907056422" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg transition">📞 Call Jordan M: 07907 056422</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 1: COMPREHENSIVE REGIONAL TEXT (DEEP NAVY BACKGROUND) -->
+  <section class="py-24 bg-slate-900 border-b border-slate-800">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <h2 class="text-3xl font-extrabold text-center mb-10 tracking-tight text-white">
+        Emergency Electrical Repairs
+      </h2>
+      <div class="space-y-6 text-md md:text-lg text-slate-300 leading-relaxed font-medium">
+        <p>Electrical emergencies can occur at any time without warning. Whether you have lost power entirely, have an acrid burning plastic smell coming from a consumer unit, notice repeatedly tripping circuit breakers, or encounter exposed live conductors, immediate intervention is essential to safeguard your property and loved ones.</p>
+        <p>We provide rapid diagnostic fault finding and emergency electrical repairs across Dorset and Hampshire borders for homeowners, landlords, and local businesses. Every out-of-hours response operation is handled safely by qualified engineers and completed in absolute compliance with UK BS7671 electrical wiring standards.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: COMMON EMERGENCIES INTERACTIVE ACCORDIONS (CHARCOAL NAVY BACKGROUND) -->
+  <section id="faults" class="py-24 bg-slate-950 border-b border-slate-900">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-extrabold text-center mb-16 tracking-tight text-white">Common Electrical Emergencies We Resolve</h2>
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+        
+        <!-- CARD 1 -->
+        <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
+          <div>
+            <div class="text-4xl mb-4">🔌</div>
+            <h3 class="font-bold text-white text-xl mb-2">Power Outages</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Emergency diagnostics for complete or partial loss of property supply paths.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
+              We track down loose distribution elements, open circuits, or primary component breakdown points to quickly establish temporary bypass lines or stable permanent supply links.
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
+          <div>
+            <div class="text-4xl mb-4">⚡</div>
+            <h3 class="font-bold text-white text-xl mb-2">Tripping Electrics</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Diagnosing underlying line leakage faults causing RCDs or breakers to drop.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
+              Using insulation resistance testing gear to map the specific neutral or earth fault avenue, isolating the problem component cleanly without dropping your entire grid infrastructure.
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
+          <div>
+            <div class="text-4xl mb-4">🔥</div>
+            <h3 class="font-bold text-white text-xl mb-2">Burning Smells</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Urgent chemical investigation of loose arcing points and melting plastics.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
+              High-resistance terminations generate intense local heat under minimal currents. We drop target circuit loads instantly and install new compliant terminal wiring connections.
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 4 -->
+        <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
+          <div>
+            <div class="text-4xl mb-4">🛡️</div>
+            <h3 class="font-bold text-white text-xl mb-2">Faulty Fuse Boards</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Emergency mechanical repairs and diagnostic management on consumer units.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
+              Replacing individual failed protective devices, overloads, or compromised main switch sets to maintain absolute building structural safety parameters.
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 5 -->
+        <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
+          <div>
+            <div class="text-4xl mb-4">⚠️</div>
+            <h3 class="font-bold text-white text-xl mb-2">Exposed Wiring</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Isolating damaged wiring runs and encapsulating exposed copper conductors.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
+              If cables are inadvertently cut during structural changes or panels are broken, we ensure the surrounding conductors are safely made dead and enclosed.
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 6 -->
+        <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
+          <div>
+            <div class="text-4xl mb-4">🔍</div>
+            <h3 class="font-bold text-white text-xl mb-2">Advanced Fault Finding</h3>
+            <p class="text-slate-300 mb-5 text-sm font-medium">Rapid diagnostic meter analysis across complex underlying circuitry lines.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2.5 rounded-xl font-bold transition">Learn More</button>
+            <div class="service-content hidden mt-4 pt-4 border-t border-slate-800 text-sm text-slate-400 font-medium leading-relaxed">
+              Utilizing calibrated loop impedance and insulation resistance equipment to track complex open neutral anomalies or hidden short circuits inside wall cavities.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: EMERGENCY HUBS DIRECTORY LINKS GRID (MID NAVY BACKGROUND) -->
+  <section id="regions" class="py-24 bg-slate-900 border-b border-slate-950">
+    <div class="container mx-auto px-4 max-w-6xl">
+      <h2 class="text-3xl font-extrabold text-center mb-3 tracking-tight text-white">Emergency Electrician Coverage Hubs</h2>
+      <p class="text-center text-slate-400 mb-16 text-sm font-medium">Select your localized regional division page below for rapid dedicated out-of-hours response channels:</p>
+      
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto text-sm font-bold">
+        <a href="emergency-electrician-poole.html" class="p-6 rounded-2xl border border-slate-800 bg-slate-950/40 text-slate-100 hover:border-[#c59b27] hover:bg-[#c59b27]/5 transition flex items-center justify-between shadow-sm">
+          <span>⚡ Emergency Electrician Poole</span> <span class="text-[#c59b27] text-xs font-semibold">&rarr;</span>
+        </a>
+        <a href="emergency-electrician-bournemouth.html" class="p-6 rounded-2xl border border-slate-800 bg-slate-950/40 text-slate-100 hover:border-[#c59b27] hover:bg-[#c59b27]/5 transition flex items-center justify-between shadow-sm">
+          <span>⚡ Emergency Electrician Bournemouth</span> <span class="text-[#c59b27] text-xs font-semibold">&rarr;</span>
+        </a>
+        <a href="emergency-electrician-christchurch.html" class="p-6 rounded-2xl border border-slate-800 bg-slate-950/40 text-slate-100 hover:border-[#c59b27] hover:bg-[#c59b27]/5 transition flex items-center justify-between shadow-sm">
+          <span>⚡ Emergency Electrician Christchurch</span> <span class="text-[#c59b27] text-xs font-semibold">&rarr;</span>
+        </a>
+        <a href="emergency-electrician-wimborne.html" class="p-6 rounded-2xl border border-slate-800 bg-slate-950/40 text-slate-100 hover:border-[#c59b27] hover:bg-[#c59b27]/5 transition flex items-center justify-between shadow-sm">
+          <span>⚡ Emergency Electrician Wimborne</span> <span class="text-[#c59b27] text-xs font-semibold">&rarr;</span>
+        </a>
+        <a href="emergency-electrician-ferndown.html" class="p-6 rounded-2xl border border-slate-800 bg-slate-950/40 text-slate-100 hover:border-[#c59b27] hover:bg-[#c59b27]/5 transition flex items-center justify-between shadow-sm">
+          <span>⚡ Emergency Electrician Ferndown</span> <span class="text-[#c59b27] text-xs font-semibold">&rarr;</span>
+        </a>
+        <a href="emergency-electrician-ringwood.html" class="p-6 rounded-2xl border border-slate-800 bg-slate-950/40 text-slate-100 hover:border-[#c59b27] hover:bg-[#c59b27]/5 transition flex items-center justify-between shadow-sm">
+          <span>⚡ Emergency Electrician Ringwood</span> <span class="text-[#c59b27] text-xs font-semibold">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: INTAKE CONSOLE LEADS FORM (DEEP CHARCOAL BACKGROUND) -->
+  <section id="contact" class="py-24 bg-slate-950">
+    <div class="container mx-auto px-4 max-w-3xl">
+      <div class="dark-glass-card rounded-3xl p-8 md:p-10 shadow-2xl text-white">
+        <h2 class="text-3xl font-black text-center mb-2 tracking-tight">Enquire About An Upgrade</h2>
+        <p class="text-center text-xs text-slate-400 mb-8 font-medium">Fill out your information details below and our team will get back to you with a clear, transparent project layout framework.</p>
+        
+        <form action="https://formspree.io/f/mlgvwwpv" method="POST" class="space-y-5">
+          <input type="text" name="_gotcha" style="display:none" />
+          <input type="hidden" name="_next" value="thankyou.html" />
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <input type="text" name="name" required placeholder="Full Name" class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-[#c59b27] text-sm font-medium" />
+            </div>
+            <div>
+              <input type="email" name="email" required placeholder="Email Address" class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-[#c59b27] text-sm font-medium" />
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <input type="tel" name="phone" required placeholder="Phone Number" class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-[#c59b27] text-sm font-medium" />
+            </div>
+            <div>
+              <select name="service" required class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white focus:outline-none focus:border-[#c59b27] text-sm font-medium">
+                <option value="Emergency Electrical Repairs Callout" class="text-white bg-slate-900">Emergency Callout Request</option>
+                <option class="text-white bg-slate-900">Fuse Board Upgrades</option>
+                <option class="text-white bg-slate-900">EICR Certificates</option>
+                <option class="text-white bg-slate-900">EV Charger Installation</option>
+                <option class="text-white bg-slate-900">House Rewiring</option>
+                <option class="text-white bg-slate-900">Lighting Install/Maintenance</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <textarea name="message" rows="4" required placeholder="Tell us about the electrical issues or planned upgrade scope you need priced..." class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-[#c59b27] text-sm font-medium"></textarea>
+          </div>
+
+          <button type="submit" class="w-full bg-[#c59b27] hover:bg-[#a17c1d] text-slate-950 py-4 rounded-xl font-black tracking-wider shadow-lg transition duration-200 text-md uppercase">Send Information Request</button>
+        </form>
+
+        <div class="mt-8 pt-8 border-t border-slate-700/60 text-center text-xs md:text-sm text-slate-400 space-y-1.5 font-medium">
+          <div>Call Desk Jordan H: <a href="tel:07711261478" class="text-[#c59b27] hover:underline">07711261478</a> | Jordan M: <a href="tel:07907056422" class="text-[#c59b27] hover:underline">07907056422</a></div>
+          <div>Office Email: <a href="mailto:electriciansnearyou@gmail.com" class="text-[#c59b27] hover:underline">electriciansnearyou@gmail.com</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UNIFORM BRAND SYSTEM FOOTER -->
+  <footer class="dark-glass-card rounded-t-[32px] text-white py-16 border-b-0">
+    <div class="container mx-auto px-4 max-w-7xl grid md:grid-cols-3 gap-10">
+      <div>
+        <h3 class="text-xl font-black mb-3 text-[#c59b27]">ElectriciansNearYou</h3>
+        <p class="text-xs text-slate-400 leading-relaxed font-medium">Professional 24/7 out-of-hours emergency troubleshooting repairs, domestic installations, periodic assessments, and compliance safety condition certification managed cleanly across Dorset and Hampshire.</p>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-200 mb-4 border-b border-slate-800 pb-1">Core Operational Sites</h4>
+        <div class="grid grid-cols-2 gap-2 text-sm font-semibold text-slate-300">
+          <a href="electrician-poole.html" class="hover:text-[#c59b27] transition">Poole</a>
+          <a href="electrician-bournemouth.html" class="hover:text-[#c59b27] transition">Bournemouth</a>
+          <a href="electrician-christchurch.html" class="hover:text-[#c59b27] transition">Christchurch</a>
+          <a href="electrician-wimborne.html" class="hover:text-[#c59b27] transition">Wimborne</a>
+          <a href="electrician-ferndown.html" class="hover:text-[#c59b27] transition">Ferndown</a>
+          <a href="electrician-ringwood.html" class="hover:text-[#c59b27] transition">Ringwood</a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-200 mb-4 border-b border-slate-800 pb-1">Quick Links</h4>
+        <div class="space-y-2.5 text-sm font-semibold">
+          <a href="index.html" class="block text-slate-300 hover:text-[#c59b27] transition">🏡 Return Home</a>
+          <a href="blog.html" class="block text-[#c59b27] hover:underline transition">📚 Bright Spark Blog Directory</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center text-slate-500 mt-14 text-xs font-medium tracking-wide">
+      &copy; 2026 ElectriciansNearYou. All Rights Reserved. Fully Certified Out-Of-Hours BS7671 Repair Engineers.
+    </div>
+  </footer>
+
+  <!-- SCRIPT matrices CONSOLE -->
+  <script>
+    const menuBtn = document.getElementById("menu-btn");
+    const closeBtn = document.getElementById("close-menu");
+    const mobileNav = document.getElementById("mobile-nav");
+
+    function openMobileMenu() {
+      mobileNav.classList.remove("hidden");
+      mobileNav.classList.add("flex");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeMobileMenu() {
+      mobileNav.classList.add("hidden");
+      mobileNav.classList.remove("flex");
+      document.body.style.overflow = "auto";
+    }
+
+    menuBtn.addEventListener("click", openMobileMenu);
+    closeBtn.addEventListener("click", closeMobileMenu);
+    document.querySelectorAll(".mobile-link").forEach(link => {
+      link.addEventListener("click", closeMobileMenu);
+    });
+
+    // Expandable Drawer Accordion Module Logic
+    document.querySelectorAll(".service-toggle").forEach(button => {
+      button.addEventListener("click", () => {
+        const content = button.nextElementSibling;
+        content.classList.toggle("hidden");
+        button.textContent = content.classList.contains("hidden") ? "Learn More" : "Show Less";
+      });
+    });
+
+    // Contact Panel Toggle Functions
+    function toggleDesktopContactModal(open) {
+        const modal = document.getElementById('contactModal');
+        if (open) {
+            modal.classList.add('active');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        } else {
+            modal.classList.remove('active');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+    }
+  </script>
 </body>
 </html>
