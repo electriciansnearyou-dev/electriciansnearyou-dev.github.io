@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENY Electrical - Premium Project Planner & CRM</title>
-    <!-- Stable Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- HTML2PDF Library for Client-Side PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap');
@@ -23,9 +20,8 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-900">
 
-    <!-- Top Navigation Header -->
     <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
-        <div classmax-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950">
                     <i data-lucide="zap" class="w-6 h-6 stroke-[2.5]"></i>
@@ -64,11 +60,9 @@
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
 
-        <!-- ================= TAB 0: HOME DASHBOARD ================= -->
         <div id="home-tab" class="tab-content active space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                <!-- Operator Identity & Bank Setup Control -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-900">
                         <div>
@@ -105,7 +99,6 @@
                     </div>
                 </div>
 
-                <!-- Quotes Pending Approval Status Monitor -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
@@ -118,7 +111,6 @@
                     <div id="dash-pending-quotes-list" class="mt-4 max-h-[140px] overflow-y-auto custom-scrollbar border-t border-slate-900 pt-3 space-y-1.5 text-xs"></div>
                 </div>
 
-                <!-- Invoices Outstanding Pending Settlement Monitor -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
@@ -134,7 +126,6 @@
             </div>
         </div>
         
-        <!-- ================= TAB 1: QUOTE BUILDER ================= -->
         <div id="quote-tab" class="tab-content space-y-6">
             
             <div id="editing-mode-banner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -147,7 +138,7 @@
                         <p class="text-xs text-slate-400">Modifying <span id="editing-record-id-display" class="font-mono text-amber-400 font-semibold"></span>. Choose to overwrite the file or save a version split.</p>
                     </div>
                 </div>
-                <button onclick="cancelActiveEditingSessionMode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors">
+                <button onclick="cancelActiveEditingSessionMode()" class="text-xs bg-slate-800 hover:bg-slate-750 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors">
                     Discard Modifications
                 </button>
             </div>
@@ -196,7 +187,6 @@
                         </div>
                     </div>
 
-                    <!-- Inventory Search and One-Off Addition Row -->
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-900">
                             <div>
@@ -210,7 +200,6 @@
                             </div>
                         </div>
 
-                        <!-- One-Off Entry Row Widget Panel -->
                         <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-3 grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
                             <input type="text" id="oneoff-desc" placeholder="One-off Item Description" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500">
                             <div class="flex gap-2">
@@ -246,7 +235,6 @@
                         </div>
                     </div>
 
-                    <!-- Dynamic Labor Rate Matrix Interface -->
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
                         <div class="flex justify-between items-center pb-2 border-b border-slate-900">
                             <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
@@ -346,7 +334,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 2: TEMPLATES MANAGER ================= -->
         <div id="templates-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
@@ -386,7 +373,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 3: MATERIAL STOCK MANAGER ================= -->
         <div id="inventory-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
@@ -447,7 +433,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 4: CLIENT CRM ENGINE ================= -->
         <div id="clients-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="space-y-4">
@@ -475,7 +460,7 @@
                                 <textarea id="crm-client-address" rows="2" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 resize-none"></textarea>
                             </div>
                             <div class="flex gap-2">
-                                <button type="submit" id="crm-client-submit-btn" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                                <button type="submit" id="crm-client-submit-btn" class="w-full bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                                     <i data-lucide="user-plus" class="w-4 h-4"></i> Create Database Entry
                                 </button>
                                 <button type="button" id="crm-client-cancel-btn" onclick="clearCrmClientForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-800 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">
@@ -508,7 +493,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 5: CENTRAL BASELINE CONFIG TAB ================= -->
         <div id="settings-tab" class="tab-content space-y-6">
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl mx-auto space-y-6">
                 <div>
@@ -554,7 +538,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 6: ARCHIVE VAULT & SYNC MATRIX ================= -->
         <div id="vault-tab" class="tab-content space-y-6">
             
             <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -577,7 +560,6 @@
                 </div>
             </div>
 
-            <!-- Historical Sheet Ledger Logs Area -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
                 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
@@ -612,7 +594,6 @@
 
     </main>
 
-    <!-- SHOPPING LIST MODAL OVERLAY -->
     <div id="shopping-list-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -637,7 +618,6 @@
         </div>
     </div>
 
-    <!-- INVOICE CONVERSION / RECONCILIATION MODAL -->
     <div id="invoice-reconciliation-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -680,7 +660,6 @@
         </div>
     </div>
 
-    <!-- PROFITABILITY LEDGER MODAL (EYES ONLY) -->
     <div id="profit-view-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-amber-500/30 rounded-2xl w-full max-w-sm overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -727,7 +706,6 @@
         </div>
     </div>
 
-    <!-- ================= SYSTEM ENGINE CORE JAVASCRIPT LOGIC ================= -->
     <script>
         const STB_SEEDED_INVENTORY = [
             { id: 'STB-1', sku: 'F3007MZ', desc: 'FUSEBOX F3007MZ 7WAY 100A SPD CON UNIT', cost: 69, category: 'Consumer Units & Protection' },
@@ -748,6 +726,9 @@
         let currentlyEditingQuoteId = null;
         let selectedVaultQuotes = new Set(); 
         let activeLaborBookingFormat = "DAY";
+
+        // Operational enum weight hierarchy map array tracking references
+        const STATUS_PROGRESSION_WEIGHTS = { 'Draft': 1, 'Sent': 2, 'Approved': 3, 'Invoiced': 4, 'Paid': 5 };
 
         document.addEventListener('DOMContentLoaded', () => {
             if (!localStorage.getItem('eny_vault')) localStorage.setItem('eny_vault', JSON.stringify([]));
@@ -794,6 +775,35 @@
         function getStoredClients() { return JSON.parse(localStorage.getItem('eny_clients')) || []; }
         function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
 
+        // --- MANUAL VAULT PROFILE LINKING PAIR OVERRIDE TOOL ---
+        function bindVaultQuoteToClientManually(quoteId, targetClientId) {
+            if(!quoteId) return;
+            let vault = getStoredVaultRecords();
+            const quoteIdx = vault.findIndex(q => q.id === quoteId);
+            if(quoteIdx === -1) return;
+
+            if(!targetClientId) {
+                // Unbind if empty select
+                vault[quoteIdx].linkedClientId = "";
+            } else {
+                const clients = getStoredClients();
+                const matchedClient = clients.find(c => c.id === targetClientId);
+                if(!matchedClient) return;
+                
+                vault[quoteIdx].linkedClientId = targetClientId;
+                // Force sync text descriptor sub-payload records
+                vault[quoteIdx].clientDetailsPayload = {
+                    name: matchedClient.name,
+                    email: matchedClient.email || "",
+                    address: matchedClient.address || ""
+                };
+            }
+
+            localStorage.setItem('eny_vault', JSON.stringify(vault));
+            alert("Vault index parameters successfully repaired and re-mapped.");
+            reconstructUnifiedInterfaces();
+        }
+
         // --- DYNAMIC CLIENT PROFILE CRM CONTROLLERS ---
         function handleCrmClientFormSubmission(event) {
             event.preventDefault();
@@ -806,7 +816,6 @@
             const editId = document.getElementById('crm-client-id-field').value;
 
             if (editId) {
-                // Modify existing registered properties
                 const idx = clients.findIndex(c => c.id === editId);
                 if (idx !== -1) {
                     clients[idx].name = providedName;
@@ -816,7 +825,6 @@
                     alert("Client registration profile parameters successfully modified.");
                 }
             } else {
-                // Push new registration data line
                 clients.push({
                     id: 'CLI-' + Date.now(),
                     name: providedName,
@@ -1101,45 +1109,6 @@
             return { netMaterials, markedMaterials, laborCosts, computedTestingCharge, grossTotal, markup, isTestingIncluded, testingCostFixed };
         }
 
-        // --- ACCOUNT IDENTITY MANAGEMENT ROUTINES ---
-        function handleUserProfileChange() {
-            const chosenUser = document.getElementById('global-user-profile-select').value;
-            localStorage.setItem('eny_profile_user', chosenUser);
-            loadCurrentProfileBankConfig();
-        }
-
-        function loadCurrentProfileBankConfig() {
-            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
-            const bankData = JSON.parse(localStorage.getItem(`eny_bank_${user}`)) || { name: '', acc: '', sort: '' };
-            document.getElementById('cfg-bank-name').value = bankData.name || '';
-            document.getElementById('cfg-bank-acc').value = bankData.acc || '';
-            document.getElementById('cfg-bank-sort').value = bankData.sort || '';
-        }
-
-        function saveCurrentProfileBankConfig() {
-            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
-            const payload = {
-                name: document.getElementById('cfg-bank-name').value.trim(),
-                acc: document.getElementById('cfg-bank-acc').value.trim(),
-                sort: document.getElementById('cfg-bank-sort').value.trim()
-            };
-            localStorage.setItem(`eny_bank_${user}`, JSON.stringify(payload));
-        }
-
-        function switchTab(targetTabId) {
-            document.querySelectorAll('.tab-content').forEach(element => element.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
-                btn.classList.add('text-slate-400', 'hover:text-white');
-            });
-            document.getElementById(targetTabId).classList.add('active');
-            const targetButton = document.getElementById(`btn-${targetTabId}`);
-            if (targetButton) {
-                targetButton.classList.remove('text-slate-400', 'hover:text-white');
-                targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
-            }
-        }
-
         // --- MATERIAL ALLOCATION HELPERS ---
         function allocateItemToQuote(itemId) {
             const inventory = getStoredInventory();
@@ -1224,82 +1193,6 @@
         }
 
         function setCategoryFilter(categoryName) { selectedCategoryFilter = categoryName; renderCategoryNavigationTabs(); filterMaterialCatalog(); }
-
-        // --- SHOPPING LIST LOGIC ---
-        function toggleQuoteSelection(id) {
-            if (selectedVaultQuotes.has(id)) { selectedVaultQuotes.delete(id); } else { selectedVaultQuotes.add(id); }
-            updateShoppingListButton();
-        }
-
-        function updateShoppingListButton() {
-            const btn = document.getElementById('btn-generate-shopping-list');
-            const textSpan = document.getElementById('shopping-btn-text');
-            if (btn && textSpan) {
-                if (selectedVaultQuotes.size > 0) {
-                    btn.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-slate-800', 'text-slate-400');
-                    btn.classList.add('bg-amber-500', 'text-slate-950', 'hover:bg-amber-600', 'cursor-pointer');
-                    textSpan.innerText = `Generate Shopping List (${selectedVaultQuotes.size})`;
-                } else {
-                    btn.classList.add('opacity-50', 'cursor-not-allowed', 'bg-slate-800', 'text-slate-400');
-                    btn.classList.remove('bg-amber-500', 'text-slate-950', 'hover:bg-amber-600', 'cursor-pointer');
-                    textSpan.innerText = `Generate Shopping List`;
-                }
-            }
-        }
-
-        function openShoppingListModal() {
-            if (selectedVaultQuotes.size === 0) return;
-            const vault = getStoredVaultRecords();
-            const aggregatedItems = {};
-            selectedVaultQuotes.forEach(quoteId => {
-                const quote = vault.find(q => q.id === quoteId);
-                if (quote && quote.itemsSnapshot) {
-                    quote.itemsSnapshot.forEach(item => {
-                        const key = item.sku;
-                        if (!aggregatedItems[key]) { aggregatedItems[key] = { desc: item.desc, sku: item.sku, qty: 0 }; }
-                        aggregatedItems[key].qty += parseInt(item.qty);
-                    });
-                }
-            });
-            const listEl = document.getElementById('shopping-list-content');
-            const itemsArray = Object.values(aggregatedItems);
-            if (itemsArray.length === 0) { listEl.innerHTML = `<li class="text-slate-500 italic text-center py-4">No materials mapped in the selected jobs.</li>`; } 
-            else {
-                listEl.innerHTML = itemsArray.map(item => `
-                    <li class="flex justify-between items-center py-3 border-b border-slate-800/60 last:border-0">
-                        <div class="pr-4"><span class="font-medium text-slate-200 block">${item.desc}</span><span class="text-[10px] text-slate-500 font-mono mt-0.5 block">${item.sku}</span></div>
-                        <div class="font-bold text-amber-400 font-mono bg-slate-950/50 px-3 py-1.5 rounded-lg border border-slate-800 text-base">x${item.qty}</div>
-                    </li>
-                `).join('');
-            }
-            document.getElementById('shopping-list-modal').classList.remove('hidden');
-        }
-
-        function closeShoppingListModal() { document.getElementById('shopping-list-modal').classList.add('hidden'); }
-
-        function copyShoppingList() {
-            const vault = getStoredVaultRecords();
-            const aggregatedItems = {};
-            selectedVaultQuotes.forEach(quoteId => {
-                const quote = vault.find(q => q.id === quoteId);
-                if (quote && quote.itemsSnapshot) {
-                    quote.itemsSnapshot.forEach(item => {
-                        const key = item.sku;
-                        if (!aggregatedItems[key]) aggregatedItems[key] = { desc: item.desc, sku: item.sku, qty: 0 };
-                        aggregatedItems[key].qty += parseInt(item.qty);
-                    });
-                }
-            });
-
-            const itemsArray = Object.values(aggregatedItems);
-            if (itemsArray.length === 0) { alert("Nothing to copy!"); return; }
-
-            let text = "WHOLESALER SHOPPING LIST\n------------------------\n";
-            itemsArray.forEach(item => { text += `[ ] ${item.qty}x - ${item.desc} (SKU: ${item.sku})\n`; });
-            
-            navigator.clipboard.writeText(text).then(() => { alert("Shopping list copied to clipboard successfully."); })
-            .catch(err => { console.error('Failed to copy text: ', err); alert("Failed to copy to clipboard."); });
-        }
 
         // --- PRE-FILLED JOBS POPULATION ENGINE ---
         function rebuildJobTemplatesDropdown() {
@@ -1405,67 +1298,11 @@
             reconstructUnifiedInterfaces();
         }
 
-        // --- CORE LOAD AND OVERWRITE UTILS ---
-        function loadQuoteForActiveModification(quoteId) {
-            const vault = getStoredVaultRecords();
-            const targetedQuote = vault.find(q => q.id === quoteId);
-            if(!targetedQuote) { alert("Target document log file data could not be accessed."); return; }
-
-            currentlyEditingQuoteId = targetedQuote.id;
-            activeLinkedClientId = targetedQuote.linkedClientId || "";
-            activeAllocatedMaterials = JSON.parse(JSON.stringify(targetedQuote.itemsSnapshot || []));
-
-            document.getElementById('job-name').value = targetedQuote.jobName || "";
-            document.getElementById('client-name').value = targetedQuote.clientDetailsPayload?.name || "";
-            document.getElementById('client-email').value = targetedQuote.clientDetailsPayload?.email || "";
-            document.getElementById('client-address').value = targetedQuote.clientDetailsPayload?.address || "";
-            
-            if (targetedQuote.laborFormatBoundType) {
-                setLaborBookingFormat(targetedQuote.laborFormatBoundType);
-                if (targetedQuote.laborFormatBoundType === 'HOUR' && targetedQuote.subsequentHoursSliderCount) {
-                    document.getElementById('labor-hour-slider').value = targetedQuote.subsequentHoursSliderCount;
-                    document.getElementById('display-hours-count').innerText = targetedQuote.subsequentHoursSliderCount;
-                }
-            } else {
-                setLaborBookingFormat('DAY');
-            }
-
-            const testingToggle = document.getElementById('include-testing-toggle');
-            const testingCostInput = document.getElementById('testing-flat-cost');
-            if (targetedQuote.includeTestingCertificate === true) {
-                testingToggle.checked = true;
-                testingCostInput.value = targetedQuote.testingCostFixed !== undefined ? targetedQuote.testingCostFixed : 75.00;
-            } else { testingToggle.checked = false; }
-
-            document.getElementById('editing-mode-banner').classList.remove('hidden');
-            document.getElementById('editing-record-id-display').innerText = targetedQuote.id;
-            document.getElementById('standard-save-actions-wrapper').classList.add('hidden');
-            document.getElementById('editing-save-actions-wrapper').classList.remove('hidden');
-
-            rebuildAllocatedMaterialsTable();
-            rebuildQuoteClientDropdown();
-            switchTab('quote-tab');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function cancelActiveEditingSessionMode() {
-            currentlyEditingQuoteId = null;
-            activeLinkedClientId = "";
-            activeAllocatedMaterials = [];
-
-            document.getElementById('job-name').value = "";
-            document.getElementById('client-name').value = "";
-            document.getElementById('client-email').value = "";
-            document.getElementById('client-address').value = "";
-            document.getElementById('include-testing-toggle').checked = false;
-            setLaborBookingFormat('DAY');
-
-            document.getElementById('editing-mode-banner').classList.add('hidden');
-            document.getElementById('standard-save-actions-wrapper').classList.remove('hidden');
-            document.getElementById('editing-save-actions-wrapper').classList.add('hidden');
-
-            rebuildAllocatedMaterialsTable();
-            rebuildQuoteClientDropdown();
+        function deleteJobTemplatePreset(id) {
+            if (!confirm("Permanently remove this template preset?")) return;
+            let templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
+            localStorage.setItem('eny_templates', JSON.stringify(templates.filter(t => t.id !== id)));
+            reconstructUnifiedInterfaces();
         }
 
         // --- DIRECTORY STOCK MANAGER UTILS ---
@@ -1539,10 +1376,17 @@
             lucide.createIcons();
         }
 
-        function rebuildDatalistAssistanceArray() {
-            document.getElementById('existing-categories').innerHTML = [...new Set(getStoredInventory().map(i => i.category).filter(Boolean))].map(c => `<option value="${c}"></option>`).join('');
+        function purgeInventoryItem(itemId, event) {
+            if(event) event.stopPropagation();
+            if(!confirm("Permanently discard this item from lookup indices?")) return;
+            let currentInventory = getStoredInventory();
+            localStorage.setItem('eny_inventory', JSON.stringify(currentInventory.filter(i => i.id !== itemId)));
+            activeAllocatedMaterials = activeAllocatedMaterials.filter(i => i.id !== itemId);
+            rebuildAllocatedMaterialsTable();
+            reconstructUnifiedInterfaces();
         }
 
+        // --- LIFECYCLE CONTROLLERS ---
         function updateQuoteStatus(id, newStatus) {
             let vault = getStoredVaultRecords();
             let targetIdx = vault.findIndex(r => r.id === id);
@@ -1608,7 +1452,7 @@
 
         function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); }
 
-        // --- PDF COMPILING GENERATION ENGINE ---
+        // --- PDF ENGINE ---
         function generateDocumentPDF(id) {
             const vault = getStoredVaultRecords();
             const target = vault.find(r => r.id === id);
@@ -1734,6 +1578,7 @@
             const table = document.getElementById('vault-table');
             const empty = document.getElementById('vault-empty-state');
             const records = getStoredVaultRecords();
+            const clientsList = getStoredClients();
 
             if(records.length === 0) { empty.classList.remove('hidden'); table.classList.add('hidden'); return; }
             empty.classList.add('hidden'); table.classList.remove('hidden');
@@ -1763,6 +1608,12 @@
                     extraActionBtns = `<button onclick="openProfitModal('${r.id}')" class="text-amber-400 hover:text-amber-300 p-1.5 rounded bg-slate-900 border border-slate-700 transition-colors"><i data-lucide="pie-chart" class="w-4 h-4"></i></button>`;
                 }
 
+                // Compile select configuration option frames for manual override widget
+                const manualCrmOptionsHtml = `<option value="">-- Disconnect Account Links --</option>` + clientsList.map(c => {
+                    const isSelected = r.linkedClientId === c.id ? 'selected' : '';
+                    return `<option value="${c.id}" ${isSelected}>${c.name}</option>`;
+                }).join('');
+
                 return `
                     <tr class="text-xs text-slate-300 hover:bg-slate-900/40 border-b border-slate-900 transition-colors">
                         <td class="py-4 px-3 text-center">
@@ -1774,7 +1625,7 @@
                         </td>
                         <td class="py-4 px-3">
                             <div class="font-bold text-white">${r.jobName}</div>
-                            <div class="text-[10px] text-slate-400 mt-0.5">${r.clientDetailsPayload?.name || 'Direct Entry'}</div>
+                            <div class="text-[10px] text-slate-400 mt-0.5"><i data-lucide="user" class="w-3 h-3 inline text-slate-500"></i> ${r.clientDetailsPayload?.name || 'Direct Entry'}</div>
                             <div class="text-[9px] text-slate-500 font-mono mt-0.5">${r.id}</div>
                         </td>
                         <td class="py-4 px-3 text-right font-mono font-bold text-white">£${r.financials.grossTotal.toFixed(2)}</td>
@@ -1798,6 +1649,19 @@
                                         <div class="border-t border-slate-800/80 pt-2 font-bold flex justify-between text-white text-sm"><span>Total Gross (Exc VAT):</span><span class="font-mono text-amber-400">£${r.financials.grossTotal.toFixed(2)}</span></div>
                                     </div>
                                 </div>
+                                <div class="space-y-3">
+                                    <h4 class="font-bold text-slate-400 uppercase tracking-wider text-[10px] flex items-center gap-1">
+                                        <i data-lucide="link-2" class="w-3 h-3 text-amber-400"></i> Manual CRM Account Pairing Override Tool
+                                    </h4>
+                                    <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-800/40 space-y-2">
+                                        <p class="text-[11px] text-slate-400">Repair configuration data loops if cross-device updates fail to sync automatically.</p>
+                                        <div class="flex flex-col sm:flex-row gap-2">
+                                            <select onchange="bindVaultQuoteToClientManually('${r.id}', this.value)" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500 w-full font-bold">
+                                                ${manualCrmOptionsHtml}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -1806,16 +1670,32 @@
             lucide.createIcons();
         }
 
+        // --- COMMIT ARCHIVE ACTIONS AND BUGFIX ATTACHMENTS ENGINE ---
         function commitQuoteToVault(overwriteExistingMode = false) {
             const clientName = document.getElementById('client-name').value.trim();
             if(!clientName) { alert("Enter a client profile name reference before committing records."); return; }
 
-            const currentClients = getStoredClients();
-            const clientMatchExists = currentClients.some(c => c.name.toLowerCase() === clientName.toLowerCase());
-            if (!clientMatchExists) {
-                currentClients.push({ id: 'CLI-' + Date.now(), name: clientName, email: document.getElementById('client-email').value.trim(), phone: '', address: document.getElementById('client-address').value.trim(), createdDate: new Date().toLocaleDateString('en-GB') });
+            let currentClients = getStoredClients();
+            let matchedClientObj = currentClients.find(c => c.name.toLowerCase() === clientName.toLowerCase());
+            
+            // Core Bugfix Implementation Matrix Execution Block
+            if (!matchedClientObj) {
+                // Instantly construct and write missing identity profiles into database array maps
+                const newGeneratedClientId = 'CLI-' + Date.now();
+                matchedClientObj = {
+                    id: newGeneratedClientId,
+                    name: clientName,
+                    email: document.getElementById('client-email').value.trim(),
+                    phone: '',
+                    address: document.getElementById('client-address').value.trim(),
+                    createdDate: new Date().toLocaleDateString('en-GB')
+                };
+                currentClients.push(matchedClientObj);
                 localStorage.setItem('eny_clients', JSON.stringify(currentClients));
             }
+
+            // Lock down explicit unique target tracking parameter tokens
+            activeLinkedClientId = matchedClientObj.id;
 
             const calcs = calculateComprehensiveMetrics();
             let vault = getStoredVaultRecords();
@@ -1836,7 +1716,7 @@
                 status: currentStatus,
                 ownerOperatorProfileID: activeProfileID, 
                 jobName: document.getElementById('job-name').value.trim() || "Electrical Contracting Works Portfolio",
-                linkedClientId: activeLinkedClientId,
+                linkedClientId: activeLinkedClientId, // Guaranteed pointer registration bugfix bound
                 laborFormatBoundType: activeLaborBookingFormat,
                 subsequentHoursSliderCount: parseInt(document.getElementById('labor-hour-slider').value) || 0,
                 clientDetailsPayload: { name: clientName, email: document.getElementById('client-email').value.trim(), address: document.getElementById('client-address').value.trim() },
@@ -1866,7 +1746,7 @@
         function toggleInlineQuoteBreakdownFolder(rowId) { document.getElementById(rowId).classList.toggle('hidden'); }
         function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
 
-        // --- TEAM SYNC ENGINE CORE BACKUPS ---
+        // --- TEAM SYNC ENGINE EXPORTS CORE ---
         function exportSystemStateBackup() {
             const packagePayload = { exportMetadataSource: "ENY_ELECTRICAL_CRM_SYSTEM", generatedTimestamp: Date.now(), inventory: getStoredInventory(), clients: getStoredClients(), vault: getStoredVaultRecords(), templates: JSON.parse(localStorage.getItem('eny_templates') || '[]') };
             const dataBlob = new Blob([JSON.stringify(packagePayload, null, 2)], { type: "application/json" });
@@ -1885,7 +1765,7 @@
                     if (inboundPayload.exportMetadataSource !== "ENY_ELECTRICAL_CRM_SYSTEM") { alert("Malformed Format Configuration Signature Error."); return; }
 
                     let localInventory = getStoredInventory(); let localClients = getStoredClients(); let localVault = getStoredVaultRecords(); let localTemplates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
-                    let stats = { stockOverwrites: 0, stockAppends: 0, clientOverwrites: 0, clientAppends: 0, quoteOverwrites: 0, quoteAppends: 0, templateOverwrites: 0, templateAppends: 0 };
+                    let stats = { stockOverwrites: 0, stockAppends: 0, clientOverwrites: 0, clientAppends: 0, quoteOverwrites: 0, quoteAppends: 0, trackingBlocks: 0 };
 
                     if (inboundPayload.inventory) {
                         inboundPayload.inventory.forEach(inboundItem => {
@@ -1902,17 +1782,43 @@
                             else { localClients.push(inboundClient); stats.clientAppends++; }
                         });
                     }
+                    
+                    // --- HIGH PRECISION PROGRESSION CONDITIONAL OVERWRITE MATRIX ---
                     if (inboundPayload.vault) {
                         inboundPayload.vault.forEach(inboundQuote => {
-                            const matchIdx = localVault.findIndex(lv => lv.id === inboundQuote.id);
-                            if (matchIdx !== -1) { if (confirm(`Conflict: Vault Quote "${inboundQuote.id}" exists. Overwrite log?`)) { localVault[matchIdx] = inboundQuote; stats.quoteOverwrites++; } } 
-                            else { localVault.push(inboundQuote); stats.quoteAppends++; }
+                            const localMatchIdx = localVault.findIndex(lv => lv.id === inboundQuote.id);
+                            
+                            if (localMatchIdx !== -1) {
+                                // Extract comparative tracker properties
+                                const localStatus = localVault[localMatchIdx].status || 'Draft';
+                                const inboundStatus = inboundQuote.status || 'Draft';
+                                
+                                const localWeight = STATUS_PROGRESSION_WEIGHTS[localStatus] || 1;
+                                const inboundWeight = STATUS_PROGRESSION_WEIGHTS[inboundStatus] || 1;
+
+                                // Execution evaluation rules logic constraint blocks
+                                if (inboundWeight < localWeight) {
+                                    // Inbound file layer is an earlier stage in the pipeline -> BLOCK OVERWRITE
+                                    stats.trackingBlocks++;
+                                    console.warn(`Sync Security Matrix triggered: Blocked override request on ${inboundQuote.id}. Local record status [${localStatus}] overrides inbound status [${inboundStatus}].`);
+                                } else {
+                                    // Inbound layer is further ahead or equal -> ALLOW PROCESS
+                                    if (confirm(`Progression Update Match: Overwrite local job file "${inboundQuote.id}" (${inboundQuote.jobName}) with step update [${inboundStatus}]?`)) {
+                                        localVault[localMatchIdx] = inboundQuote;
+                                        stats.quoteOverwrites++;
+                                    }
+                                }
+                            } else {
+                                // No previous ID entry trace match exists -> Safe append
+                                localVault.push(inboundQuote);
+                                stats.quoteAppends++;
+                            }
                         });
                     }
 
                     localStorage.setItem('eny_inventory', JSON.stringify(localInventory)); localStorage.setItem('eny_clients', JSON.stringify(localClients)); localStorage.setItem('eny_vault', JSON.stringify(localVault)); localStorage.setItem('eny_templates', JSON.stringify(localTemplates));
                     reconstructUnifiedInterfaces();
-                    alert(`Sync Summary:\n\n• Materials: Added ${stats.stockAppends}, Overwrote ${stats.stockOverwrites}\n• Clients: Added ${stats.clientAppends}, Overwrote ${stats.clientOverwrites}\n• Vault Records: Added ${stats.quoteAppends}, Overwrote ${stats.quoteOverwrites}`);
+                    alert(`Sync Matrix Verification Execution Summary:\n\n• Materials: Added ${stats.stockAppends}, Overwrote ${stats.stockOverwrites}\n• Clients: Added ${stats.clientAppends}, Overwrote ${stats.clientOverwrites}\n• Vault Pipeline logs: Added ${stats.quoteAppends}, Overwrote ${stats.quoteOverwrites}\n• Regression Warning Intercepts: Blocked ${stats.trackingBlocks} downgrade sync requests.`);
                 } catch (err) { alert("Error parsing sync map template layout configurations."); console.error(err); }
             };
             fileReader.readAsText(uploadedFile); event.target.value = '';
