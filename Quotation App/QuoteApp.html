@@ -147,9 +147,11 @@
                         <p class="text-xs text-slate-400">Modifying <span id="editing-record-id-display" class="font-mono text-amber-400 font-semibold"></span>. Choose to overwrite the file or save a version split.</p>
                     </div>
                 </div>
-                <button onclick="cancelActiveEditingSessionMode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors">
-                    Discard Modifications
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="cancelActiveEditingSessionMode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors">
+                        Discard Modifications
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -513,7 +515,7 @@
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl mx-auto space-y-6">
                 <div>
                     <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                        <i data-lucide="settings"></i> Global Labor Model Setup
+                        <i data-lucide="settings" class="text-amber-400"></i> Global Labor Model Setup
                     </h2>
                     <p class="text-xs text-slate-400 mt-0.5">Define your core pricing matrices below. Changing parameters updates future calculations instantly across workspaces.</p>
                 </div>
@@ -627,7 +629,7 @@
                 <ul id="shopping-list-content" class="space-y-2 text-sm text-slate-300"></ul>
             </div>
             <div class="p-5 border-t border-slate-800 bg-slate-800/50 flex justify-end gap-3">
-                <button onclick="copyShoppingList()" class="bg-slate-800 hover:bg-slate-750 border border-slate-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer">
+                <button onclick="copyShoppingList()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer">
                     <i data-lucide="copy" class="w-4 h-4"></i> Copy List
                 </button>
                 <button onclick="closeShoppingListModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-2 rounded-xl text-sm font-bold transition-colors cursor-pointer">
@@ -735,11 +737,57 @@
             { id: 'STB-3', sku: 'F3015MZ', desc: 'FUSEBOX F3015MZ 15WAY 100A SPD CON UNIT', cost: 82, category: 'Consumer Units & Protection' },
             { id: 'STB-4', sku: 'F3021MZ', desc: 'FUSEBOX F3021MZ 21WAY 100A SPD CON UNIT', cost: 91, category: 'Consumer Units & Protection' },
             { id: 'STB-5', sku: '6381Y25KIT1M', desc: '6381Y 25MM DI FLEXIBLE TAILS KIT 1M', cost: 14, category: 'Wiring & Management' },
+            { id: 'STB-6', sku: '6381Y251BLU', desc: '25MM DI FLEXIBLE TAILS BLUE 6381Y', cost: 0, category: 'Wiring & Management' },
+            { id: 'STB-7', sku: '6381Y251BR', desc: '25MM DI FLEXIBLE TAILS BROWN 6381Y', cost: 0, category: 'Wiring & Management' },
+            { id: 'STB-8', sku: '6491X161GY', desc: '16MM SINGLE G/Y EARTH 6491X', cost: 0, category: 'Wiring & Management' },
             { id: 'STB-9', sku: 'RTA060630B', desc: 'FUSEBOX RTA060630B 6A B TYPE A RCBO 6ΚΑ', cost: 12, category: 'Consumer Units & Protection' },
+            { id: 'STB-10', sku: 'MT06B061', desc: 'FUSEBOX MT06B061 6A B TYPE MCB 6KA SP', cost: 2, category: 'Consumer Units & Protection' },
+            { id: 'STB-11', sku: 'G32T', desc: 'FUSEBOX G32T 32MM IP68 TAILS GLAND CLICK SCOLMORE', cost: 3, category: 'Consumer Units & Protection' },
             { id: 'STB-12', sku: 'CMA036', desc: 'CLICK CMA036 SOCKET 2G SWITCHED 13A WHI', cost: 3, category: 'Sockets & Switches' },
             { id: 'STB-13', sku: 'CMA786', desc: 'CMA786 Socket 2G Swd & USB 13A Whi Click', cost: 20, category: 'Sockets & Switches' },
+            { id: 'STB-14', sku: 'CMA035', desc: 'CMA035 SOCKET 1G SWITCHED 13A WHI CLICK', cost: 3, category: 'Sockets & Switches' },
+            { id: 'STB-15', sku: 'CMA011', desc: 'CMA011 CLICK PLATESWITCH 1G 2W 10A WHI', cost: 2, category: 'Sockets & Switches' },
+            { id: 'STB-16', sku: 'CMA651', desc: 'CMA651 CONNECTION UNIT SWD 13A CLICK', cost: 4, category: 'Sockets & Switches' },
+            { id: 'STB-17', sku: 'CMA500', desc: 'CLICK SWITCH DP 45A WHITE CMA500', cost: 6, category: 'Sockets & Switches' },
+            { id: 'STB-18', sku: 'CMA215', desc: 'CONN UNIT COOKER OUTLET CMA215 CLICK', cost: 4, category: 'Sockets & Switches' },
+            { id: 'STB-19', sku: 'CMA081', desc: 'CLICK CMA081 PATTRESS 1GANG 25MM WHI', cost: 1, category: 'Sockets & Switches' },
+            { id: 'STB-20', sku: 'CMA082', desc: 'CLICK CMA082 PATTRESS 2GANG 25MM WHI', cost: 2, category: 'Sockets & Switches' },
+            { id: 'STB-21', sku: 'SFR1', desc: 'U/Volt SFR1 Box 1 Gang Rad Corners White', cost: 3, category: 'Sockets & Switches' },
+            { id: 'STB-22', sku: 'SFR2', desc: 'U/Volt SFR2 Box 2 Gang Rad Corners White', cost: 4, category: 'Sockets & Switches' },
+            { id: 'STB-23', sku: 'SFR1/44', desc: 'U/Volt SFR1/44 Box 1 Gang Rad Corners', cost: 5, category: 'Sockets & Switches' },
+            { id: 'STB-24', sku: 'SFR2/44', desc: 'U/Volt SFR2/44 Box 2 Gang Rad Corners', cost: 7, category: 'Sockets & Switches' },
             { id: 'STB-25', sku: 'JC1101/NB', desc: 'JCC JC1101/NB X50 LED Downlight 3/5W', cost: 11, category: 'Luminaires & Fittings' },
-            { id: 'STB-47', sku: '207-3301', desc: 'Wago 207-3301 Wago 221-4 Junction Box', cost: 3, category: 'Sundries' }
+            { id: 'STB-26', sku: 'JC1107/WH', desc: 'JCC JC1107/WH Downlight Bezel Whi X50', cost: 2, category: 'Luminaires & Fittings' },
+            { id: 'STB-27', sku: 'JC1101/WH10', desc: 'JCC JC1101/WH10 X50 LED D/Lgt 3/5W Pk=10', cost: 78, category: 'Luminaires & Fittings' },
+            { id: 'STB-28', sku: 'AFD600D/CCT', desc: 'Allled AFD600D/CCT LED Downlight 6W', cost: 9, category: 'Luminaires & Fittings' },
+            { id: 'STB-29', sku: '666', desc: 'BG 666 Pendant Set 6in', cost: 3, category: 'Luminaires & Fittings' },
+            { id: 'STB-30', sku: '4207-1', desc: 'Crompton 4207-1 LED BC-B22 7W 2700K Clr', cost: 6, category: 'Luminaires & Fittings' },
+            { id: 'STB-31', sku: '107139', desc: 'Saxby 107139 RularPRO Batten 5ft 39W', cost: 22, category: 'Luminaires & Fittings' },
+            { id: 'STB-32', sku: 'ADIS2/1', desc: 'Ansell ADIS2/1 B/Hd IP65 9-16W', cost: 25, category: 'Luminaires & Fittings' },
+            { id: 'STB-33', sku: 'ADIS1/1', desc: 'Ansell ADIS1/1 B/Hd IP65 4-7W', cost: 16, category: 'Luminaires & Fittings' },
+            { id: 'STB-34', sku: 'ADLED2/WV/CCT', desc: 'Ansell ADLED2/WV/CCT B/Hd LED Whi', cost: 40, category: 'Luminaires & Fittings' },
+            { id: 'STB-35', sku: '113960', desc: 'Saxby 113960 HeroULTRA B/Hd 15W 316mm', cost: 20, category: 'Luminaires & Fittings' },
+            { id: 'STB-36', sku: '16699', desc: 'Crompton 16699 LED Lamp GU10 5W 3000K', cost: 3, category: 'Luminaires Fittings' },
+            { id: 'STB-37', sku: 'FSA2W', desc: 'Falcon FSA2W Mini Trunking 25x16mmx75m', cost: 2, category: 'Containment' },
+            { id: 'STB-38', sku: 'FSA4W', desc: 'Falcon FSA4W Mini Trunking 40x25mmx30m', cost: 3, category: 'Containment' },
+            { id: 'STB-39', sku: 'BSSH20W-LSF', desc: 'U/Volt BSSH20W-LSF Conduit 20mmx3m 100m', cost: 1, category: 'Containment' },
+            { id: 'STB-40', sku: 'FCT32W', desc: 'Falcon FCT32W Cbl Trunking 75x50mmx18m', cost: 9, category: 'Containment' },
+            { id: 'STB-41', sku: 'IE20WH', desc: 'U/Volt IE20WH InspectionElbow 20mm White', cost: 2, category: 'Containment' },
+            { id: 'STB-42', sku: 'SM20WH', desc: 'U/Volt SM20WH Coupler 20mm White', cost: 1, category: 'Containment' },
+            { id: 'STB-43', sku: 'AFT/MBS20WH', desc: 'U/Volt AFT/MBS20WH Adaptor 20mm White', cost: 1, category: 'Containment' },
+            { id: 'STB-44', sku: 'AMT/LR20WH', desc: 'U/Volt AMT/LR20WH Adaptor 20mm White', cost: 1, category: 'Containment' },
+            { id: 'STB-45', sku: 'CB20/1WH', desc: 'U/Volt CB20/1WH Terminal Box 20mm White', cost: 2, category: 'Containment' },
+            { id: 'STB-46', sku: 'CB20/AWH', desc: 'U/Volt CB20/AWH Angle Box 20mm White', cost: 2, category: 'Containment' },
+            { id: 'STB-47', sku: '207-3301', desc: 'Wago 207-3301 Wago 221-4 Junction Box', cost: 3, category: 'Sundries' },
+            { id: 'STB-48', sku: 'J803', desc: 'Hager J803 Junction Box 3Terminals 30A', cost: 5, category: 'Sundries' },
+            { id: 'STB-49', sku: 'J804', desc: 'Hager J804 Junction Box 4Terminals 20A', cost: 6, category: 'Sundries' },
+            { id: 'STB-50', sku: '034385', desc: 'Legd 034385 Earthing Clamp 12/16mm', cost: 5, category: 'Sundries' }
+        ];
+
+        // Seed default foundational layout workflows
+        const DEFAULT_SEED_TEMPLATES = [
+            { id: 'T1', name: "Consumer Unit Upgrade Material Pack", items: [{ id: 'STB-1', qty: 1 }, { id: 'STB-9', qty: 6 }] },
+            { id: 'T2', name: "Standard Room Lighting Setup Pack", items: [{ id: 'STB-25', qty: 6 }, { id: 'STB-47', qty: 2 }] }
         ];
 
         let selectedCategoryFilter = "ALL";
@@ -755,7 +803,7 @@
             if (!localStorage.getItem('eny_vault')) localStorage.setItem('eny_vault', JSON.stringify([]));
             if (!localStorage.getItem('eny_clients')) localStorage.setItem('eny_clients', JSON.stringify([]));
             if (!localStorage.getItem('eny_inventory')) localStorage.setItem('eny_inventory', JSON.stringify(STB_SEEDED_INVENTORY));
-            if (!localStorage.getItem('eny_templates')) localStorage.setItem('eny_templates', JSON.stringify([]));
+            if (!localStorage.getItem('eny_templates')) localStorage.setItem('eny_templates', JSON.stringify(DEFAULT_SEED_TEMPLATES));
             
             if (!localStorage.getItem('eny_rate_day')) localStorage.setItem('eny_rate_day', '350');
             if (!localStorage.getItem('eny_rate_half')) localStorage.setItem('eny_rate_half', '200');
@@ -1110,45 +1158,6 @@
             document.getElementById('summary-gross-total').innerText = `£${grossTotal.toFixed(2)}`;
             
             return { netMaterials, markedMaterials, laborCosts, computedTestingCharge, grossTotal, markup, isTestingIncluded, testingCostFixed };
-        }
-
-        // --- ACCOUNT IDENTITY MANAGEMENT ROUTINES ---
-        function handleUserProfileChange() {
-            const chosenUser = document.getElementById('global-user-profile-select').value;
-            localStorage.setItem('eny_profile_user', chosenUser);
-            loadCurrentProfileBankConfig();
-        }
-
-        function loadCurrentProfileBankConfig() {
-            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
-            const bankData = JSON.parse(localStorage.getItem(`eny_bank_${user}`)) || { name: '', acc: '', sort: '' };
-            document.getElementById('cfg-bank-name').value = bankData.name || '';
-            document.getElementById('cfg-bank-acc').value = bankData.acc || '';
-            document.getElementById('cfg-bank-sort').value = bankData.sort || '';
-        }
-
-        function saveCurrentProfileBankConfig() {
-            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
-            const payload = {
-                name: document.getElementById('cfg-bank-name').value.trim(),
-                acc: document.getElementById('cfg-bank-acc').value.trim(),
-                sort: document.getElementById('cfg-bank-sort').value.trim()
-            };
-            localStorage.setItem(`eny_bank_${user}`, JSON.stringify(payload));
-        }
-
-        function switchTab(targetTabId) {
-            document.querySelectorAll('.tab-content').forEach(element => element.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
-                btn.classList.add('text-slate-400', 'hover:text-white');
-            });
-            document.getElementById(targetTabId).classList.add('active');
-            const targetButton = document.getElementById(`btn-${targetTabId}`);
-            if (targetButton) {
-                targetButton.classList.remove('text-slate-400', 'hover:text-white');
-                targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
-            }
         }
 
         // --- MATERIAL ALLOCATION HELPERS ---
@@ -1557,206 +1566,6 @@
             lucide.createIcons();
         }
 
-        function purgeInventoryItem(itemId, event) {
-            if(event) event.stopPropagation();
-            if(!confirm("Permanently discard this item from lookup indices?")) return;
-            let currentInventory = getStoredInventory();
-            localStorage.setItem('eny_inventory', JSON.stringify(currentInventory.filter(i => i.id !== itemId)));
-            activeAllocatedMaterials = activeAllocatedMaterials.filter(i => i.id !== itemId);
-            rebuildAllocatedMaterialsTable();
-            reconstructUnifiedInterfaces();
-        }
-
-        function rebuildDatalistAssistanceArray() {
-            document.getElementById('existing-categories').innerHTML = [...new Set(getStoredInventory().map(i => i.category).filter(Boolean))].map(c => `<option value="${c}"></option>`).join('');
-        }
-
-        function updateQuoteStatus(id, newStatus) {
-            let vault = getStoredVaultRecords();
-            let targetIdx = vault.findIndex(r => r.id === id);
-            if (targetIdx !== -1) {
-                vault[targetIdx].status = newStatus;
-                localStorage.setItem('eny_vault', JSON.stringify(vault));
-                reconstructUnifiedInterfaces();
-            }
-        }
-
-        function openInvoiceReconciliation(id) {
-            const vault = getStoredVaultRecords();
-            const target = vault.find(r => r.id === id);
-            if (!target) return;
-
-            document.getElementById('recon-quote-id').value = id;
-            document.getElementById('recon-gross-total').innerText = `£${target.financials.grossTotal.toFixed(2)}`;
-            document.getElementById('recon-actual-materials').value = target.financials.netMaterials.toFixed(2);
-            document.getElementById('recon-actual-labor').value = target.financials.laborCosts.toFixed(2);
-
-            document.getElementById('invoice-reconciliation-modal').classList.remove('hidden');
-        }
-
-        function closeInvoiceModal() { document.getElementById('invoice-reconciliation-modal').classList.add('hidden'); }
-
-        function confirmInvoiceConversion() {
-            const id = document.getElementById('recon-quote-id').value;
-            const actualMaterials = parseFloat(document.getElementById('recon-actual-materials').value) || 0;
-            const actualLabor = parseFloat(document.getElementById('recon-actual-labor').value) || 0;
-
-            let vault = getStoredVaultRecords();
-            let targetIdx = vault.findIndex(r => r.id === id);
-            if (targetIdx !== -1) {
-                vault[targetIdx].status = 'Invoiced';
-                vault[targetIdx].actuals = { materials: actualMaterials, labor: actualLabor };
-                localStorage.setItem('eny_vault', JSON.stringify(vault));
-                closeInvoiceModal();
-                reconstructUnifiedInterfaces();
-            }
-        }
-
-        function openProfitModal(id) {
-            const vault = getStoredVaultRecords();
-            const target = vault.find(r => r.id === id);
-            if (!target || !target.actuals) return;
-
-            const revenue = target.financials.grossTotal;
-            const costMat = target.actuals.materials;
-            const costLab = target.actuals.labor;
-            const costTest = target.includeTestingCertificate ? target.financials.testingCosts : 0;
-            const totalCosts = costMat + costLab + costTest;
-            const netProfit = revenue - totalCosts;
-            const margin = revenue > 0 ? ((netProfit / revenue) * 100).toFixed(1) : 0;
-
-            document.getElementById('profit-revenue').innerText = `£${revenue.toFixed(2)}`;
-            document.getElementById('profit-materials').innerText = `${costMat.toFixed(2)}`;
-            document.getElementById('profit-labor').innerText = `${costLab.toFixed(2)}`;
-            document.getElementById('profit-testing').innerText = `${costTest.toFixed(2)}`;
-            document.getElementById('profit-net').innerText = `£${netProfit.toFixed(2)}`;
-            document.getElementById('profit-margin').innerText = `${margin}%`;
-            document.getElementById('profit-view-modal').classList.remove('hidden');
-        }
-
-        function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); }
-
-        // --- PDF COMPILING GENERATION ENGINE ---
-        function generateDocumentPDF(id) {
-            const vault = getStoredVaultRecords();
-            const target = vault.find(r => r.id === id);
-            if (!target) return;
-
-            if (target.status === 'Draft' || !target.status) updateQuoteStatus(id, 'Sent');
-
-            const isInvoice = target.status === 'Invoiced' || target.status === 'Paid';
-            const docPrefix = isInvoice ? 'Invoice' : 'Quotation';
-            const clientName = target.clientDetailsPayload?.name || 'Client';
-
-            const docUser = target.ownerOperatorProfileID || 'HUGHES';
-            const bankConfig = JSON.parse(localStorage.getItem(`eny_bank_${docUser}`)) || { name: 'ENY Electrical', acc: 'XXXXXXXX', sort: 'XX-XX-XX' };
-
-            const materialsValue = target.financials.markedMaterials || 0;
-            const labourValue = target.financials.laborCosts || 0;
-            const testingValue = target.includeTestingCertificate ? (target.financials.testingCosts || 0) : 0;
-            const subtotalValue = materialsValue + labourValue + testingValue;
-
-            let itemsHtml = `
-                <tr style="background-color: #ffffff;">
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Materials Portfolio Summary</td>
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: center;">1</td>
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${materialsValue.toFixed(2)}</td>
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${materialsValue.toFixed(2)}</td>
-                </tr>
-                <tr style="background-color: #f8fafc;">
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Contracting Labour Operations Allocation</td>
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: center;">1</td>
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${labourValue.toFixed(2)}</td>
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${labourValue.toFixed(2)}</td>
-                </tr>
-                <tr style="background-color: #ffffff;">
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Testing, Initial Verification & compliance Certification</td>
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: center;">1</td>
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${testingValue.toFixed(2)}</td>
-                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${testingValue.toFixed(2)}</td>
-                </tr>
-            `;
-
-            const invoiceBankBlock = isInvoice 
-                ? `<div style="margin-top: 15px; padding: 10px; background-color: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px;">
-                    <strong>Bank Payment Transfer Details:</strong><br>
-                    Account Name: ${bankConfig.name} &nbsp;|&nbsp; Account Number: ${bankConfig.acc} &nbsp;|&nbsp; Sort Code: ${bankConfig.sort}
-                   </div>` : '';
-
-            const pdfHtml = `
-                <div style="padding: 45px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #334155; background-color: #ffffff; min-height: 842px; position: relative;">
-                    <div style="height: 4px; background-color: #2b4c7e; margin: -45px -45px 35px -45px;"></div>
-                    <table style="width: 100%; margin-bottom: 35px;">
-                        <tr>
-                            <td style="vertical-align: top;">
-                                <div style="font-size: 14px; color: #475569; font-weight: 500; tracking-wide; margin-bottom: 8px;">Electricians Near You</div>
-                                <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #1e3a8a; tracking-tight;">${docPrefix}</h1>
-                                <div style="font-size: 11px; color: #db2777; font-weight: 600; margin-top: 4px;">Submitted on ${target.timestamp.split(' ')[0]}</div>
-                            </td>
-                            <td style="text-align: right; vertical-align: top;">
-                                <div style="display: inline-block; border: 2px solid #e2e8f0; border-radius: 50%; width: 72px; height: 72px; text-align: center; line-height: 68px; font-size: 18px; font-weight: 800; color: #1e3a8a; background-color: #fafafa;">ENY</div>
-                            </td>
-                        </tr>
-                    </table>
-                    <table style="width: 100%; margin-bottom: 40px; font-size: 12px; border-collapse: collapse;">
-                        <tr>
-                            <td style="width: 60%; vertical-align: top; padding-right: 20px;">
-                                <div style="color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; font-size: 10px; tracking-wider;">Submitted To</div>
-                                <div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 2px;">${clientName}</div>
-                                ${target.clientDetailsPayload?.address ? `<div style="color: #475569; line-height: 1.4; font-size: 12px;">${target.clientDetailsPayload.address}</div>` : ''}
-                            </td>
-                            <td style="width: 40%; vertical-align: top; line-height: 1.6; color: #475569; padding-left: 20px;">
-                                <div><strong style="color: #0f172a;">${docPrefix} #:</strong> ${target.id.slice(-5)}</div>
-                                <div style="margin-top: 4px;"><strong style="color: #0f172a;">Project Scope:</strong></div>
-                                <div style="color: #0f172a; font-weight: 500; font-size: 12px;">${target.jobName}</div>
-                            </td>
-                        </tr>
-                    </table>
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
-                        <thead>
-                            <tr style="background-color: #1e3a8a;">
-                                <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #ffffff; tracking-wider; border-top-left-radius: 4px; border-bottom-left-radius: 4px;">Description</th>
-                                <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #ffffff; tracking-wider; width: 60px;">Qty</th>
-                                <th style="padding: 10px 12px; text-align: right; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #ffffff; tracking-wider; width: 100px;">Unit price</th>
-                                <th style="padding: 10px 12px; text-align: right; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #ffffff; tracking-wider; width: 100px; border-top-right-radius: 4px; border-bottom-right-radius: 4px;">Total price</th>
-                            </tr>
-                        </thead>
-                        <tbody>${itemsHtml}</tbody>
-                    </table>
-                    <table style="width: 100%; margin-bottom: 40px; font-size: 13px;">
-                        <tr>
-                            <td style="width: 60%; vertical-align: top; font-size: 11px; color: #64748b; padding-right: 30px; line-height: 1.5;">
-                                <strong>Terms and Conditions on agreement:</strong><br>
-                                Quotation is for Specified work only. Alterations will result in an additional cost.
-                                ${invoiceBankBlock}
-                            </td>
-                            <td style="width: 40%; vertical-align: top; text-align: right;">
-                                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                                    <tr>
-                                        <td style="padding: 6px 0; color: #1e3a8a; font-weight: 600;">Gross Total (Net)</td>
-                                        <td style="padding: 6px 0; text-align: right; font-family: monospace; font-weight: 600; color: #0f172a; width: 110px;">£${subtotalValue.toFixed(2)}</td>
-                                    </tr>
-                                    <tr style="border-top: 1px dashed #cbd5e1;">
-                                        <td style="padding: 12px 0 0 0; font-size: 15px; font-weight: 700; color: #0f172a;">Total Balance Due</td>
-                                        <td style="padding: 12px 0 0 0; text-align: right; font-size: 20px; font-weight: 800; color: #db2777; font-family: monospace;">£${subtotalValue.toFixed(2)}</td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            `;
-
-            const opt = {
-                margin: 10,
-                filename: `${docPrefix.toLowerCase()}_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${target.id}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(pdfHtml).save();
-        }
-
         function rebuildVaultDataTable() {
             const tbody = document.getElementById('vault-records-body');
             const table = document.getElementById('vault-table');
@@ -1921,9 +1730,6 @@
             cancelActiveEditingSessionMode();
             reconstructUnifiedInterfaces();
         }
-
-        function toggleInlineQuoteBreakdownFolder(rowId) { document.getElementById(rowId).classList.toggle('hidden'); }
-        function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
 
         // --- TEAM SYNC ENGINE EXPORTS CORE ---
         function exportSystemStateBackup() {
