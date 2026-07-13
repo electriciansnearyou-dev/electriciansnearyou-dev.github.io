@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Common EICR Failure Causes | Landlord Safety Inspection Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "Inter", sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass-card { background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .top-navbar { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="pt-24 pb-12">
+
+    <!-- NAVBAR -->
+    <header class="top-navbar fixed top-0 left-0 right-0 h-[70px] z-50 flex items-center shadow-lg">
+        <div class="w-full max-w-5xl mx-auto px-4 flex items-center justify-between">
+            <a href="../index.html" class="text-xl font-extrabold text-white tracking-tight">ElectriciansNearYou</a>
+            <div class="flex gap-3">
+                <a href="../index.html" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-white border border-slate-700 transition">🏡 Main Site</a>
+                <a href="../blog.html" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-white border border-slate-700 transition">📚 Blog Hub</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ARTICLE LAYOUT -->
+    <main class="max-w-3xl mx-auto px-4">
+        <article class="glass-card rounded-3xl p-6 md:p-10 shadow-2xl">
+            <span class="text-xs font-bold text-[#c59b27] uppercase tracking-widest block mb-3">Landlord Requirements</span>
+            <h1 class="text-3xl md:text-4xl font-black tracking-tight text-white mb-6 leading-tight">EICR Failures: Most Common Causes</h1>
+            
+            <div class="space-y-6 text-slate-300 leading-relaxed text-sm md:text-base font-medium">
+                <p>An Electrical Installation Condition Report (EICR) is a strict mechanical health check of a property's underlying wiring. When an inspector issues an "Unsatisfactory" outcome grade, it's typically tied to a few recurring code discrepancies that present immediate shock or operational thermal breakdown risks.</p>
+                
+                <h2 class="text-xl font-bold text-white pt-4 text-[#c59b27]">Lack of Critical RCD Protection (Code C2)</h2>
+                <p>The single most frequent trigger for an automatic EICR safety fail is the absence of Residual Current Devices (RCDs) on general socket outlets and damp-zone lighting rings. If a circuit lacks a sensitive 30mA trip trigger window, an appliance wiring breakdown could pass live structural currents straight through human contact before standard fuse units register an overload, making this a top-tier safety breach.</p>
+
+                <h2 class="text-xl font-bold text-white pt-4 text-[#c59b27]">Inadequate Main Earthing and Protective Bonding</h2>
+                <p>Testing engineers frequently log degraded, undersized, or missing bonding connections to central oncoming metallic incoming utility infrastructure installations like incoming gas lines and water mains. If a fault causes secondary metal pipes to become live, without correct thick copper connection loops down to the primary electrical earthing rod terminal, the breaker cannot drop fast enough, turning your entire plumbing footprint into an immediate shock risk zone.</p>
+
+                <h2 class="text-xl font-bold text-white pt-4 text-[#c59b27]">Thermal Degradation and DIY Alterations</h2>
+                <p>Overloaded ring main connections often show clear structural signs of heat degradation around terminal points inside wall boxes. Unprofessional layout modifications—like bridging rings, stacking high-draw utilities over loose screw connection lines, or exposing live copper paths inside broken accessories—trigger immediate C1 or C2 failure declarations that require fast isolation remedies.</p>
+            </div>
+
+            <div class="mt-10 pt-6 border-t border-slate-800 text-center">
+                <p class="text-xs text-slate-400 mb-4">Need to schedule a certified safety inspection check for your rental property portfolio?</p>
+                <a href="../Calculators/EICR-Calculator.html" class="inline-block bg-[#c59b27] hover:bg-[#a17c1d] text-slate-950 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wide transition shadow-md">Calculate EICR Assessment Fee &rarr;</a>
+            </div>
+        </article>
+    </main>
+</body>
+</html>
