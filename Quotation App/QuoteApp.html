@@ -629,7 +629,7 @@
                 <ul id="shopping-list-content" class="space-y-2 text-sm text-slate-300"></ul>
             </div>
             <div class="p-5 border-t border-slate-800 bg-slate-800/50 flex justify-end gap-3">
-                <button onclick="copyShoppingList()" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer">
+                <button onclick="copyShoppingList()" class="bg-slate-800 hover:bg-slate-750 border border-slate-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer">
                     <i data-lucide="copy" class="w-4 h-4"></i> Copy List
                 </button>
                 <button onclick="closeShoppingListModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-2 rounded-xl text-sm font-bold transition-colors cursor-pointer">
@@ -1000,6 +1000,22 @@
             lucide.createIcons();
         }
 
+        function deleteClientProfile(clientId) {
+            if (!confirm("Permanently remove this customer from CRM logs?")) return;
+            let clients = getStoredClients();
+            localStorage.setItem('eny_clients', JSON.stringify(clients.filter(c => c.id !== clientId)));
+            if (activeLinkedClientId === clientId) { document.getElementById('quote-client-select').value = ""; activeLinkedClientId = ""; }
+            rebuildCrmProfilesInterface();
+            rebuildQuoteClientDropdown();
+        }
+
+        function rebuildQuoteClientDropdown() {
+            const select = document.getElementById('quote-client-select');
+            if (!select) return;
+            select.innerHTML = `<option value="">-- Manual Entry (Auto-Saves) --</option>` + getStoredClients().map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            select.value = activeLinkedClientId;
+        }
+
         // --- DASHBOARD AND METRICS BUILDERS ---
         function rebuildHomeDashboardMetrics() {
             const records = getStoredVaultRecords();
@@ -1158,6 +1174,45 @@
             document.getElementById('summary-gross-total').innerText = `£${grossTotal.toFixed(2)}`;
             
             return { netMaterials, markedMaterials, laborCosts, computedTestingCharge, grossTotal, markup, isTestingIncluded, testingCostFixed };
+        }
+
+        // --- ACCOUNT IDENTITY MANAGEMENT ROUTINES ---
+        function handleUserProfileChange() {
+            const chosenUser = document.getElementById('global-user-profile-select').value;
+            localStorage.setItem('eny_profile_user', chosenUser);
+            loadCurrentProfileBankConfig();
+        }
+
+        function loadCurrentProfileBankConfig() {
+            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
+            const bankData = JSON.parse(localStorage.getItem(`eny_bank_${user}`)) || { name: '', acc: '', sort: '' };
+            document.getElementById('cfg-bank-name').value = bankData.name || '';
+            document.getElementById('cfg-bank-acc').value = bankData.acc || '';
+            document.getElementById('cfg-bank-sort').value = bankData.sort || '';
+        }
+
+        function saveCurrentProfileBankConfig() {
+            const user = localStorage.getItem('eny_profile_user') || 'HUGHES';
+            const payload = {
+                name: document.getElementById('cfg-bank-name').value.trim(),
+                acc: document.getElementById('cfg-bank-acc').value.trim(),
+                sort: document.getElementById('cfg-bank-sort').value.trim()
+            };
+            localStorage.setItem(`eny_bank_${user}`, JSON.stringify(payload));
+        }
+
+        function switchTab(targetTabId) {
+            document.querySelectorAll('.tab-content').forEach(element => element.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+                btn.classList.add('text-slate-400', 'hover:text-white');
+            });
+            document.getElementById(targetTabId).classList.add('active');
+            const targetButton = document.getElementById(`btn-${targetTabId}`);
+            if (targetButton) {
+                targetButton.classList.remove('text-slate-400', 'hover:text-white');
+                targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+            }
         }
 
         // --- MATERIAL ALLOCATION HELPERS ---
@@ -1566,6 +1621,206 @@
             lucide.createIcons();
         }
 
+        function purgeInventoryItem(itemId, event) {
+            if(event) event.stopPropagation();
+            if(!confirm("Permanently discard this item from lookup indices?")) return;
+            let currentInventory = getStoredInventory();
+            localStorage.setItem('eny_inventory', JSON.stringify(currentInventory.filter(i => i.id !== itemId)));
+            activeAllocatedMaterials = activeAllocatedMaterials.filter(i => i.id !== itemId);
+            rebuildAllocatedMaterialsTable();
+            reconstructUnifiedInterfaces();
+        }
+
+        function rebuildDatalistAssistanceArray() {
+            document.getElementById('existing-categories').innerHTML = [...new Set(getStoredInventory().map(i => i.category).filter(Boolean))].map(c => `<option value="${c}"></option>`).join('');
+        }
+
+        function updateQuoteStatus(id, newStatus) {
+            let vault = getStoredVaultRecords();
+            let targetIdx = vault.findIndex(r => r.id === id);
+            if (targetIdx !== -1) {
+                vault[targetIdx].status = newStatus;
+                localStorage.setItem('eny_vault', JSON.stringify(vault));
+                reconstructUnifiedInterfaces();
+            }
+        }
+
+        function openInvoiceReconciliation(id) {
+            const vault = getStoredVaultRecords();
+            const target = vault.find(r => r.id === id);
+            if (!target) return;
+
+            document.getElementById('recon-quote-id').value = id;
+            document.getElementById('recon-gross-total').innerText = `£${target.financials.grossTotal.toFixed(2)}`;
+            document.getElementById('recon-actual-materials').value = target.financials.netMaterials.toFixed(2);
+            document.getElementById('recon-actual-labor').value = target.financials.laborCosts.toFixed(2);
+
+            document.getElementById('invoice-reconciliation-modal').classList.remove('hidden');
+        }
+
+        function closeInvoiceModal() { document.getElementById('invoice-reconciliation-modal').classList.add('hidden'); }
+
+        function confirmInvoiceConversion() {
+            const id = document.getElementById('recon-quote-id').value;
+            const actualMaterials = parseFloat(document.getElementById('recon-actual-materials').value) || 0;
+            const actualLabor = parseFloat(document.getElementById('recon-actual-labor').value) || 0;
+
+            let vault = getStoredVaultRecords();
+            let targetIdx = vault.findIndex(r => r.id === id);
+            if (targetIdx !== -1) {
+                vault[targetIdx].status = 'Invoiced';
+                vault[targetIdx].actuals = { materials: actualMaterials, labor: actualLabor };
+                localStorage.setItem('eny_vault', JSON.stringify(vault));
+                closeInvoiceModal();
+                reconstructUnifiedInterfaces();
+            }
+        }
+
+        function openProfitModal(id) {
+            const vault = getStoredVaultRecords();
+            const target = vault.find(r => r.id === id);
+            if (!target || !target.actuals) return;
+
+            const revenue = target.financials.grossTotal;
+            const costMat = target.actuals.materials;
+            const costLab = target.actuals.labor;
+            const costTest = target.includeTestingCertificate ? target.financials.testingCosts : 0;
+            const totalCosts = costMat + costLab + costTest;
+            const netProfit = revenue - totalCosts;
+            const margin = revenue > 0 ? ((netProfit / revenue) * 100).toFixed(1) : 0;
+
+            document.getElementById('profit-revenue').innerText = `£${revenue.toFixed(2)}`;
+            document.getElementById('profit-materials').innerText = `${costMat.toFixed(2)}`;
+            document.getElementById('profit-labor').innerText = `${costLab.toFixed(2)}`;
+            document.getElementById('profit-testing').innerText = `${costTest.toFixed(2)}`;
+            document.getElementById('profit-net').innerText = `£${netProfit.toFixed(2)}`;
+            document.getElementById('profit-margin').innerText = `${margin}%`;
+            document.getElementById('profit-view-modal').classList.remove('hidden');
+        }
+
+        function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); }
+
+        // --- PDF COMPILING GENERATION ENGINE ---
+        function generateDocumentPDF(id) {
+            const vault = getStoredVaultRecords();
+            const target = vault.find(r => r.id === id);
+            if (!target) return;
+
+            if (target.status === 'Draft' || !target.status) updateQuoteStatus(id, 'Sent');
+
+            const isInvoice = target.status === 'Invoiced' || target.status === 'Paid';
+            const docPrefix = isInvoice ? 'Invoice' : 'Quotation';
+            const clientName = target.clientDetailsPayload?.name || 'Client';
+
+            const docUser = target.ownerOperatorProfileID || 'HUGHES';
+            const bankConfig = JSON.parse(localStorage.getItem(`eny_bank_${docUser}`)) || { name: 'ENY Electrical', acc: 'XXXXXXXX', sort: 'XX-XX-XX' };
+
+            const materialsValue = target.financials.markedMaterials || 0;
+            const labourValue = target.financials.laborCosts || 0;
+            const testingValue = target.includeTestingCertificate ? (target.financials.testingCosts || 0) : 0;
+            const subtotalValue = materialsValue + labourValue + testingValue;
+
+            let itemsHtml = `
+                <tr style="background-color: #ffffff;">
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Materials Portfolio Summary</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: center;">1</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${materialsValue.toFixed(2)}</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${materialsValue.toFixed(2)}</td>
+                </tr>
+                <tr style="background-color: #f8fafc;">
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Contracting Labour Operations Allocation</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: center;">1</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${labourValue.toFixed(2)}</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${labourValue.toFixed(2)}</td>
+                </tr>
+                <tr style="background-color: #ffffff;">
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;">Testing, Initial Verification & compliance Certification</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: center;">1</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${testingValue.toFixed(2)}</td>
+                    <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155; text-align: right; font-family: monospace;">£${testingValue.toFixed(2)}</td>
+                </tr>
+            `;
+
+            const invoiceBankBlock = isInvoice 
+                ? `<div style="margin-top: 15px; padding: 10px; background-color: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 11px;">
+                    <strong>Bank Payment Transfer Details:</strong><br>
+                    Account Name: ${bankConfig.name} &nbsp;|&nbsp; Account Number: ${bankConfig.acc} &nbsp;|&nbsp; Sort Code: ${bankConfig.sort}
+                   </div>` : '';
+
+            const pdfHtml = `
+                <div style="padding: 45px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #334155; background-color: #ffffff; min-height: 842px; position: relative;">
+                    <div style="height: 4px; background-color: #2b4c7e; margin: -45px -45px 35px -45px;"></div>
+                    <table style="width: 100%; margin-bottom: 35px;">
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <div style="font-size: 14px; color: #475569; font-weight: 500; tracking-wide; margin-bottom: 8px;">Electricians Near You</div>
+                                <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #1e3a8a; tracking-tight;">${docPrefix}</h1>
+                                <div style="font-size: 11px; color: #db2777; font-weight: 600; margin-top: 4px;">Submitted on ${target.timestamp.split(' ')[0]}</div>
+                            </td>
+                            <td style="text-align: right; vertical-align: top;">
+                                <div style="display: inline-block; border: 2px solid #e2e8f0; border-radius: 50%; width: 72px; height: 72px; text-align: center; line-height: 68px; font-size: 18px; font-weight: 800; color: #1e3a8a; background-color: #fafafa;">ENY</div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%; margin-bottom: 40px; font-size: 12px; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 60%; vertical-align: top; padding-right: 20px;">
+                                <div style="color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; font-size: 10px; tracking-wider;">Submitted To</div>
+                                <div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 2px;">${clientName}</div>
+                                ${target.clientDetailsPayload?.address ? `<div style="color: #475569; line-height: 1.4; font-size: 12px;">${target.clientDetailsPayload.address}</div>` : ''}
+                            </td>
+                            <td style="width: 40%; vertical-align: top; line-height: 1.6; color: #475569; padding-left: 20px;">
+                                <div><strong style="color: #0f172a;">${docPrefix} #:</strong> ${target.id.slice(-5)}</div>
+                                <div style="margin-top: 4px;"><strong style="color: #0f172a;">Project Scope:</strong></div>
+                                <div style="color: #0f172a; font-weight: 500; font-size: 12px;">${target.jobName}</div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+                        <thead>
+                            <tr style="background-color: #1e3a8a;">
+                                <th style="padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #ffffff; tracking-wider; border-top-left-radius: 4px; border-bottom-left-radius: 4px;">Description</th>
+                                <th style="padding: 10px 12px; text-align: center; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #ffffff; tracking-wider; width: 60px;">Qty</th>
+                                <th style="padding: 10px 12px; text-align: right; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #ffffff; tracking-wider; width: 100px;">Unit price</th>
+                                <th style="padding: 10px 12px; text-align: right; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #ffffff; tracking-wider; width: 100px; border-top-right-radius: 4px; border-bottom-right-radius: 4px;">Total price</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsHtml}</tbody>
+                    </table>
+                    <table style="width: 100%; margin-bottom: 40px; font-size: 13px;">
+                        <tr>
+                            <td style="width: 60%; vertical-align: top; font-size: 11px; color: #64748b; padding-right: 30px; line-height: 1.5;">
+                                <strong>Terms and Conditions on agreement:</strong><br>
+                                Quotation is for Specified work only. Alterations will result in an additional cost.
+                                ${invoiceBankBlock}
+                            </td>
+                            <td style="width: 40%; vertical-align: top; text-align: right;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                    <tr>
+                                        <td style="padding: 6px 0; color: #1e3a8a; font-weight: 600;">Gross Total (Net)</td>
+                                        <td style="padding: 6px 0; text-align: right; font-family: monospace; font-weight: 600; color: #0f172a; width: 110px;">£${subtotalValue.toFixed(2)}</td>
+                                    </tr>
+                                    <tr style="border-top: 1px dashed #cbd5e1;">
+                                        <td style="padding: 12px 0 0 0; font-size: 15px; font-weight: 700; color: #0f172a;">Total Balance Due</td>
+                                        <td style="padding: 12px 0 0 0; text-align: right; font-size: 20px; font-weight: 800; color: #db2777; font-family: monospace;">£${subtotalValue.toFixed(2)}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+
+            const opt = {
+                margin: 10,
+                filename: `${docPrefix.toLowerCase()}_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${target.id}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(pdfHtml).save();
+        }
+
         function rebuildVaultDataTable() {
             const tbody = document.getElementById('vault-records-body');
             const table = document.getElementById('vault-table');
@@ -1730,6 +1985,9 @@
             cancelActiveEditingSessionMode();
             reconstructUnifiedInterfaces();
         }
+
+        function toggleInlineQuoteBreakdownFolder(rowId) { document.getElementById(rowId).classList.toggle('hidden'); }
+        function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
 
         // --- TEAM SYNC ENGINE EXPORTS CORE ---
         function exportSystemStateBackup() {
