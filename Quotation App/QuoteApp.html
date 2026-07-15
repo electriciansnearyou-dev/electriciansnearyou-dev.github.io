@@ -325,10 +325,14 @@
                         
                         <div class="space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800/80">
                             <div class="flex justify-between text-sm">
-                                <span class="text-slate-400">Net Materials:</span>
+                                <span class="text-slate-400">Net Materials (Ex. VAT):</span>
                                 <span id="summary-net-materials" class="font-medium">£0.00</span>
                             </div>
-                            <div class="flex justify-between text-sm">
+                            <div class="flex justify-between text-sm border-b border-slate-800/60 pb-2">
+                                <span class="text-slate-400">+ 20% Wholesaler VAT:</span>
+                                <span id="summary-materials-vat" class="font-medium text-slate-300">£0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm pt-1">
                                 <span class="text-slate-400">Marked-Up Materials:</span>
                                 <span id="summary-marked-materials" class="font-medium text-amber-400/90">£0.00</span>
                             </div>
@@ -737,6 +741,7 @@
     </div>
 
     <script>
+        // Default items array seed
         const STB_SEEDED_INVENTORY = [
             { id: 'STB-1', sku: 'F3007MZ', desc: 'FUSEBOX F3007MZ 7WAY 100A SPD CON UNIT', cost: 69, category: 'Consumer Units & Protection' },
             { id: 'STB-2', sku: 'F3011MZ', desc: 'FUSEBOX F3011MZ 11WAY 100A SPD CON UNIT', cost: 76, category: 'Consumer Units & Protection' },
@@ -790,6 +795,7 @@
             { id: 'STB-50', sku: '034385', desc: 'Legd 034385 Earthing Clamp 12/16mm', cost: 5, category: 'Sundries' }
         ];
 
+        // Seed default foundational layout workflows
         const DEFAULT_SEED_TEMPLATES = [
             { id: 'T1', name: "Consumer Unit Upgrade Material Pack", items: [{ id: 'STB-1', qty: 1 }, { id: 'STB-9', qty: 6 }] },
             { id: 'T2', name: "Standard Room Lighting Setup Pack", items: [{ id: 'STB-25', qty: 6 }, { id: 'STB-47', qty: 2 }] }
@@ -990,8 +996,8 @@
                                             </div>
                                             <div id="crm-folder-${j.id}" class="hidden pt-2 text-[10px] border-t border-dashed border-slate-800 text-slate-400 bg-slate-950/80 p-2 rounded">
                                                 <div class="space-y-1">
-                                                    <div class="flex justify-between"><span>Materials:</span><span class="font-mono">£${j.financials.markedMaterials.toFixed(2)}</span></div>
-                                                    <div class="flex justify-between"><span>Labor:</span><span class="font-mono">£${j.financials.laborCosts.toFixed(2)}</span></div>
+                                                    <div class="flex justify-between"><span>Materials:</span><span class="font-mono">£${(j.financials.markedMaterials || 0).toFixed(2)}</span></div>
+                                                    <div class="flex justify-between"><span>Labor:</span><span class="font-mono">£${(j.financials.laborCosts || 0).toFixed(2)}</span></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1093,18 +1099,18 @@
             activeLaborBookingFormat = formatMode;
             ['day', 'half', 'hour'].forEach(m => {
                 const el = document.getElementById(`lbl-btn-${m}`);
-                el.className = "py-2 text-xs font-bold rounded-lg transition-all text-slate-400";
+                if(el) el.className = "py-2 text-xs font-bold rounded-lg transition-all text-slate-400";
             });
 
             const targetBtn = document.getElementById(`lbl-btn-${formatMode.toLowerCase()}`);
-            targetBtn.className = "py-2 text-xs font-bold rounded-lg transition-all bg-amber-500 text-slate-950 shadow-md";
+            if(targetBtn) targetBtn.className = "py-2 text-xs font-bold rounded-lg transition-all bg-amber-500 text-slate-950 shadow-md";
 
             const hourlyWidgetFrame = document.getElementById('hourly-selector-context-frame');
             if (formatMode === 'HOUR') {
-                hourlyWidgetFrame.classList.remove('invisible', 'opacity-0');
+                hourlyWidgetFrame.classList.remove('invisible', 'opacity-0', 'h-0', 'overflow-hidden');
                 hourlyWidgetFrame.classList.add('opacity-100');
             } else {
-                hourlyWidgetFrame.classList.add('invisible', 'opacity-0');
+                hourlyWidgetFrame.classList.add('invisible', 'opacity-0', 'h-0', 'overflow-hidden');
                 hourlyWidgetFrame.classList.remove('opacity-100');
             }
             calculateComprehensiveMetrics();
@@ -1165,9 +1171,15 @@
 
         // --- CORE COMPREHENSIVE MATH ENGINE ---
         function calculateComprehensiveMetrics() {
-            const netMaterials = activeAllocatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost) * curr.qty), 0);
+            const netMaterialsExVat = activeAllocatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost) * curr.qty), 0);
+            
+            // Explicitly calculate and add the 20% Wholesaler VAT applied to cost of materials
+            const materialsVat = netMaterialsExVat * 0.20;
+            const netMaterialsIncVat = netMaterialsExVat + materialsVat;
+
+            // Apply standard markup to the VAT inclusive materials cost
             const markup = parseFloat(localStorage.getItem('eny_global_markup')) || 0;
-            const markedMaterials = netMaterials * (1 + (markup / 100));
+            const markedMaterials = netMaterialsIncVat * (1 + (markup / 100));
             
             let laborCosts = 0;
             const rateDay = parseFloat(localStorage.getItem('eny_rate_day')) || 350;
@@ -1200,13 +1212,25 @@
 
             const grossTotal = markedMaterials + laborCosts + computedTestingCharge;
 
-            document.getElementById('summary-net-materials').innerText = `£${netMaterials.toFixed(2)}`;
+            document.getElementById('summary-net-materials').innerText = `£${netMaterialsExVat.toFixed(2)}`;
+            document.getElementById('summary-materials-vat').innerText = `£${materialsVat.toFixed(2)}`;
             document.getElementById('summary-marked-materials').innerText = `£${markedMaterials.toFixed(2)}`;
             document.getElementById('summary-labor-costs').innerText = `£${laborCosts.toFixed(2)}`;
             document.getElementById('summary-testing-costs').innerText = `£${computedTestingCharge.toFixed(2)}`;
             document.getElementById('summary-gross-total').innerText = `£${grossTotal.toFixed(2)}`;
             
-            return { netMaterials, markedMaterials, laborCosts, computedTestingCharge, grossTotal, markup, isTestingIncluded, testingCostFixed };
+            return { 
+                netMaterialsExVat: netMaterialsExVat,
+                materialsVat: materialsVat,
+                netMaterials: netMaterialsIncVat, 
+                markedMaterials: markedMaterials, 
+                laborCosts: laborCosts, 
+                computedTestingCharge: computedTestingCharge, 
+                grossTotal: grossTotal, 
+                markup: markup, 
+                isTestingIncluded: isTestingIncluded, 
+                testingCostFixed: testingCostFixed 
+            };
         }
 
         // --- ACCOUNT IDENTITY MANAGEMENT ROUTINES ---
@@ -1587,7 +1611,8 @@
             document.getElementById('client-address').value = "";
             document.getElementById('include-testing-toggle').checked = false;
             
-            document.getElementById('op2-enable-toggle').checked = false;
+            const op2Toggle = document.getElementById('op2-enable-toggle');
+            if(op2Toggle) op2Toggle.checked = false;
             toggleOp2Controls();
             
             setLaborBookingFormat('DAY');
@@ -1702,7 +1727,7 @@
 
             document.getElementById('recon-quote-id').value = id;
             document.getElementById('recon-gross-total').innerText = `£${target.financials.grossTotal.toFixed(2)}`;
-            document.getElementById('recon-actual-materials').value = target.financials.netMaterials.toFixed(2);
+            document.getElementById('recon-actual-materials').value = (target.financials.netMaterialsExVat || 0).toFixed(2);
             document.getElementById('recon-actual-labor').value = target.financials.laborCosts.toFixed(2);
 
             document.getElementById('invoice-reconciliation-modal').classList.remove('hidden');
@@ -1941,8 +1966,9 @@
                                 <div class="space-y-3">
                                     <h4 class="font-bold text-amber-400 uppercase tracking-wider text-[10px]">Financial Breakdown Mapping</h4>
                                     <div class="space-y-2 bg-slate-900/40 p-3 rounded-lg border border-slate-800/40">
-                                        <div class="flex justify-between"><span>Net wholesale Cost Materials:</span><span class="font-mono">£${r.financials.netMaterials.toFixed(2)}</span></div>
-                                        <div class="flex justify-between"><span>Gross Operational Labor Allocation cost:</span><span class="font-mono">£${r.financials.laborCosts.toFixed(2)}</span></div>
+                                        <div class="flex justify-between"><span>Net Wholesale Cost (Ex. VAT):</span><span class="font-mono">£${(r.financials.netMaterialsExVat || 0).toFixed(2)}</span></div>
+                                        <div class="flex justify-between"><span>Net Wholesale Cost (Inc. 20% VAT):</span><span class="font-mono text-slate-400">£${(r.financials.netMaterials || 0).toFixed(2)}</span></div>
+                                        <div class="flex justify-between"><span>Gross Operational Labor Allocation cost:</span><span class="font-mono">£${(r.financials.laborCosts || 0).toFixed(2)}</span></div>
                                         <div class="border-t border-slate-800/80 pt-2 font-bold flex justify-between text-white text-sm"><span>Total Gross (Exc VAT):</span><span class="font-mono text-amber-400">£${r.financials.grossTotal.toFixed(2)}</span></div>
                                     </div>
                                 </div>
@@ -2018,7 +2044,15 @@
                 clientDetailsPayload: { name: clientName, email: document.getElementById('client-email').value.trim(), address: document.getElementById('client-address').value.trim() },
                 includeTestingCertificate: calcs.isTestingIncluded,
                 testingCostFixed: calcs.testingCostFixed,
-                financials: { netMaterials: calcs.netMaterials, markedMaterials: calcs.markedMaterials, laborCosts: calcs.laborCosts, testingCosts: calcs.computedTestingCharge, grossTotal: calcs.grossTotal },
+                financials: { 
+                    netMaterialsExVat: calcs.netMaterialsExVat, 
+                    materialsVat: calcs.materialsVat, 
+                    netMaterials: calcs.netMaterials, 
+                    markedMaterials: calcs.markedMaterials, 
+                    laborCosts: calcs.laborCosts, 
+                    testingCosts: calcs.computedTestingCharge, 
+                    grossTotal: calcs.grossTotal 
+                },
                 itemsSnapshot: [...activeAllocatedMaterials]
             };
 
