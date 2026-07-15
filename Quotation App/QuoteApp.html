@@ -10,6 +10,12 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- HTML2PDF Library for Client-Side PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- PDF.js Library for Client-Side PDF Text Extraction -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script>
+        // Set the worker source for PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -425,15 +431,29 @@
         <!-- ================= TAB 3: MATERIAL STOCK MANAGER ================= -->
         <div id="inventory-tab" class="tab-content space-y-6">
             
-            <!-- SMART SUPPLIER IMPORT BLOCK -->
+            <!-- SMART SUPPLIER IMPORT BLOCK WITH PDF PARSING -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm mb-8">
                 <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
-                    <i data-lucide="file-input" class="text-amber-400"></i> Smart Supplier Import (Text/CSV)
+                    <i data-lucide="file-input" class="text-amber-400"></i> Smart Supplier Import Tool
                 </h2>
-                <p class="text-xs text-slate-400 mb-4">Paste raw text from a PDF quotation (like STB Electrical) or standard CSV format (SKU, Description, Price). New items will be added. Existing items will only overwrite if the new price is higher.</p>
-                <textarea id="import-text-area" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-amber-500 mb-4" placeholder="Paste your data here..."></textarea>
+                <p class="text-xs text-slate-400 mb-4">Upload a PDF quote directly (like STB Electrical) or paste raw text. The system will automatically scan for part numbers ending in <code>:1</code>, extract the descriptions, and round the trade cost up to the nearest integer. Existing items will only overwrite if the new cost is higher.</p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                    <!-- PDF File Upload Button -->
+                    <label class="w-full sm:w-1/2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer text-center">
+                        <i data-lucide="file-text" class="w-5 h-5"></i> <span id="pdf-upload-btn-text">Upload Supplier PDF</span>
+                        <input type="file" id="pdf-upload" class="hidden" accept="application/pdf" onchange="handlePdfUpload(event)">
+                    </label>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true"><div class="w-full border-t border-slate-800"></div></div>
+                    <div class="relative flex justify-center"><span class="bg-slate-950 px-3 text-xs text-slate-500 font-medium">OR PASTE TEXT MANUALLY</span></div>
+                </div>
+
+                <textarea id="import-text-area" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 mt-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-amber-500 mb-4" placeholder="Paste data here if not using PDF upload..."></textarea>
                 <button onclick="processRawImport()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 px-6 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto">
-                    <i data-lucide="upload-cloud" class="w-4 h-4"></i> Process & Import Catalog
+                    <i data-lucide="upload-cloud" class="w-4 h-4"></i> Run Parsing Engine
                 </button>
             </div>
 
@@ -778,60 +798,172 @@
 
     <!-- ================= SYSTEM ENGINE CORE JAVASCRIPT LOGIC ================= -->
     <script>
+        // --- CLIENT-SIDE PDF PARSER ---
+        async function handlePdfUpload(event) {
+            const file = event.target.files[0];
+            if (!file || file.type !== "application/pdf") {
+                alert("Please select a valid PDF file to scan.");
+                return;
+            }
+
+            const btn = document.getElementById('pdf-upload-btn-text');
+            const originalText = btn.innerText;
+            btn.innerText = "Scanning Document...";
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                let fullText = "";
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    
+                    let items = textContent.items;
+                    items.sort((a, b) => {
+                        const yDiff = b.transform[5] - a.transform[5];
+                        if (Math.abs(yDiff) > 5) return yDiff; 
+                        return a.transform[4] - b.transform[4]; 
+                    });
+
+                    let lastY = -1;
+                    let line = "";
+                    for (let item of items) {
+                        if (lastY !== -1 && Math.abs(item.transform[5] - lastY) > 5) {
+                            fullText += line.trim() + "\n";
+                            line = "";
+                        }
+                        line += item.str + " ";
+                        lastY = item.transform[5];
+                    }
+                    fullText += line.trim() + "\n";
+                }
+
+                document.getElementById('import-text-area').value = fullText;
+                processRawImport(); 
+            } catch (error) {
+                console.error(error);
+                alert("Could not process PDF. Ensure it is a text-based digital file, not a flat image scan.");
+            } finally {
+                btn.innerText = originalText;
+                event.target.value = ""; 
+            }
+        }
+
+        // --- SMART IMPORT ENGINE PARSER ---
+        function processRawImport() {
+            const rawData = document.getElementById('import-text-area').value;
+            if(!rawData.trim()) { alert("Please upload a PDF or paste data into the import box first."); return; }
+            
+            const lines = rawData.split('\n');
+            let inventory = getStoredInventory();
+            let addedCount = 0;
+            let updatedCount = 0;
+
+            lines.forEach(line => {
+                line = line.trim();
+                if(!line) return;
+                
+                let sku = "";
+                let desc = "";
+                let price = 0;
+
+                // Strategy 1: STB Electrical Specific Match
+                let stbMatch = line.match(/([A-Z0-9\/\-]+):1\s+(.+)/);
+                if (stbMatch) {
+                    sku = stbMatch[1].trim();
+                    let remainder = stbMatch[2].trim();
+                    let tokens = remainder.split(/\s+/);
+                    let descTokens = [];
+                    let numTokens = [];
+                    
+                    for(let t of tokens) {
+                        let cleanNum = t.replace(/£|,/g, '');
+                        if(!isNaN(cleanNum) && !t.match(/[a-zA-Z]/) && t !== '') {
+                            numTokens.push(parseFloat(cleanNum));
+                        } else {
+                            descTokens.push(t);
+                        }
+                    }
+                    
+                    desc = descTokens.join(' ');
+                    // Nett price is usually the 2nd to last number in STB tables
+                    if (numTokens.length >= 2) {
+                        price = numTokens[numTokens.length - 2];
+                    } else if (numTokens.length > 0) {
+                        price = numTokens[numTokens.length - 1];
+                    }
+                } 
+                // Strategy 2: User Copy-Paste with Pipes or Tabs
+                else if (line.includes('|') || line.includes('\t')) {
+                    let cols = line.split(/\||\t/);
+                    if (cols.length >= 3) {
+                        if (line.includes('|') && cols.length >= 9) {
+                            sku = cols[1].trim().replace(/:1$/, '');
+                            desc = cols[2].trim();
+                            price = Math.ceil(parseFloat(cols[8].trim()) || 0);
+                        } else {
+                            sku = cols[0].trim();
+                            desc = cols[1].trim();
+                            let lastCol = cols[cols.length-1].trim().replace(/£|,/g, '');
+                            price = parseFloat(lastCol);
+                            if(isNaN(price) && cols.length > 3) {
+                                price = parseFloat(cols[cols.length-2].trim().replace(/£|,/g, ''));
+                            }
+                        }
+                    }
+                }
+                // Strategy 3: Generic Space Separated fallback (SKU DESC PRICE)
+                else {
+                    let genericMatch = line.match(/^([A-Z0-9\/\-]+)\s+(.+?)\s+£?([\d\.,]+)$/);
+                    if (genericMatch) {
+                        sku = genericMatch[1].trim();
+                        desc = genericMatch[2].trim();
+                        price = parseFloat(genericMatch[3].replace(/,/g, ''));
+                    }
+                }
+
+                if(sku && desc && price > 0 && !isNaN(price)) {
+                    let roundedPrice = Math.ceil(price);
+                    const existingIndex = inventory.findIndex(i => i.sku.toLowerCase() === sku.toLowerCase());
+                    if (existingIndex !== -1) {
+                        if (roundedPrice > inventory[existingIndex].cost) {
+                            inventory[existingIndex].cost = roundedPrice;
+                            updatedCount++;
+                        }
+                    } else {
+                        inventory.push({ 
+                            id: 'MAT-' + Date.now() + Math.floor(Math.random()*1000), 
+                            sku: sku, 
+                            desc: desc, 
+                            cost: roundedPrice, 
+                            category: 'Imported' 
+                        });
+                        addedCount++;
+                    }
+                }
+            });
+
+            localStorage.setItem('eny_inventory', JSON.stringify(inventory));
+            alert(`Import Parsing Engine Complete!\n\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items with higher costs.`);
+            document.getElementById('import-text-area').value = "";
+            reconstructUnifiedInterfaces();
+        }
+
+        // --- PRE-SEEDED DEFAULTS ---
         const STB_SEEDED_INVENTORY = [
             { id: 'STB-1', sku: 'F3007MZ', desc: 'FUSEBOX F3007MZ 7WAY 100A SPD CON UNIT', cost: 69, category: 'Consumer Units & Protection' },
             { id: 'STB-2', sku: 'F3011MZ', desc: 'FUSEBOX F3011MZ 11WAY 100A SPD CON UNIT', cost: 76, category: 'Consumer Units & Protection' },
             { id: 'STB-3', sku: 'F3015MZ', desc: 'FUSEBOX F3015MZ 15WAY 100A SPD CON UNIT', cost: 82, category: 'Consumer Units & Protection' },
             { id: 'STB-4', sku: 'F3021MZ', desc: 'FUSEBOX F3021MZ 21WAY 100A SPD CON UNIT', cost: 91, category: 'Consumer Units & Protection' },
             { id: 'STB-5', sku: '6381Y25KIT1M', desc: '6381Y 25MM DI FLEXIBLE TAILS KIT 1M', cost: 14, category: 'Wiring & Management' },
-            { id: 'STB-6', sku: '6381Y251BLU', desc: '25MM DI FLEXIBLE TAILS BLUE 6381Y', cost: 0, category: 'Wiring & Management' },
-            { id: 'STB-7', sku: '6381Y251BR', desc: '25MM DI FLEXIBLE TAILS BROWN 6381Y', cost: 0, category: 'Wiring & Management' },
-            { id: 'STB-8', sku: '6491X161GY', desc: '16MM SINGLE G/Y EARTH 6491X', cost: 0, category: 'Wiring & Management' },
             { id: 'STB-9', sku: 'RTA060630B', desc: 'FUSEBOX RTA060630B 6A B TYPE A RCBO 6ΚΑ', cost: 12, category: 'Consumer Units & Protection' },
-            { id: 'STB-10', sku: 'MT06B061', desc: 'FUSEBOX MT06B061 6A B TYPE MCB 6KA SP', cost: 2, category: 'Consumer Units & Protection' },
-            { id: 'STB-11', sku: 'G32T', desc: 'FUSEBOX G32T 32MM IP68 TAILS GLAND CLICK SCOLMORE', cost: 3, category: 'Consumer Units & Protection' },
             { id: 'STB-12', sku: 'CMA036', desc: 'CLICK CMA036 SOCKET 2G SWITCHED 13A WHI', cost: 3, category: 'Sockets & Switches' },
             { id: 'STB-13', sku: 'CMA786', desc: 'CMA786 Socket 2G Swd & USB 13A Whi Click', cost: 20, category: 'Sockets & Switches' },
-            { id: 'STB-14', sku: 'CMA035', desc: 'CMA035 SOCKET 1G SWITCHED 13A WHI CLICK', cost: 3, category: 'Sockets & Switches' },
-            { id: 'STB-15', sku: 'CMA011', desc: 'CMA011 CLICK PLATESWITCH 1G 2W 10A WHI', cost: 2, category: 'Sockets & Switches' },
-            { id: 'STB-16', sku: 'CMA651', desc: 'CMA651 CONNECTION UNIT SWD 13A CLICK', cost: 4, category: 'Sockets & Switches' },
-            { id: 'STB-17', sku: 'CMA500', desc: 'CLICK SWITCH DP 45A WHITE CMA500', cost: 6, category: 'Sockets & Switches' },
-            { id: 'STB-18', sku: 'CMA215', desc: 'CONN UNIT COOKER OUTLET CMA215 CLICK', cost: 4, category: 'Sockets & Switches' },
-            { id: 'STB-19', sku: 'CMA081', desc: 'CLICK CMA081 PATTRESS 1GANG 25MM WHI', cost: 1, category: 'Sockets & Switches' },
-            { id: 'STB-20', sku: 'CMA082', desc: 'CLICK CMA082 PATTRESS 2GANG 25MM WHI', cost: 2, category: 'Sockets & Switches' },
-            { id: 'STB-21', sku: 'SFR1', desc: 'U/Volt SFR1 Box 1 Gang Rad Corners White', cost: 3, category: 'Sockets & Switches' },
-            { id: 'STB-22', sku: 'SFR2', desc: 'U/Volt SFR2 Box 2 Gang Rad Corners White', cost: 4, category: 'Sockets & Switches' },
-            { id: 'STB-23', sku: 'SFR1/44', desc: 'U/Volt SFR1/44 Box 1 Gang Rad Corners', cost: 5, category: 'Sockets & Switches' },
-            { id: 'STB-24', sku: 'SFR2/44', desc: 'U/Volt SFR2/44 Box 2 Gang Rad Corners', cost: 7, category: 'Sockets & Switches' },
             { id: 'STB-25', sku: 'JC1101/NB', desc: 'JCC JC1101/NB X50 LED Downlight 3/5W', cost: 11, category: 'Luminaires & Fittings' },
-            { id: 'STB-26', sku: 'JC1107/WH', desc: 'JCC JC1107/WH Downlight Bezel Whi X50', cost: 2, category: 'Luminaires & Fittings' },
-            { id: 'STB-27', sku: 'JC1101/WH10', desc: 'JCC JC1101/WH10 X50 LED D/Lgt 3/5W Pk=10', cost: 78, category: 'Luminaires & Fittings' },
-            { id: 'STB-28', sku: 'AFD600D/CCT', desc: 'Allled AFD600D/CCT LED Downlight 6W', cost: 9, category: 'Luminaires & Fittings' },
-            { id: 'STB-29', sku: '666', desc: 'BG 666 Pendant Set 6in', cost: 3, category: 'Luminaires & Fittings' },
-            { id: 'STB-30', sku: '4207-1', desc: 'Crompton 4207-1 LED BC-B22 7W 2700K Clr', cost: 6, category: 'Luminaires & Fittings' },
-            { id: 'STB-31', sku: '107139', desc: 'Saxby 107139 RularPRO Batten 5ft 39W', cost: 22, category: 'Luminaires & Fittings' },
-            { id: 'STB-32', sku: 'ADIS2/1', desc: 'Ansell ADIS2/1 B/Hd IP65 9-16W', cost: 25, category: 'Luminaires & Fittings' },
-            { id: 'STB-33', sku: 'ADIS1/1', desc: 'Ansell ADIS1/1 B/Hd IP65 4-7W', cost: 16, category: 'Luminaires & Fittings' },
-            { id: 'STB-34', sku: 'ADLED2/WV/CCT', desc: 'Ansell ADLED2/WV/CCT B/Hd LED Whi', cost: 40, category: 'Luminaires & Fittings' },
-            { id: 'STB-35', sku: '113960', desc: 'Saxby 113960 HeroULTRA B/Hd 15W 316mm', cost: 20, category: 'Luminaires & Fittings' },
-            { id: 'STB-36', sku: '16699', desc: 'Crompton 16699 LED Lamp GU10 5W 3000K', cost: 3, category: 'Luminaires & Fittings' },
-            { id: 'STB-37', sku: 'FSA2W', desc: 'Falcon FSA2W Mini Trunking 25x16mmx75m', cost: 2, category: 'Containment' },
-            { id: 'STB-38', sku: 'FSA4W', desc: 'Falcon FSA4W Mini Trunking 40x25mmx30m', cost: 3, category: 'Containment' },
-            { id: 'STB-39', sku: 'BSSH20W-LSF', desc: 'U/Volt BSSH20W-LSF Conduit 20mmx3m 100m', cost: 1, category: 'Containment' },
-            { id: 'STB-40', sku: 'FCT32W', desc: 'Falcon FCT32W Cbl Trunking 75x50mmx18m', cost: 9, category: 'Containment' },
-            { id: 'STB-41', sku: 'IE20WH', desc: 'U/Volt IE20WH InspectionElbow 20mm White', cost: 2, category: 'Containment' },
-            { id: 'STB-42', sku: 'SM20WH', desc: 'U/Volt SM20WH Coupler 20mm White', cost: 1, category: 'Containment' },
-            { id: 'STB-43', sku: 'AFT/MBS20WH', desc: 'U/Volt AFT/MBS20WH Adaptor 20mm White', cost: 1, category: 'Containment' },
-            { id: 'STB-44', sku: 'AMT/LR20WH', desc: 'U/Volt AMT/LR20WH Adaptor 20mm White', cost: 1, category: 'Containment' },
-            { id: 'STB-45', sku: 'CB20/1WH', desc: 'U/Volt CB20/1WH Terminal Box 20mm White', cost: 2, category: 'Containment' },
-            { id: 'STB-46', sku: 'CB20/AWH', desc: 'U/Volt CB20/AWH Angle Box 20mm White', cost: 2, category: 'Containment' },
-            { id: 'STB-47', sku: '207-3301', desc: 'Wago 207-3301 Wago 221-4 Junction Box', cost: 3, category: 'Sundries' },
-            { id: 'STB-48', sku: 'J803', desc: 'Hager J803 Junction Box 3Terminals 30A', cost: 5, category: 'Sundries' },
-            { id: 'STB-49', sku: 'J804', desc: 'Hager J804 Junction Box 4Terminals 20A', cost: 6, category: 'Sundries' },
-            { id: 'STB-50', sku: '034385', desc: 'Legd 034385 Earthing Clamp 12/16mm', cost: 5, category: 'Sundries' }
+            { id: 'STB-47', sku: '207-3301', desc: 'Wago 207-3301 Wago 221-4 Junction Box', cost: 3, category: 'Sundries' }
         ];
 
-        // Seed default foundational layout workflows
         const DEFAULT_SEED_TEMPLATES = [
             { id: 'T1', name: "Consumer Unit Upgrade Material Pack", items: [{ id: 'STB-1', qty: 1 }, { id: 'STB-9', qty: 6 }] },
             { id: 'T2', name: "Standard Room Lighting Setup Pack", items: [{ id: 'STB-25', qty: 6 }, { id: 'STB-47', qty: 2 }] }
@@ -890,60 +1022,6 @@
         function getStoredInventory() { return JSON.parse(localStorage.getItem('eny_inventory')) || []; }
         function getStoredClients() { return JSON.parse(localStorage.getItem('eny_clients')) || []; }
         function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
-
-        // --- SMART IMPORT ENGINE PARSER ---
-        function processRawImport() {
-            const rawData = document.getElementById('import-text-area').value;
-            if(!rawData.trim()) { alert("Please paste data into the import box first."); return; }
-            
-            const lines = rawData.split('\n');
-            let inventory = getStoredInventory();
-            let addedCount = 0;
-            let updatedCount = 0;
-
-            lines.forEach(line => {
-                if(!line.trim()) return;
-                
-                let cols = line.split(/\||\t/);
-                if(cols.length < 3) cols = line.split(','); 
-
-                let sku = "";
-                let desc = "";
-                let price = 0;
-
-                if (line.includes('|')) {
-                     if(cols.length >= 9) {
-                         sku = cols[1].trim().replace(/:1$/, '');
-                         desc = cols[2].trim();
-                         price = Math.ceil(parseFloat(cols[8].trim()) || 0);
-                     }
-                } else {
-                     if(cols.length >= 3) {
-                         sku = cols[0].replace(/"/g, '').trim();
-                         desc = cols[1].replace(/"/g, '').trim();
-                         price = Math.ceil(parseFloat(cols[2].replace(/"/g, '').trim()) || 0);
-                     }
-                }
-
-                if(sku && desc && price > 0) {
-                    const existingIndex = inventory.findIndex(i => i.sku.toLowerCase() === sku.toLowerCase());
-                    if (existingIndex !== -1) {
-                        if (price > inventory[existingIndex].cost) {
-                            inventory[existingIndex].cost = price;
-                            updatedCount++;
-                        }
-                    } else {
-                        inventory.push({ id: 'MAT-' + Date.now() + Math.floor(Math.random()*1000), sku: sku, desc: desc, cost: price, category: 'Imported' });
-                        addedCount++;
-                    }
-                }
-            });
-
-            localStorage.setItem('eny_inventory', JSON.stringify(inventory));
-            alert(`Import complete!\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items with higher costs.`);
-            document.getElementById('import-text-area').value = "";
-            reconstructUnifiedInterfaces();
-        }
 
         // --- MANUAL CRM COUPLING TOOL ---
         function bindVaultQuoteToClientManually(quoteId, targetClientId) {
