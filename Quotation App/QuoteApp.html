@@ -868,67 +868,59 @@
                 let desc = "";
                 let price = 0;
 
-                // Strategy 1: STB Electrical Specific Match
-                let stbMatch = line.match(/([A-Z0-9\/\-]+):1\s+(.+)/);
+                // 1. Try STB format matching
+                let stbMatch = line.match(/^(?:\d+\s+)?([A-Z0-9\/\-\.]+):1\s+(.+)/);
                 if (stbMatch) {
-                    sku = stbMatch[1].trim();
+                    let tempSku = stbMatch[1].trim();
                     let remainder = stbMatch[2].trim();
                     let tokens = remainder.split(/\s+/);
-                    let descTokens = [];
-                    let numTokens = [];
+                    let trailingNumbers = [];
                     
-                    for(let t of tokens) {
-                        let cleanNum = t.replace(/£|,/g, '');
-                        if(!isNaN(cleanNum) && !t.match(/[a-zA-Z]/) && t !== '') {
-                            numTokens.push(parseFloat(cleanNum));
+                    while (tokens.length > 0) {
+                        let lastToken = tokens[tokens.length - 1];
+                        if (/^[\d\.,]+$/.test(lastToken)) {
+                            trailingNumbers.unshift(tokens.pop());
                         } else {
-                            descTokens.push(t);
+                            break;
                         }
                     }
                     
-                    desc = descTokens.join(' ');
-                    // Nett price is usually the 2nd to last number in STB tables
-                    if (numTokens.length >= 2) {
-                        price = numTokens[numTokens.length - 2];
-                    } else if (numTokens.length > 0) {
-                        price = numTokens[numTokens.length - 1];
+                    if (trailingNumbers.length >= 2) {
+                        sku = tempSku;
+                        desc = tokens.join(' ').trim();
+                        price = parseFloat(trailingNumbers[trailingNumbers.length - 2].replace(/,/g, ''));
                     }
                 } 
-                // Strategy 2: User Copy-Paste with Pipes or Tabs
-                else if (line.includes('|') || line.includes('\t')) {
+                
+                // 2. Try generic pipe/tab delimited
+                if (!sku && (line.includes('|') || line.includes('\t'))) {
                     let cols = line.split(/\||\t/);
                     if (cols.length >= 3) {
                         if (line.includes('|') && cols.length >= 9) {
                             sku = cols[1].trim().replace(/:1$/, '');
                             desc = cols[2].trim();
-                            price = Math.ceil(parseFloat(cols[8].trim()) || 0);
+                            price = parseFloat(cols[8].trim().replace(/£|,/g, ''));
                         } else {
-                            sku = cols[0].trim();
-                            desc = cols[1].trim();
-                            let lastCol = cols[cols.length-1].trim().replace(/£|,/g, '');
-                            price = parseFloat(lastCol);
-                            if(isNaN(price) && cols.length > 3) {
-                                price = parseFloat(cols[cols.length-2].trim().replace(/£|,/g, ''));
+                            sku = cols[0].trim().replace(/"/g, '');
+                            desc = cols[1].trim().replace(/"/g, '');
+                            price = parseFloat(cols[2].replace(/£|,|"|\s/g, ''));
+                            if (isNaN(price) && cols.length > 3) {
+                                price = parseFloat(cols[cols.length-2].replace(/£|,|"|\s/g, ''));
                             }
                         }
                     }
                 }
-                // Strategy 3: Generic Space Separated fallback (SKU DESC PRICE)
-                else {
-                    let genericMatch = line.match(/^([A-Z0-9\/\-]+)\s+(.+?)\s+£?([\d\.,]+)$/);
-                    if (genericMatch) {
-                        sku = genericMatch[1].trim();
-                        desc = genericMatch[2].trim();
-                        price = parseFloat(genericMatch[3].replace(/,/g, ''));
-                    }
-                }
 
                 if(sku && desc && price > 0 && !isNaN(price)) {
+                    // Ignore random header grabs
+                    if (sku.toLowerCase().includes('quotation') || desc.toLowerCase().includes('vat')) return;
+
                     let roundedPrice = Math.ceil(price);
                     const existingIndex = inventory.findIndex(i => i.sku.toLowerCase() === sku.toLowerCase());
                     if (existingIndex !== -1) {
                         if (roundedPrice > inventory[existingIndex].cost) {
                             inventory[existingIndex].cost = roundedPrice;
+                            inventory[existingIndex].desc = desc; // Update description if it changed slightly
                             updatedCount++;
                         }
                     } else {
@@ -945,7 +937,7 @@
             });
 
             localStorage.setItem('eny_inventory', JSON.stringify(inventory));
-            alert(`Import Parsing Engine Complete!\n\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items with higher costs.`);
+            alert(`Import Parsing Complete!\n\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items.`);
             document.getElementById('import-text-area').value = "";
             reconstructUnifiedInterfaces();
         }
