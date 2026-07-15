@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENY Electrical - Premium Project Planner & CRM</title>
+    <!-- Stable Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- HTML2PDF Library for Client-Side PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap');
@@ -20,6 +23,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-900">
 
+    <!-- Top Navigation Header -->
     <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -60,9 +64,11 @@
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
 
+        <!-- ================= TAB 0: HOME DASHBOARD ================= -->
         <div id="home-tab" class="tab-content active space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
+                <!-- Operator Identity & Bank Setup Control -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-900">
                         <div>
@@ -99,6 +105,7 @@
                     </div>
                 </div>
 
+                <!-- Quotes Pending Approval Status Monitor -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
@@ -111,6 +118,7 @@
                     <div id="dash-pending-quotes-list" class="mt-4 max-h-[140px] overflow-y-auto custom-scrollbar border-t border-slate-900 pt-3 space-y-1.5 text-xs"></div>
                 </div>
 
+                <!-- Invoices Outstanding Pending Settlement Monitor -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
@@ -126,6 +134,7 @@
             </div>
         </div>
         
+        <!-- ================= TAB 1: QUOTE BUILDER ================= -->
         <div id="quote-tab" class="tab-content space-y-6">
             
             <div id="editing-mode-banner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -189,6 +198,7 @@
                         </div>
                     </div>
 
+                    <!-- Inventory Search and One-Off Addition Row -->
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-900">
                             <div>
@@ -202,6 +212,7 @@
                             </div>
                         </div>
 
+                        <!-- One-Off Entry Row Widget Panel -->
                         <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-3 grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
                             <input type="text" id="oneoff-desc" placeholder="One-off Item Description" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500">
                             <div class="flex gap-2">
@@ -237,6 +248,7 @@
                         </div>
                     </div>
 
+                    <!-- Dynamic Labor Rate Matrix Interface -->
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
                         <div class="flex justify-between items-center pb-2 border-b border-slate-900">
                             <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
@@ -258,6 +270,7 @@
                             </div>
 
                             <div id="hourly-selector-context-frame" class="invisible opacity-0 transition-opacity space-y-4">
+                                <!-- Lead Operative -->
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex justify-between">
                                         <span>Lead Operative (Subsequent Hrs)</span>
@@ -270,6 +283,7 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Second Operative -->
                                 <div class="pt-4 border-t border-slate-800">
                                     <label class="flex items-center gap-2 text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 cursor-pointer select-none">
                                         <input type="checkbox" id="op2-enable-toggle" onchange="toggleOp2Controls()" class="rounded bg-slate-900 border-slate-700 text-amber-500 focus:ring-0">
@@ -368,6 +382,7 @@
             </div>
         </div>
 
+        <!-- ================= TAB 2: TEMPLATES MANAGER ================= -->
         <div id="templates-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
@@ -407,7 +422,21 @@
             </div>
         </div>
 
+        <!-- ================= TAB 3: MATERIAL STOCK MANAGER ================= -->
         <div id="inventory-tab" class="tab-content space-y-6">
+            
+            <!-- SMART SUPPLIER IMPORT BLOCK -->
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm mb-8">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
+                    <i data-lucide="file-input" class="text-amber-400"></i> Smart Supplier Import (Text/CSV)
+                </h2>
+                <p class="text-xs text-slate-400 mb-4">Paste raw text from a PDF quotation (like STB Electrical) or standard CSV format (SKU, Description, Price). New items will be added. Existing items will only overwrite if the new price is higher.</p>
+                <textarea id="import-text-area" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-amber-500 mb-4" placeholder="Paste your data here..."></textarea>
+                <button onclick="processRawImport()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 px-6 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto">
+                    <i data-lucide="upload-cloud" class="w-4 h-4"></i> Process & Import Catalog
+                </button>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
                     <div>
@@ -467,6 +496,7 @@
             </div>
         </div>
 
+        <!-- ================= TAB 4: CLIENT CRM ENGINE ================= -->
         <div id="clients-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="space-y-4">
@@ -527,6 +557,7 @@
             </div>
         </div>
 
+        <!-- ================= TAB 5: CENTRAL BASELINE CONFIG TAB ================= -->
         <div id="settings-tab" class="tab-content space-y-6">
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl mx-auto space-y-6">
                 <div>
@@ -572,6 +603,7 @@
             </div>
         </div>
 
+        <!-- ================= TAB 6: ARCHIVE VAULT & SYNC MATRIX ================= -->
         <div id="vault-tab" class="tab-content space-y-6">
             
             <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -594,6 +626,7 @@
                 </div>
             </div>
 
+            <!-- Historical Sheet Ledger Logs Area -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
                 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
@@ -628,6 +661,7 @@
 
     </main>
 
+    <!-- SHOPPING LIST MODAL OVERLAY -->
     <div id="shopping-list-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -652,6 +686,7 @@
         </div>
     </div>
 
+    <!-- INVOICE CONVERSION / RECONCILIATION MODAL -->
     <div id="invoice-reconciliation-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -694,6 +729,7 @@
         </div>
     </div>
 
+    <!-- PROFITABILITY LEDGER MODAL (EYES ONLY) -->
     <div id="profit-view-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-amber-500/30 rounded-2xl w-full max-w-sm overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -740,8 +776,8 @@
         </div>
     </div>
 
+    <!-- ================= SYSTEM ENGINE CORE JAVASCRIPT LOGIC ================= -->
     <script>
-        // Default items array seed
         const STB_SEEDED_INVENTORY = [
             { id: 'STB-1', sku: 'F3007MZ', desc: 'FUSEBOX F3007MZ 7WAY 100A SPD CON UNIT', cost: 69, category: 'Consumer Units & Protection' },
             { id: 'STB-2', sku: 'F3011MZ', desc: 'FUSEBOX F3011MZ 11WAY 100A SPD CON UNIT', cost: 76, category: 'Consumer Units & Protection' },
@@ -854,6 +890,60 @@
         function getStoredInventory() { return JSON.parse(localStorage.getItem('eny_inventory')) || []; }
         function getStoredClients() { return JSON.parse(localStorage.getItem('eny_clients')) || []; }
         function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
+
+        // --- SMART IMPORT ENGINE PARSER ---
+        function processRawImport() {
+            const rawData = document.getElementById('import-text-area').value;
+            if(!rawData.trim()) { alert("Please paste data into the import box first."); return; }
+            
+            const lines = rawData.split('\n');
+            let inventory = getStoredInventory();
+            let addedCount = 0;
+            let updatedCount = 0;
+
+            lines.forEach(line => {
+                if(!line.trim()) return;
+                
+                let cols = line.split(/\||\t/);
+                if(cols.length < 3) cols = line.split(','); 
+
+                let sku = "";
+                let desc = "";
+                let price = 0;
+
+                if (line.includes('|')) {
+                     if(cols.length >= 9) {
+                         sku = cols[1].trim().replace(/:1$/, '');
+                         desc = cols[2].trim();
+                         price = Math.ceil(parseFloat(cols[8].trim()) || 0);
+                     }
+                } else {
+                     if(cols.length >= 3) {
+                         sku = cols[0].replace(/"/g, '').trim();
+                         desc = cols[1].replace(/"/g, '').trim();
+                         price = Math.ceil(parseFloat(cols[2].replace(/"/g, '').trim()) || 0);
+                     }
+                }
+
+                if(sku && desc && price > 0) {
+                    const existingIndex = inventory.findIndex(i => i.sku.toLowerCase() === sku.toLowerCase());
+                    if (existingIndex !== -1) {
+                        if (price > inventory[existingIndex].cost) {
+                            inventory[existingIndex].cost = price;
+                            updatedCount++;
+                        }
+                    } else {
+                        inventory.push({ id: 'MAT-' + Date.now() + Math.floor(Math.random()*1000), sku: sku, desc: desc, cost: price, category: 'Imported' });
+                        addedCount++;
+                    }
+                }
+            });
+
+            localStorage.setItem('eny_inventory', JSON.stringify(inventory));
+            alert(`Import complete!\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items with higher costs.`);
+            document.getElementById('import-text-area').value = "";
+            reconstructUnifiedInterfaces();
+        }
 
         // --- MANUAL CRM COUPLING TOOL ---
         function bindVaultQuoteToClientManually(quoteId, targetClientId) {
@@ -1173,11 +1263,9 @@
         function calculateComprehensiveMetrics() {
             const netMaterialsExVat = activeAllocatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost) * curr.qty), 0);
             
-            // Explicitly calculate and add the 20% Wholesaler VAT applied to cost of materials
             const materialsVat = netMaterialsExVat * 0.20;
             const netMaterialsIncVat = netMaterialsExVat + materialsVat;
 
-            // Apply standard markup to the VAT inclusive materials cost
             const markup = parseFloat(localStorage.getItem('eny_global_markup')) || 0;
             const markedMaterials = netMaterialsIncVat * (1 + (markup / 100));
             
@@ -1192,11 +1280,9 @@
             } else if (activeLaborBookingFormat === 'HALF') {
                 laborCosts = rateHalf;
             } else if (activeLaborBookingFormat === 'HOUR') {
-                // Operative 1 Allocation
                 const nextHoursCount1 = parseInt(document.getElementById('labor-hour-slider').value) || 0;
                 laborCosts += rateHourFirst + (nextHoursCount1 * rateHourNext);
 
-                // Operative 2 Allocation Override Checks
                 if (document.getElementById('op2-enable-toggle')?.checked) {
                     const isOp2Premium = document.getElementById('op2-first-hour-toggle').checked;
                     const nextHoursCount2 = parseInt(document.getElementById('labor-hour-slider-op2').value) || 0;
