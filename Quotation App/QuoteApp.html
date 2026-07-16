@@ -795,27 +795,21 @@
                     let items = textContent.items;
                     items.sort((a, b) => {
                         const yDiff = b.transform[5] - a.transform[5];
-                        if (Math.abs(yDiff) > 8) return yDiff; 
+                        // 5px tolerance for slight text baseline shifts
+                        if (Math.abs(yDiff) > 5) return yDiff; 
                         return a.transform[4] - b.transform[4]; 
                     });
 
-                    let lastY = null;
-                    let currentLine = [];
                     for (let item of items) {
                         let text = item.str.trim();
-                        if (!text) continue;
-                        
-                        if (lastY !== null && Math.abs(item.transform[5] - lastY) > 8) {
-                            tokenSequence.push(currentLine.join(" "));
-                            currentLine = [];
+                        if (text) {
+                            tokenSequence.push(text);
                         }
-                        currentLine.push(text);
-                        lastY = item.transform[5];
                     }
-                    if (currentLine.length > 0) tokenSequence.push(currentLine.join(" "));
                 }
                 
-                document.getElementById('import-text-area').value = tokenSequence.join("\n");
+                // Join with spaces so the token scanner can read it perfectly left-to-right
+                document.getElementById('import-text-area').value = tokenSequence.join(" ");
                 processRawImport(); 
             } catch (error) {
                 console.error(error);
@@ -837,69 +831,78 @@
 
             let tokens = rawData.split(/\s+/).filter(t => t.trim() !== '');
             
-            for (let i = 0; i < tokens.length; i++) {
-                if (tokens[i].endsWith(':1')) {
-                    let sku = tokens[i].replace(':1', '');
-                    let descTokens = [];
-                    let j = i + 1;
-                    
-                    while (j < tokens.length) {
-                        if (tokens[j].endsWith(':1')) break;
+            if (rawData.includes(':1')) {
+                // STB / Token-Sequence Engine
+                for (let i = 0; i < tokens.length; i++) {
+                    if (tokens[i].endsWith(':1')) {
+                        let sku = tokens[i].replace(':1', '');
                         
-                        if (j + 3 < tokens.length) {
-                            let isNumGrid = /^\d+$/.test(tokens[j]) && 
-                                            /^[\d.,]+$/.test(tokens[j+1]) && 
-                                            /^\d+$/.test(tokens[j+2]) && 
-                                            /^[\d.,]+$/.test(tokens[j+3]);
-                            if (isNumGrid) break;
-                        }
-                        descTokens.push(tokens[j]);
-                        j++;
-                    }
-                    
-                    let desc = descTokens.join(' ');
-                    
-                    let numberBlock = [];
-                    while (j < tokens.length && !tokens[j].endsWith(':1') && /^[0-9.,]+$/.test(tokens[j])) {
-                        numberBlock.push(tokens[j]);
-                        j++;
-                    }
-                    
-                    let decimals = numberBlock.filter(t => t.includes('.'));
-                    let price = 0;
-                    if (decimals.length > 0) {
-                        price = parseFloat(decimals[decimals.length - 1].replace(/,/g, ''));
-                    } else if (numberBlock.length >= 2) {
-                        price = parseFloat(numberBlock[numberBlock.length - 2].replace(/,/g, ''));
-                    }
-                    
-                    if (sku && desc && price > 0 && !sku.toLowerCase().includes('quotation')) {
-                        let roundedPrice = Math.ceil(price);
-                        const existingIndex = inventory.findIndex(inv => inv.sku.toLowerCase() === sku.toLowerCase());
-                        if (existingIndex !== -1) {
-                            if (roundedPrice > inventory[existingIndex].cost) {
-                                inventory[existingIndex].cost = roundedPrice;
-                                inventory[existingIndex].desc = desc; 
-                                updatedCount++;
+                        // PREVENT BUG: Skip if the SKU is just a number (e.g., Quotation No 51933)
+                        if (/^\d+$/.test(sku)) continue;
+                        
+                        let descTokens = [];
+                        let j = i + 1;
+                        
+                        // Harvest the description
+                        while (j < tokens.length) {
+                            if (tokens[j].endsWith(':1')) break;
+                            
+                            // If we encounter [Integer] followed by [Decimal], the description has ended and pricing begins
+                            if (j + 1 < tokens.length && /^\d+$/.test(tokens[j]) && /^\d+\.\d+$/.test(tokens[j+1])) {
+                                break;
                             }
-                        } else {
-                            inventory.push({ 
-                                id: 'MAT-' + Date.now() + Math.floor(Math.random()*1000), 
-                                sku: sku, 
-                                desc: desc, 
-                                cost: roundedPrice, 
-                                category: 'Imported' 
-                            });
-                            addedCount++;
+                            descTokens.push(tokens[j]);
+                            j++;
                         }
+                        
+                        let desc = descTokens.join(' ').trim();
+                        
+                        // Harvest the pricing block
+                        let numberBlock = [];
+                        while (j < tokens.length && !tokens[j].endsWith(':1')) {
+                            if (/^[\d.,]+$/.test(tokens[j])) {
+                                numberBlock.push(tokens[j]);
+                            }
+                            j++;
+                        }
+                        
+                        // Find the NETT price (last decimal in the STB layout sequence)
+                        let decimals = numberBlock.filter(t => t.includes('.'));
+                        let price = 0;
+                        if (decimals.length > 0) {
+                            price = parseFloat(decimals[decimals.length - 1].replace(/,/g, ''));
+                        }
+                        
+                        // Ensure it's a valid item and not a stray header
+                        if (sku && desc && price > 0 && !desc.toLowerCase().includes('date:')) {
+                            let roundedPrice = Math.ceil(price);
+                            const existingIndex = inventory.findIndex(inv => inv.sku.toLowerCase() === sku.toLowerCase());
+                            if (existingIndex !== -1) {
+                                if (roundedPrice > inventory[existingIndex].cost) {
+                                    inventory[existingIndex].cost = roundedPrice;
+                                    inventory[existingIndex].desc = desc; 
+                                    updatedCount++;
+                                }
+                            } else {
+                                inventory.push({ 
+                                    id: 'MAT-' + Date.now() + Math.floor(Math.random()*1000), 
+                                    sku: sku, 
+                                    desc: desc, 
+                                    cost: roundedPrice, 
+                                    category: 'Imported' 
+                                });
+                                addedCount++;
+                            }
+                        }
+                        i = j - 1; 
                     }
-                    i = j - 1;
                 }
             }
 
+            // Fallback for non-STB PDFs (CSV or line-by-line dumps)
             if (addedCount === 0 && updatedCount === 0) {
-                 const lines = rawData.split('\n');
-                 lines.forEach(line => {
+                const lines = rawData.split('\n');
+                lines.forEach(line => {
                     line = line.trim();
                     if(!line) return;
                     
