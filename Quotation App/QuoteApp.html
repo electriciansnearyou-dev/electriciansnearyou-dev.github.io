@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENY Electrical - Premium Project Planner & CRM</title>
-    <!-- Stable Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- HTML2PDF Library for Client-Side PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- PDF.js Library for Client-Side PDF Text Extraction -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script>
         // Set the worker source for PDF.js
@@ -29,7 +25,6 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-900">
 
-    <!-- Top Navigation Header -->
     <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -70,11 +65,9 @@
 
     <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
 
-        <!-- ================= TAB 0: HOME DASHBOARD ================= -->
         <div id="home-tab" class="tab-content active space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                <!-- Operator Identity & Bank Setup Control -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-900">
                         <div>
@@ -111,7 +104,6 @@
                     </div>
                 </div>
 
-                <!-- Quotes Pending Approval Status Monitor -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
@@ -124,7 +116,6 @@
                     <div id="dash-pending-quotes-list" class="mt-4 max-h-[140px] overflow-y-auto custom-scrollbar border-t border-slate-900 pt-3 space-y-1.5 text-xs"></div>
                 </div>
 
-                <!-- Invoices Outstanding Pending Settlement Monitor -->
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
@@ -140,7 +131,6 @@
             </div>
         </div>
         
-        <!-- ================= TAB 1: QUOTE BUILDER ================= -->
         <div id="quote-tab" class="tab-content space-y-6">
             
             <div id="editing-mode-banner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -204,7 +194,6 @@
                         </div>
                     </div>
 
-                    <!-- Inventory Search and One-Off Addition Row -->
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-900">
                             <div>
@@ -218,7 +207,6 @@
                             </div>
                         </div>
 
-                        <!-- One-Off Entry Row Widget Panel -->
                         <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-3 grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
                             <input type="text" id="oneoff-desc" placeholder="One-off Item Description" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500">
                             <div class="flex gap-2">
@@ -254,7 +242,6 @@
                         </div>
                     </div>
 
-                    <!-- Dynamic Labor Rate Matrix Interface -->
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
                         <div class="flex justify-between items-center pb-2 border-b border-slate-900">
                             <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
@@ -276,7 +263,6 @@
                             </div>
 
                             <div id="hourly-selector-context-frame" class="invisible opacity-0 transition-opacity space-y-4">
-                                <!-- Lead Operative -->
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex justify-between">
                                         <span>Lead Operative (Subsequent Hrs)</span>
@@ -289,7 +275,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Second Operative -->
                                 <div class="pt-4 border-t border-slate-800">
                                     <label class="flex items-center gap-2 text-xs font-semibold text-slate-300 uppercase tracking-wider mb-3 cursor-pointer select-none">
                                         <input type="checkbox" id="op2-enable-toggle" onchange="toggleOp2Controls()" class="rounded bg-slate-900 border-slate-700 text-amber-500 focus:ring-0">
@@ -388,7 +373,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 2: TEMPLATES MANAGER ================= -->
         <div id="templates-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
@@ -428,10 +412,8 @@
             </div>
         </div>
 
-        <!-- ================= TAB 3: MATERIAL STOCK MANAGER ================= -->
         <div id="inventory-tab" class="tab-content space-y-6">
             
-            <!-- SMART SUPPLIER IMPORT BLOCK WITH PDF PARSING -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm mb-8">
                 <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
                     <i data-lucide="file-input" class="text-amber-400"></i> Smart Supplier Import Tool
@@ -439,7 +421,6 @@
                 <p class="text-xs text-slate-400 mb-4">Upload a PDF quote directly (like STB Electrical) or paste raw text. The system will automatically scan for part numbers ending in <code>:1</code>, extract the descriptions, and round the trade cost up to the nearest integer. Existing items will only overwrite if the new cost is higher.</p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 mb-4">
-                    <!-- PDF File Upload Button -->
                     <label class="w-full sm:w-1/2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer text-center">
                         <i data-lucide="file-text" class="w-5 h-5"></i> <span id="pdf-upload-btn-text">Upload Supplier PDF</span>
                         <input type="file" id="pdf-upload" class="hidden" accept="application/pdf" onchange="handlePdfUpload(event)">
@@ -516,7 +497,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 4: CLIENT CRM ENGINE ================= -->
         <div id="clients-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="space-y-4">
@@ -577,7 +557,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 5: CENTRAL BASELINE CONFIG TAB ================= -->
         <div id="settings-tab" class="tab-content space-y-6">
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl mx-auto space-y-6">
                 <div>
@@ -623,7 +602,6 @@
             </div>
         </div>
 
-        <!-- ================= TAB 6: ARCHIVE VAULT & SYNC MATRIX ================= -->
         <div id="vault-tab" class="tab-content space-y-6">
             
             <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -646,7 +624,6 @@
                 </div>
             </div>
 
-            <!-- Historical Sheet Ledger Logs Area -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
                 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
@@ -681,7 +658,6 @@
 
     </main>
 
-    <!-- SHOPPING LIST MODAL OVERLAY -->
     <div id="shopping-list-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -706,7 +682,6 @@
         </div>
     </div>
 
-    <!-- INVOICE CONVERSION / RECONCILIATION MODAL -->
     <div id="invoice-reconciliation-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -749,7 +724,6 @@
         </div>
     </div>
 
-    <!-- PROFITABILITY LEDGER MODAL (EYES ONLY) -->
     <div id="profit-view-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-amber-500/30 rounded-2xl w-full max-w-sm overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)]">
             <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
@@ -796,7 +770,6 @@
         </div>
     </div>
 
-    <!-- ================= SYSTEM ENGINE CORE JAVASCRIPT LOGIC ================= -->
     <script>
         // --- CLIENT-SIDE PDF PARSER ---
         async function handlePdfUpload(event) {
@@ -819,24 +792,31 @@
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
                     
-                    let items = textContent.items;
-                    items.sort((a, b) => {
-                        const yDiff = b.transform[5] - a.transform[5];
-                        if (Math.abs(yDiff) > 5) return yDiff; 
-                        return a.transform[4] - b.transform[4]; 
-                    });
-
-                    let lastY = -1;
-                    let line = "";
-                    for (let item of items) {
-                        if (lastY !== -1 && Math.abs(item.transform[5] - lastY) > 5) {
-                            fullText += line.trim() + "\n";
-                            line = "";
+                    let rows = [];
+                    for (let item of textContent.items) {
+                        let y = Math.round(item.transform[5]);
+                        let x = item.transform[4];
+                        let added = false;
+                        for (let row of rows) {
+                            if (Math.abs(row.y - y) < 5) {
+                                row.items.push({text: item.str, x: x});
+                                added = true;
+                                break;
+                            }
                         }
-                        line += item.str + " ";
-                        lastY = item.transform[5];
+                        if (!added) {
+                            rows.push({y: y, items: [{text: item.str, x: x}]});
+                        }
                     }
-                    fullText += line.trim() + "\n";
+                    
+                    rows.sort((a, b) => b.y - a.y);
+                    
+                    for (let row of rows) {
+                        row.items.sort((a, b) => a.x - b.x);
+                        let lineStr = row.items.map(i => i.text).join(" ").trim();
+                        lineStr = lineStr.replace(/\s+/g, ' ');
+                        if (lineStr) fullText += lineStr + "\n";
+                    }
                 }
 
                 document.getElementById('import-text-area').value = fullText;
@@ -869,7 +849,7 @@
                 let price = 0;
 
                 // 1. Try STB format matching
-                let stbMatch = line.match(/^(?:\d+\s+)?([A-Z0-9\/\-\.]+):1\s+(.+)/);
+                let stbMatch = line.match(/(?:^|\s)([A-Z0-9\/\-\.]+):1\s+(.+)/);
                 if (stbMatch) {
                     let tempSku = stbMatch[1].trim();
                     let remainder = stbMatch[2].trim();
@@ -889,6 +869,10 @@
                         sku = tempSku;
                         desc = tokens.join(' ').trim();
                         price = parseFloat(trailingNumbers[trailingNumbers.length - 2].replace(/,/g, ''));
+                    } else if (trailingNumbers.length === 1) {
+                        sku = tempSku;
+                        desc = tokens.join(' ').trim();
+                        price = parseFloat(trailingNumbers[0].replace(/,/g, ''));
                     }
                 } 
                 
@@ -911,7 +895,7 @@
                     }
                 }
 
-                if(sku && desc && price > 0 && !isNaN(price)) {
+                if(sku && desc && price >= 0 && !isNaN(price)) {
                     // Ignore random header grabs
                     if (sku.toLowerCase().includes('quotation') || desc.toLowerCase().includes('vat')) return;
 
@@ -920,7 +904,7 @@
                     if (existingIndex !== -1) {
                         if (roundedPrice > inventory[existingIndex].cost) {
                             inventory[existingIndex].cost = roundedPrice;
-                            inventory[existingIndex].desc = desc; // Update description if it changed slightly
+                            inventory[existingIndex].desc = desc; 
                             updatedCount++;
                         }
                     } else {
@@ -2305,4 +2289,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
