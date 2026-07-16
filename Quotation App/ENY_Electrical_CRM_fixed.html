@@ -195,35 +195,6 @@
                     </div>
 
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
-                            <i data-lucide="mic" class="text-amber-400 w-5 h-5"></i> Voice / Notes Quote Assistant
-                        </h2>
-                        <p class="text-xs text-slate-400">Record a quick voice note about the job (or just type/paste notes), then tap "Find Matches". It suggests materials from your stock directory and a labor booking, one tap each to add — nothing is added automatically, so always check the suggestions before confirming.</p>
-
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <button type="button" id="voice-record-btn" onclick="toggleVoiceRecording()" class="w-full sm:w-auto bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                                <i data-lucide="mic" class="w-5 h-5"></i> Start Recording
-                            </button>
-                            <button type="button" onclick="analyzeVoiceTranscript()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                                <i data-lucide="search" class="w-4 h-4"></i> Find Matching Items & Labor
-                            </button>
-                        </div>
-
-                        <textarea id="voice-transcript-area" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="Your recorded notes will appear here — or just type/paste directly, e.g. 'Swapped the consumer unit for an 11 way, fitted two double sockets in the kitchen, half day plus an hour'"></textarea>
-
-                        <button type="button" onclick="manualCleanUpVoiceTranscript()" class="text-xs text-slate-400 hover:text-amber-400 underline decoration-dotted underline-offset-2 flex items-center gap-1 cursor-pointer">
-                            <i data-lucide="eraser" class="w-3 h-3"></i> Transcript looks garbled/repeated? Tap to clean it up
-                        </button>
-
-                        <div id="voice-labor-suggestion" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <span id="voice-labor-suggestion-text" class="text-xs font-semibold text-amber-300"></span>
-                            <button type="button" onclick="applyVoiceLaborSuggestion()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer shrink-0">Apply to Labor Section</button>
-                        </div>
-
-                        <div id="voice-material-suggestions" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-                    </div>
-
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-900">
                             <div>
                                 <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
@@ -422,19 +393,34 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Included Materials</label>
+                            <div class="relative mb-2">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500"></i>
+                                <input type="text" id="template-material-search-input" oninput="filterTemplateMaterialSelector()" placeholder="Search materials to add..." class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
                             <div id="template-materials-selector-box" class="max-h-40 overflow-y-auto border border-slate-800 rounded-xl p-2 bg-slate-900/40 divide-y divide-slate-900 custom-scrollbar"></div>
                         </div>
 
-                        <button type="submit" id="template-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
-                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job Template
-                        </button>
+                        <div class="flex gap-2">
+                            <button type="submit" id="template-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job Template
+                            </button>
+                            <button type="button" id="template-cancel-btn" onclick="clearTemplateForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-800 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">
+                                Cancel
+                            </button>
+                        </div>
                     </form>
                 </div>
 
                 <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                    <h2 class="text-lg font-bold text-white mb-4">Saved Presets Catalog</h2>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                        <h2 class="text-lg font-bold text-white">Saved Presets Catalog</h2>
+                        <div class="relative w-full sm:w-64">
+                            <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                            <input type="text" id="template-catalog-search-input" oninput="rebuildTemplateCatalogList()" placeholder="Search saved templates..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
                     <div id="template-catalog-empty" class="text-center py-12 text-slate-500 text-sm hidden">
-                        <i data-lucide="layout" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> No custom job presets configured.
+                        <i data-lucide="layout" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> <span id="template-catalog-empty-text">No custom job presets configured.</span>
                     </div>
                     <div class="space-y-3" id="template-catalog-list-wrapper"></div>
                 </div>
@@ -821,6 +807,46 @@
             <div class="p-4 border-t border-slate-800 bg-slate-800/50 flex justify-center">
                 <button onclick="closeProfitModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer">
                     Close Ledger
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="template-apply-review-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2 min-w-0">
+                    <i data-lucide="layout-template" class="text-amber-400 shrink-0"></i>
+                    <span class="truncate">Apply: <span id="template-apply-review-name" class="text-amber-400"></span></span>
+                </h3>
+                <button onclick="cancelTemplateApply()" class="text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div id="template-apply-mode-toggle-wrapper" class="p-4 border-b border-slate-800 hidden">
+                <p class="text-xs text-slate-400 mb-2">You already have items in this quote. What would you like to do?</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" id="template-apply-mode-add-btn" onclick="setTemplateApplyMode('add')" class="py-2 text-xs font-bold rounded-lg border transition-all cursor-pointer">
+                        <i data-lucide="plus" class="w-3.5 h-3.5 inline mr-1"></i> Add to Current Quote
+                    </button>
+                    <button type="button" id="template-apply-mode-replace-btn" onclick="setTemplateApplyMode('replace')" class="py-2 text-xs font-bold rounded-lg border transition-all cursor-pointer">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5 inline mr-1"></i> Replace Current Quote
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1">
+                <p class="text-xs text-slate-400 mb-3">Review quantities before adding — untick anything you don't need this time.</p>
+                <div id="template-apply-review-items" class="space-y-2"></div>
+            </div>
+
+            <div class="p-5 border-t border-slate-800 bg-slate-800/50 flex justify-end gap-3">
+                <button onclick="cancelTemplateApply()" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors cursor-pointer">
+                    Cancel
+                </button>
+                <button onclick="confirmTemplateApply()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer">
+                    <i data-lucide="check" class="w-4 h-4"></i> Add These Items
                 </button>
             </div>
         </div>
@@ -1656,331 +1682,6 @@
             qtyInput.value = "1";
         }
 
-        // --- VOICE / NOTES QUOTE ASSISTANT ---
-        // Free-tier by design: Web Speech API for voice-to-text (built into Chrome/Edge,
-        // runs entirely in-browser, no API key), then simple keyword-overlap matching
-        // against the local stock directory. This is deliberately "suggest and confirm",
-        // NOT auto-populate — nothing gets added to the quote until you tap it, because
-        // free keyword matching isn't reliable enough to trust blindly with real pricing.
-
-        let voiceRecognitionInstance = null;
-        let voiceRecognitionActive = false;
-        let voiceManualStop = true;
-        let voiceFinalTranscript = '';
-        // Tracks the finalized text already committed at each result index, so we can
-        // tell genuinely new speech apart from the browser re-sending old results.
-        let voiceCommittedTexts = [];
-
-        const VOICE_MATCH_STOPWORDS = new Set([
-            'the','a','an','and','or','for','with','to','of','on','in','at','it','is','was',
-            'we','i','did','do','done','job','also','then','some','few','need','needs','put',
-            'install','installed','fit','fitted','add','added','plus','got','new','old','use',
-            'used','one','two','three','four','five','couple','pair','x','swap','swapped',
-            'replace','replaced','white','black','this','that','these','those'
-        ]);
-
-        function tokenizeForVoiceMatch(str) {
-            return str.toLowerCase()
-                .replace(/[^\w\s\/\-]/g, ' ')
-                .split(/\s+/)
-                .filter(w => w.length > 1 && !VOICE_MATCH_STOPWORDS.has(w));
-        }
-
-        // Converts spoken numbers to digits before matching/detection, since catalogue
-        // text and the hour-detection regex are digit-based ("11WAY", "2 hours") but
-        // speech recognition transcribes numbers as words ("eleven", "two").
-        const VOICE_NUMBER_WORDS = {
-            'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6,
-            'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10, 'eleven': 11, 'twelve': 12,
-            'thirteen': 13, 'fourteen': 14, 'fifteen': 15, 'sixteen': 16, 'seventeen': 17,
-            'eighteen': 18, 'nineteen': 19, 'twenty': 20, 'thirty': 30
-        };
-
-        function normalizeSpokenNumbers(text) {
-            let result = text;
-            // Compounds first: "twenty one" / "twenty-one" -> "21"
-            result = result.replace(/\b(twenty|thirty)[\s-](one|two|three|four|five|six|seven|eight|nine)\b/gi,
-                (m, tens, units) => String(VOICE_NUMBER_WORDS[tens.toLowerCase()] + VOICE_NUMBER_WORDS[units.toLowerCase()])
-            );
-            // Then single number words
-            result = result.replace(/\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty)\b/gi,
-                (m) => String(VOICE_NUMBER_WORDS[m.toLowerCase()])
-            );
-            return result;
-        }
-
-        // Safety net on top of the per-index tracking in startVoiceRecognitionSession().
-        // Different phones/browsers implement the Android speech-restart quirk slightly
-        // differently — some reuse the same result index (which the tracking above
-        // handles), others append the repeat as a brand-new index instead, which slips
-        // straight past that check. Rather than chase every device's exact behavior,
-        // this collapses any immediately-repeated run of words in the TEXT itself,
-        // which catches the problem regardless of how it was produced — including if
-        // it came from a keyboard's own dictation feature rather than this app's
-        // recording button at all.
-        function collapseAdjacentDuplicatePhrases(text) {
-            const words = text.split(/\s+/).filter(Boolean);
-            const result = [];
-            let i = 0;
-            while (i < words.length) {
-                let matched = false;
-                const maxLen = Math.min(6, Math.floor((words.length - i) / 2));
-                for (let len = maxLen; len >= 1; len--) {
-                    const phrase1 = words.slice(i, i + len).map(w => w.toLowerCase().replace(/[^\w]/g, ''));
-                    const phrase2 = words.slice(i + len, i + 2 * len).map(w => w.toLowerCase().replace(/[^\w]/g, ''));
-                    if (phrase1.length === len && phrase2.length === len && phrase1.every((w, idx) => w === phrase2[idx])) {
-                        result.push(...words.slice(i, i + len));
-                        i += 2 * len;
-                        matched = true;
-                        break;
-                    }
-                }
-                if (!matched) {
-                    result.push(words[i]);
-                    i++;
-                }
-            }
-            return result.join(' ');
-        }
-
-        function collapseAdjacentDuplicatesFull(text) {
-            let prev = text;
-            let curr = collapseAdjacentDuplicatePhrases(prev);
-            let iterations = 0;
-            while (curr !== prev && iterations < 6) {
-                prev = curr;
-                curr = collapseAdjacentDuplicatePhrases(prev);
-                iterations++;
-            }
-            return curr;
-        }
-
-        function manualCleanUpVoiceTranscript() {
-            const box = document.getElementById('voice-transcript-area');
-            const cleaned = collapseAdjacentDuplicatesFull(box.value.trim());
-            if (cleaned === box.value.trim()) {
-                alert("No repeated words or phrases found to clean up.");
-                return;
-            }
-            box.value = cleaned;
-        }
-
-        function toggleVoiceRecording() {
-            const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const btn = document.getElementById('voice-record-btn');
-
-            if (!SpeechRecognitionAPI) {
-                alert("Voice recording isn't supported in this browser. Try Chrome or Edge — or just type/paste your notes into the box below instead, the matching still works from typed text.");
-                return;
-            }
-
-            if (voiceRecognitionActive) {
-                // Mark as a manual stop BEFORE calling stop() so onend knows not to restart.
-                voiceManualStop = true;
-                voiceRecognitionInstance.stop();
-                return;
-            }
-
-            voiceManualStop = false;
-            voiceRecognitionActive = true;
-            voiceCommittedTexts = [];
-
-            voiceFinalTranscript = document.getElementById('voice-transcript-area').value;
-            if (voiceFinalTranscript && !voiceFinalTranscript.endsWith(' ')) voiceFinalTranscript += ' ';
-
-            btn.innerHTML = `<i data-lucide="square" class="w-5 h-5"></i> Stop Recording`;
-            btn.classList.remove('bg-blue-500/10', 'hover:bg-blue-500/20', 'border', 'border-blue-500/30', 'text-blue-400');
-            btn.classList.add('bg-red-500', 'hover:bg-red-600', 'text-white');
-            lucide.createIcons();
-
-            startVoiceRecognitionSession();
-        }
-
-        // A SINGLE continuous session is used (not repeatedly torn down and rebuilt)
-        // because recreating the recognition object between every utterance introduces
-        // real microphone re-acquisition lag on mobile — during that gap, anything you
-        // say gets silently dropped, which is why only the LAST item in a spoken list
-        // was being captured.
-        //
-        // Android Chrome also has a known quirk where it periodically restarts its OWN
-        // internal session and resends results starting from index 0 again — sometimes
-        // as an exact repeat of already-finalized text, sometimes reusing that index
-        // for genuinely new speech. Comparing result COUNT alone can't tell those apart
-        // reliably. Instead, we compare the actual text already committed at each index
-        // against what's arriving now: identical text at that index means "already
-        // added, skip it"; different text at that index means "this index has been
-        // reused for new speech after a restart, commit it" — this handles both the
-        // duplication bug and the dropped-item bug correctly.
-        function startVoiceRecognitionSession() {
-            const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const btn = document.getElementById('voice-record-btn');
-
-            voiceRecognitionInstance = new SpeechRecognitionAPI();
-            voiceRecognitionInstance.continuous = true;
-            voiceRecognitionInstance.interimResults = true;
-            voiceRecognitionInstance.lang = 'en-GB';
-
-            voiceRecognitionInstance.onresult = (event) => {
-                let interim = '';
-
-                for (let i = 0; i < event.results.length; i++) {
-                    const piece = event.results[i][0].transcript;
-                    if (event.results[i].isFinal) {
-                        const trimmedPiece = piece.trim();
-                        if (voiceCommittedTexts[i] !== trimmedPiece) {
-                            voiceFinalTranscript += piece + ' ';
-                            voiceCommittedTexts[i] = trimmedPiece;
-                        }
-                    } else {
-                        interim += piece;
-                    }
-                }
-
-                // Belt-and-braces cleanup: collapse any immediately-repeated words/
-                // phrases in the finalized portion, since different devices trigger
-                // the underlying restart bug in slightly different ways.
-                voiceFinalTranscript = collapseAdjacentDuplicatesFull(voiceFinalTranscript.trim()) + ' ';
-
-                document.getElementById('voice-transcript-area').value = voiceFinalTranscript + interim;
-            };
-
-            voiceRecognitionInstance.onerror = (event) => {
-                console.error('Speech recognition error:', event.error);
-                if (event.error === 'not-allowed') {
-                    alert("Microphone access was blocked. Check your browser's site permissions and try again.");
-                    voiceManualStop = true;
-                }
-                // 'no-speech' / 'aborted' are common during normal pauses — onend below
-                // handles resuming automatically rather than treating these as fatal.
-            };
-
-            voiceRecognitionInstance.onend = () => {
-                if (!voiceManualStop) {
-                    // The browser ended the session on its own (long silence, internal
-                    // restart, etc). Resume immediately so it keeps behaving like one
-                    // continuous listening session from your point of view.
-                    try {
-                        voiceRecognitionInstance.start();
-                        return;
-                    } catch (e) {
-                        console.error('Could not resume voice recognition:', e);
-                    }
-                }
-
-                voiceRecognitionActive = false;
-                btn.innerHTML = `<i data-lucide="mic" class="w-5 h-5"></i> Start Recording`;
-                btn.classList.remove('bg-red-500', 'hover:bg-red-600', 'text-white');
-                btn.classList.add('bg-blue-500/10', 'hover:bg-blue-500/20', 'border', 'border-blue-500/30', 'text-blue-400');
-                lucide.createIcons();
-            };
-
-            try {
-                voiceRecognitionInstance.start();
-            } catch (e) {
-                console.error('Voice recognition start failed:', e);
-            }
-        }
-
-        function scoreVoiceItemMatch(item, tokens) {
-            const itemTokens = tokenizeForVoiceMatch(item.desc + ' ' + item.sku + ' ' + item.category);
-            let score = 0;
-            tokens.forEach(t => {
-                if (itemTokens.some(it => it === t || it.includes(t) || t.includes(it))) score++;
-            });
-            return score;
-        }
-
-        function renderVoiceMaterialSuggestions(scored) {
-            const grid = document.getElementById('voice-material-suggestions');
-            if (scored.length === 0) {
-                grid.innerHTML = `<div class="col-span-2 text-center py-4 text-xs text-slate-500">No confident matches found in your stock directory — try rephrasing (e.g. use wording closer to your catalogue descriptions), or add items manually below.</div>`;
-                return;
-            }
-            grid.innerHTML = scored.map(({item}) => `
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-slate-700 transition-colors">
-                    <div>
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="text-[10px] font-mono tracking-wider font-semibold text-amber-500">${item.sku}</span>
-                            <span class="text-[9px] text-slate-500 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800">${item.category}</span>
-                        </div>
-                        <h4 class="text-xs font-medium text-slate-200 mt-1 line-clamp-2">${item.desc}</h4>
-                    </div>
-                    <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-950">
-                        <span class="text-sm font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</span>
-                        <button type="button" onclick="allocateItemToQuote('${item.id}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 p-1.5 rounded-lg transition-all text-slate-300 cursor-pointer flex items-center gap-1 text-[10px] font-bold px-2">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        function detectAndRenderLaborSuggestion(text) {
-            const lower = normalizeSpokenNumbers(text).toLowerCase();
-            const box = document.getElementById('voice-labor-suggestion');
-
-            const hourMatch = lower.match(/(\d+)\s*(?:hour|hours|hr|hrs)/);
-            const halfDayMatch = /half\s*(?:a\s*)?day/.test(lower);
-            const fullDayMatch = !halfDayMatch && /full\s*day|whole\s*day|all\s*day|(?:^|\s)days?(?:\s|$)/.test(lower);
-
-            let suggestion = null;
-            if (hourMatch) {
-                const totalHours = parseInt(hourMatch[1]);
-                const subsequentHours = Math.max(0, totalHours - 1);
-                suggestion = { format: 'HOUR', hours: subsequentHours, label: `${totalHours} hour${totalHours === 1 ? '' : 's'} total (Hourly booking)` };
-            } else if (halfDayMatch) {
-                suggestion = { format: 'HALF', hours: 0, label: 'Half day' };
-            } else if (fullDayMatch) {
-                suggestion = { format: 'DAY', hours: 0, label: 'Full day' };
-            }
-
-            if (suggestion) {
-                box.classList.remove('hidden');
-                box.dataset.format = suggestion.format;
-                box.dataset.hours = suggestion.hours;
-                document.getElementById('voice-labor-suggestion-text').innerText = `Detected: ${suggestion.label}`;
-            } else {
-                box.classList.add('hidden');
-            }
-        }
-
-        function applyVoiceLaborSuggestion() {
-            const box = document.getElementById('voice-labor-suggestion');
-            const format = box.dataset.format;
-            if (!format) return;
-
-            setLaborBookingFormat(format);
-            if (format === 'HOUR' && box.dataset.hours) {
-                document.getElementById('labor-hour-slider').value = box.dataset.hours;
-                document.getElementById('display-hours-count').innerText = box.dataset.hours;
-                calculateComprehensiveMetrics();
-            }
-        }
-
-        function analyzeVoiceTranscript() {
-            let text = document.getElementById('voice-transcript-area').value;
-            if (!text.trim()) { alert("Record or type some job notes first."); return; }
-
-            // Defensive cleanup pass — catches duplication from any source (typed/pasted
-            // text, or a keyboard's own dictation feature bypassing this app's recording
-            // entirely), not just the live recording path.
-            text = collapseAdjacentDuplicatesFull(text.trim());
-            document.getElementById('voice-transcript-area').value = text;
-
-            const tokens = tokenizeForVoiceMatch(normalizeSpokenNumbers(text));
-            const inventory = getStoredInventory();
-
-            const scored = inventory
-                .map(item => ({ item, score: scoreVoiceItemMatch(item, tokens) }))
-                .filter(s => s.score > 0)
-                .sort((a, b) => b.score - a.score)
-                .slice(0, 10);
-
-            renderVoiceMaterialSuggestions(scored);
-            detectAndRenderLaborSuggestion(text);
-        }
-
         // --- CORE COMPREHENSIVE MATH ENGINE ---
         function calculateComprehensiveMetrics() {
             const netMaterialsExVat = activeAllocatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost) * curr.qty), 0);
@@ -2248,36 +1949,130 @@
             select.innerHTML = '<option value="">-- Blank Workspace Canvas --</option>' + JSON.parse(localStorage.getItem('eny_templates') || '[]').map(t => `<option value="${t.id}">${t.name}</option>`).join('');
         }
 
+        // --- TEMPLATE APPLY REVIEW MODAL (Add/Replace + quantity review before adding) ---
+        let pendingTemplateApplyId = null;
+        let pendingTemplateApplyMode = 'replace';
+
         function applyPrefilledJobTemplate() {
             const templateId = document.getElementById('prefilled-job-select').value;
             if (!templateId) return;
 
             const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
-            const inventory = getStoredInventory();
             const template = templates.find(t => t.id === templateId);
             if (!template) return;
 
-            document.getElementById('job-name').value = template.name;
-            
-            activeAllocatedMaterials = [];
-            template.items.forEach(ti => {
+            pendingTemplateApplyId = templateId;
+            document.getElementById('template-apply-review-name').innerText = template.name;
+
+            const toggleWrapper = document.getElementById('template-apply-mode-toggle-wrapper');
+            if (activeAllocatedMaterials.length > 0) {
+                toggleWrapper.classList.remove('hidden');
+                setTemplateApplyMode('add');
+            } else {
+                toggleWrapper.classList.add('hidden');
+                pendingTemplateApplyMode = 'replace';
+            }
+
+            renderTemplateApplyReviewItems(template);
+            document.getElementById('template-apply-review-modal').classList.remove('hidden');
+            lucide.createIcons();
+            document.getElementById('prefilled-job-select').value = "";
+        }
+
+        function setTemplateApplyMode(mode) {
+            pendingTemplateApplyMode = mode;
+            const addBtn = document.getElementById('template-apply-mode-add-btn');
+            const replaceBtn = document.getElementById('template-apply-mode-replace-btn');
+            const activeClasses = ['bg-amber-500', 'text-slate-950', 'border-amber-500'];
+            const inactiveClasses = ['bg-slate-900', 'text-slate-400', 'border-slate-800'];
+
+            const setActive = (btn, isActive) => {
+                if (isActive) { btn.classList.add(...activeClasses); btn.classList.remove(...inactiveClasses); }
+                else { btn.classList.add(...inactiveClasses); btn.classList.remove(...activeClasses); }
+            };
+            setActive(addBtn, mode === 'add');
+            setActive(replaceBtn, mode === 'replace');
+        }
+
+        function renderTemplateApplyReviewItems(template) {
+            const inventory = getStoredInventory();
+            const container = document.getElementById('template-apply-review-items');
+            const rows = template.items.map(ti => {
                 const stockItem = inventory.find(i => i.id === ti.id);
-                if (stockItem) { activeAllocatedMaterials.push({ ...stockItem, qty: ti.qty }); }
+                if (!stockItem) return '';
+                return `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex items-center gap-3" data-item-id="${stockItem.id}">
+                        <input type="checkbox" checked class="tmpl-review-include w-4 h-4 rounded bg-slate-900 border-slate-700 text-amber-500 cursor-pointer shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs font-medium text-slate-200 truncate">${stockItem.desc}</div>
+                            <div class="text-[10px] text-slate-500 font-mono">${stockItem.sku} • £${parseFloat(stockItem.cost).toFixed(2)} each</div>
+                        </div>
+                        <input type="number" min="1" value="${ti.qty}" class="tmpl-review-qty w-16 bg-slate-900 border border-slate-800 text-center rounded p-1.5 font-mono text-white text-xs shrink-0">
+                    </div>
+                `;
+            }).join('');
+            container.innerHTML = rows || `<p class="text-xs text-slate-500 text-center py-4">This template has no materials mapped.</p>`;
+        }
+
+        function confirmTemplateApply() {
+            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
+            const template = templates.find(t => t.id === pendingTemplateApplyId);
+            if (!template) { cancelTemplateApply(); return; }
+
+            const inventory = getStoredInventory();
+            const rows = document.querySelectorAll('#template-apply-review-items > div[data-item-id]');
+
+            const itemsToApply = [];
+            rows.forEach(row => {
+                const include = row.querySelector('.tmpl-review-include').checked;
+                if (!include) return;
+                const itemId = row.getAttribute('data-item-id');
+                const qty = parseInt(row.querySelector('.tmpl-review-qty').value) || 1;
+                const stockItem = inventory.find(i => i.id === itemId);
+                if (stockItem) itemsToApply.push({ stockItem, qty });
+            });
+
+            if (pendingTemplateApplyMode === 'replace') {
+                activeAllocatedMaterials = [];
+                document.getElementById('job-name').value = template.name;
+            } else {
+                const jobNameField = document.getElementById('job-name');
+                if (!jobNameField.value.trim()) jobNameField.value = template.name;
+            }
+
+            itemsToApply.forEach(({ stockItem, qty }) => {
+                if (pendingTemplateApplyMode === 'add') {
+                    const existing = activeAllocatedMaterials.find(m => m.id === stockItem.id);
+                    if (existing) { existing.qty += qty; return; }
+                }
+                activeAllocatedMaterials.push({ ...stockItem, qty });
             });
 
             rebuildAllocatedMaterialsTable();
-            document.getElementById('prefilled-job-select').value = ""; 
+            closeTemplateApplyModal();
+        }
+
+        function cancelTemplateApply() {
+            closeTemplateApplyModal();
+        }
+
+        function closeTemplateApplyModal() {
+            document.getElementById('template-apply-review-modal').classList.add('hidden');
+            pendingTemplateApplyId = null;
         }
 
         // --- TEMPLATES MANAGER CORES ---
         function rebuildTemplatesManagementInterface() {
+            rebuildTemplateMaterialSelector();
+            rebuildTemplateCatalogList();
+        }
+
+        function rebuildTemplateMaterialSelector() {
             const stock = getStoredInventory();
-            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
-            
             const selectorBox = document.getElementById('template-materials-selector-box');
             if (selectorBox) {
                 selectorBox.innerHTML = stock.map(item => `
-                    <div class="flex items-center justify-between py-1.5 px-1 text-xs">
+                    <div class="tmpl-mat-row flex items-center justify-between py-1.5 px-1 text-xs" data-searchable="${(item.desc + ' ' + item.sku).toLowerCase().replace(/"/g, '&quot;')}">
                         <label class="flex items-center gap-2 text-slate-300 truncate cursor-pointer select-none w-full">
                             <input type="checkbox" id="chk-tmpl-mat-${item.id}" data-id="${item.id}" onchange="toggleTemplateMatQtyField('${item.id}')" class="tmpl-mat-checkbox w-4 h-4 rounded bg-slate-950 border-slate-800 text-amber-500 cursor-pointer">
                             <span class="truncate max-w-[180px] sm:max-w-xs">${item.desc}</span>
@@ -2286,15 +2081,42 @@
                     </div>
                 `).join('');
             }
+            // Re-apply whatever's currently in the search box, since this rebuild
+            // recreates every row fresh (unfiltered) each time it runs.
+            filterTemplateMaterialSelector();
+        }
+
+        function filterTemplateMaterialSelector() {
+            const searchInput = document.getElementById('template-material-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            document.querySelectorAll('#template-materials-selector-box .tmpl-mat-row').forEach(row => {
+                const searchable = row.getAttribute('data-searchable') || '';
+                row.classList.toggle('hidden', filterText !== '' && !searchable.includes(filterText));
+            });
+        }
+
+        function rebuildTemplateCatalogList() {
+            const stock = getStoredInventory();
+            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
+
+            const catalogSearchInput = document.getElementById('template-catalog-search-input');
+            const catalogFilterText = catalogSearchInput ? catalogSearchInput.value.toLowerCase().trim() : '';
+            const filteredTemplates = templates.filter(t => t.name.toLowerCase().includes(catalogFilterText));
 
             const wrapper = document.getElementById('template-catalog-list-wrapper');
             const empty = document.getElementById('template-catalog-empty');
+            const emptyText = document.getElementById('template-catalog-empty-text');
             if (!wrapper) return;
 
-            if (templates.length === 0) { empty.classList.remove('hidden'); wrapper.innerHTML = ""; return; }
+            if (filteredTemplates.length === 0) {
+                empty.classList.remove('hidden');
+                if (emptyText) emptyText.innerText = templates.length === 0 ? 'No custom job presets configured.' : 'No templates match your search.';
+                wrapper.innerHTML = "";
+                return;
+            }
             empty.classList.add('hidden');
 
-            wrapper.innerHTML = templates.map(t => {
+            wrapper.innerHTML = filteredTemplates.map(t => {
                 const partsText = t.items.map(ti => {
                     const match = stock.find(s => s.id === ti.id);
                     return match ? `• ${match.desc} (x${ti.qty})` : null;
@@ -2302,11 +2124,13 @@
 
                 return `
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                        <div class="space-y-1">
+                        <div class="space-y-1 min-w-0">
                             <h3 class="text-sm font-bold text-white">${t.name}</h3>
                             <div class="text-[10px] text-slate-500 font-mono pt-1 leading-relaxed">${partsText || 'No custom materials mapped.'}</div>
                         </div>
-                        <div class="flex items-center gap-2 self-end md:self-auto">
+                        <div class="flex items-center gap-2 self-end md:self-auto shrink-0">
+                            <button onclick="loadTemplateForModification('${t.id}')" class="text-[11px] bg-slate-950 hover:bg-slate-800 text-amber-400 font-medium px-2.5 py-1.5 border border-slate-800 rounded-lg flex items-center gap-1 cursor-pointer"><i data-lucide="edit-3" class="w-3 h-3"></i> Edit</button>
+                            <button onclick="duplicateJobTemplatePreset('${t.id}')" class="text-[11px] bg-slate-950 hover:bg-slate-800 text-slate-300 font-medium px-2.5 py-1.5 border border-slate-800 rounded-lg flex items-center gap-1 cursor-pointer"><i data-lucide="copy-plus" class="w-3 h-3"></i> Duplicate</button>
                             <button onclick="deleteJobTemplatePreset('${t.id}')" class="text-slate-500 hover:text-red-400 p-2 rounded-lg transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>
@@ -2343,6 +2167,65 @@
             localStorage.setItem('eny_templates', JSON.stringify(templates));
             clearTemplateForm();
             reconstructUnifiedInterfaces();
+        }
+
+        function loadTemplateForModification(templateId) {
+            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
+            const template = templates.find(t => t.id === templateId);
+            if (!template) return;
+
+            // Clear any active material search and rebuild fresh so every checkbox
+            // exists and is visible before we set checked state on the right ones.
+            const searchInput = document.getElementById('template-material-search-input');
+            if (searchInput) searchInput.value = '';
+            rebuildTemplateMaterialSelector();
+
+            document.getElementById('template-id-field').value = template.id;
+            document.getElementById('template-name-input').value = template.name;
+
+            template.items.forEach(ti => {
+                const checkbox = document.getElementById(`chk-tmpl-mat-${ti.id}`);
+                const qtyInput = document.getElementById(`input-tmpl-qty-${ti.id}`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    toggleTemplateMatQtyField(ti.id);
+                }
+                if (qtyInput) qtyInput.value = ti.qty;
+            });
+
+            document.getElementById('template-form-title').innerText = "Modify Job Template";
+            document.getElementById('template-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Template`;
+            document.getElementById('template-cancel-btn').classList.remove('hidden');
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function duplicateJobTemplatePreset(templateId) {
+            let templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
+            const original = templates.find(t => t.id === templateId);
+            if (!original) return;
+
+            const duplicate = {
+                id: 'TMPL-' + Date.now(),
+                name: original.name + ' (Copy)',
+                items: original.items.map(i => ({ ...i }))
+            };
+            templates.push(duplicate);
+            localStorage.setItem('eny_templates', JSON.stringify(templates));
+            reconstructUnifiedInterfaces();
+            loadTemplateForModification(duplicate.id);
+        }
+
+        function clearTemplateForm() {
+            document.getElementById('new-template-form').reset();
+            document.getElementById('template-id-field').value = "";
+            document.getElementById('template-form-title').innerText = "Create Job Template";
+            document.getElementById('template-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job Template`;
+            document.getElementById('template-cancel-btn').classList.add('hidden');
+            const searchInput = document.getElementById('template-material-search-input');
+            if (searchInput) searchInput.value = '';
+            rebuildTemplateMaterialSelector();
+            lucide.createIcons();
         }
 
         function deleteJobTemplatePreset(id) {
