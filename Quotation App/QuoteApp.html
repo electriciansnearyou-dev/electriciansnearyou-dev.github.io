@@ -790,21 +790,29 @@
 
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
+                    // IMPORTANT: some supplier PDFs (e.g. STB Electrical) are encoded with a
+                    // page /Rotate flag instead of physically laying text out in landscape.
+                    // Raw item.transform values are in *unrotated* PDF space, so sorting on
+                    // them directly scrambles the reading order on rotated pages. We map every
+                    // item through the page's viewport transform (which bakes in the rotation)
+                    // before sorting, so "top-to-bottom, left-to-right" is always correct.
+                    const viewport = page.getViewport({ scale: 1 });
                     const textContent = await page.getTextContent();
-                    
-                    let items = textContent.items;
+
+                    let items = textContent.items.map(item => {
+                        const m = pdfjsLib.Util.transform(viewport.transform, item.transform);
+                        return { str: item.str.trim(), x: m[4], y: m[5] };
+                    }).filter(item => item.str);
+
                     items.sort((a, b) => {
-                        const yDiff = b.transform[5] - a.transform[5];
+                        const yDiff = a.y - b.y;
                         // 5px tolerance for slight text baseline shifts
-                        if (Math.abs(yDiff) > 5) return yDiff; 
-                        return a.transform[4] - b.transform[4]; 
+                        if (Math.abs(yDiff) > 5) return yDiff;
+                        return a.x - b.x;
                     });
 
                     for (let item of items) {
-                        let text = item.str.trim();
-                        if (text) {
-                            tokenSequence.push(text);
-                        }
+                        tokenSequence.push(item.str);
                     }
                 }
                 
@@ -836,10 +844,13 @@
                 for (let i = 0; i < tokens.length; i++) {
                     if (tokens[i].endsWith(':1')) {
                         let sku = tokens[i].replace(':1', '');
-                        
-                        // PREVENT BUG: Skip if the SKU is just a number (e.g., Quotation No 51933)
-                        if (/^\d+$/.test(sku)) continue;
-                        
+
+                        // NOTE: we deliberately do NOT skip purely-numeric SKUs here.
+                        // Some real suppliers (e.g. Wiska) use all-digit part numbers, and
+                        // blanket-skipping them silently dropped valid stock items.
+                        // The "Quotation No: 51933" header token is filtered out naturally
+                        // below, because no valid price data immediately follows it.
+
                         let descTokens = [];
                         let j = i + 1;
                         
@@ -856,22 +867,36 @@
                         }
                         
                         let desc = descTokens.join(' ').trim();
-                        
-                        // Harvest the pricing block
+
+                        // Capture QTY: the integer immediately preceding the price columns.
+                        // STB's NETT column is the LINE TOTAL (unit price × qty), not a
+                        // per-unit price, so we need qty to back out the true unit cost.
+                        let qty = (j < tokens.length && /^\d+$/.test(tokens[j])) ? parseInt(tokens[j]) : 1;
+
+                        // Harvest this row's numeric columns only. STB rows always contain
+                        // exactly 4 decimal values in order: Price, Disc%, Unit Price, Nett.
+                        // Stopping once we've seen 4 decimals prevents the scanner from
+                        // bleeding into the next row's line-number OR (for the last item
+                        // on the page) into the footer's Total Goods/VAT/Total Due figures.
                         let numberBlock = [];
-                        while (j < tokens.length && !tokens[j].endsWith(':1')) {
+                        let decimalsSeen = 0;
+                        while (j < tokens.length && !tokens[j].endsWith(':1') && decimalsSeen < 4) {
                             if (/^[\d.,]+$/.test(tokens[j])) {
                                 numberBlock.push(tokens[j]);
+                                if (tokens[j].includes('.')) decimalsSeen++;
                             }
                             j++;
                         }
                         
                         // Find the NETT price (last decimal in the STB layout sequence)
                         let decimals = numberBlock.filter(t => t.includes('.'));
-                        let price = 0;
+                        let lineNett = 0;
                         if (decimals.length > 0) {
-                            price = parseFloat(decimals[decimals.length - 1].replace(/,/g, ''));
+                            lineNett = parseFloat(decimals[decimals.length - 1].replace(/,/g, ''));
                         }
+
+                        // Convert the line total back to a per-unit trade cost
+                        let price = qty > 0 ? (lineNett / qty) : lineNett;
                         
                         // Ensure it's a valid item and not a stray header
                         if (sku && desc && price > 0 && !desc.toLowerCase().includes('date:')) {
@@ -894,6 +919,9 @@
                                 addedCount++;
                             }
                         }
+
+                        // Advance past whatever we consumed; the outer loop will keep
+                        // scanning token-by-token until it finds the next ':1' marker.
                         i = j - 1; 
                     }
                 }
