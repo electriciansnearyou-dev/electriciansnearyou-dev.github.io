@@ -1663,6 +1663,9 @@
         let voiceRecognitionActive = false;
         let voiceManualStop = true;
         let voiceFinalTranscript = '';
+        // Tracks the finalized text already committed at each result index, so we can
+        // tell genuinely new speech apart from the browser re-sending old results.
+        let voiceCommittedTexts = [];
 
         const VOICE_MATCH_STOPWORDS = new Set([
             'the','a','an','and','or','for','with','to','of','on','in','at','it','is','was',
@@ -1720,6 +1723,7 @@
 
             voiceManualStop = false;
             voiceRecognitionActive = true;
+            voiceCommittedTexts = [];
 
             voiceFinalTranscript = document.getElementById('voice-transcript-area').value;
             if (voiceFinalTranscript && !voiceFinalTranscript.endsWith(' ')) voiceFinalTranscript += ' ';
@@ -1732,67 +1736,82 @@
             startVoiceRecognitionSession();
         }
 
-        // Deliberately runs SHORT single-utterance sessions (continuous = false) and
-        // auto-restarts them the instant one ends, rather than using the browser's
-        // built-in continuous mode. Continuous mode is known to be unreliable on
-        // Android Chrome — it periodically restarts its internal session but resends
-        // the entire result history rather than just what's new, which caused the
-        // transcript to duplicate/stutter and grow uncontrollably. Restarting short
-        // sessions ourselves means each session only ever reports genuinely new speech.
+        // A SINGLE continuous session is used (not repeatedly torn down and rebuilt)
+        // because recreating the recognition object between every utterance introduces
+        // real microphone re-acquisition lag on mobile — during that gap, anything you
+        // say gets silently dropped, which is why only the LAST item in a spoken list
+        // was being captured.
+        //
+        // Android Chrome also has a known quirk where it periodically restarts its OWN
+        // internal session and resends results starting from index 0 again — sometimes
+        // as an exact repeat of already-finalized text, sometimes reusing that index
+        // for genuinely new speech. Comparing result COUNT alone can't tell those apart
+        // reliably. Instead, we compare the actual text already committed at each index
+        // against what's arriving now: identical text at that index means "already
+        // added, skip it"; different text at that index means "this index has been
+        // reused for new speech after a restart, commit it" — this handles both the
+        // duplication bug and the dropped-item bug correctly.
         function startVoiceRecognitionSession() {
             const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
             const btn = document.getElementById('voice-record-btn');
 
             voiceRecognitionInstance = new SpeechRecognitionAPI();
-            voiceRecognitionInstance.continuous = false;
+            voiceRecognitionInstance.continuous = true;
             voiceRecognitionInstance.interimResults = true;
             voiceRecognitionInstance.lang = 'en-GB';
 
             voiceRecognitionInstance.onresult = (event) => {
                 let interim = '';
+
                 for (let i = 0; i < event.results.length; i++) {
                     const piece = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
-                        voiceFinalTranscript += piece + ' ';
+                        const trimmedPiece = piece.trim();
+                        if (voiceCommittedTexts[i] !== trimmedPiece) {
+                            voiceFinalTranscript += piece + ' ';
+                            voiceCommittedTexts[i] = trimmedPiece;
+                        }
                     } else {
                         interim += piece;
                     }
                 }
+
                 document.getElementById('voice-transcript-area').value = voiceFinalTranscript + interim;
             };
 
             voiceRecognitionInstance.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
-                // 'no-speech' fires constantly during normal pauses between sentences —
-                // that's expected with short auto-restarting sessions, not a real error.
                 if (event.error === 'not-allowed') {
                     alert("Microphone access was blocked. Check your browser's site permissions and try again.");
                     voiceManualStop = true;
                 }
+                // 'no-speech' / 'aborted' are common during normal pauses — onend below
+                // handles resuming automatically rather than treating these as fatal.
             };
 
             voiceRecognitionInstance.onend = () => {
-                if (voiceManualStop) {
-                    voiceRecognitionActive = false;
-                    btn.innerHTML = `<i data-lucide="mic" class="w-5 h-5"></i> Start Recording`;
-                    btn.classList.remove('bg-red-500', 'hover:bg-red-600', 'text-white');
-                    btn.classList.add('bg-blue-500/10', 'hover:bg-blue-500/20', 'border', 'border-blue-500/30', 'text-blue-400');
-                    lucide.createIcons();
-                } else {
-                    // Keep listening — immediately start the next short session.
+                if (!voiceManualStop) {
+                    // The browser ended the session on its own (long silence, internal
+                    // restart, etc). Resume immediately so it keeps behaving like one
+                    // continuous listening session from your point of view.
                     try {
-                        startVoiceRecognitionSession();
+                        voiceRecognitionInstance.start();
+                        return;
                     } catch (e) {
-                        console.error('Could not restart voice recognition:', e);
-                        voiceRecognitionActive = false;
+                        console.error('Could not resume voice recognition:', e);
                     }
                 }
+
+                voiceRecognitionActive = false;
+                btn.innerHTML = `<i data-lucide="mic" class="w-5 h-5"></i> Start Recording`;
+                btn.classList.remove('bg-red-500', 'hover:bg-red-600', 'text-white');
+                btn.classList.add('bg-blue-500/10', 'hover:bg-blue-500/20', 'border', 'border-blue-500/30', 'text-blue-400');
+                lucide.createIcons();
             };
 
             try {
                 voiceRecognitionInstance.start();
             } catch (e) {
-                // Guards against rare "already started" errors during rapid restarts.
                 console.error('Voice recognition start failed:', e);
             }
         }
