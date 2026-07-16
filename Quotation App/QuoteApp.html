@@ -418,7 +418,7 @@
                 <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
                     <i data-lucide="file-input" class="text-amber-400"></i> Smart Supplier Import Tool
                 </h2>
-                <p class="text-xs text-slate-400 mb-4">Upload a PDF quote directly (like STB Electrical) or paste raw text. The system will automatically scan for part numbers ending in <code>:1</code>, extract the descriptions, and round the trade cost up to the nearest integer. Existing items will only overwrite if the new cost is higher.</p>
+                <p class="text-xs text-slate-400 mb-4">Upload a PDF quote directly (like STB Electrical) or paste raw text. The system will automatically scan the sequence for part numbers, isolate the descriptions, and pull the Nett price accurately regardless of visual layout quirks. Existing items will only overwrite if the new cost is higher.</p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 mb-4">
                     <label class="w-full sm:w-1/2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer text-center">
@@ -786,40 +786,33 @@
             try {
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-                let fullText = "";
+                
+                // We will just extract raw sequential tokens instead of guessing table rows
+                let tokenSequence = [];
 
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
                     
-                    let rows = [];
-                    for (let item of textContent.items) {
-                        let y = Math.round(item.transform[5]);
-                        let x = item.transform[4];
-                        let added = false;
-                        for (let row of rows) {
-                            if (Math.abs(row.y - y) < 5) {
-                                row.items.push({text: item.str, x: x});
-                                added = true;
-                                break;
-                            }
+                    // Sort primarily by Y (top to bottom) then X (left to right)
+                    // The 8px tolerance groups slight wobbles on the same physical print line together
+                    let items = textContent.items;
+                    items.sort((a, b) => {
+                        const yDiff = b.transform[5] - a.transform[5];
+                        if (Math.abs(yDiff) > 8) return yDiff; 
+                        return a.transform[4] - b.transform[4]; 
+                    });
+
+                    for (let item of items) {
+                        let text = item.str.trim();
+                        if (text) {
+                            tokenSequence.push(...text.split(/\s+/));
                         }
-                        if (!added) {
-                            rows.push({y: y, items: [{text: item.str, x: x}]});
-                        }
-                    }
-                    
-                    rows.sort((a, b) => b.y - a.y);
-                    
-                    for (let row of rows) {
-                        row.items.sort((a, b) => a.x - b.x);
-                        let lineStr = row.items.map(i => i.text).join(" ").trim();
-                        lineStr = lineStr.replace(/\s+/g, ' ');
-                        if (lineStr) fullText += lineStr + "\n";
                     }
                 }
-
-                document.getElementById('import-text-area').value = fullText;
+                
+                // Convert tokens back into a space-separated string block for the manual parser box
+                document.getElementById('import-text-area').value = tokenSequence.join(" ");
                 processRawImport(); 
             } catch (error) {
                 console.error(error);
@@ -835,93 +828,127 @@
             const rawData = document.getElementById('import-text-area').value;
             if(!rawData.trim()) { alert("Please upload a PDF or paste data into the import box first."); return; }
             
-            const lines = rawData.split('\n');
             let inventory = getStoredInventory();
             let addedCount = 0;
             let updatedCount = 0;
 
-            lines.forEach(line => {
-                line = line.trim();
-                if(!line) return;
+            // Strategy 1: Smart Token Sequence Scanner (Best for PDF text dumps)
+            if (rawData.includes(':1')) {
+                // Break everything into individual words/tokens
+                let tokens = rawData.split(/\s+/).filter(t => t.trim() !== '');
                 
-                let sku = "";
-                let desc = "";
-                let price = 0;
-
-                // 1. Try STB format matching
-                let stbMatch = line.match(/(?:^|\s)([A-Z0-9\/\-\.]+):1\s+(.+)/);
-                if (stbMatch) {
-                    let tempSku = stbMatch[1].trim();
-                    let remainder = stbMatch[2].trim();
-                    let tokens = remainder.split(/\s+/);
-                    let trailingNumbers = [];
-                    
-                    while (tokens.length > 0) {
-                        let lastToken = tokens[tokens.length - 1];
-                        if (/^[\d\.,]+$/.test(lastToken)) {
-                            trailingNumbers.unshift(tokens.pop());
-                        } else {
-                            break;
+                for (let i = 0; i < tokens.length; i++) {
+                    if (tokens[i].endsWith(':1')) {
+                        let sku = tokens[i].replace(':1', '');
+                        let descTokens = [];
+                        let j = i + 1;
+                        
+                        // Collect description words until we hit the start of the pricing numbers
+                        while (j < tokens.length) {
+                            // Look ahead to find the QTY and PRICE pattern
+                            if (j + 2 < tokens.length) {
+                                let t1 = tokens[j]; let t2 = tokens[j+1]; let t3 = tokens[j+2];
+                                // If we see an Integer -> Decimal -> Integer/PK combo, description is over
+                                if (/^\d+$/.test(t1) && /^\d+\.\d+$/.test(t2)) {
+                                    break; 
+                                }
+                            }
+                            // Failsafe: if we hit another SKU, stop
+                            if (tokens[j].endsWith(':1')) break; 
+                            
+                            descTokens.push(tokens[j]);
+                            j++;
                         }
+                        
+                        let desc = descTokens.join(' ');
+                        
+                        // Now collect all the numbers for this item
+                        let numberBlock = [];
+                        while (j < tokens.length && !tokens[j].endsWith(':1')) {
+                            numberBlock.push(tokens[j]);
+                            j++;
+                        }
+                        
+                        // Filter out just the decimals. The Nett price on STB is usually the LAST decimal.
+                        let decimals = numberBlock.filter(t => /^\d+\.\d+$/.test(t));
+                        let price = 0;
+                        if (decimals.length > 0) {
+                            price = parseFloat(decimals[decimals.length - 1].replace(/,/g, ''));
+                        }
+                        
+                        if (sku && desc && price > 0 && !sku.toLowerCase().includes('quotation') && !desc.toLowerCase().includes('vat')) {
+                            let roundedPrice = Math.ceil(price);
+                            const existingIndex = inventory.findIndex(inv => inv.sku.toLowerCase() === sku.toLowerCase());
+                            if (existingIndex !== -1) {
+                                if (roundedPrice > inventory[existingIndex].cost) {
+                                    inventory[existingIndex].cost = roundedPrice;
+                                    inventory[existingIndex].desc = desc; 
+                                    updatedCount++;
+                                }
+                            } else {
+                                inventory.push({ 
+                                    id: 'MAT-' + Date.now() + Math.floor(Math.random()*1000), 
+                                    sku: sku, 
+                                    desc: desc, 
+                                    cost: roundedPrice, 
+                                    category: 'Imported' 
+                                });
+                                addedCount++;
+                            }
+                        }
+                        // Advance outer loop past the numbers we just processed
+                        i = j - 1; 
                     }
+                }
+            } else {
+                // Strategy 2: Generic Line-by-Line CSV Fallback
+                const lines = rawData.split('\n');
+                lines.forEach(line => {
+                    line = line.trim();
+                    if(!line) return;
                     
-                    if (trailingNumbers.length >= 2) {
-                        sku = tempSku;
-                        desc = tokens.join(' ').trim();
-                        price = parseFloat(trailingNumbers[trailingNumbers.length - 2].replace(/,/g, ''));
-                    } else if (trailingNumbers.length === 1) {
-                        sku = tempSku;
-                        desc = tokens.join(' ').trim();
-                        price = parseFloat(trailingNumbers[0].replace(/,/g, ''));
-                    }
-                } 
-                
-                // 2. Try generic pipe/tab delimited
-                if (!sku && (line.includes('|') || line.includes('\t'))) {
-                    let cols = line.split(/\||\t/);
-                    if (cols.length >= 3) {
-                        if (line.includes('|') && cols.length >= 9) {
-                            sku = cols[1].trim().replace(/:1$/, '');
-                            desc = cols[2].trim();
-                            price = parseFloat(cols[8].trim().replace(/£|,/g, ''));
-                        } else {
-                            sku = cols[0].trim().replace(/"/g, '');
-                            desc = cols[1].trim().replace(/"/g, '');
-                            price = parseFloat(cols[2].replace(/£|,|"|\s/g, ''));
-                            if (isNaN(price) && cols.length > 3) {
-                                price = parseFloat(cols[cols.length-2].replace(/£|,|"|\s/g, ''));
+                    let sku = ""; let desc = ""; let price = 0;
+
+                    if (line.includes('|') || line.includes('\t') || line.includes(',')) {
+                        let cols = line.split(/\||\t|,/);
+                        cols = cols.map(c => c.replace(/"/g, '').trim()).filter(c => c !== '');
+                        
+                        if (cols.length >= 3) {
+                            sku = cols[0];
+                            desc = cols[1];
+                            let priceToken = cols[cols.length-1].replace(/£|,/g, '');
+                            price = parseFloat(priceToken);
+                            if(isNaN(price) && cols.length > 3) {
+                                price = parseFloat(cols[cols.length-2].replace(/£|,/g, ''));
                             }
                         }
                     }
-                }
 
-                if(sku && desc && price >= 0 && !isNaN(price)) {
-                    // Ignore random header grabs
-                    if (sku.toLowerCase().includes('quotation') || desc.toLowerCase().includes('vat')) return;
-
-                    let roundedPrice = Math.ceil(price);
-                    const existingIndex = inventory.findIndex(i => i.sku.toLowerCase() === sku.toLowerCase());
-                    if (existingIndex !== -1) {
-                        if (roundedPrice > inventory[existingIndex].cost) {
-                            inventory[existingIndex].cost = roundedPrice;
-                            inventory[existingIndex].desc = desc; 
-                            updatedCount++;
+                    if(sku && desc && price > 0 && !isNaN(price) && !sku.toLowerCase().includes('quotation') && !desc.toLowerCase().includes('vat')) {
+                        let roundedPrice = Math.ceil(price);
+                        const existingIndex = inventory.findIndex(inv => inv.sku.toLowerCase() === sku.toLowerCase());
+                        if (existingIndex !== -1) {
+                            if (roundedPrice > inventory[existingIndex].cost) {
+                                inventory[existingIndex].cost = roundedPrice;
+                                inventory[existingIndex].desc = desc; 
+                                updatedCount++;
+                            }
+                        } else {
+                            inventory.push({ 
+                                id: 'MAT-' + Date.now() + Math.floor(Math.random()*1000), 
+                                sku: sku, 
+                                desc: desc, 
+                                cost: roundedPrice, 
+                                category: 'Imported' 
+                            });
+                            addedCount++;
                         }
-                    } else {
-                        inventory.push({ 
-                            id: 'MAT-' + Date.now() + Math.floor(Math.random()*1000), 
-                            sku: sku, 
-                            desc: desc, 
-                            cost: roundedPrice, 
-                            category: 'Imported' 
-                        });
-                        addedCount++;
                     }
-                }
-            });
+                });
+            }
 
             localStorage.setItem('eny_inventory', JSON.stringify(inventory));
-            alert(`Import Parsing Complete!\n\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items.`);
+            alert(`Import Parsing Complete!\n\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items with higher costs.`);
             document.getElementById('import-text-area').value = "";
             reconstructUnifiedInterfaces();
         }
@@ -2289,4 +2316,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
