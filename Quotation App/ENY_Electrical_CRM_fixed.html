@@ -195,6 +195,31 @@
                     </div>
 
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
+                            <i data-lucide="mic" class="text-amber-400 w-5 h-5"></i> Voice / Notes Quote Assistant
+                        </h2>
+                        <p class="text-xs text-slate-400">Record a quick voice note about the job (or just type/paste notes), then tap "Find Matches". It suggests materials from your stock directory and a labor booking, one tap each to add — nothing is added automatically, so always check the suggestions before confirming.</p>
+
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <button type="button" id="voice-record-btn" onclick="toggleVoiceRecording()" class="w-full sm:w-auto bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                                <i data-lucide="mic" class="w-5 h-5"></i> Start Recording
+                            </button>
+                            <button type="button" onclick="analyzeVoiceTranscript()" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                                <i data-lucide="search" class="w-4 h-4"></i> Find Matching Items & Labor
+                            </button>
+                        </div>
+
+                        <textarea id="voice-transcript-area" rows="3" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="Your recorded notes will appear here — or just type/paste directly, e.g. 'Swapped the consumer unit for an 11 way, fitted two double sockets in the kitchen, half day plus an hour'"></textarea>
+
+                        <div id="voice-labor-suggestion" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <span id="voice-labor-suggestion-text" class="text-xs font-semibold text-amber-300"></span>
+                            <button type="button" onclick="applyVoiceLaborSuggestion()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer shrink-0">Apply to Labor Section</button>
+                        </div>
+
+                        <div id="voice-material-suggestions" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                    </div>
+
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-900">
                             <div>
                                 <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
@@ -1625,6 +1650,207 @@
             descInput.value = "";
             costInput.value = "";
             qtyInput.value = "1";
+        }
+
+        // --- VOICE / NOTES QUOTE ASSISTANT ---
+        // Free-tier by design: Web Speech API for voice-to-text (built into Chrome/Edge,
+        // runs entirely in-browser, no API key), then simple keyword-overlap matching
+        // against the local stock directory. This is deliberately "suggest and confirm",
+        // NOT auto-populate — nothing gets added to the quote until you tap it, because
+        // free keyword matching isn't reliable enough to trust blindly with real pricing.
+
+        let voiceRecognitionInstance = null;
+        let voiceRecognitionActive = false;
+        let voiceFinalTranscript = '';
+
+        const VOICE_MATCH_STOPWORDS = new Set([
+            'the','a','an','and','or','for','with','to','of','on','in','at','it','is','was',
+            'we','i','did','do','done','job','also','then','some','few','need','needs','put',
+            'install','installed','fit','fitted','add','added','plus','got','new','old','use',
+            'used','one','two','three','four','five','couple','pair','x','swap','swapped',
+            'replace','replaced','white','black','this','that','these','those'
+        ]);
+
+        function tokenizeForVoiceMatch(str) {
+            return str.toLowerCase()
+                .replace(/[^\w\s\/\-]/g, ' ')
+                .split(/\s+/)
+                .filter(w => w.length > 1 && !VOICE_MATCH_STOPWORDS.has(w));
+        }
+
+        // Converts spoken numbers to digits before matching/detection, since catalogue
+        // text and the hour-detection regex are digit-based ("11WAY", "2 hours") but
+        // speech recognition transcribes numbers as words ("eleven", "two").
+        const VOICE_NUMBER_WORDS = {
+            'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6,
+            'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10, 'eleven': 11, 'twelve': 12,
+            'thirteen': 13, 'fourteen': 14, 'fifteen': 15, 'sixteen': 16, 'seventeen': 17,
+            'eighteen': 18, 'nineteen': 19, 'twenty': 20, 'thirty': 30
+        };
+
+        function normalizeSpokenNumbers(text) {
+            let result = text;
+            // Compounds first: "twenty one" / "twenty-one" -> "21"
+            result = result.replace(/\b(twenty|thirty)[\s-](one|two|three|four|five|six|seven|eight|nine)\b/gi,
+                (m, tens, units) => String(VOICE_NUMBER_WORDS[tens.toLowerCase()] + VOICE_NUMBER_WORDS[units.toLowerCase()])
+            );
+            // Then single number words
+            result = result.replace(/\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty)\b/gi,
+                (m) => String(VOICE_NUMBER_WORDS[m.toLowerCase()])
+            );
+            return result;
+        }
+
+        function toggleVoiceRecording() {
+            const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const btn = document.getElementById('voice-record-btn');
+
+            if (!SpeechRecognitionAPI) {
+                alert("Voice recording isn't supported in this browser. Try Chrome or Edge — or just type/paste your notes into the box below instead, the matching still works from typed text.");
+                return;
+            }
+
+            if (voiceRecognitionActive) {
+                voiceRecognitionInstance.stop();
+                return;
+            }
+
+            voiceRecognitionInstance = new SpeechRecognitionAPI();
+            voiceRecognitionInstance.continuous = true;
+            voiceRecognitionInstance.interimResults = true;
+            voiceRecognitionInstance.lang = 'en-GB';
+
+            voiceFinalTranscript = document.getElementById('voice-transcript-area').value;
+            if (voiceFinalTranscript && !voiceFinalTranscript.endsWith(' ')) voiceFinalTranscript += ' ';
+
+            voiceRecognitionInstance.onresult = (event) => {
+                let interim = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const piece = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        voiceFinalTranscript += piece + ' ';
+                    } else {
+                        interim += piece;
+                    }
+                }
+                document.getElementById('voice-transcript-area').value = voiceFinalTranscript + interim;
+            };
+
+            voiceRecognitionInstance.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                if (event.error === 'not-allowed') {
+                    alert("Microphone access was blocked. Check your browser's site permissions and try again.");
+                }
+            };
+
+            voiceRecognitionInstance.onend = () => {
+                voiceRecognitionActive = false;
+                btn.innerHTML = `<i data-lucide="mic" class="w-5 h-5"></i> Start Recording`;
+                btn.classList.remove('bg-red-500', 'hover:bg-red-600', 'text-white');
+                btn.classList.add('bg-blue-500/10', 'hover:bg-blue-500/20', 'border', 'border-blue-500/30', 'text-blue-400');
+                lucide.createIcons();
+            };
+
+            voiceRecognitionInstance.start();
+            voiceRecognitionActive = true;
+            btn.innerHTML = `<i data-lucide="square" class="w-5 h-5"></i> Stop Recording`;
+            btn.classList.remove('bg-blue-500/10', 'hover:bg-blue-500/20', 'border', 'border-blue-500/30', 'text-blue-400');
+            btn.classList.add('bg-red-500', 'hover:bg-red-600', 'text-white');
+            lucide.createIcons();
+        }
+
+        function scoreVoiceItemMatch(item, tokens) {
+            const itemTokens = tokenizeForVoiceMatch(item.desc + ' ' + item.sku + ' ' + item.category);
+            let score = 0;
+            tokens.forEach(t => {
+                if (itemTokens.some(it => it === t || it.includes(t) || t.includes(it))) score++;
+            });
+            return score;
+        }
+
+        function renderVoiceMaterialSuggestions(scored) {
+            const grid = document.getElementById('voice-material-suggestions');
+            if (scored.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center py-4 text-xs text-slate-500">No confident matches found in your stock directory — try rephrasing (e.g. use wording closer to your catalogue descriptions), or add items manually below.</div>`;
+                return;
+            }
+            grid.innerHTML = scored.map(({item}) => `
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col justify-between hover:border-slate-700 transition-colors">
+                    <div>
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-mono tracking-wider font-semibold text-amber-500">${item.sku}</span>
+                            <span class="text-[9px] text-slate-500 px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800">${item.category}</span>
+                        </div>
+                        <h4 class="text-xs font-medium text-slate-200 mt-1 line-clamp-2">${item.desc}</h4>
+                    </div>
+                    <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-950">
+                        <span class="text-sm font-bold text-white">£${parseFloat(item.cost).toFixed(2)}</span>
+                        <button type="button" onclick="allocateItemToQuote('${item.id}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 p-1.5 rounded-lg transition-all text-slate-300 cursor-pointer flex items-center gap-1 text-[10px] font-bold px-2">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function detectAndRenderLaborSuggestion(text) {
+            const lower = normalizeSpokenNumbers(text).toLowerCase();
+            const box = document.getElementById('voice-labor-suggestion');
+
+            const hourMatch = lower.match(/(\d+)\s*(?:hour|hours|hr|hrs)/);
+            const halfDayMatch = /half\s*(?:a\s*)?day/.test(lower);
+            const fullDayMatch = !halfDayMatch && /full\s*day|whole\s*day|all\s*day|(?:^|\s)days?(?:\s|$)/.test(lower);
+
+            let suggestion = null;
+            if (hourMatch) {
+                const totalHours = parseInt(hourMatch[1]);
+                const subsequentHours = Math.max(0, totalHours - 1);
+                suggestion = { format: 'HOUR', hours: subsequentHours, label: `${totalHours} hour${totalHours === 1 ? '' : 's'} total (Hourly booking)` };
+            } else if (halfDayMatch) {
+                suggestion = { format: 'HALF', hours: 0, label: 'Half day' };
+            } else if (fullDayMatch) {
+                suggestion = { format: 'DAY', hours: 0, label: 'Full day' };
+            }
+
+            if (suggestion) {
+                box.classList.remove('hidden');
+                box.dataset.format = suggestion.format;
+                box.dataset.hours = suggestion.hours;
+                document.getElementById('voice-labor-suggestion-text').innerText = `Detected: ${suggestion.label}`;
+            } else {
+                box.classList.add('hidden');
+            }
+        }
+
+        function applyVoiceLaborSuggestion() {
+            const box = document.getElementById('voice-labor-suggestion');
+            const format = box.dataset.format;
+            if (!format) return;
+
+            setLaborBookingFormat(format);
+            if (format === 'HOUR' && box.dataset.hours) {
+                document.getElementById('labor-hour-slider').value = box.dataset.hours;
+                document.getElementById('display-hours-count').innerText = box.dataset.hours;
+                calculateComprehensiveMetrics();
+            }
+        }
+
+        function analyzeVoiceTranscript() {
+            const text = document.getElementById('voice-transcript-area').value;
+            if (!text.trim()) { alert("Record or type some job notes first."); return; }
+
+            const tokens = tokenizeForVoiceMatch(normalizeSpokenNumbers(text));
+            const inventory = getStoredInventory();
+
+            const scored = inventory
+                .map(item => ({ item, score: scoreVoiceItemMatch(item, tokens) }))
+                .filter(s => s.score > 0)
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 10);
+
+            renderVoiceMaterialSuggestions(scored);
+            detectAndRenderLaborSuggestion(text);
         }
 
         // --- CORE COMPREHENSIVE MATH ENGINE ---
