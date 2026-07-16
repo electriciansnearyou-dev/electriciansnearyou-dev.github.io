@@ -438,6 +438,33 @@
                 </button>
             </div>
 
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm mb-8">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
+                    <i data-lucide="refresh-cw" class="text-amber-400"></i> Wholesaler Bulk Price Review
+                </h2>
+                <p class="text-xs text-slate-400 mb-4">Export your full stock directory as a CSV to send to a wholesaler for a global price review. They can either fill in the "New Cost" column and send the CSV back, or just send a fresh quote PDF (same STB-style layout as the Smart Import tool) — either format is accepted here. Every matched SKU is overwritten with the new price, whether it went up or down. This is fully independent of the Smart Import tool above (which only ever increases prices and can add new items) and the Team Sync tool in the Vault tab (which is for syncing with colleagues) — neither is affected by this.</p>
+
+                <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                    <button type="button" onclick="exportStockListForRepricing()" class="w-full sm:w-1/2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                        <i data-lucide="download" class="w-5 h-5"></i> Export Full Stock List (CSV)
+                    </button>
+                    <label class="w-full sm:w-1/2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-400 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer text-center">
+                        <i data-lucide="upload-cloud" class="w-5 h-5"></i> <span id="reprice-upload-btn-text">Upload Wholesaler's Updated Prices</span>
+                        <input type="file" id="reprice-upload" class="hidden" accept=".csv,.txt,.pdf,application/pdf" onchange="handleRepriceFileUpload(event)">
+                    </label>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true"><div class="w-full border-t border-slate-800"></div></div>
+                    <div class="relative flex justify-center"><span class="bg-slate-950 px-3 text-xs text-slate-500 font-medium">OR PASTE UPDATED CSV TEXT MANUALLY</span></div>
+                </div>
+
+                <textarea id="reprice-import-text-area" rows="4" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 mt-4 text-xs font-mono text-slate-300 focus:outline-none focus:border-amber-500 mb-4" placeholder="Paste the wholesaler's returned CSV here if not uploading a file..."></textarea>
+                <button type="button" onclick="processRepriceImport()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Apply Updated Prices
+                </button>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
                     <div>
@@ -977,6 +1004,239 @@
             localStorage.setItem('eny_inventory', JSON.stringify(inventory));
             alert(`Import Parsing Complete!\n\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items with higher costs.`);
             document.getElementById('import-text-area').value = "";
+            reconstructUnifiedInterfaces();
+        }
+
+        // --- WHOLESALER BULK PRICE REVIEW TOOL ---
+        // This is deliberately isolated from processRawImport() (Smart Import, which only
+        // ever raises prices) and from importSystemStateAndMerge() (Team Sync, which is
+        // confirm-per-item for colleague collaboration). This tool unconditionally applies
+        // whatever new price the wholesaler sends back, up or down, matched purely by SKU.
+
+        function csvEscapeField(value) {
+            const str = String(value ?? '');
+            if (/[",\n]/.test(str)) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        }
+
+        function parseCsvLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (inQuotes) {
+                    if (char === '"') {
+                        if (line[i + 1] === '"') { current += '"'; i++; }
+                        else { inQuotes = false; }
+                    } else {
+                        current += char;
+                    }
+                } else {
+                    if (char === '"') { inQuotes = true; }
+                    else if (char === ',') { result.push(current); current = ''; }
+                    else { current += char; }
+                }
+            }
+            result.push(current);
+            return result.map(v => v.trim());
+        }
+
+        function exportStockListForRepricing() {
+            const inventory = getStoredInventory();
+            if (inventory.length === 0) { alert("Your stock directory is empty — nothing to export."); return; }
+
+            let csvRows = ['SKU,Description,Category,Current Cost,New Cost (Wholesaler fills in)'];
+            inventory.forEach(item => {
+                csvRows.push([
+                    csvEscapeField(item.sku),
+                    csvEscapeField(item.desc),
+                    csvEscapeField(item.category),
+                    csvEscapeField(parseFloat(item.cost).toFixed(2)),
+                    ''
+                ].join(','));
+            });
+
+            const csvContent = csvRows.join('\r\n');
+            const dataBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `ENY_Stock_List_For_Repricing_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function handleRepriceFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const btnText = document.getElementById('reprice-upload-btn-text');
+            const originalText = btnText.innerText;
+
+            try {
+                const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+
+                if (isPdf) {
+                    btnText.innerText = "Scanning PDF...";
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                    let tokenSequence = [];
+
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+
+                        let items = textContent.items;
+                        items.sort((a, b) => {
+                            const yDiff = b.transform[5] - a.transform[5];
+                            if (Math.abs(yDiff) > 5) return yDiff;
+                            return a.transform[4] - b.transform[4];
+                        });
+
+                        for (let item of items) {
+                            let text = item.str.trim();
+                            if (text) tokenSequence.push(text);
+                        }
+                    }
+                    document.getElementById('reprice-import-text-area').value = tokenSequence.join(" ");
+                } else {
+                    btnText.innerText = "Reading File...";
+                    const text = await file.text();
+                    document.getElementById('reprice-import-text-area').value = text;
+                }
+
+                processRepriceImport();
+            } catch (error) {
+                console.error(error);
+                alert("Could not read the uploaded file. Make sure it's a text-based PDF quote, or a CSV/TXT file.");
+            } finally {
+                btnText.innerText = originalText;
+                event.target.value = "";
+            }
+        }
+
+        function processRepriceImport() {
+            const rawData = document.getElementById('reprice-import-text-area').value;
+            if (!rawData.trim()) { alert("Please upload or paste the wholesaler's updated price list first."); return; }
+
+            let inventory = getStoredInventory();
+            let increased = 0, decreased = 0, unchanged = 0, skippedBlank = 0;
+            let notFound = [];
+
+            if (rawData.includes(':1')) {
+                // Wholesaler sent back a fresh STB-style quote PDF rather than our CSV.
+                // Reuses the same token-sequence engine as the Smart Import tool (SKU,
+                // qty-aware NETT extraction) but applies it as an UNCONDITIONAL overwrite
+                // in either direction, and never adds brand-new SKUs to the directory —
+                // that stays the Smart Import tool's job. Descriptions are also left
+                // untouched here; only the cost is ever changed by this tool.
+                let tokens = rawData.split(/\s+/).filter(t => t.trim() !== '');
+
+                for (let i = 0; i < tokens.length; i++) {
+                    if (tokens[i].endsWith(':1')) {
+                        let sku = tokens[i].replace(':1', '');
+
+                        let descTokens = [];
+                        let j = i + 1;
+
+                        while (j < tokens.length) {
+                            if (tokens[j].endsWith(':1')) break;
+                            if (j + 1 < tokens.length && /^\d+$/.test(tokens[j]) && /^\d+\.\d+$/.test(tokens[j+1])) break;
+                            descTokens.push(tokens[j]);
+                            j++;
+                        }
+
+                        let qty = (j < tokens.length && /^\d+$/.test(tokens[j])) ? parseInt(tokens[j]) : 1;
+
+                        let numberBlock = [];
+                        let decimalsSeen = 0;
+                        while (j < tokens.length && !tokens[j].endsWith(':1') && decimalsSeen < 4) {
+                            if (/^[\d.,]+$/.test(tokens[j])) {
+                                numberBlock.push(tokens[j]);
+                                if (tokens[j].includes('.')) decimalsSeen++;
+                            }
+                            j++;
+                        }
+
+                        let decimals = numberBlock.filter(t => t.includes('.'));
+                        let lineNett = decimals.length > 0 ? parseFloat(decimals[decimals.length - 1].replace(/,/g, '')) : 0;
+                        let newCost = qty > 0 ? (lineNett / qty) : lineNett;
+
+                        // A zero (or missing) price means the header/quotation-number token,
+                        // or a genuine "price on request" line — skip either way, don't
+                        // count it as "not found".
+                        if (sku && newCost > 0) {
+                            const existingIndex = inventory.findIndex(inv => inv.sku.toLowerCase() === sku.toLowerCase());
+                            if (existingIndex === -1) {
+                                notFound.push(sku);
+                            } else {
+                                const roundedNewCost = Math.ceil(newCost);
+                                const oldCost = inventory[existingIndex].cost;
+                                if (roundedNewCost === oldCost) {
+                                    unchanged++;
+                                } else {
+                                    inventory[existingIndex].cost = roundedNewCost;
+                                    if (roundedNewCost > oldCost) { increased++; } else { decreased++; }
+                                }
+                            }
+                        }
+
+                        i = j - 1;
+                    }
+                }
+            } else {
+                // Our own exported CSV, returned with the "New Cost" column filled in.
+                const lines = rawData.split(/\r?\n/).map(l => l.trim()).filter(l => l !== '');
+
+                lines.forEach(line => {
+                    const cols = parseCsvLine(line);
+                    if (cols.length < 2) return;
+
+                    const skuCandidate = cols[0];
+                    // Skip the header row
+                    if (skuCandidate.toLowerCase() === 'sku') return;
+
+                    // New Cost is expected in the 5th column (as exported). If the wholesaler
+                    // stripped the header/blank column and only left 4 columns, fall back to
+                    // treating the last column as the new cost.
+                    let newCostRaw = cols.length >= 5 ? cols[4] : (cols.length >= 4 ? cols[3] : '');
+                    newCostRaw = (newCostRaw || '').replace(/[£$,]/g, '').trim();
+
+                    if (newCostRaw === '') { skippedBlank++; return; }
+
+                    const newCost = parseFloat(newCostRaw);
+                    if (isNaN(newCost) || newCost <= 0) { skippedBlank++; return; }
+
+                    const existingIndex = inventory.findIndex(inv => inv.sku.toLowerCase() === skuCandidate.toLowerCase());
+                    if (existingIndex === -1) { notFound.push(skuCandidate); return; }
+
+                    const roundedNewCost = Math.ceil(newCost);
+                    const oldCost = inventory[existingIndex].cost;
+
+                    if (roundedNewCost === oldCost) { unchanged++; return; }
+
+                    // Unconditional overwrite — increases AND decreases both apply.
+                    inventory[existingIndex].cost = roundedNewCost;
+                    if (roundedNewCost > oldCost) { increased++; } else { decreased++; }
+                });
+            }
+
+            localStorage.setItem('eny_inventory', JSON.stringify(inventory));
+
+            let summary = `Wholesaler Price Review Applied!\n\n`;
+            summary += `• Prices increased: ${increased}\n`;
+            summary += `• Prices decreased: ${decreased}\n`;
+            summary += `• Unchanged (same price): ${unchanged}\n`;
+            if (skippedBlank > 0) summary += `• Skipped (blank/invalid new cost): ${skippedBlank}\n`;
+            if (notFound.length > 0) {
+                summary += `• Not found in your stock directory (${notFound.length}): ${notFound.slice(0, 10).join(', ')}${notFound.length > 10 ? ', ...' : ''}\n`;
+            }
+
+            alert(summary);
+            document.getElementById('reprice-import-text-area').value = "";
             reconstructUnifiedInterfaces();
         }
 
