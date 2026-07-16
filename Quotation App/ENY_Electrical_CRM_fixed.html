@@ -1661,6 +1661,7 @@
 
         let voiceRecognitionInstance = null;
         let voiceRecognitionActive = false;
+        let voiceManualStop = true;
         let voiceFinalTranscript = '';
 
         const VOICE_MATCH_STOPWORDS = new Set([
@@ -1711,21 +1712,45 @@
             }
 
             if (voiceRecognitionActive) {
+                // Mark as a manual stop BEFORE calling stop() so onend knows not to restart.
+                voiceManualStop = true;
                 voiceRecognitionInstance.stop();
                 return;
             }
 
-            voiceRecognitionInstance = new SpeechRecognitionAPI();
-            voiceRecognitionInstance.continuous = true;
-            voiceRecognitionInstance.interimResults = true;
-            voiceRecognitionInstance.lang = 'en-GB';
+            voiceManualStop = false;
+            voiceRecognitionActive = true;
 
             voiceFinalTranscript = document.getElementById('voice-transcript-area').value;
             if (voiceFinalTranscript && !voiceFinalTranscript.endsWith(' ')) voiceFinalTranscript += ' ';
 
+            btn.innerHTML = `<i data-lucide="square" class="w-5 h-5"></i> Stop Recording`;
+            btn.classList.remove('bg-blue-500/10', 'hover:bg-blue-500/20', 'border', 'border-blue-500/30', 'text-blue-400');
+            btn.classList.add('bg-red-500', 'hover:bg-red-600', 'text-white');
+            lucide.createIcons();
+
+            startVoiceRecognitionSession();
+        }
+
+        // Deliberately runs SHORT single-utterance sessions (continuous = false) and
+        // auto-restarts them the instant one ends, rather than using the browser's
+        // built-in continuous mode. Continuous mode is known to be unreliable on
+        // Android Chrome — it periodically restarts its internal session but resends
+        // the entire result history rather than just what's new, which caused the
+        // transcript to duplicate/stutter and grow uncontrollably. Restarting short
+        // sessions ourselves means each session only ever reports genuinely new speech.
+        function startVoiceRecognitionSession() {
+            const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const btn = document.getElementById('voice-record-btn');
+
+            voiceRecognitionInstance = new SpeechRecognitionAPI();
+            voiceRecognitionInstance.continuous = false;
+            voiceRecognitionInstance.interimResults = true;
+            voiceRecognitionInstance.lang = 'en-GB';
+
             voiceRecognitionInstance.onresult = (event) => {
                 let interim = '';
-                for (let i = event.resultIndex; i < event.results.length; i++) {
+                for (let i = 0; i < event.results.length; i++) {
                     const piece = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
                         voiceFinalTranscript += piece + ' ';
@@ -1738,25 +1763,38 @@
 
             voiceRecognitionInstance.onerror = (event) => {
                 console.error('Speech recognition error:', event.error);
+                // 'no-speech' fires constantly during normal pauses between sentences —
+                // that's expected with short auto-restarting sessions, not a real error.
                 if (event.error === 'not-allowed') {
                     alert("Microphone access was blocked. Check your browser's site permissions and try again.");
+                    voiceManualStop = true;
                 }
             };
 
             voiceRecognitionInstance.onend = () => {
-                voiceRecognitionActive = false;
-                btn.innerHTML = `<i data-lucide="mic" class="w-5 h-5"></i> Start Recording`;
-                btn.classList.remove('bg-red-500', 'hover:bg-red-600', 'text-white');
-                btn.classList.add('bg-blue-500/10', 'hover:bg-blue-500/20', 'border', 'border-blue-500/30', 'text-blue-400');
-                lucide.createIcons();
+                if (voiceManualStop) {
+                    voiceRecognitionActive = false;
+                    btn.innerHTML = `<i data-lucide="mic" class="w-5 h-5"></i> Start Recording`;
+                    btn.classList.remove('bg-red-500', 'hover:bg-red-600', 'text-white');
+                    btn.classList.add('bg-blue-500/10', 'hover:bg-blue-500/20', 'border', 'border-blue-500/30', 'text-blue-400');
+                    lucide.createIcons();
+                } else {
+                    // Keep listening — immediately start the next short session.
+                    try {
+                        startVoiceRecognitionSession();
+                    } catch (e) {
+                        console.error('Could not restart voice recognition:', e);
+                        voiceRecognitionActive = false;
+                    }
+                }
             };
 
-            voiceRecognitionInstance.start();
-            voiceRecognitionActive = true;
-            btn.innerHTML = `<i data-lucide="square" class="w-5 h-5"></i> Stop Recording`;
-            btn.classList.remove('bg-blue-500/10', 'hover:bg-blue-500/20', 'border', 'border-blue-500/30', 'text-blue-400');
-            btn.classList.add('bg-red-500', 'hover:bg-red-600', 'text-white');
-            lucide.createIcons();
+            try {
+                voiceRecognitionInstance.start();
+            } catch (e) {
+                // Guards against rare "already started" errors during rapid restarts.
+                console.error('Voice recognition start failed:', e);
+            }
         }
 
         function scoreVoiceItemMatch(item, tokens) {
