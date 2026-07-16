@@ -786,16 +786,12 @@
             try {
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
-                
-                // We will just extract raw sequential tokens instead of guessing table rows
                 let tokenSequence = [];
 
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
                     
-                    // Sort primarily by Y (top to bottom) then X (left to right)
-                    // The 8px tolerance groups slight wobbles on the same physical print line together
                     let items = textContent.items;
                     items.sort((a, b) => {
                         const yDiff = b.transform[5] - a.transform[5];
@@ -803,20 +799,27 @@
                         return a.transform[4] - b.transform[4]; 
                     });
 
+                    let lastY = null;
+                    let currentLine = [];
                     for (let item of items) {
                         let text = item.str.trim();
-                        if (text) {
-                            tokenSequence.push(...text.split(/\s+/));
+                        if (!text) continue;
+                        
+                        if (lastY !== null && Math.abs(item.transform[5] - lastY) > 8) {
+                            tokenSequence.push(currentLine.join(" "));
+                            currentLine = [];
                         }
+                        currentLine.push(text);
+                        lastY = item.transform[5];
                     }
+                    if (currentLine.length > 0) tokenSequence.push(currentLine.join(" "));
                 }
                 
-                // Convert tokens back into a space-separated string block for the manual parser box
-                document.getElementById('import-text-area').value = tokenSequence.join(" ");
+                document.getElementById('import-text-area').value = tokenSequence.join("\n");
                 processRawImport(); 
             } catch (error) {
                 console.error(error);
-                alert("Could not process PDF. Ensure it is a text-based digital file, not a flat image scan.");
+                alert("Could not process PDF. Ensure it is a text-based digital file.");
             } finally {
                 btn.innerText = originalText;
                 event.target.value = ""; 
@@ -832,78 +835,71 @@
             let addedCount = 0;
             let updatedCount = 0;
 
-            // Strategy 1: Smart Token Sequence Scanner (Best for PDF text dumps)
-            if (rawData.includes(':1')) {
-                // Break everything into individual words/tokens
-                let tokens = rawData.split(/\s+/).filter(t => t.trim() !== '');
-                
-                for (let i = 0; i < tokens.length; i++) {
-                    if (tokens[i].endsWith(':1')) {
-                        let sku = tokens[i].replace(':1', '');
-                        let descTokens = [];
-                        let j = i + 1;
+            let tokens = rawData.split(/\s+/).filter(t => t.trim() !== '');
+            
+            for (let i = 0; i < tokens.length; i++) {
+                if (tokens[i].endsWith(':1')) {
+                    let sku = tokens[i].replace(':1', '');
+                    let descTokens = [];
+                    let j = i + 1;
+                    
+                    while (j < tokens.length) {
+                        if (tokens[j].endsWith(':1')) break;
                         
-                        // Collect description words until we hit the start of the pricing numbers
-                        while (j < tokens.length) {
-                            // Look ahead to find the QTY and PRICE pattern
-                            if (j + 2 < tokens.length) {
-                                let t1 = tokens[j]; let t2 = tokens[j+1]; let t3 = tokens[j+2];
-                                // If we see an Integer -> Decimal -> Integer/PK combo, description is over
-                                if (/^\d+$/.test(t1) && /^\d+\.\d+$/.test(t2)) {
-                                    break; 
-                                }
-                            }
-                            // Failsafe: if we hit another SKU, stop
-                            if (tokens[j].endsWith(':1')) break; 
-                            
-                            descTokens.push(tokens[j]);
-                            j++;
+                        if (j + 3 < tokens.length) {
+                            let isNumGrid = /^\d+$/.test(tokens[j]) && 
+                                            /^[\d.,]+$/.test(tokens[j+1]) && 
+                                            /^\d+$/.test(tokens[j+2]) && 
+                                            /^[\d.,]+$/.test(tokens[j+3]);
+                            if (isNumGrid) break;
                         }
-                        
-                        let desc = descTokens.join(' ');
-                        
-                        // Now collect all the numbers for this item
-                        let numberBlock = [];
-                        while (j < tokens.length && !tokens[j].endsWith(':1')) {
-                            numberBlock.push(tokens[j]);
-                            j++;
-                        }
-                        
-                        // Filter out just the decimals. The Nett price on STB is usually the LAST decimal.
-                        let decimals = numberBlock.filter(t => /^\d+\.\d+$/.test(t));
-                        let price = 0;
-                        if (decimals.length > 0) {
-                            price = parseFloat(decimals[decimals.length - 1].replace(/,/g, ''));
-                        }
-                        
-                        if (sku && desc && price > 0 && !sku.toLowerCase().includes('quotation') && !desc.toLowerCase().includes('vat')) {
-                            let roundedPrice = Math.ceil(price);
-                            const existingIndex = inventory.findIndex(inv => inv.sku.toLowerCase() === sku.toLowerCase());
-                            if (existingIndex !== -1) {
-                                if (roundedPrice > inventory[existingIndex].cost) {
-                                    inventory[existingIndex].cost = roundedPrice;
-                                    inventory[existingIndex].desc = desc; 
-                                    updatedCount++;
-                                }
-                            } else {
-                                inventory.push({ 
-                                    id: 'MAT-' + Date.now() + Math.floor(Math.random()*1000), 
-                                    sku: sku, 
-                                    desc: desc, 
-                                    cost: roundedPrice, 
-                                    category: 'Imported' 
-                                });
-                                addedCount++;
-                            }
-                        }
-                        // Advance outer loop past the numbers we just processed
-                        i = j - 1; 
+                        descTokens.push(tokens[j]);
+                        j++;
                     }
+                    
+                    let desc = descTokens.join(' ');
+                    
+                    let numberBlock = [];
+                    while (j < tokens.length && !tokens[j].endsWith(':1') && /^[0-9.,]+$/.test(tokens[j])) {
+                        numberBlock.push(tokens[j]);
+                        j++;
+                    }
+                    
+                    let decimals = numberBlock.filter(t => t.includes('.'));
+                    let price = 0;
+                    if (decimals.length > 0) {
+                        price = parseFloat(decimals[decimals.length - 1].replace(/,/g, ''));
+                    } else if (numberBlock.length >= 2) {
+                        price = parseFloat(numberBlock[numberBlock.length - 2].replace(/,/g, ''));
+                    }
+                    
+                    if (sku && desc && price > 0 && !sku.toLowerCase().includes('quotation')) {
+                        let roundedPrice = Math.ceil(price);
+                        const existingIndex = inventory.findIndex(inv => inv.sku.toLowerCase() === sku.toLowerCase());
+                        if (existingIndex !== -1) {
+                            if (roundedPrice > inventory[existingIndex].cost) {
+                                inventory[existingIndex].cost = roundedPrice;
+                                inventory[existingIndex].desc = desc; 
+                                updatedCount++;
+                            }
+                        } else {
+                            inventory.push({ 
+                                id: 'MAT-' + Date.now() + Math.floor(Math.random()*1000), 
+                                sku: sku, 
+                                desc: desc, 
+                                cost: roundedPrice, 
+                                category: 'Imported' 
+                            });
+                            addedCount++;
+                        }
+                    }
+                    i = j - 1;
                 }
-            } else {
-                // Strategy 2: Generic Line-by-Line CSV Fallback
-                const lines = rawData.split('\n');
-                lines.forEach(line => {
+            }
+
+            if (addedCount === 0 && updatedCount === 0) {
+                 const lines = rawData.split('\n');
+                 lines.forEach(line => {
                     line = line.trim();
                     if(!line) return;
                     
@@ -924,7 +920,7 @@
                         }
                     }
 
-                    if(sku && desc && price > 0 && !isNaN(price) && !sku.toLowerCase().includes('quotation') && !desc.toLowerCase().includes('vat')) {
+                    if(sku && desc && price > 0 && !isNaN(price)) {
                         let roundedPrice = Math.ceil(price);
                         const existingIndex = inventory.findIndex(inv => inv.sku.toLowerCase() === sku.toLowerCase());
                         if (existingIndex !== -1) {
