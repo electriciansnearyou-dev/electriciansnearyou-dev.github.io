@@ -68,7 +68,7 @@
         <div id="home-tab" class="tab-content active space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
                     <div class="flex items-center justify-between pb-2 border-b border-slate-900">
                         <div>
                             <h2 class="text-base font-bold text-white flex items-center gap-2">
@@ -104,7 +104,7 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Quotes Pending Approval</h3>
@@ -116,7 +116,7 @@
                     <div id="dash-pending-quotes-list" class="mt-4 max-h-[140px] overflow-y-auto custom-scrollbar border-t border-slate-900 pt-3 space-y-1.5 text-xs"></div>
                 </div>
 
-                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider">Invoices Pending Payment</h3>
@@ -153,7 +153,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="lg:col-span-2 space-y-6">
                     
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
                         <div class="flex items-center justify-between">
                             <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
                                 <i data-lucide="user-check" class="text-amber-400 w-5 h-5"></i> Link Client & Job Configuration
@@ -168,6 +168,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pre-filled Job Template</label>
+                                <input type="text" id="prefilled-job-search-input" oninput="rebuildJobTemplatesDropdown()" placeholder="Search templates..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 mb-1.5">
                                 <select id="prefilled-job-select" onchange="applyPrefilledJobTemplate()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-amber-400 font-medium focus:outline-none focus:border-amber-500 transition-colors">
                                     <option value="">-- Blank Workspace Canvas --</option>
                                 </select>
@@ -178,7 +179,7 @@
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-900">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-900">
                             <div>
                                 <label class="block text-xs font-medium text-slate-400 mb-1">Contact Name</label>
                                 <input type="text" id="client-name" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100">
@@ -188,13 +189,17 @@
                                 <input type="email" id="client-email" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100">
                             </div>
                             <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Phone Number</label>
+                                <input type="tel" id="client-phone" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100">
+                            </div>
+                            <div>
                                 <label class="block text-xs font-medium text-slate-400 mb-1">Site/Billing Address</label>
                                 <input type="text" id="client-address" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-100">
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-900">
                             <div>
                                 <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
@@ -222,7 +227,7 @@
                         <div id="catalog-results-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[310px] overflow-y-auto pr-2 custom-scrollbar"></div>
                     </div>
 
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                         <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4">
                             <i data-lucide="shopping-cart" class="text-amber-400 w-5 h-5"></i> Allocated Materials Summary
                         </h2>
@@ -242,7 +247,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-6">
                         <div class="flex justify-between items-center pb-2 border-b border-slate-900">
                             <h2 class="text-lg font-semibold flex items-center gap-2 text-white">
                                 <i data-lucide="clock" class="text-amber-400 w-5 h-5"></i> Labor Allocation Structure
@@ -325,7 +330,7 @@
                 </div>
 
                 <div class="space-y-6">
-                    <div class="bg-slate-950 border border-amber-500/20 rounded-2xl p-6 shadow-xl sticky top-24 space-y-4">
+                    <div class="bg-[#283548] border border-amber-500/20 rounded-2xl ring-1 ring-white/[0.06] p-6 shadow-xl sticky top-24 space-y-4">
                         <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Live Quotation Overview</h3>
                         
                         <div class="space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800/80">
@@ -375,7 +380,7 @@
 
         <div id="templates-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 h-fit space-y-4 shadow-lg ring-1 ring-white/[0.06]">
                     <div>
                         <h2 id="template-form-title" class="text-lg font-bold text-white">Create Job Template</h2>
                         <p class="text-xs text-slate-400 mt-0.5">Bundle configurations and item quantities into a reusable selection pack.</p>
@@ -393,19 +398,34 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Included Materials</label>
+                            <div class="relative mb-2">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500"></i>
+                                <input type="text" id="template-material-search-input" oninput="filterTemplateMaterialSelector()" placeholder="Search materials to add..." class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                            </div>
                             <div id="template-materials-selector-box" class="max-h-40 overflow-y-auto border border-slate-800 rounded-xl p-2 bg-slate-900/40 divide-y divide-slate-900 custom-scrollbar"></div>
                         </div>
 
-                        <button type="submit" id="template-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
-                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job Template
-                        </button>
+                        <div class="flex gap-2">
+                            <button type="submit" id="template-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job Template
+                            </button>
+                            <button type="button" id="template-cancel-btn" onclick="clearTemplateForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-800 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">
+                                Cancel
+                            </button>
+                        </div>
                     </form>
                 </div>
 
-                <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
-                    <h2 class="text-lg font-bold text-white mb-4">Saved Presets Catalog</h2>
+                <div class="lg:col-span-2 bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                        <h2 class="text-lg font-bold text-white">Saved Presets Catalog</h2>
+                        <div class="relative w-full sm:w-64">
+                            <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                            <input type="text" id="template-catalog-search-input" oninput="rebuildTemplateCatalogList()" placeholder="Search saved templates..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
                     <div id="template-catalog-empty" class="text-center py-12 text-slate-500 text-sm hidden">
-                        <i data-lucide="layout" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> No custom job presets configured.
+                        <i data-lucide="layout" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> <span id="template-catalog-empty-text">No custom job presets configured.</span>
                     </div>
                     <div class="space-y-3" id="template-catalog-list-wrapper"></div>
                 </div>
@@ -414,7 +434,7 @@
 
         <div id="inventory-tab" class="tab-content space-y-6">
             
-            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm mb-8">
+            <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] mb-8">
                 <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
                     <i data-lucide="file-input" class="text-amber-400"></i> Smart Supplier Import Tool
                 </h2>
@@ -438,7 +458,7 @@
                 </button>
             </div>
 
-            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm mb-8">
+            <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] mb-8">
                 <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-2">
                     <i data-lucide="refresh-cw" class="text-amber-400"></i> Wholesaler Bulk Price Review
                 </h2>
@@ -466,7 +486,7 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 h-fit space-y-4 shadow-sm">
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 h-fit space-y-4 shadow-lg ring-1 ring-white/[0.06]">
                     <div>
                         <h2 id="stock-form-title" class="text-lg font-bold text-white">Add Custom Stock Item</h2>
                         <p class="text-xs text-slate-400 mt-0.5">Creating a new category automatically updates global navigation search filters.</p>
@@ -503,7 +523,7 @@
                     </form>
                 </div>
 
-                <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                <div class="lg:col-span-2 bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                     <h2 class="text-lg font-bold text-white mb-2">Stock Directory</h2>
                     <p class="text-xs text-slate-400 mb-4">Click directly on any row item below to load its properties into the modifier editing frame.</p>
                     <div class="overflow-x-auto max-h-[500px] overflow-y-auto custom-scrollbar">
@@ -527,7 +547,7 @@
         <div id="clients-tab" class="tab-content space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="space-y-4">
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
                         <div>
                             <h2 id="crm-form-title" class="text-lg font-bold text-white">New Client Registration</h2>
                             <p class="text-xs text-slate-400 mt-0.5">Register account profiles inside local business memory storage</p>
@@ -563,7 +583,7 @@
                 </div>
 
                 <div class="lg:col-span-2 space-y-4">
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg ring-1 ring-white/[0.06]">
                         <div class="relative w-full">
                             <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
                             <input type="text" id="crm-search-input" oninput="rebuildCrmProfilesInterface()" placeholder="Search clients by name..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
@@ -571,7 +591,7 @@
                         <span id="crm-count-badge" class="bg-slate-900 border border-slate-800 px-3 py-2 rounded-xl text-xs font-semibold text-amber-400 shrink-0 text-center">0 Accounts</span>
                     </div>
 
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                         <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-4">
                             <i data-lucide="book-user" class="text-amber-400"></i> Client Database Ledger
                         </h2>
@@ -585,7 +605,7 @@
         </div>
 
         <div id="settings-tab" class="tab-content space-y-6">
-            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm max-w-2xl mx-auto space-y-6">
+            <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl mx-auto space-y-6">
                 <div>
                     <h2 class="text-lg font-bold text-white flex items-center gap-2">
                         <i data-lucide="settings" class="text-amber-400"></i> Global Labor Model Setup
@@ -631,7 +651,7 @@
 
         <div id="vault-tab" class="tab-content space-y-6">
             
-            <div class="bg-gradient-to-r from-slate-950 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div class="bg-gradient-to-r from-[#283548] to-slate-900 border border-slate-600 rounded-2xl ring-1 ring-white/[0.06] p-6 shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                 <div>
                     <h3 class="text-base font-bold text-white flex items-center gap-2">
                         <i data-lucide="refresh-cw" class="text-amber-400 w-5 h-5"></i> Team Sync Engine
@@ -651,7 +671,7 @@
                 </div>
             </div>
 
-            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-sm">
+            <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                 
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <h2 class="text-lg font-bold text-white">Workflow Pipeline & Vault Logs</h2>
@@ -686,8 +706,8 @@
     </main>
 
     <div id="shopping-list-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
-            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">
                     <i data-lucide="list-checks" class="text-amber-400"></i> Wholesaler Shopping List
                 </h3>
@@ -698,7 +718,7 @@
             <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
                 <ul id="shopping-list-content" class="space-y-2 text-sm text-slate-300"></ul>
             </div>
-            <div class="p-5 border-t border-slate-800 bg-slate-800/50 flex justify-end gap-3">
+            <div class="p-5 border-t border-slate-800 bg-slate-900/50 flex justify-end gap-3">
                 <button onclick="copyShoppingList()" class="bg-slate-800 hover:bg-slate-750 border border-slate-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer">
                     <i data-lucide="copy" class="w-4 h-4"></i> Copy List
                 </button>
@@ -710,8 +730,8 @@
     </div>
 
     <div id="invoice-reconciliation-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
-            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">
                     <i data-lucide="file-check-2" class="text-emerald-400"></i> Convert to Invoice
                 </h3>
@@ -740,7 +760,7 @@
                     <input type="number" step="0.01" id="recon-actual-labor" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                 </div>
             </div>
-            <div class="p-5 border-t border-slate-800 bg-slate-800/50 flex justify-end gap-3">
+            <div class="p-5 border-t border-slate-800 bg-slate-900/50 flex justify-end gap-3">
                 <button onclick="closeInvoiceModal()" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors cursor-pointer">
                     Cancel
                 </button>
@@ -752,8 +772,8 @@
     </div>
 
     <div id="profit-view-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-amber-500/30 rounded-2xl w-full max-w-sm overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)]">
-            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-800/50">
+        <div class="bg-[#283548] border border-amber-500/30 rounded-2xl ring-1 ring-white/[0.06] w-full max-w-sm overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)]">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
                 <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
                     <i data-lucide="pie-chart" class="text-amber-400"></i> Profitability Ledger
                 </h3>
@@ -789,9 +809,49 @@
                     <span class="text-lg font-bold font-mono text-amber-400" id="profit-margin">0%</span>
                 </div>
             </div>
-            <div class="p-4 border-t border-slate-800 bg-slate-800/50 flex justify-center">
+            <div class="p-4 border-t border-slate-800 bg-slate-900/50 flex justify-center">
                 <button onclick="closeProfitModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer">
                     Close Ledger
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="template-apply-review-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2 min-w-0">
+                    <i data-lucide="layout-template" class="text-amber-400 shrink-0"></i>
+                    <span class="truncate">Apply: <span id="template-apply-review-name" class="text-amber-400"></span></span>
+                </h3>
+                <button onclick="cancelTemplateApply()" class="text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div id="template-apply-mode-toggle-wrapper" class="p-4 border-b border-slate-800 hidden">
+                <p class="text-xs text-slate-400 mb-2">You already have items in this quote. What would you like to do?</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" id="template-apply-mode-add-btn" onclick="setTemplateApplyMode('add')" class="py-2 text-xs font-bold rounded-lg border transition-all cursor-pointer">
+                        <i data-lucide="plus" class="w-3.5 h-3.5 inline mr-1"></i> Add to Current Quote
+                    </button>
+                    <button type="button" id="template-apply-mode-replace-btn" onclick="setTemplateApplyMode('replace')" class="py-2 text-xs font-bold rounded-lg border transition-all cursor-pointer">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5 inline mr-1"></i> Replace Current Quote
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1">
+                <p class="text-xs text-slate-400 mb-3">Review quantities before adding — untick anything you don't need this time.</p>
+                <div id="template-apply-review-items" class="space-y-2"></div>
+            </div>
+
+            <div class="p-5 border-t border-slate-800 bg-slate-900/50 flex justify-end gap-3">
+                <button onclick="cancelTemplateApply()" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors cursor-pointer">
+                    Cancel
+                </button>
+                <button onclick="confirmTemplateApply()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer">
+                    <i data-lucide="check" class="w-4 h-4"></i> Add These Items
                 </button>
             </div>
         </div>
@@ -1313,6 +1373,22 @@
         function getStoredClients() { return JSON.parse(localStorage.getItem('eny_clients')) || []; }
         function getStoredVaultRecords() { return JSON.parse(localStorage.getItem('eny_vault')) || []; }
 
+        // Shared display ordering for the stock directory: grouped by category
+        // (alphabetically), then alphabetically by description within each category.
+        // This only affects how lists are RENDERED — it never touches the underlying
+        // stored order in localStorage.
+        function sortInventoryByCategoryThenName(inventory) {
+            return [...inventory].sort((a, b) => {
+                const catA = (a.category || '').toLowerCase();
+                const catB = (b.category || '').toLowerCase();
+                if (catA !== catB) return catA < catB ? -1 : 1;
+                const descA = (a.desc || '').toLowerCase();
+                const descB = (b.desc || '').toLowerCase();
+                if (descA !== descB) return descA < descB ? -1 : 1;
+                return 0;
+            });
+        }
+
         // --- MANUAL CRM COUPLING TOOL ---
         function bindVaultQuoteToClientManually(quoteId, targetClientId) {
             if(!quoteId) return;
@@ -1404,6 +1480,25 @@
             lucide.createIcons();
         }
 
+        // Parses the app's "DD/MM/YYYY" or "DD/MM/YYYY HH:MM" timestamp strings into
+        // a sortable number, since they can't be sorted correctly as plain text
+        // (day comes first, so string sorting would put "31/01" before "05/02").
+        function parseUkTimestamp(str) {
+            if (!str) return 0;
+            const [datePart, timePart] = str.split(' ');
+            const dateSegments = (datePart || '').split('/');
+            if (dateSegments.length !== 3) return 0;
+            const [day, month, year] = dateSegments.map(Number);
+            let hours = 0, minutes = 0;
+            if (timePart) {
+                const timeSegments = timePart.split(':');
+                hours = Number(timeSegments[0]) || 0;
+                minutes = Number(timeSegments[1]) || 0;
+            }
+            const d = new Date(year, month - 1, day, hours, minutes);
+            return isNaN(d.getTime()) ? 0 : d.getTime();
+        }
+
         function rebuildCrmProfilesInterface() {
             const wrapper = document.getElementById('crm-ledger-accordion-wrapper');
             const empty = document.getElementById('crm-empty-state');
@@ -1414,19 +1509,38 @@
             
             const filteredClients = clients.filter(c => c.name.toLowerCase().includes(filterText));
 
-            document.getElementById('crm-count-badge').innerText = `${filteredClients.length} Account${filteredClients.length===1?'':'s'}`;
-            if(filteredClients.length === 0) { empty.classList.remove('hidden'); wrapper.innerHTML=""; return; }
+            // Attach each client's jobs and most-recent-activity time once, then sort
+            // by that so clients with the newest quote/invoice activity float to the
+            // top. Clients with no jobs yet fall back to their registration date,
+            // rather than being buried below everyone regardless of how recently
+            // they were added.
+            const clientsWithActivity = filteredClients.map(client => {
+                const jobs = records.filter(q => q.linkedClientId === client.id);
+                const mostRecentJobTime = jobs.reduce((latest, j) => {
+                    const t = parseUkTimestamp(j.timestamp);
+                    return t > latest ? t : latest;
+                }, 0);
+                const sortTime = mostRecentJobTime > 0 ? mostRecentJobTime : parseUkTimestamp(client.createdDate);
+                return { client, jobs, sortTime };
+            });
+            clientsWithActivity.sort((a, b) => b.sortTime - a.sortTime);
+
+            document.getElementById('crm-count-badge').innerText = `${clientsWithActivity.length} Account${clientsWithActivity.length===1?'':'s'}`;
+            if(clientsWithActivity.length === 0) { empty.classList.remove('hidden'); wrapper.innerHTML=""; return; }
             empty.classList.add('hidden');
 
-            wrapper.innerHTML = filteredClients.map(client => {
-                const jobs = records.filter(q => q.linkedClientId === client.id);
+            wrapper.innerHTML = clientsWithActivity.map(({ client, jobs }) => {
                 const spend = jobs.reduce((acc, curr) => acc + curr.financials.grossTotal, 0);
                 return `
                     <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
                         <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div><h3 class="text-sm font-bold text-white">${client.name}</h3><p class="text-[11px] text-slate-500">ID: ${client.id} • Registered: ${client.createdDate}</p></div>
-                            <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-3">
                                 <div class="text-right"><span class="text-[10px] uppercase font-semibold text-slate-500 block">Total Client Value</span><span class="text-xs font-bold text-amber-400 font-mono">£${spend.toFixed(2)} (${jobs.length} Job${jobs.length===1?'':'s'})</span></div>
+                                <div class="flex items-center gap-1.5">
+                                    ${client.phone ? `<a href="tel:${client.phone}" class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-slate-950 border border-slate-800 transition-all cursor-pointer" title="Call ${client.phone}"><i data-lucide="phone-call" class="w-4 h-4"></i></a>` : `<span class="text-slate-700 p-1.5 rounded-lg bg-slate-950 border border-slate-900 cursor-not-allowed" title="No phone number on file"><i data-lucide="phone-call" class="w-4 h-4"></i></span>`}
+                                    ${client.email ? `<a href="mailto:${client.email}" class="text-blue-400 hover:text-blue-300 p-1.5 rounded-lg bg-slate-950 border border-slate-800 transition-all cursor-pointer" title="Email ${client.email}"><i data-lucide="mail" class="w-4 h-4"></i></a>` : `<span class="text-slate-700 p-1.5 rounded-lg bg-slate-950 border border-slate-900 cursor-not-allowed" title="No email on file"><i data-lucide="mail" class="w-4 h-4"></i></span>`}
+                                </div>
                                 <button onclick="deleteClientProfile('${client.id}')" class="text-slate-500 hover:text-red-400 p-1.5 rounded-lg transition-all cursor-pointer"><i data-lucide="trash" class="w-4 h-4"></i></button>
                             </div>
                         </div>
@@ -1483,6 +1597,27 @@
             if (!select) return;
             select.innerHTML = `<option value="">-- Manual Entry (Auto-Saves) --</option>` + getStoredClients().map(c => `<option value="${c.id}">${c.name}</option>`).join('');
             select.value = activeLinkedClientId;
+        }
+
+        function loadSelectedClientIntoQuote() {
+            const select = document.getElementById('quote-client-select');
+            const selectedId = select.value;
+
+            if (!selectedId) {
+                // "Manual Entry" selected — just detach the link, leave any
+                // already-typed field values as they are.
+                activeLinkedClientId = "";
+                return;
+            }
+
+            const client = getStoredClients().find(c => c.id === selectedId);
+            if (!client) return;
+
+            activeLinkedClientId = client.id;
+            document.getElementById('client-name').value = client.name || "";
+            document.getElementById('client-email').value = client.email || "";
+            document.getElementById('client-phone').value = client.phone || "";
+            document.getElementById('client-address').value = client.address || "";
         }
 
         // --- DASHBOARD AND METRICS BUILDERS ---
@@ -1769,11 +1904,11 @@
             const resultsGrid = document.getElementById('catalog-results-grid');
             const currentInventory = getStoredInventory();
             
-            const targetedSubset = currentInventory.filter(item => {
+            const targetedSubset = sortInventoryByCategoryThenName(currentInventory.filter(item => {
                 const matchCategory = (selectedCategoryFilter === "ALL" || item.category === selectedCategoryFilter);
                 const matchSearch = item.desc.toLowerCase().includes(searchString) || item.sku.toLowerCase().includes(searchString);
                 return matchCategory && matchSearch;
-            });
+            }));
 
             if (targetedSubset.length === 0) { resultsGrid.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-slate-500">No matching stock items found.</div>`; return; }
 
@@ -1799,7 +1934,9 @@
             const container = document.getElementById('category-tabs-container');
             if(!container) return;
             const currentInventory = getStoredInventory();
-            const uniqueCategories = ["ALL", ...new Set(currentInventory.map(item => item.category).filter(Boolean))];
+            const sortedCategories = [...new Set(currentInventory.map(item => item.category).filter(Boolean))]
+                .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+            const uniqueCategories = ["ALL", ...sortedCategories];
             
             if (!uniqueCategories.includes(selectedCategoryFilter)) selectedCategoryFilter = "ALL";
 
@@ -1891,39 +2028,137 @@
         function rebuildJobTemplatesDropdown() {
             const select = document.getElementById('prefilled-job-select');
             if (!select) return;
-            select.innerHTML = '<option value="">-- Blank Workspace Canvas --</option>' + JSON.parse(localStorage.getItem('eny_templates') || '[]').map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+            const searchInput = document.getElementById('prefilled-job-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]')
+                .filter(t => t.name.toLowerCase().includes(filterText));
+            select.innerHTML = '<option value="">-- Blank Workspace Canvas --</option>' + templates.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
         }
+
+        // --- TEMPLATE APPLY REVIEW MODAL (Add/Replace + quantity review before adding) ---
+        let pendingTemplateApplyId = null;
+        let pendingTemplateApplyMode = 'replace';
 
         function applyPrefilledJobTemplate() {
             const templateId = document.getElementById('prefilled-job-select').value;
             if (!templateId) return;
 
             const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
-            const inventory = getStoredInventory();
             const template = templates.find(t => t.id === templateId);
             if (!template) return;
 
-            document.getElementById('job-name').value = template.name;
-            
-            activeAllocatedMaterials = [];
-            template.items.forEach(ti => {
+            pendingTemplateApplyId = templateId;
+            document.getElementById('template-apply-review-name').innerText = template.name;
+
+            const toggleWrapper = document.getElementById('template-apply-mode-toggle-wrapper');
+            if (activeAllocatedMaterials.length > 0) {
+                toggleWrapper.classList.remove('hidden');
+                setTemplateApplyMode('add');
+            } else {
+                toggleWrapper.classList.add('hidden');
+                pendingTemplateApplyMode = 'replace';
+            }
+
+            renderTemplateApplyReviewItems(template);
+            document.getElementById('template-apply-review-modal').classList.remove('hidden');
+            lucide.createIcons();
+            document.getElementById('prefilled-job-select').value = "";
+        }
+
+        function setTemplateApplyMode(mode) {
+            pendingTemplateApplyMode = mode;
+            const addBtn = document.getElementById('template-apply-mode-add-btn');
+            const replaceBtn = document.getElementById('template-apply-mode-replace-btn');
+            const activeClasses = ['bg-amber-500', 'text-slate-950', 'border-amber-500'];
+            const inactiveClasses = ['bg-slate-900', 'text-slate-400', 'border-slate-800'];
+
+            const setActive = (btn, isActive) => {
+                if (isActive) { btn.classList.add(...activeClasses); btn.classList.remove(...inactiveClasses); }
+                else { btn.classList.add(...inactiveClasses); btn.classList.remove(...activeClasses); }
+            };
+            setActive(addBtn, mode === 'add');
+            setActive(replaceBtn, mode === 'replace');
+        }
+
+        function renderTemplateApplyReviewItems(template) {
+            const inventory = getStoredInventory();
+            const container = document.getElementById('template-apply-review-items');
+            const rows = template.items.map(ti => {
                 const stockItem = inventory.find(i => i.id === ti.id);
-                if (stockItem) { activeAllocatedMaterials.push({ ...stockItem, qty: ti.qty }); }
+                if (!stockItem) return '';
+                return `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2.5 flex items-center gap-3" data-item-id="${stockItem.id}">
+                        <input type="checkbox" checked class="tmpl-review-include w-4 h-4 rounded bg-slate-900 border-slate-700 text-amber-500 cursor-pointer shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs font-medium text-slate-200 truncate">${stockItem.desc}</div>
+                            <div class="text-[10px] text-slate-500 font-mono">${stockItem.sku} • £${parseFloat(stockItem.cost).toFixed(2)} each</div>
+                        </div>
+                        <input type="number" min="1" value="${ti.qty}" class="tmpl-review-qty w-16 bg-slate-900 border border-slate-800 text-center rounded p-1.5 font-mono text-white text-xs shrink-0">
+                    </div>
+                `;
+            }).join('');
+            container.innerHTML = rows || `<p class="text-xs text-slate-500 text-center py-4">This template has no materials mapped.</p>`;
+        }
+
+        function confirmTemplateApply() {
+            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
+            const template = templates.find(t => t.id === pendingTemplateApplyId);
+            if (!template) { cancelTemplateApply(); return; }
+
+            const inventory = getStoredInventory();
+            const rows = document.querySelectorAll('#template-apply-review-items > div[data-item-id]');
+
+            const itemsToApply = [];
+            rows.forEach(row => {
+                const include = row.querySelector('.tmpl-review-include').checked;
+                if (!include) return;
+                const itemId = row.getAttribute('data-item-id');
+                const qty = parseInt(row.querySelector('.tmpl-review-qty').value) || 1;
+                const stockItem = inventory.find(i => i.id === itemId);
+                if (stockItem) itemsToApply.push({ stockItem, qty });
+            });
+
+            if (pendingTemplateApplyMode === 'replace') {
+                activeAllocatedMaterials = [];
+                document.getElementById('job-name').value = template.name;
+            } else {
+                const jobNameField = document.getElementById('job-name');
+                if (!jobNameField.value.trim()) jobNameField.value = template.name;
+            }
+
+            itemsToApply.forEach(({ stockItem, qty }) => {
+                if (pendingTemplateApplyMode === 'add') {
+                    const existing = activeAllocatedMaterials.find(m => m.id === stockItem.id);
+                    if (existing) { existing.qty += qty; return; }
+                }
+                activeAllocatedMaterials.push({ ...stockItem, qty });
             });
 
             rebuildAllocatedMaterialsTable();
-            document.getElementById('prefilled-job-select').value = ""; 
+            closeTemplateApplyModal();
+        }
+
+        function cancelTemplateApply() {
+            closeTemplateApplyModal();
+        }
+
+        function closeTemplateApplyModal() {
+            document.getElementById('template-apply-review-modal').classList.add('hidden');
+            pendingTemplateApplyId = null;
         }
 
         // --- TEMPLATES MANAGER CORES ---
         function rebuildTemplatesManagementInterface() {
+            rebuildTemplateMaterialSelector();
+            rebuildTemplateCatalogList();
+        }
+
+        function rebuildTemplateMaterialSelector() {
             const stock = getStoredInventory();
-            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
-            
             const selectorBox = document.getElementById('template-materials-selector-box');
             if (selectorBox) {
                 selectorBox.innerHTML = stock.map(item => `
-                    <div class="flex items-center justify-between py-1.5 px-1 text-xs">
+                    <div class="tmpl-mat-row flex items-center justify-between py-1.5 px-1 text-xs" data-searchable="${(item.desc + ' ' + item.sku).toLowerCase().replace(/"/g, '&quot;')}">
                         <label class="flex items-center gap-2 text-slate-300 truncate cursor-pointer select-none w-full">
                             <input type="checkbox" id="chk-tmpl-mat-${item.id}" data-id="${item.id}" onchange="toggleTemplateMatQtyField('${item.id}')" class="tmpl-mat-checkbox w-4 h-4 rounded bg-slate-950 border-slate-800 text-amber-500 cursor-pointer">
                             <span class="truncate max-w-[180px] sm:max-w-xs">${item.desc}</span>
@@ -1932,15 +2167,42 @@
                     </div>
                 `).join('');
             }
+            // Re-apply whatever's currently in the search box, since this rebuild
+            // recreates every row fresh (unfiltered) each time it runs.
+            filterTemplateMaterialSelector();
+        }
+
+        function filterTemplateMaterialSelector() {
+            const searchInput = document.getElementById('template-material-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            document.querySelectorAll('#template-materials-selector-box .tmpl-mat-row').forEach(row => {
+                const searchable = row.getAttribute('data-searchable') || '';
+                row.classList.toggle('hidden', filterText !== '' && !searchable.includes(filterText));
+            });
+        }
+
+        function rebuildTemplateCatalogList() {
+            const stock = getStoredInventory();
+            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
+
+            const catalogSearchInput = document.getElementById('template-catalog-search-input');
+            const catalogFilterText = catalogSearchInput ? catalogSearchInput.value.toLowerCase().trim() : '';
+            const filteredTemplates = templates.filter(t => t.name.toLowerCase().includes(catalogFilterText));
 
             const wrapper = document.getElementById('template-catalog-list-wrapper');
             const empty = document.getElementById('template-catalog-empty');
+            const emptyText = document.getElementById('template-catalog-empty-text');
             if (!wrapper) return;
 
-            if (templates.length === 0) { empty.classList.remove('hidden'); wrapper.innerHTML = ""; return; }
+            if (filteredTemplates.length === 0) {
+                empty.classList.remove('hidden');
+                if (emptyText) emptyText.innerText = templates.length === 0 ? 'No custom job presets configured.' : 'No templates match your search.';
+                wrapper.innerHTML = "";
+                return;
+            }
             empty.classList.add('hidden');
 
-            wrapper.innerHTML = templates.map(t => {
+            wrapper.innerHTML = filteredTemplates.map(t => {
                 const partsText = t.items.map(ti => {
                     const match = stock.find(s => s.id === ti.id);
                     return match ? `• ${match.desc} (x${ti.qty})` : null;
@@ -1948,11 +2210,13 @@
 
                 return `
                     <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                        <div class="space-y-1">
+                        <div class="space-y-1 min-w-0">
                             <h3 class="text-sm font-bold text-white">${t.name}</h3>
                             <div class="text-[10px] text-slate-500 font-mono pt-1 leading-relaxed">${partsText || 'No custom materials mapped.'}</div>
                         </div>
-                        <div class="flex items-center gap-2 self-end md:self-auto">
+                        <div class="flex items-center gap-2 self-end md:self-auto shrink-0">
+                            <button onclick="loadTemplateForModification('${t.id}')" class="text-[11px] bg-slate-950 hover:bg-slate-800 text-amber-400 font-medium px-2.5 py-1.5 border border-slate-800 rounded-lg flex items-center gap-1 cursor-pointer"><i data-lucide="edit-3" class="w-3 h-3"></i> Edit</button>
+                            <button onclick="duplicateJobTemplatePreset('${t.id}')" class="text-[11px] bg-slate-950 hover:bg-slate-800 text-slate-300 font-medium px-2.5 py-1.5 border border-slate-800 rounded-lg flex items-center gap-1 cursor-pointer"><i data-lucide="copy-plus" class="w-3 h-3"></i> Duplicate</button>
                             <button onclick="deleteJobTemplatePreset('${t.id}')" class="text-slate-500 hover:text-red-400 p-2 rounded-lg transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>
@@ -1991,6 +2255,65 @@
             reconstructUnifiedInterfaces();
         }
 
+        function loadTemplateForModification(templateId) {
+            const templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
+            const template = templates.find(t => t.id === templateId);
+            if (!template) return;
+
+            // Clear any active material search and rebuild fresh so every checkbox
+            // exists and is visible before we set checked state on the right ones.
+            const searchInput = document.getElementById('template-material-search-input');
+            if (searchInput) searchInput.value = '';
+            rebuildTemplateMaterialSelector();
+
+            document.getElementById('template-id-field').value = template.id;
+            document.getElementById('template-name-input').value = template.name;
+
+            template.items.forEach(ti => {
+                const checkbox = document.getElementById(`chk-tmpl-mat-${ti.id}`);
+                const qtyInput = document.getElementById(`input-tmpl-qty-${ti.id}`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    toggleTemplateMatQtyField(ti.id);
+                }
+                if (qtyInput) qtyInput.value = ti.qty;
+            });
+
+            document.getElementById('template-form-title').innerText = "Modify Job Template";
+            document.getElementById('template-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Template`;
+            document.getElementById('template-cancel-btn').classList.remove('hidden');
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function duplicateJobTemplatePreset(templateId) {
+            let templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
+            const original = templates.find(t => t.id === templateId);
+            if (!original) return;
+
+            const duplicate = {
+                id: 'TMPL-' + Date.now(),
+                name: original.name + ' (Copy)',
+                items: original.items.map(i => ({ ...i }))
+            };
+            templates.push(duplicate);
+            localStorage.setItem('eny_templates', JSON.stringify(templates));
+            reconstructUnifiedInterfaces();
+            loadTemplateForModification(duplicate.id);
+        }
+
+        function clearTemplateForm() {
+            document.getElementById('new-template-form').reset();
+            document.getElementById('template-id-field').value = "";
+            document.getElementById('template-form-title').innerText = "Create Job Template";
+            document.getElementById('template-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job Template`;
+            document.getElementById('template-cancel-btn').classList.add('hidden');
+            const searchInput = document.getElementById('template-material-search-input');
+            if (searchInput) searchInput.value = '';
+            rebuildTemplateMaterialSelector();
+            lucide.createIcons();
+        }
+
         function deleteJobTemplatePreset(id) {
             if (!confirm("Permanently remove this template preset?")) return;
             let templates = JSON.parse(localStorage.getItem('eny_templates') || '[]');
@@ -2012,6 +2335,15 @@
             document.getElementById('client-name').value = targetedQuote.clientDetailsPayload?.name || "";
             document.getElementById('client-email').value = targetedQuote.clientDetailsPayload?.email || "";
             document.getElementById('client-address').value = targetedQuote.clientDetailsPayload?.address || "";
+
+            // Older saved quotes were recorded before phone numbers were tracked, so
+            // fall back to the linked CRM record's phone if the quote itself has none.
+            let resolvedPhone = targetedQuote.clientDetailsPayload?.phone;
+            if (!resolvedPhone && targetedQuote.linkedClientId) {
+                const linkedClient = getStoredClients().find(c => c.id === targetedQuote.linkedClientId);
+                resolvedPhone = linkedClient?.phone;
+            }
+            document.getElementById('client-phone').value = resolvedPhone || "";
             
             if (targetedQuote.laborFormatBoundType) {
                 setLaborBookingFormat(targetedQuote.laborFormatBoundType);
@@ -2062,6 +2394,7 @@
             document.getElementById('job-name').value = "";
             document.getElementById('client-name').value = "";
             document.getElementById('client-email').value = "";
+            document.getElementById('client-phone').value = "";
             document.getElementById('client-address').value = "";
             document.getElementById('include-testing-toggle').checked = false;
             
@@ -2133,11 +2466,11 @@
 
         function rebuildMasterStockDirectoryTable() {
             const tbody = document.getElementById('master-stock-table-body');
-            const inventory = getStoredInventory();
+            const inventory = sortInventoryByCategoryThenName(getStoredInventory());
             if(inventory.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">Stock directory empty.</td></tr>`; return; }
             
             tbody.innerHTML = inventory.map(item => `
-                <tr class="text-xs text-slate-300 hover:bg-slate-800/40 cursor-pointer transition-colors group" onclick="loadStockItemForModification('${item.id}')">
+                <tr class="text-xs text-slate-300 hover:bg-slate-700/40 cursor-pointer transition-colors group" onclick="loadStockItemForModification('${item.id}')">
                     <td class="py-3 px-2 font-mono font-semibold text-amber-500 group-hover:text-amber-400">${item.sku}</td>
                     <td class="py-3 px-2 font-medium text-slate-100 group-hover:underline">${item.desc}</td>
                     <td class="py-3 px-2 text-slate-400"><span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800/60">${item.category}</span></td>
@@ -2451,6 +2784,8 @@
             const clientName = document.getElementById('client-name').value.trim();
             if(!clientName) { alert("Enter a client profile name reference before committing records."); return; }
 
+            const formPhone = document.getElementById('client-phone').value.trim();
+
             let currentClients = getStoredClients();
             let matchedClientObj = currentClients.find(c => c.name.toLowerCase() === clientName.toLowerCase());
             
@@ -2460,11 +2795,17 @@
                     id: newGeneratedClientId,
                     name: clientName,
                     email: document.getElementById('client-email').value.trim(),
-                    phone: '',
+                    phone: formPhone,
                     address: document.getElementById('client-address').value.trim(),
                     createdDate: new Date().toLocaleDateString('en-GB')
                 };
                 currentClients.push(matchedClientObj);
+                localStorage.setItem('eny_clients', JSON.stringify(currentClients));
+            } else if (formPhone && !matchedClientObj.phone) {
+                // Backfill a missing phone number on an existing client rather than
+                // requiring a manual trip into the CRM afterward — never overwrites
+                // a number they've already got on file.
+                matchedClientObj.phone = formPhone;
                 localStorage.setItem('eny_clients', JSON.stringify(currentClients));
             }
 
@@ -2495,7 +2836,7 @@
                 op2Enabled: document.getElementById('op2-enable-toggle')?.checked || false,
                 op2FirstHour: document.getElementById('op2-first-hour-toggle')?.checked || false,
                 op2SubsequentHours: parseInt(document.getElementById('labor-hour-slider-op2')?.value) || 0,
-                clientDetailsPayload: { name: clientName, email: document.getElementById('client-email').value.trim(), address: document.getElementById('client-address').value.trim() },
+                clientDetailsPayload: { name: clientName, email: document.getElementById('client-email').value.trim(), phone: formPhone, address: document.getElementById('client-address').value.trim() },
                 includeTestingCertificate: calcs.isTestingIncluded,
                 testingCostFixed: calcs.testingCostFixed,
                 financials: { 
@@ -2603,4 +2944,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
