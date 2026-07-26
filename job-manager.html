@@ -1037,15 +1037,43 @@
         // by "YEAR-MONTHINDEX", refreshed whenever the visible month changes.
         let externalGoogleEventsCache = {};
 
-        // Reads an event's date as a plain local YYYY-MM-DD string, whether it's an
-        // all-day event (start.date, already a date string) or a timed event
-        // (start.dateTime). Uses the same safe local-date extraction as the rest of
-        // the app — never .toISOString() — to avoid reintroducing the timezone bug.
-        function getGoogleEventDateISO(event) {
-            if (!event.start) return null;
-            if (event.start.date) return event.start.date;
-            if (event.start.dateTime) return toLocalISODate(new Date(event.start.dateTime));
-            return null;
+        // Returns every local YYYY-MM-DD date an event spans (inclusive), whether
+        // it's an all-day event (start.date/end.date) or a timed event
+        // (start.dateTime/end.dateTime) — so a week-long entry shows on each day
+        // it covers, not just its start day. All-day events use Google's
+        // exclusive end-date convention (end.date is the day AFTER the last real
+        // day), which this accounts for; timed events don't have that quirk.
+        // Uses the same safe local-date extraction as the rest of the app — never
+        // .toISOString() — to avoid reintroducing the earlier timezone bug.
+        function getGoogleEventDateRange(event) {
+            if (!event.start) return [];
+
+            let firstDay, lastDayInclusive;
+
+            if (event.start.date) {
+                firstDay = event.start.date;
+                const endExclusive = (event.end && event.end.date) ? event.end.date : firstDay;
+                const endDateObj = new Date(endExclusive + 'T00:00:00');
+                endDateObj.setDate(endDateObj.getDate() - 1);
+                lastDayInclusive = toLocalISODate(endDateObj);
+                if (lastDayInclusive < firstDay) lastDayInclusive = firstDay;
+            } else if (event.start.dateTime) {
+                firstDay = toLocalISODate(new Date(event.start.dateTime));
+                lastDayInclusive = (event.end && event.end.dateTime) ? toLocalISODate(new Date(event.end.dateTime)) : firstDay;
+            } else {
+                return [];
+            }
+
+            const dates = [];
+            let cursor = new Date(firstDay + 'T00:00:00');
+            const endCursor = new Date(lastDayInclusive + 'T00:00:00');
+            let safetyCounter = 0;
+            while (cursor <= endCursor && safetyCounter < 366) {
+                dates.push(toLocalISODate(cursor));
+                cursor.setDate(cursor.getDate() + 1);
+                safetyCounter++;
+            }
+            return dates;
         }
 
         // Events this app itself pushed shouldn't also show up as "external" —
@@ -1058,6 +1086,72 @@
                 if (p.smokeAlarmCalendarEventId) ids.add(p.smokeAlarmCalendarEventId);
             });
             return ids;
+        }
+
+        // Matches an event title against the currently configured engineer names
+        // (case-insensitive substring match). Returns the matched engineer name,
+        // or null if none of the 3 names appear in the title.
+        function detectEngineerFromEventTitle(summary) {
+            if (!summary) return null;
+            const lower = summary.toLowerCase();
+            for (const name of getEngineerNames()) {
+                if (name && lower.includes(name.toLowerCase())) return name;
+            }
+            return null;
+        }
+
+        function eventTitleMentionsCallout(summary) {
+            if (!summary) return false;
+            return /call[\s-]?out/i.test(summary);
+        }
+
+        // Auto-marks engineers unavailable based on their name (or "callout")
+        // appearing in an external Google Calendar event's title, for every day
+        // the event spans. A bare "callout" with no recognizable engineer name
+        // can't be attributed to anyone specific, so those are left alone rather
+        // than guessed at — if your callout entries don't already include the
+        // engineer's name, it's worth adding that to how they're titled.
+        // Reconciliation (adding new matches, removing stale ones) is scoped
+        // strictly to the month just fetched, so it never touches unavailability
+        // data for a month that isn't currently being looked at, and it never
+        // touches manually-added entries (only ones it created itself).
+        async function syncAutoUnavailabilityFromEvents(events, year, monthIndexZeroBased) {
+            const monthStart = toLocalISODate(new Date(year, monthIndexZeroBased, 1));
+            const monthEnd = toLocalISODate(new Date(year, monthIndexZeroBased + 1, 0));
+
+            const desired = [];
+            events.forEach(evt => {
+                const engineer = detectEngineerFromEventTitle(evt.summary);
+                if (!engineer) return;
+                getGoogleEventDateRange(evt).forEach(date => {
+                    if (date >= monthStart && date <= monthEnd) {
+                        desired.push({ engineer, date, sourceEventId: evt.id });
+                    }
+                });
+            });
+
+            for (const want of desired) {
+                const alreadyExists = currentUnavailability.some(u => u.engineerName === want.engineer && u.date === want.date);
+                if (!alreadyExists) {
+                    await db.collection('unavailability').add({
+                        engineerName: want.engineer,
+                        date: want.date,
+                        source: 'google-calendar',
+                        sourceEventId: want.sourceEventId,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            }
+
+            const existingAuto = currentUnavailability.filter(u =>
+                u.source === 'google-calendar' && u.date >= monthStart && u.date <= monthEnd
+            );
+            for (const existing of existingAuto) {
+                const stillWanted = desired.some(w => w.engineer === existing.engineerName && w.date === existing.date);
+                if (!stillWanted) {
+                    await db.collection('unavailability').doc(existing.id).delete();
+                }
+            }
         }
 
         async function fetchGoogleCalendarEventsForMonth(year, monthIndexZeroBased) {
@@ -1078,6 +1172,9 @@
                 const knownIds = getKnownPushedEventIds();
                 const externalEvents = (data.items || []).filter(evt => !knownIds.has(evt.id));
                 externalGoogleEventsCache[cacheKey] = externalEvents;
+
+                await syncAutoUnavailabilityFromEvents(externalEvents, year, monthIndexZeroBased);
+
                 return externalEvents;
             } catch (e) {
                 console.error('Failed to fetch Google Calendar events:', e);
@@ -1116,7 +1213,7 @@
                     (engineerFilter === 'ALL' || j.assignedEngineer === engineerFilter));
                 const unavailableThisDay = getUnavailableEngineersForDay(cell.dateISO)
                     .filter(u => engineerFilter === 'ALL' || u.engineerName === engineerFilter);
-                const externalThisDay = externalEvents.filter(evt => getGoogleEventDateISO(evt) === cell.dateISO);
+                const externalThisDay = externalEvents.filter(evt => getGoogleEventDateRange(evt).includes(cell.dateISO));
                 const isToday = cell.dateISO === today;
 
                 const dots = jobsThisDay.slice(0, 4).map(j => {
@@ -1157,7 +1254,7 @@
 
             const cacheKey = `${calendarViewYear}-${calendarViewMonth}`;
             const externalEvents = (externalGoogleEventsCache[cacheKey] || [])
-                .filter(evt => getGoogleEventDateISO(evt) === selectedCalendarDate);
+                .filter(evt => getGoogleEventDateRange(evt).includes(selectedCalendarDate));
 
             if (externalEvents.length === 0) {
                 section.classList.add('hidden');
@@ -1238,9 +1335,15 @@
             } else {
                 listEl.innerHTML = entries.map(u => {
                     const colors = getEngineerColorClass(u.engineerName);
+                    const autoTag = u.source === 'google-calendar'
+                        ? `<span class="text-[9px] text-slate-500 ml-1.5">(from Google Calendar)</span>`
+                        : '';
                     return `
                         <div class="bg-slate-900 border border-slate-700 rounded-lg p-2.5 flex items-center justify-between gap-2">
-                            <span class="text-xs font-bold px-2 py-1 rounded border ${colors.badge}">${u.engineerName}</span>
+                            <div class="flex items-center">
+                                <span class="text-xs font-bold px-2 py-1 rounded border ${colors.badge}">${u.engineerName}</span>
+                                ${autoTag}
+                            </div>
                             <button onclick="removeEngineerUnavailability('${u.id}')" class="text-slate-400 hover:text-red-400 p-1 cursor-pointer"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
                         </div>
                     `;
@@ -1377,12 +1480,18 @@
         async function pushJobToCalendar(job, existingEventId) {
             const startDateTime = `${job.date}T${job.time || '09:00'}:00`;
             const endDateTime = computeJobEndTime(job.date, job.time || '09:00');
+            // Google's Calendar API requires either a UTC offset in the dateTime
+            // string itself, or an explicit timeZone field — neither was being
+            // sent before, which is why jobs were silently rejected by the API
+            // while all-day reminder events (which use 'date', not 'dateTime',
+            // and don't have this requirement) pushed through fine.
+            const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
             const eventPayload = {
                 summary: `${job.title} — ${job.assignedEngineer}`,
                 description: `${job.propertyAddress ? 'Property: ' + job.propertyAddress + '\\n' : ''}${job.notes || ''}`,
-                start: { dateTime: startDateTime },
-                end: { dateTime: endDateTime },
+                start: { dateTime: startDateTime, timeZone: localTimeZone },
+                end: { dateTime: endDateTime, timeZone: localTimeZone },
                 reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 60 }] }
             };
 
