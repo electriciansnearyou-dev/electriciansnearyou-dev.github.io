@@ -2706,11 +2706,14 @@
             };
 
             html2pdf().set(opt).from(pdfContainer).save()
-                .then(cleanUpPdfRender)
+                .then(() => {
+                    cleanUpPdfRender();
+                    alert('PDF generated successfully.');
+                })
                 .catch((err) => {
                     console.error('PDF generation failed:', err);
                     cleanUpPdfRender();
-                    alert('Could not generate the PDF. Please try again.');
+                    alert('PDF generation failed with this error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
                 });
         }
 
