@@ -2680,7 +2680,27 @@
                 html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            html2pdf().set(opt).from(pdfHtml).save();
+
+            // html2canvas can't reliably measure/render a raw HTML string that was
+            // never actually placed on the page — it has no real layout to work
+            // from, which is what was producing a blank PDF. Building it into a
+            // real (off-screen, temporarily attached) element gives it genuine
+            // width/layout to render against, then it's removed afterward either way.
+            const pdfContainer = document.createElement('div');
+            pdfContainer.style.position = 'fixed';
+            pdfContainer.style.top = '0';
+            pdfContainer.style.left = '-9999px';
+            pdfContainer.style.width = '210mm';
+            pdfContainer.innerHTML = pdfHtml;
+            document.body.appendChild(pdfContainer);
+
+            html2pdf().set(opt).from(pdfContainer).save()
+                .then(() => { document.body.removeChild(pdfContainer); })
+                .catch((err) => {
+                    console.error('PDF generation failed:', err);
+                    document.body.removeChild(pdfContainer);
+                    alert('Could not generate the PDF. Please try again.');
+                });
         }
 
         function rebuildVaultDataTable() {
