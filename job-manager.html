@@ -532,10 +532,21 @@
         // ============================================================
         // REMINDER DATE MATH (tested standalone before integration)
         // ============================================================
+        // Builds a "YYYY-MM-DD" string from a Date's LOCAL calendar fields, never
+        // via .toISOString() (which converts to UTC first). In any timezone ahead
+        // of UTC — including the UK during British Summer Time (UTC+1) — local
+        // midnight falls on the PREVIOUS UTC day, so .toISOString().slice(0,10)
+        // silently returns yesterday's date. This is the one safe way to extract
+        // a calendar-date string that always matches what the user actually picked.
+        function toLocalISODate(dateObj) {
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(dateObj.getDate())}`;
+        }
+
         function addYears(dateStr, years) {
             const d = new Date(dateStr + 'T00:00:00');
             d.setFullYear(d.getFullYear() + years);
-            return d.toISOString().slice(0, 10);
+            return toLocalISODate(d);
         }
 
         function daysBetween(dateAStr, dateBStr) {
@@ -545,7 +556,7 @@
         }
 
         function todayISO() {
-            return new Date().toISOString().slice(0, 10);
+            return toLocalISODate(new Date());
         }
 
         function computeReminderStatus(lastTestedDateStr, cycleYears, dueSoonWindowDays) {
@@ -905,16 +916,16 @@
             const cells = [];
             for (let i = firstWeekdayMonFirst; i > 0; i--) {
                 const d = new Date(year, monthIndexZeroBased, 1 - i);
-                cells.push({ dateISO: d.toISOString().slice(0, 10), day: d.getDate(), isOtherMonth: true });
+                cells.push({ dateISO: toLocalISODate(d), day: d.getDate(), isOtherMonth: true });
             }
             for (let day = 1; day <= daysInMonth; day++) {
                 const d = new Date(year, monthIndexZeroBased, day);
-                cells.push({ dateISO: d.toISOString().slice(0, 10), day, isOtherMonth: false });
+                cells.push({ dateISO: toLocalISODate(d), day, isOtherMonth: false });
             }
             while (cells.length % 7 !== 0) {
                 const nextIdx = cells.length - (firstWeekdayMonFirst + daysInMonth);
                 const d = new Date(year, monthIndexZeroBased + 1, nextIdx + 1);
-                cells.push({ dateISO: d.toISOString().slice(0, 10), day: d.getDate(), isOtherMonth: true });
+                cells.push({ dateISO: toLocalISODate(d), day: d.getDate(), isOtherMonth: true });
             }
             const weeks = [];
             for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
@@ -1097,7 +1108,7 @@
 
             const endDateObj = new Date(endDate + 'T00:00:00');
             endDateObj.setDate(endDateObj.getDate() + 1);
-            const endDateExclusive = endDateObj.toISOString().slice(0, 10);
+            const endDateExclusive = toLocalISODate(endDateObj);
 
             const eventPayload = {
                 summary: `${isElectrical ? '⚡ Electrical Inspection' : '🔥 Smoke Alarm Test'} Due — ${(p.address || '').split('\\n')[0]}`,
