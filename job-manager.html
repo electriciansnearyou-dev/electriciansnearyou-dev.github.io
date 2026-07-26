@@ -331,17 +331,25 @@
 
                     <div class="border-t border-slate-700 pt-6">
                         <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-1"><i data-lucide="calendar-sync" class="text-amber-400"></i> Google Calendar</h2>
-                        <p class="text-xs text-slate-400 mb-4">Connect to push jobs and inspection/testing reminders as real calendar events with notifications, so they land on your phone through the Google Calendar app.</p>
+                        <p class="text-xs text-slate-400 mb-4">Connect to push jobs and inspection/testing reminders as real calendar events with notifications, so they land on your phone through the Google Calendar app. Your calendar view will also show your existing Google Calendar events alongside jobs.</p>
                         <div id="calendar-connection-status" class="bg-slate-900 border border-slate-700 rounded-xl p-4 flex items-center justify-between gap-3 mb-3">
                             <div class="flex items-center gap-2">
                                 <i data-lucide="circle-slash" id="calendar-status-icon" class="w-4 h-4 text-slate-500"></i>
                                 <span id="calendar-status-text" class="text-sm text-slate-400">Not connected</span>
                             </div>
-                            <button onclick="connectGoogleCalendar()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1.5">
-                                <i data-lucide="link" class="w-3.5 h-3.5"></i> Connect
-                            </button>
+                            <div class="flex items-center gap-2">
+                                <button id="calendar-connect-btn" onclick="connectGoogleCalendar()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1.5">
+                                    <i data-lucide="link" class="w-3.5 h-3.5"></i> Connect
+                                </button>
+                                <button id="calendar-disconnect-btn" onclick="disconnectGoogleCalendar()" class="hidden bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer">
+                                    Disconnect
+                                </button>
+                            </div>
                         </div>
-                        <p class="text-[11px] text-slate-500">Since this stays an internal (unverified) connection, whoever's connected will need to reconnect roughly every 7 days — a quick one-click reconnect, not a full re-setup.</p>
+                        <button onclick="resyncAllToCalendar()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2 mb-3">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Resync Now (push anything missed while disconnected)
+                        </button>
+                        <p class="text-[11px] text-slate-500">Since this stays an internal (unverified) connection, whoever's connected will need to reconnect roughly every 7 days — a quick one-click reconnect, not a full re-setup. Jobs and reminders created while disconnected are saved normally but won't reach Google Calendar until you reconnect and hit Resync.</p>
                     </div>
 
                     <div class="border-t border-slate-700 pt-6">
@@ -377,6 +385,10 @@
                             <i data-lucide="user-x" class="w-3.5 h-3.5"></i> Mark Unavailable
                         </button>
                     </div>
+                </div>
+                <div id="day-detail-external-events-section" class="hidden border-t border-slate-700 pt-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Also On Your Google Calendar</h4>
+                    <div id="day-detail-external-events-list" class="space-y-2"></div>
                 </div>
             </div>
             <div class="p-5 border-t border-slate-700 bg-slate-900/50 flex justify-end">
@@ -1021,13 +1033,82 @@
             renderCalendarGrid();
         }
 
+        // Cache of external (not created by this app) Google Calendar events, keyed
+        // by "YEAR-MONTHINDEX", refreshed whenever the visible month changes.
+        let externalGoogleEventsCache = {};
+
+        // Reads an event's date as a plain local YYYY-MM-DD string, whether it's an
+        // all-day event (start.date, already a date string) or a timed event
+        // (start.dateTime). Uses the same safe local-date extraction as the rest of
+        // the app — never .toISOString() — to avoid reintroducing the timezone bug.
+        function getGoogleEventDateISO(event) {
+            if (!event.start) return null;
+            if (event.start.date) return event.start.date;
+            if (event.start.dateTime) return toLocalISODate(new Date(event.start.dateTime));
+            return null;
+        }
+
+        // Events this app itself pushed shouldn't also show up as "external" —
+        // otherwise every job would appear to double itself on the calendar.
+        function getKnownPushedEventIds() {
+            const ids = new Set();
+            currentJobs.forEach(j => { if (j.calendarEventId) ids.add(j.calendarEventId); });
+            currentProperties.forEach(p => {
+                if (p.electricalCalendarEventId) ids.add(p.electricalCalendarEventId);
+                if (p.smokeAlarmCalendarEventId) ids.add(p.smokeAlarmCalendarEventId);
+            });
+            return ids;
+        }
+
+        async function fetchGoogleCalendarEventsForMonth(year, monthIndexZeroBased) {
+            if (!isGoogleCalendarConnected()) return [];
+            const cacheKey = `${year}-${monthIndexZeroBased}`;
+            if (externalGoogleEventsCache[cacheKey]) return externalGoogleEventsCache[cacheKey];
+
+            const timeMin = new Date(year, monthIndexZeroBased, 1).toISOString();
+            const timeMax = new Date(year, monthIndexZeroBased + 1, 1).toISOString();
+
+            try {
+                const res = await fetch(
+                    `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true&orderBy=startTime`,
+                    { headers: { 'Authorization': `Bearer ${googleAccessToken}` } }
+                );
+                if (!res.ok) { console.error('Failed to fetch Google Calendar events:', await res.text()); return []; }
+                const data = await res.json();
+                const knownIds = getKnownPushedEventIds();
+                const externalEvents = (data.items || []).filter(evt => !knownIds.has(evt.id));
+                externalGoogleEventsCache[cacheKey] = externalEvents;
+                return externalEvents;
+            } catch (e) {
+                console.error('Failed to fetch Google Calendar events:', e);
+                return [];
+            }
+        }
+
         function renderCalendarGrid() {
+            renderCalendarGridDOM();
+
+            // Kick off a background refresh of external events for the visible
+            // month; re-render (without triggering another fetch) once it lands.
+            if (isGoogleCalendarConnected()) {
+                const targetYear = calendarViewYear, targetMonth = calendarViewMonth;
+                fetchGoogleCalendarEventsForMonth(targetYear, targetMonth).then(() => {
+                    if (calendarViewYear === targetYear && calendarViewMonth === targetMonth) {
+                        renderCalendarGridDOM();
+                    }
+                });
+            }
+        }
+
+        function renderCalendarGridDOM() {
             const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
             document.getElementById('calendar-month-label').innerText = `${monthNames[calendarViewMonth]} ${calendarViewYear}`;
 
             const engineerFilter = document.getElementById('calendar-engineer-filter').value;
             const weeks = generateMonthGrid(calendarViewYear, calendarViewMonth);
             const today = todayISO();
+            const cacheKey = `${calendarViewYear}-${calendarViewMonth}`;
+            const externalEvents = externalGoogleEventsCache[cacheKey] || [];
 
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = weeks.flat().map(cell => {
@@ -1035,12 +1116,19 @@
                     (engineerFilter === 'ALL' || j.assignedEngineer === engineerFilter));
                 const unavailableThisDay = getUnavailableEngineersForDay(cell.dateISO)
                     .filter(u => engineerFilter === 'ALL' || u.engineerName === engineerFilter);
+                const externalThisDay = externalEvents.filter(evt => getGoogleEventDateISO(evt) === cell.dateISO);
                 const isToday = cell.dateISO === today;
 
                 const dots = jobsThisDay.slice(0, 4).map(j => {
                     const colors = getEngineerColorClass(j.assignedEngineer);
                     return `<span class="w-1.5 h-1.5 rounded-full ${colors.dot}"></span>`;
                 }).join('');
+
+                // A distinct grey ringed dot for events that exist on the connected
+                // Google Calendar but weren't created by this app.
+                const externalDot = externalThisDay.length > 0
+                    ? `<span class="w-1.5 h-1.5 rounded-full bg-slate-400 ring-1 ring-slate-300" title="Also on your Google Calendar"></span>`
+                    : '';
 
                 // Unavailability shown as small bars (not dots) so it reads as
                 // distinct from scheduled jobs at a glance, same engineer colors.
@@ -1055,11 +1143,34 @@
                         ${isToday ? 'ring-2 ring-amber-500' : ''}">
                         <span class="text-[10px] font-bold">${cell.day}</span>
                         <div class="w-full space-y-0.5 mt-0.5">${unavailableBars}</div>
-                        <div class="flex flex-wrap gap-0.5 mt-auto">${dots}</div>
+                        <div class="flex flex-wrap gap-0.5 mt-auto">${dots}${externalDot}</div>
                     </button>
                 `;
             }).join('');
             lucide.createIcons();
+        }
+
+        function renderExternalEventsForSelectedDay() {
+            const section = document.getElementById('day-detail-external-events-section');
+            const listEl = document.getElementById('day-detail-external-events-list');
+            if (!selectedCalendarDate) { section.classList.add('hidden'); return; }
+
+            const cacheKey = `${calendarViewYear}-${calendarViewMonth}`;
+            const externalEvents = (externalGoogleEventsCache[cacheKey] || [])
+                .filter(evt => getGoogleEventDateISO(evt) === selectedCalendarDate);
+
+            if (externalEvents.length === 0) {
+                section.classList.add('hidden');
+                listEl.innerHTML = '';
+                return;
+            }
+            section.classList.remove('hidden');
+            listEl.innerHTML = externalEvents.map(evt => `
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-2.5">
+                    <div class="text-xs font-semibold text-slate-300">${evt.summary || '(No title)'}</div>
+                    <div class="text-[10px] text-slate-500">From your Google Calendar — read-only here</div>
+                </div>
+            `).join('');
         }
 
         function openDayDetailModal(dateISO) {
@@ -1088,6 +1199,7 @@
             }
 
             renderUnavailableListForSelectedDay();
+            renderExternalEventsForSelectedDay();
             document.getElementById('day-detail-modal').classList.remove('hidden');
             lucide.createIcons();
         }
@@ -1163,6 +1275,29 @@
         let gisTokenClient = null;
         let googleAccessToken = null;
         let googleAccessTokenExpiry = 0;
+        const GOOGLE_TOKEN_STORAGE_KEY = 'eny_jm_google_token';
+
+        // The access token only lived in a JS variable before, so it was lost on
+        // every page reload — the app forgot you'd connected and never told you.
+        // Persisting it (until its own ~1hr expiry) means a reload doesn't silently
+        // break pushing to Calendar.
+        function saveGoogleTokenToStorage(token, expiry) {
+            try { localStorage.setItem(GOOGLE_TOKEN_STORAGE_KEY, JSON.stringify({ token, expiry })); } catch (e) { /* ignore */ }
+        }
+
+        function loadGoogleTokenFromStorage() {
+            try {
+                const raw = localStorage.getItem(GOOGLE_TOKEN_STORAGE_KEY);
+                if (!raw) return null;
+                const parsed = JSON.parse(raw);
+                if (parsed && parsed.token && parsed.expiry && Date.now() < parsed.expiry) return parsed;
+            } catch (e) { /* ignore */ }
+            return null;
+        }
+
+        function clearGoogleTokenFromStorage() {
+            try { localStorage.removeItem(GOOGLE_TOKEN_STORAGE_KEY); } catch (e) { /* ignore */ }
+        }
 
         window.addEventListener('load', () => {
             if (window.google && google.accounts && google.accounts.oauth2) {
@@ -1173,10 +1308,20 @@
                         if (tokenResponse && tokenResponse.access_token) {
                             googleAccessToken = tokenResponse.access_token;
                             googleAccessTokenExpiry = Date.now() + (tokenResponse.expires_in * 1000);
+                            saveGoogleTokenToStorage(googleAccessToken, googleAccessTokenExpiry);
                             updateCalendarConnectionUI(true);
                         }
                     },
                 });
+
+                // Restore a still-valid connection immediately on load, instead of
+                // always starting from "Not connected" until the next manual click.
+                const stored = loadGoogleTokenFromStorage();
+                if (stored) {
+                    googleAccessToken = stored.token;
+                    googleAccessTokenExpiry = stored.expiry;
+                    updateCalendarConnectionUI(true);
+                }
             }
         });
 
@@ -1188,6 +1333,16 @@
             gisTokenClient.requestAccessToken();
         }
 
+        function disconnectGoogleCalendar() {
+            if (googleAccessToken && window.google) {
+                google.accounts.oauth2.revoke(googleAccessToken, () => {});
+            }
+            googleAccessToken = null;
+            googleAccessTokenExpiry = 0;
+            clearGoogleTokenFromStorage();
+            updateCalendarConnectionUI(false);
+        }
+
         function isGoogleCalendarConnected() {
             return !!googleAccessToken && Date.now() < googleAccessTokenExpiry;
         }
@@ -1195,6 +1350,8 @@
         function updateCalendarConnectionUI(connected) {
             const icon = document.getElementById('calendar-status-icon');
             const text = document.getElementById('calendar-status-text');
+            const connectBtn = document.getElementById('calendar-connect-btn');
+            const disconnectBtn = document.getElementById('calendar-disconnect-btn');
             if (connected) {
                 icon.setAttribute('data-lucide', 'circle-check');
                 icon.classList.remove('text-slate-500');
@@ -1202,6 +1359,8 @@
                 text.innerText = 'Connected';
                 text.classList.remove('text-slate-400');
                 text.classList.add('text-emerald-400');
+                if (connectBtn) connectBtn.classList.add('hidden');
+                if (disconnectBtn) disconnectBtn.classList.remove('hidden');
             } else {
                 icon.setAttribute('data-lucide', 'circle-slash');
                 icon.classList.add('text-slate-500');
@@ -1209,6 +1368,8 @@
                 text.innerText = 'Not connected';
                 text.classList.add('text-slate-400');
                 text.classList.remove('text-emerald-400');
+                if (connectBtn) connectBtn.classList.remove('hidden');
+                if (disconnectBtn) disconnectBtn.classList.add('hidden');
             }
             lucide.createIcons();
         }
@@ -1228,23 +1389,20 @@
             return await createOrUpdateCalendarEvent(existingEventId, eventPayload);
         }
 
-        async function pushReminderToCalendar(propertyId, type) {
-            if (!isGoogleCalendarConnected()) {
-                alert('Connect Google Calendar in Settings first.');
-                return;
-            }
+        // Does the actual push; returns true/false, no alerts — reusable from both
+        // the single-property button and the bulk resync loop.
+        async function pushReminderToCalendarSilent(propertyId, type) {
             const p = currentProperties.find(x => x.id === propertyId);
-            if (!p) return;
+            if (!p) return false;
 
             const isElectrical = type === 'electrical';
             const lastDate = isElectrical ? p.lastElectricalInspection : p.lastSmokeAlarmTest;
-            if (!lastDate) { alert('Set a last-tested date for this property first.'); return; }
+            if (!lastDate) return false;
 
             const cycleYears = isElectrical ? ELECTRICAL_CYCLE_YEARS : SMOKE_ALARM_CYCLE_YEARS;
             const dueDate = addYears(lastDate, cycleYears);
-            const endDate = addYears(lastDate, cycleYears); // all-day event end is exclusive; adjust below
 
-            const endDateObj = new Date(endDate + 'T00:00:00');
+            const endDateObj = new Date(dueDate + 'T00:00:00');
             endDateObj.setDate(endDateObj.getDate() + 1);
             const endDateExclusive = toLocalISODate(endDateObj);
 
@@ -1260,9 +1418,56 @@
             const existingEventId = p[fieldName] || null;
             const eventId = await createOrUpdateCalendarEvent(existingEventId, eventPayload);
             if (eventId) {
-                db.collection('properties').doc(propertyId).update({ [fieldName]: eventId });
-                alert('Reminder pushed to Google Calendar.');
+                await db.collection('properties').doc(propertyId).update({ [fieldName]: eventId });
+                return true;
             }
+            return false;
+        }
+
+        async function pushReminderToCalendar(propertyId, type) {
+            if (!isGoogleCalendarConnected()) {
+                alert('Connect Google Calendar in Settings first.');
+                return;
+            }
+            const p = currentProperties.find(x => x.id === propertyId);
+            if (!p) return;
+
+            const isElectrical = type === 'electrical';
+            const lastDate = isElectrical ? p.lastElectricalInspection : p.lastSmokeAlarmTest;
+            if (!lastDate) { alert('Set a last-tested date for this property first.'); return; }
+
+            const success = await pushReminderToCalendarSilent(propertyId, type);
+            alert(success ? 'Reminder pushed to Google Calendar.' : 'Could not push reminder to Google Calendar — try again.');
+        }
+
+        async function resyncAllToCalendar() {
+            if (!isGoogleCalendarConnected()) {
+                alert('Connect Google Calendar first.');
+                return;
+            }
+
+            let pushedJobs = 0;
+            for (const job of currentJobs) {
+                if (job.status === 'Scheduled' && !job.calendarEventId) {
+                    const eventId = await pushJobToCalendar(job, null);
+                    if (eventId) {
+                        await db.collection('jobs').doc(job.id).update({ calendarEventId: eventId });
+                        pushedJobs++;
+                    }
+                }
+            }
+
+            let pushedReminders = 0;
+            for (const property of currentProperties) {
+                if (property.lastElectricalInspection && !property.electricalCalendarEventId) {
+                    if (await pushReminderToCalendarSilent(property.id, 'electrical')) pushedReminders++;
+                }
+                if (property.lastSmokeAlarmTest && !property.smokeAlarmCalendarEventId) {
+                    if (await pushReminderToCalendarSilent(property.id, 'smoke')) pushedReminders++;
+                }
+            }
+
+            alert(`Resync complete: ${pushedJobs} job(s) and ${pushedReminders} reminder(s) pushed to Google Calendar.`);
         }
 
         function computeJobEndTime(dateStr, timeStr, durationHours = 2) {
