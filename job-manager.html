@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENY Electrical - Job Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Firebase (compat SDK — plain script tags, no build step, matches this app's style) -->
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+
+    <!-- Google Identity Services (Calendar OAuth token flow) -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        /* Hazard-stripe accent for critically overdue reminders — the one deliberate
+           signature touch, drawn from real warning-tape/signage rather than a generic
+           red badge, since this is an electrician's own visual vocabulary. */
+        .hazard-stripe {
+            background-image: repeating-linear-gradient(135deg, #f59e0b 0px, #f59e0b 10px, #0f172a 10px, #0f172a 20px);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-900">
+
+    <!-- ================= LOGIN GATE ================= -->
+    <div id="login-gate" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-[#283548] border border-slate-600 rounded-2xl p-8 shadow-lg ring-1 ring-white/[0.06] space-y-5">
+            <div class="flex flex-col items-center gap-3 mb-2">
+                <div class="h-12 w-12 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950">
+                    <i data-lucide="calendar-clock" class="w-7 h-7 stroke-[2.5]"></i>
+                </div>
+                <div class="text-center">
+                    <h1 class="font-bold text-lg tracking-tight text-white">ENY ELECTRICAL</h1>
+                    <p class="text-xs font-semibold text-amber-400 tracking-wider uppercase">Job Manager</p>
+                </div>
+            </div>
+            <div id="login-error" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-lg p-3"></div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Team Email</label>
+                    <input type="email" id="login-email" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="team@yourcompany.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Password</label>
+                    <input type="password" id="login-password" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="••••••••">
+                </div>
+            </div>
+            <button onclick="handleLoginSubmit()" id="login-submit-btn" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold py-3 px-4 rounded-xl shadow-lg shadow-amber-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer text-sm">
+                <i data-lucide="log-in" class="w-4 h-4 stroke-[2.5]"></i> Sign In
+            </button>
+            <p class="text-[11px] text-slate-500 text-center">Shared team login — the same one used by all 3 engineers.</p>
+        </div>
+    </div>
+
+    <!-- ================= MAIN APP (hidden until signed in) ================= -->
+    <div id="app-root" class="hidden">
+        <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950">
+                        <i data-lucide="calendar-clock" class="w-6 h-6 stroke-[2.5]"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">ENY ELECTRICAL</h1>
+                        <p class="text-xs font-semibold text-amber-400 tracking-wider uppercase">Job Manager</p>
+                    </div>
+                </div>
+
+                <nav class="flex flex-wrap items-center justify-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+                    </button>
+                    <button onclick="switchTab('calendar-tab')" id="btn-calendar-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                        <i data-lucide="calendar" class="w-4 h-4"></i> Calendar
+                    </button>
+                    <button onclick="switchTab('properties-tab')" id="btn-properties-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                        <i data-lucide="home" class="w-4 h-4"></i> Properties
+                    </button>
+                    <button onclick="switchTab('jobs-tab')" id="btn-jobs-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                        <i data-lucide="clipboard-list" class="w-4 h-4"></i> Jobs
+                    </button>
+                    <button onclick="switchTab('settings-tab')" id="btn-settings-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                        <i data-lucide="sliders" class="w-4 h-4"></i> Settings
+                    </button>
+                </nav>
+
+                <button onclick="handleSignOut()" class="text-xs text-slate-400 hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
+                </button>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
+
+            <!-- ================= DASHBOARD TAB ================= -->
+            <div id="dashboard-tab" class="tab-content active space-y-6">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Overdue Inspections</span>
+                            <i data-lucide="zap-off" class="w-4 h-4 text-red-400"></i>
+                        </div>
+                        <span id="stat-overdue-electrical" class="text-3xl font-black font-mono text-red-400 block">0</span>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Overdue Smoke Alarms</span>
+                            <i data-lucide="flame" class="w-4 h-4 text-red-400"></i>
+                        </div>
+                        <span id="stat-overdue-smoke" class="text-3xl font-black font-mono text-red-400 block">0</span>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Due Soon (all)</span>
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+                        </div>
+                        <span id="stat-due-soon" class="text-3xl font-black font-mono text-amber-400 block">0</span>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Jobs Today</span>
+                            <i data-lucide="briefcase" class="w-4 h-4 text-blue-400"></i>
+                        </div>
+                        <span id="stat-jobs-today" class="text-3xl font-black font-mono text-white block">0</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4">
+                            <i data-lucide="shield-alert" class="text-amber-400 w-5 h-5"></i> Inspection & Testing Reminders
+                        </h2>
+                        <div id="dashboard-reminders-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4">
+                            <i data-lucide="calendar-days" class="text-amber-400 w-5 h-5"></i> Next 7 Days
+                        </h2>
+                        <div id="dashboard-upcoming-jobs-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= CALENDAR TAB ================= -->
+            <div id="calendar-tab" class="tab-content space-y-6">
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <button onclick="navigateCalendarMonth(-1)" class="p-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-amber-500 transition-colors cursor-pointer"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <h2 id="calendar-month-label" class="text-lg font-bold text-white w-40 text-center"></h2>
+                            <button onclick="navigateCalendarMonth(1)" class="p-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-amber-500 transition-colors cursor-pointer"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                            <button onclick="goToCalendarToday()" class="text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer">Today</button>
+                        </div>
+                        <select id="calendar-engineer-filter" onchange="renderCalendarGrid()" class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                            <option value="ALL">All Engineers</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1.5 mb-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+                    </div>
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-1.5"></div>
+                </div>
+            </div>
+
+            <!-- ================= PROPERTIES TAB ================= -->
+            <div id="properties-tab" class="tab-content space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 h-fit space-y-4 shadow-lg ring-1 ring-white/[0.06]">
+                        <div>
+                            <h2 id="property-form-title" class="text-lg font-bold text-white">Add Property</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Link it to an existing CRM client, or leave unlinked.</p>
+                        </div>
+                        <form id="property-form" onsubmit="savePropertyConfig(event)" class="space-y-4">
+                            <input type="hidden" id="property-id-field">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Property Address *</label>
+                                <textarea id="property-address" required rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="10 Example Street, Poole, BH17 7FS"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Linked CRM Client</label>
+                                <select id="property-client-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                    <option value="">-- None / Not linked --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Access Notes (keysafe / gate codes)</label>
+                                <textarea id="property-notes" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="Keysafe code 1234, gate code #56, dog on site..."></textarea>
+                            </div>
+                            <div class="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Last Electrical Inspection (EICR)</label>
+                                    <input type="date" id="property-last-electrical" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                    <span class="text-[10px] text-slate-500 mt-1 block">Sets a 5-year reminder from this date.</span>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Last Smoke Alarm Test</label>
+                                    <input type="date" id="property-last-smoke" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                    <span class="text-[10px] text-slate-500 mt-1 block">Sets a 1-year reminder from this date.</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" id="property-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Property
+                                </button>
+                                <button type="button" id="property-cancel-btn" onclick="clearPropertyForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                            <input type="text" id="property-search-input" oninput="renderPropertiesList()" placeholder="Search properties by address or client..." class="w-full bg-[#283548] border border-slate-600 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div id="properties-empty-state" class="hidden text-center py-12 text-slate-500 text-sm bg-[#283548] border border-slate-600 rounded-2xl">
+                            <i data-lucide="home" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> No properties logged yet.
+                        </div>
+                        <div id="properties-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= JOBS TAB ================= -->
+            <div id="jobs-tab" class="tab-content space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 h-fit space-y-4 shadow-lg ring-1 ring-white/[0.06]">
+                        <div>
+                            <h2 id="job-form-title" class="text-lg font-bold text-white">Add Job</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Assign it to an engineer and a date.</p>
+                        </div>
+                        <form id="job-form" onsubmit="saveJobConfig(event)" class="space-y-4">
+                            <input type="hidden" id="job-id-field">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Job Title *</label>
+                                <input type="text" id="job-title" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="Consumer unit upgrade">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Property</label>
+                                <select id="job-property-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                    <option value="">-- None / Not linked --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Assigned Engineer *</label>
+                                <select id="job-engineer-select" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"></select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Date *</label>
+                                    <input type="date" id="job-date" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Time</label>
+                                    <input type="time" id="job-time" value="09:00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Status</label>
+                                <select id="job-status-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                    <option value="Scheduled">Scheduled</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Notes</label>
+                                <textarea id="job-notes" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"></textarea>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="submit" id="job-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job
+                                </button>
+                                <button type="button" id="job-cancel-btn" onclick="clearJobForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <select id="jobs-engineer-filter" onchange="renderJobsList()" class="bg-[#283548] border border-slate-600 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                                <option value="ALL">All Engineers</option>
+                            </select>
+                            <select id="jobs-status-filter" onchange="renderJobsList()" class="bg-[#283548] border border-slate-600 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                                <option value="ALL">All Statuses</option>
+                                <option value="Scheduled">Scheduled</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div id="jobs-empty-state" class="hidden text-center py-12 text-slate-500 text-sm bg-[#283548] border border-slate-600 rounded-2xl">
+                            <i data-lucide="clipboard-list" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> No jobs match your filters.
+                        </div>
+                        <div id="jobs-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SETTINGS TAB ================= -->
+            <div id="settings-tab" class="tab-content space-y-6">
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl mx-auto space-y-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="users" class="text-amber-400"></i> Engineers</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">These names appear throughout Jobs and the Calendar.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Engineer 1</label>
+                            <input type="text" id="setting-engineer-1" oninput="saveEngineerSettings()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Engineer 2</label>
+                            <input type="text" id="setting-engineer-2" oninput="saveEngineerSettings()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Engineer 3</label>
+                            <input type="text" id="setting-engineer-3" oninput="saveEngineerSettings()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-700 pt-6">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-1"><i data-lucide="calendar-sync" class="text-amber-400"></i> Google Calendar</h2>
+                        <p class="text-xs text-slate-400 mb-4">Connect to push jobs and inspection/testing reminders as real calendar events with notifications, so they land on your phone through the Google Calendar app.</p>
+                        <div id="calendar-connection-status" class="bg-slate-900 border border-slate-700 rounded-xl p-4 flex items-center justify-between gap-3 mb-3">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="circle-slash" id="calendar-status-icon" class="w-4 h-4 text-slate-500"></i>
+                                <span id="calendar-status-text" class="text-sm text-slate-400">Not connected</span>
+                            </div>
+                            <button onclick="connectGoogleCalendar()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1.5">
+                                <i data-lucide="link" class="w-3.5 h-3.5"></i> Connect
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-slate-500">Since this stays an internal (unverified) connection, whoever's connected will need to reconnect roughly every 7 days — a quick one-click reconnect, not a full re-setup.</p>
+                    </div>
+
+                    <div class="border-t border-slate-700 pt-6">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2 mb-1"><i data-lucide="database" class="text-amber-400"></i> Sync Status</h2>
+                        <p class="text-xs text-slate-400">Properties and jobs sync automatically and instantly across all 3 engineers via the shared team database — no export/import needed.</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ================= DAY DETAIL MODAL ================= -->
+    <div id="day-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i data-lucide="calendar-days" class="text-amber-400"></i> <span id="day-detail-date-label"></span>
+                </h3>
+                <button onclick="closeDayDetailModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-2">
+                <div id="day-detail-jobs-list" class="space-y-2"></div>
+            </div>
+            <div class="p-5 border-t border-slate-700 bg-slate-900/50 flex justify-end">
+                <button onclick="addJobForSelectedDay()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add Job This Day
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // CONFIG — fill these in with your own project's values
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyApAyy8zY2NHknUmVLtls4ZEOFbx_lLALc",
+            authDomain: "job-manager-85655.firebaseapp.com",
+            projectId: "job-manager-85655",
+            storageBucket: "job-manager-85655.firebasestorage.app",
+            messagingSenderId: "862567904137",
+            appId: "1:862567904137:web:59a7292a52da1b5c6fa758"
+        };
+        const GOOGLE_CLIENT_ID = "862567904137-5c5hugdh0ftvids0bi7325bj1u515upi.apps.googleusercontent.com";
+
+        const ELECTRICAL_CYCLE_YEARS = 5;
+        const SMOKE_ALARM_CYCLE_YEARS = 1;
+        const ELECTRICAL_DUE_SOON_DAYS = 60;
+        const SMOKE_ALARM_DUE_SOON_DAYS = 30;
+
+        const ENGINEER_COLORS = ['blue', 'emerald', 'purple'];
+        const ENGINEER_COLOR_CLASSES = {
+            blue:    { dot: 'bg-blue-400',    text: 'text-blue-400',    badge: 'bg-blue-500/10 border-blue-500/30 text-blue-400' },
+            emerald: { dot: 'bg-emerald-400', text: 'text-emerald-400', badge: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' },
+            purple:  { dot: 'bg-purple-400',  text: 'text-purple-400',  badge: 'bg-purple-500/10 border-purple-500/30 text-purple-400' },
+        };
+
+        // ============================================================
+        // FIREBASE INIT
+        // ============================================================
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentProperties = [];
+        let currentJobs = [];
+        let currentSettings = { engineer1: 'Engineer 1', engineer2: 'Engineer 2', engineer3: 'Engineer 3' };
+        let firestoreListenersStarted = false;
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('login-gate').classList.add('hidden');
+                document.getElementById('app-root').classList.remove('hidden');
+                if (!firestoreListenersStarted) {
+                    startFirestoreListeners();
+                    firestoreListenersStarted = true;
+                }
+            } else {
+                document.getElementById('login-gate').classList.remove('hidden');
+                document.getElementById('app-root').classList.add('hidden');
+            }
+        });
+
+        function handleLoginSubmit() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const errorBox = document.getElementById('login-error');
+            errorBox.classList.add('hidden');
+
+            auth.signInWithEmailAndPassword(email, password).catch((err) => {
+                errorBox.innerText = err.message;
+                errorBox.classList.remove('hidden');
+            });
+        }
+
+        function handleSignOut() {
+            auth.signOut();
+        }
+
+        // ============================================================
+        // FIRESTORE LISTENERS (real-time sync across all 3 engineers)
+        // ============================================================
+        function startFirestoreListeners() {
+            db.collection('properties').onSnapshot((snapshot) => {
+                currentProperties = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderPropertiesList();
+                rebuildPropertyDropdowns();
+                renderDashboard();
+                renderCalendarGrid();
+            }, (err) => console.error('Properties listener error:', err));
+
+            db.collection('jobs').onSnapshot((snapshot) => {
+                currentJobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderJobsList();
+                renderDashboard();
+                renderCalendarGrid();
+            }, (err) => console.error('Jobs listener error:', err));
+
+            db.collection('settings').doc('config').onSnapshot((doc) => {
+                if (doc.exists) {
+                    currentSettings = doc.data();
+                    document.getElementById('setting-engineer-1').value = currentSettings.engineer1 || 'Engineer 1';
+                    document.getElementById('setting-engineer-2').value = currentSettings.engineer2 || 'Engineer 2';
+                    document.getElementById('setting-engineer-3').value = currentSettings.engineer3 || 'Engineer 3';
+                } else {
+                    db.collection('settings').doc('config').set(currentSettings);
+                }
+                rebuildEngineerDropdowns();
+                renderJobsList();
+                renderCalendarGrid();
+            }, (err) => console.error('Settings listener error:', err));
+        }
+
+        function saveEngineerSettings() {
+            currentSettings = {
+                engineer1: document.getElementById('setting-engineer-1').value.trim() || 'Engineer 1',
+                engineer2: document.getElementById('setting-engineer-2').value.trim() || 'Engineer 2',
+                engineer3: document.getElementById('setting-engineer-3').value.trim() || 'Engineer 3',
+            };
+            db.collection('settings').doc('config').set(currentSettings);
+        }
+
+        function getEngineerNames() {
+            return [currentSettings.engineer1, currentSettings.engineer2, currentSettings.engineer3];
+        }
+
+        function getEngineerColorClass(engineerName) {
+            const idx = getEngineerNames().indexOf(engineerName);
+            const color = ENGINEER_COLORS[idx] || 'blue';
+            return ENGINEER_COLOR_CLASSES[color];
+        }
+
+        function rebuildEngineerDropdowns() {
+            const names = getEngineerNames();
+            const jobSelect = document.getElementById('job-engineer-select');
+            const calFilter = document.getElementById('calendar-engineer-filter');
+            const jobsFilter = document.getElementById('jobs-engineer-filter');
+
+            jobSelect.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
+            calFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+            jobsFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+        }
+
+        // ============================================================
+        // CRM LINKAGE (reads the quote app's client list — same origin,
+        // so this works automatically with zero setup as long as this
+        // file is hosted on the same domain)
+        // ============================================================
+        function getStoredCrmClients() {
+            try {
+                return JSON.parse(localStorage.getItem('eny_clients')) || [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function rebuildPropertyDropdowns() {
+            const clients = getStoredCrmClients();
+            const clientSelect = document.getElementById('property-client-select');
+            clientSelect.innerHTML = '<option value="">-- None / Not linked --</option>' +
+                clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+            const jobPropertySelect = document.getElementById('job-property-select');
+            jobPropertySelect.innerHTML = '<option value="">-- None / Not linked --</option>' +
+                currentProperties.map(p => `<option value="${p.id}">${(p.address || '').split('\\n')[0]}</option>`).join('');
+        }
+
+        // ============================================================
+        // REMINDER DATE MATH (tested standalone before integration)
+        // ============================================================
+        function addYears(dateStr, years) {
+            const d = new Date(dateStr + 'T00:00:00');
+            d.setFullYear(d.getFullYear() + years);
+            return d.toISOString().slice(0, 10);
+        }
+
+        function daysBetween(dateAStr, dateBStr) {
+            const a = new Date(dateAStr + 'T00:00:00');
+            const b = new Date(dateBStr + 'T00:00:00');
+            return Math.round((b - a) / 86400000);
+        }
+
+        function todayISO() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        function computeReminderStatus(lastTestedDateStr, cycleYears, dueSoonWindowDays) {
+            const today = todayISO();
+            if (!lastTestedDateStr) {
+                return { dueDate: null, status: 'unknown', daysUntilDue: null };
+            }
+            const dueDate = addYears(lastTestedDateStr, cycleYears);
+            const daysUntilDue = daysBetween(today, dueDate);
+            let status;
+            if (daysUntilDue < 0) status = 'overdue';
+            else if (daysUntilDue <= dueSoonWindowDays) status = 'due-soon';
+            else status = 'ok';
+            return { dueDate, status, daysUntilDue };
+        }
+
+        function formatUkDate(isoDate) {
+            if (!isoDate) return '—';
+            const [y, m, d] = isoDate.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        function reminderStatusBadge(status, daysUntilDue) {
+            if (status === 'unknown') return `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700">Never Tested</span>`;
+            if (status === 'overdue') return `<span class="hazard-stripe text-[10px] font-bold uppercase px-2 py-1 rounded text-white border border-amber-500">Overdue ${Math.abs(daysUntilDue)}d</span>`;
+            if (status === 'due-soon') return `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">Due in ${daysUntilDue}d</span>`;
+            return `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">OK (${daysUntilDue}d)</span>`;
+        }
+
+        // ============================================================
+        // DASHBOARD
+        // ============================================================
+        function renderDashboard() {
+            let overdueElectrical = 0, overdueSmoke = 0, dueSoonAll = 0;
+            const reminderRows = [];
+
+            currentProperties.forEach(p => {
+                const elec = computeReminderStatus(p.lastElectricalInspection, ELECTRICAL_CYCLE_YEARS, ELECTRICAL_DUE_SOON_DAYS);
+                const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
+                if (elec.status === 'overdue') overdueElectrical++;
+                if (smoke.status === 'overdue') overdueSmoke++;
+                if (elec.status === 'due-soon') dueSoonAll++;
+                if (smoke.status === 'due-soon') dueSoonAll++;
+
+                if (elec.status === 'overdue' || elec.status === 'due-soon') {
+                    reminderRows.push({ property: p, type: 'Electrical Inspection', icon: 'zap-off', ...elec });
+                }
+                if (smoke.status === 'overdue' || smoke.status === 'due-soon') {
+                    reminderRows.push({ property: p, type: 'Smoke Alarm Test', icon: 'flame', ...smoke });
+                }
+            });
+
+            reminderRows.sort((a, b) => (a.daysUntilDue ?? 0) - (b.daysUntilDue ?? 0));
+
+            document.getElementById('stat-overdue-electrical').innerText = overdueElectrical;
+            document.getElementById('stat-overdue-smoke').innerText = overdueSmoke;
+            document.getElementById('stat-due-soon').innerText = dueSoonAll;
+
+            const remindersList = document.getElementById('dashboard-reminders-list');
+            if (reminderRows.length === 0) {
+                remindersList.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">Nothing overdue or due soon — you're all caught up.</p>`;
+            } else {
+                remindersList.innerHTML = reminderRows.map(r => `
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="text-xs font-semibold text-slate-200 truncate">${(r.property.address || '').split('\\n')[0]}</div>
+                            <div class="text-[10px] text-slate-500">${r.type} — due ${formatUkDate(r.dueDate)}</div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            ${reminderStatusBadge(r.status, r.daysUntilDue)}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const today = todayISO();
+            const todaysJobs = currentJobs.filter(j => j.date === today && j.status === 'Scheduled');
+            document.getElementById('stat-jobs-today').innerText = todaysJobs.length;
+
+            const in7days = currentJobs
+                .filter(j => j.status === 'Scheduled' && j.date >= today && daysBetween(today, j.date) <= 7)
+                .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+            const upcomingList = document.getElementById('dashboard-upcoming-jobs-list');
+            if (in7days.length === 0) {
+                upcomingList.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No jobs scheduled in the next 7 days.</p>`;
+            } else {
+                upcomingList.innerHTML = in7days.map(j => {
+                    const colors = getEngineerColorClass(j.assignedEngineer);
+                    return `
+                        <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="text-xs font-semibold text-slate-200 truncate">${j.title}</div>
+                                <div class="text-[10px] text-slate-500">${formatUkDate(j.date)} at ${j.time || '—'}</div>
+                            </div>
+                            <span class="text-[10px] font-bold px-2 py-1 rounded border ${colors.badge} shrink-0">${j.assignedEngineer}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            lucide.createIcons();
+        }
+
+        // ============================================================
+        // PROPERTIES
+        // ============================================================
+        function savePropertyConfig(event) {
+            event.preventDefault();
+            const editId = document.getElementById('property-id-field').value;
+            const clientId = document.getElementById('property-client-select').value;
+            const clients = getStoredCrmClients();
+            const linkedClient = clients.find(c => c.id === clientId);
+
+            const payload = {
+                address: document.getElementById('property-address').value.trim(),
+                linkedClientId: clientId || null,
+                linkedClientName: linkedClient ? linkedClient.name : null,
+                notes: document.getElementById('property-notes').value.trim(),
+                lastElectricalInspection: document.getElementById('property-last-electrical').value || null,
+                lastSmokeAlarmTest: document.getElementById('property-last-smoke').value || null,
+            };
+
+            if (editId) {
+                db.collection('properties').doc(editId).update(payload);
+            } else {
+                payload.createdAt = new Date().toISOString();
+                db.collection('properties').add(payload);
+            }
+            clearPropertyForm();
+        }
+
+        function loadPropertyForModification(propertyId) {
+            const p = currentProperties.find(x => x.id === propertyId);
+            if (!p) return;
+            document.getElementById('property-id-field').value = p.id;
+            document.getElementById('property-address').value = p.address || '';
+            document.getElementById('property-client-select').value = p.linkedClientId || '';
+            document.getElementById('property-notes').value = p.notes || '';
+            document.getElementById('property-last-electrical').value = p.lastElectricalInspection || '';
+            document.getElementById('property-last-smoke').value = p.lastSmokeAlarmTest || '';
+            document.getElementById('property-form-title').innerText = 'Modify Property';
+            document.getElementById('property-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Property`;
+            document.getElementById('property-cancel-btn').classList.remove('hidden');
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function clearPropertyForm() {
+            document.getElementById('property-form').reset();
+            document.getElementById('property-id-field').value = '';
+            document.getElementById('property-form-title').innerText = 'Add Property';
+            document.getElementById('property-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Property`;
+            document.getElementById('property-cancel-btn').classList.add('hidden');
+            lucide.createIcons();
+        }
+
+        function deleteProperty(propertyId) {
+            if (!confirm('Permanently remove this property and its notes?')) return;
+            db.collection('properties').doc(propertyId).delete();
+        }
+
+        function markReminderTestedToday(propertyId, field) {
+            db.collection('properties').doc(propertyId).update({ [field]: todayISO() });
+        }
+
+        function renderPropertiesList() {
+            const searchInput = document.getElementById('property-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            const filtered = currentProperties.filter(p =>
+                (p.address || '').toLowerCase().includes(filterText) ||
+                (p.linkedClientName || '').toLowerCase().includes(filterText)
+            );
+
+            const listEl = document.getElementById('properties-list');
+            const emptyEl = document.getElementById('properties-empty-state');
+
+            if (filtered.length === 0) {
+                emptyEl.classList.remove('hidden');
+                listEl.innerHTML = '';
+                return;
+            }
+            emptyEl.classList.add('hidden');
+
+            listEl.innerHTML = filtered.map(p => {
+                const elec = computeReminderStatus(p.lastElectricalInspection, ELECTRICAL_CYCLE_YEARS, ELECTRICAL_DUE_SOON_DAYS);
+                const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
+                return `
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06] space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="text-sm font-bold text-white whitespace-pre-line">${p.address}</div>
+                                ${p.linkedClientName ? `<div class="text-[11px] text-amber-400 mt-1"><i data-lucide="user" class="w-3 h-3 inline mr-1"></i>${p.linkedClientName}</div>` : ''}
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button onclick="loadPropertyForModification('${p.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                                <button onclick="deleteProperty('${p.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            </div>
+                        </div>
+                        ${p.notes ? `<div class="text-xs text-slate-400 bg-slate-900 border border-slate-700 rounded-lg p-2.5 whitespace-pre-line"><i data-lucide="key" class="w-3 h-3 inline mr-1 text-amber-400"></i>${p.notes}</div>` : ''}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div class="flex items-center justify-between gap-2 bg-slate-900 border border-slate-700 rounded-lg p-2.5">
+                                <div class="text-[11px] text-slate-400">Electrical Inspection</div>
+                                ${reminderStatusBadge(elec.status, elec.daysUntilDue)}
+                            </div>
+                            <div class="flex items-center justify-between gap-2 bg-slate-900 border border-slate-700 rounded-lg p-2.5">
+                                <div class="text-[11px] text-slate-400">Smoke Alarm Test</div>
+                                ${reminderStatusBadge(smoke.status, smoke.daysUntilDue)}
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="markReminderTestedToday('${p.id}', 'lastElectricalInspection')" class="text-[10px] font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 px-2 py-1.5 rounded-lg border border-slate-700 cursor-pointer">Mark Inspection Done Today</button>
+                            <button onclick="markReminderTestedToday('${p.id}', 'lastSmokeAlarmTest')" class="text-[10px] font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 px-2 py-1.5 rounded-lg border border-slate-700 cursor-pointer">Mark Smoke Test Done Today</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // ============================================================
+        // JOBS
+        // ============================================================
+        async function saveJobConfig(event) {
+            event.preventDefault();
+            const editId = document.getElementById('job-id-field').value;
+            const propertyId = document.getElementById('job-property-select').value;
+            const property = currentProperties.find(p => p.id === propertyId);
+
+            const payload = {
+                title: document.getElementById('job-title').value.trim(),
+                propertyId: propertyId || null,
+                propertyAddress: property ? property.address : null,
+                assignedEngineer: document.getElementById('job-engineer-select').value,
+                date: document.getElementById('job-date').value,
+                time: document.getElementById('job-time').value || '09:00',
+                status: document.getElementById('job-status-select').value,
+                notes: document.getElementById('job-notes').value.trim(),
+            };
+
+            let jobId = editId;
+            let existingCalendarEventId = null;
+            if (editId) {
+                const existing = currentJobs.find(j => j.id === editId);
+                existingCalendarEventId = existing ? existing.calendarEventId : null;
+                await db.collection('jobs').doc(editId).update(payload);
+            } else {
+                payload.createdAt = new Date().toISOString();
+                const ref = await db.collection('jobs').add(payload);
+                jobId = ref.id;
+            }
+
+            if (isGoogleCalendarConnected()) {
+                const eventId = await pushJobToCalendar(payload, existingCalendarEventId);
+                if (eventId) {
+                    db.collection('jobs').doc(jobId).update({ calendarEventId: eventId });
+                }
+            }
+
+            clearJobForm();
+        }
+
+        function loadJobForModification(jobId) {
+            const j = currentJobs.find(x => x.id === jobId);
+            if (!j) return;
+            document.getElementById('job-id-field').value = j.id;
+            document.getElementById('job-title').value = j.title || '';
+            document.getElementById('job-property-select').value = j.propertyId || '';
+            document.getElementById('job-engineer-select').value = j.assignedEngineer || '';
+            document.getElementById('job-date').value = j.date || '';
+            document.getElementById('job-time').value = j.time || '09:00';
+            document.getElementById('job-status-select').value = j.status || 'Scheduled';
+            document.getElementById('job-notes').value = j.notes || '';
+            document.getElementById('job-form-title').innerText = 'Modify Job';
+            document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Job`;
+            document.getElementById('job-cancel-btn').classList.remove('hidden');
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function clearJobForm() {
+            document.getElementById('job-form').reset();
+            document.getElementById('job-id-field').value = '';
+            document.getElementById('job-time').value = '09:00';
+            document.getElementById('job-form-title').innerText = 'Add Job';
+            document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job`;
+            document.getElementById('job-cancel-btn').classList.add('hidden');
+            lucide.createIcons();
+        }
+
+        async function deleteJob(jobId) {
+            if (!confirm('Permanently remove this job?')) return;
+            const j = currentJobs.find(x => x.id === jobId);
+            if (j && j.calendarEventId && isGoogleCalendarConnected()) {
+                await deleteCalendarEvent(j.calendarEventId);
+            }
+            db.collection('jobs').doc(jobId).delete();
+        }
+
+        function renderJobsList() {
+            const engineerFilter = document.getElementById('jobs-engineer-filter').value;
+            const statusFilter = document.getElementById('jobs-status-filter').value;
+
+            const filtered = currentJobs
+                .filter(j => engineerFilter === 'ALL' || j.assignedEngineer === engineerFilter)
+                .filter(j => statusFilter === 'ALL' || j.status === statusFilter)
+                .sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
+
+            const listEl = document.getElementById('jobs-list');
+            const emptyEl = document.getElementById('jobs-empty-state');
+
+            if (filtered.length === 0) {
+                emptyEl.classList.remove('hidden');
+                listEl.innerHTML = '';
+                return;
+            }
+            emptyEl.classList.add('hidden');
+
+            listEl.innerHTML = filtered.map(j => {
+                const colors = getEngineerColorClass(j.assignedEngineer);
+                const statusColor = j.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                    : j.status === 'Cancelled' ? 'bg-slate-800 text-slate-500 border-slate-700'
+                    : 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+                return `
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg ring-1 ring-white/[0.06]">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                <span class="text-sm font-bold text-white">${j.title}</span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${statusColor}">${j.status}</span>
+                            </div>
+                            <div class="text-[11px] text-slate-400">${formatUkDate(j.date)} at ${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[10px] font-bold px-2 py-1 rounded border ${colors.badge}">${j.assignedEngineer}</span>
+                            <button onclick="loadJobForModification('${j.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="deleteJob('${j.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // ============================================================
+        // CALENDAR
+        // ============================================================
+        let calendarViewYear = new Date().getFullYear();
+        let calendarViewMonth = new Date().getMonth();
+        let selectedCalendarDate = null;
+
+        function generateMonthGrid(year, monthIndexZeroBased) {
+            const firstOfMonth = new Date(year, monthIndexZeroBased, 1);
+            const lastOfMonth = new Date(year, monthIndexZeroBased + 1, 0);
+            const daysInMonth = lastOfMonth.getDate();
+            const firstWeekdayMonFirst = (firstOfMonth.getDay() + 6) % 7;
+            const cells = [];
+            for (let i = firstWeekdayMonFirst; i > 0; i--) {
+                const d = new Date(year, monthIndexZeroBased, 1 - i);
+                cells.push({ dateISO: d.toISOString().slice(0, 10), day: d.getDate(), isOtherMonth: true });
+            }
+            for (let day = 1; day <= daysInMonth; day++) {
+                const d = new Date(year, monthIndexZeroBased, day);
+                cells.push({ dateISO: d.toISOString().slice(0, 10), day, isOtherMonth: false });
+            }
+            while (cells.length % 7 !== 0) {
+                const nextIdx = cells.length - (firstWeekdayMonFirst + daysInMonth);
+                const d = new Date(year, monthIndexZeroBased + 1, nextIdx + 1);
+                cells.push({ dateISO: d.toISOString().slice(0, 10), day: d.getDate(), isOtherMonth: true });
+            }
+            const weeks = [];
+            for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+            return weeks;
+        }
+
+        function navigateCalendarMonth(delta) {
+            calendarViewMonth += delta;
+            if (calendarViewMonth < 0) { calendarViewMonth = 11; calendarViewYear--; }
+            if (calendarViewMonth > 11) { calendarViewMonth = 0; calendarViewYear++; }
+            renderCalendarGrid();
+        }
+
+        function goToCalendarToday() {
+            const now = new Date();
+            calendarViewYear = now.getFullYear();
+            calendarViewMonth = now.getMonth();
+            renderCalendarGrid();
+        }
+
+        function renderCalendarGrid() {
+            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            document.getElementById('calendar-month-label').innerText = `${monthNames[calendarViewMonth]} ${calendarViewYear}`;
+
+            const engineerFilter = document.getElementById('calendar-engineer-filter').value;
+            const weeks = generateMonthGrid(calendarViewYear, calendarViewMonth);
+            const today = todayISO();
+
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = weeks.flat().map(cell => {
+                const jobsThisDay = currentJobs.filter(j => j.date === cell.dateISO && j.status !== 'Cancelled' &&
+                    (engineerFilter === 'ALL' || j.assignedEngineer === engineerFilter));
+                const isToday = cell.dateISO === today;
+
+                const dots = jobsThisDay.slice(0, 4).map(j => {
+                    const colors = getEngineerColorClass(j.assignedEngineer);
+                    return `<span class="w-1.5 h-1.5 rounded-full ${colors.dot}"></span>`;
+                }).join('');
+
+                return `
+                    <button onclick="openDayDetailModal('${cell.dateISO}')" class="aspect-square rounded-lg p-1.5 flex flex-col items-start justify-start border transition-colors cursor-pointer text-left
+                        ${cell.isOtherMonth ? 'bg-slate-900/30 border-slate-800 text-slate-600' : 'bg-slate-900 border-slate-700 hover:border-amber-500 text-slate-200'}
+                        ${isToday ? 'ring-2 ring-amber-500' : ''}">
+                        <span class="text-[10px] font-bold">${cell.day}</span>
+                        <div class="flex flex-wrap gap-0.5 mt-auto">${dots}</div>
+                    </button>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function openDayDetailModal(dateISO) {
+            selectedCalendarDate = dateISO;
+            const [y, m, d] = dateISO.split('-');
+            document.getElementById('day-detail-date-label').innerText = `${d}/${m}/${y}`;
+
+            const jobsThisDay = currentJobs.filter(j => j.date === dateISO).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+            const listEl = document.getElementById('day-detail-jobs-list');
+
+            if (jobsThisDay.length === 0) {
+                listEl.innerHTML = `<p class="text-xs text-slate-500 text-center py-6">No jobs scheduled this day.</p>`;
+            } else {
+                listEl.innerHTML = jobsThisDay.map(j => {
+                    const colors = getEngineerColorClass(j.assignedEngineer);
+                    return `
+                        <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3 cursor-pointer hover:border-amber-500" onclick="closeDayDetailModal(); loadJobForModification('${j.id}'); switchTab('jobs-tab');">
+                            <div class="min-w-0">
+                                <div class="text-xs font-semibold text-slate-200">${j.time} — ${j.title}</div>
+                                ${j.propertyAddress ? `<div class="text-[10px] text-slate-500 truncate">${j.propertyAddress.split('\\n')[0]}</div>` : ''}
+                            </div>
+                            <span class="text-[10px] font-bold px-2 py-1 rounded border ${colors.badge} shrink-0">${j.assignedEngineer}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            document.getElementById('day-detail-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeDayDetailModal() {
+            document.getElementById('day-detail-modal').classList.add('hidden');
+        }
+
+        function addJobForSelectedDay() {
+            closeDayDetailModal();
+            switchTab('jobs-tab');
+            clearJobForm();
+            if (selectedCalendarDate) {
+                document.getElementById('job-date').value = selectedCalendarDate;
+            }
+        }
+
+        // ============================================================
+        // GOOGLE CALENDAR (Identity Services token flow)
+        // ============================================================
+        let gisTokenClient = null;
+        let googleAccessToken = null;
+        let googleAccessTokenExpiry = 0;
+
+        window.addEventListener('load', () => {
+            if (window.google && google.accounts && google.accounts.oauth2) {
+                gisTokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: GOOGLE_CLIENT_ID,
+                    scope: 'https://www.googleapis.com/auth/calendar.events',
+                    callback: (tokenResponse) => {
+                        if (tokenResponse && tokenResponse.access_token) {
+                            googleAccessToken = tokenResponse.access_token;
+                            googleAccessTokenExpiry = Date.now() + (tokenResponse.expires_in * 1000);
+                            updateCalendarConnectionUI(true);
+                        }
+                    },
+                });
+            }
+        });
+
+        function connectGoogleCalendar() {
+            if (!gisTokenClient) {
+                alert('Google sign-in is still loading — try again in a moment.');
+                return;
+            }
+            gisTokenClient.requestAccessToken();
+        }
+
+        function isGoogleCalendarConnected() {
+            return !!googleAccessToken && Date.now() < googleAccessTokenExpiry;
+        }
+
+        function updateCalendarConnectionUI(connected) {
+            const icon = document.getElementById('calendar-status-icon');
+            const text = document.getElementById('calendar-status-text');
+            if (connected) {
+                icon.setAttribute('data-lucide', 'circle-check');
+                icon.classList.remove('text-slate-500');
+                icon.classList.add('text-emerald-400');
+                text.innerText = 'Connected';
+                text.classList.remove('text-slate-400');
+                text.classList.add('text-emerald-400');
+            } else {
+                icon.setAttribute('data-lucide', 'circle-slash');
+                icon.classList.add('text-slate-500');
+                icon.classList.remove('text-emerald-400');
+                text.innerText = 'Not connected';
+                text.classList.add('text-slate-400');
+                text.classList.remove('text-emerald-400');
+            }
+            lucide.createIcons();
+        }
+
+        async function pushJobToCalendar(job, existingEventId) {
+            const startDateTime = `${job.date}T${job.time || '09:00'}:00`;
+            const endDateTime = computeJobEndTime(job.date, job.time || '09:00');
+
+            const eventPayload = {
+                summary: `${job.title} — ${job.assignedEngineer}`,
+                description: `${job.propertyAddress ? 'Property: ' + job.propertyAddress + '\\n' : ''}${job.notes || ''}`,
+                start: { dateTime: startDateTime },
+                end: { dateTime: endDateTime },
+                reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 60 }] }
+            };
+
+            return await createOrUpdateCalendarEvent(existingEventId, eventPayload);
+        }
+
+        async function pushReminderToCalendar(propertyId, type) {
+            if (!isGoogleCalendarConnected()) {
+                alert('Connect Google Calendar in Settings first.');
+                return;
+            }
+            const p = currentProperties.find(x => x.id === propertyId);
+            if (!p) return;
+
+            const isElectrical = type === 'electrical';
+            const lastDate = isElectrical ? p.lastElectricalInspection : p.lastSmokeAlarmTest;
+            if (!lastDate) { alert('Set a last-tested date for this property first.'); return; }
+
+            const cycleYears = isElectrical ? ELECTRICAL_CYCLE_YEARS : SMOKE_ALARM_CYCLE_YEARS;
+            const dueDate = addYears(lastDate, cycleYears);
+            const endDate = addYears(lastDate, cycleYears); // all-day event end is exclusive; adjust below
+
+            const endDateObj = new Date(endDate + 'T00:00:00');
+            endDateObj.setDate(endDateObj.getDate() + 1);
+            const endDateExclusive = endDateObj.toISOString().slice(0, 10);
+
+            const eventPayload = {
+                summary: `${isElectrical ? '⚡ Electrical Inspection' : '🔥 Smoke Alarm Test'} Due — ${(p.address || '').split('\\n')[0]}`,
+                description: `${isElectrical ? '5-year electrical inspection' : '1-year smoke alarm test'} due for this property.`,
+                start: { date: dueDate },
+                end: { date: endDateExclusive },
+                reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 10080 }, { method: 'popup', minutes: 1440 }] }
+            };
+
+            const fieldName = isElectrical ? 'electricalCalendarEventId' : 'smokeAlarmCalendarEventId';
+            const existingEventId = p[fieldName] || null;
+            const eventId = await createOrUpdateCalendarEvent(existingEventId, eventPayload);
+            if (eventId) {
+                db.collection('properties').doc(propertyId).update({ [fieldName]: eventId });
+                alert('Reminder pushed to Google Calendar.');
+            }
+        }
+
+        function computeJobEndTime(dateStr, timeStr, durationHours = 2) {
+            const start = new Date(`${dateStr}T${timeStr}:00`);
+            start.setHours(start.getHours() + durationHours);
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${start.getFullYear()}-${pad(start.getMonth()+1)}-${pad(start.getDate())}T${pad(start.getHours())}:${pad(start.getMinutes())}:00`;
+        }
+
+        async function createOrUpdateCalendarEvent(existingEventId, eventPayload) {
+            if (!isGoogleCalendarConnected()) return null;
+            const url = existingEventId
+                ? `https://www.googleapis.com/calendar/v3/calendars/primary/events/${existingEventId}`
+                : `https://www.googleapis.com/calendar/v3/calendars/primary/events`;
+            const method = existingEventId ? 'PATCH' : 'POST';
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Authorization': `Bearer ${googleAccessToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(eventPayload)
+                });
+                if (!res.ok) { console.error('Calendar API error:', await res.text()); return null; }
+                const data = await res.json();
+                return data.id;
+            } catch (e) {
+                console.error('Calendar API request failed:', e);
+                return null;
+            }
+        }
+
+        async function deleteCalendarEvent(eventId) {
+            if (!isGoogleCalendarConnected() || !eventId) return;
+            try {
+                await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${googleAccessToken}` }
+                });
+            } catch (e) {
+                console.error('Calendar delete failed:', e);
+            }
+        }
+
+        // ============================================================
+        // TAB SWITCHING
+        // ============================================================
+        function switchTab(targetTabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+                btn.classList.add('text-slate-400', 'hover:text-white');
+            });
+            document.getElementById(targetTabId).classList.add('active');
+            const targetButton = document.getElementById(`btn-${targetTabId}`);
+            if (targetButton) {
+                targetButton.classList.remove('text-slate-400', 'hover:text-white');
+                targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+            }
+            if (targetTabId === 'calendar-tab') renderCalendarGrid();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            switchTab('dashboard-tab');
+        });
+    </script>
+</body>
+</html>
