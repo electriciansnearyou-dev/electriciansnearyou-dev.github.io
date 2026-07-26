@@ -247,6 +247,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Property</label>
+                                <input type="text" id="job-property-search-input" oninput="filterJobPropertyDropdown()" placeholder="Search properties..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 mb-1.5">
                                 <select id="job-property-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                                     <option value="">-- None / Not linked --</option>
                                 </select>
@@ -362,8 +363,21 @@
                 </h3>
                 <button onclick="closeDayDetailModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-2">
-                <div id="day-detail-jobs-list" class="space-y-2"></div>
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-5">
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5"><i data-lucide="calendar-x" class="w-3.5 h-3.5"></i> Jobs This Day</h4>
+                    <div id="day-detail-jobs-list" class="space-y-2"></div>
+                </div>
+                <div class="border-t border-slate-700 pt-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5"><i data-lucide="user-x" class="w-3.5 h-3.5"></i> Unavailable This Day</h4>
+                    <div id="day-detail-unavailable-list" class="space-y-2 mb-3"></div>
+                    <div class="flex gap-2">
+                        <select id="day-detail-unavailable-engineer-select" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500"></select>
+                        <button onclick="markSelectedEngineerUnavailable()" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400 font-semibold px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1.5 shrink-0">
+                            <i data-lucide="user-x" class="w-3.5 h-3.5"></i> Mark Unavailable
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="p-5 border-t border-slate-700 bg-slate-900/50 flex justify-end">
                 <button onclick="addJobForSelectedDay()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-2 rounded-xl text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer">
@@ -408,6 +422,7 @@
 
         let currentProperties = [];
         let currentJobs = [];
+        let currentUnavailability = [];
         let currentSettings = { engineer1: 'Engineer 1', engineer2: 'Engineer 2', engineer3: 'Engineer 3' };
         let firestoreListenersStarted = false;
 
@@ -460,6 +475,12 @@
                 renderCalendarGrid();
             }, (err) => console.error('Jobs listener error:', err));
 
+            db.collection('unavailability').onSnapshot((snapshot) => {
+                currentUnavailability = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderCalendarGrid();
+                if (selectedCalendarDate) renderUnavailableListForSelectedDay();
+            }, (err) => console.error('Unavailability listener error:', err));
+
             db.collection('settings').doc('config').onSnapshot((doc) => {
                 if (doc.exists) {
                     currentSettings = doc.data();
@@ -499,10 +520,12 @@
             const jobSelect = document.getElementById('job-engineer-select');
             const calFilter = document.getElementById('calendar-engineer-filter');
             const jobsFilter = document.getElementById('jobs-engineer-filter');
+            const unavailableSelect = document.getElementById('day-detail-unavailable-engineer-select');
 
             jobSelect.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
             calFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
             jobsFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+            unavailableSelect.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
         }
 
         // ============================================================
@@ -524,9 +547,30 @@
             clientSelect.innerHTML = '<option value="">-- None / Not linked --</option>' +
                 clients.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
 
+            filterJobPropertyDropdown();
+        }
+
+        function filterJobPropertyDropdown() {
+            const searchInput = document.getElementById('job-property-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const jobPropertySelect = document.getElementById('job-property-select');
+            const previousValue = jobPropertySelect.value;
+
+            const filtered = currentProperties.filter(p =>
+                (p.address || '').toLowerCase().includes(filterText) ||
+                (p.linkedClientName || '').toLowerCase().includes(filterText)
+            );
+
             jobPropertySelect.innerHTML = '<option value="">-- None / Not linked --</option>' +
-                currentProperties.map(p => `<option value="${p.id}">${(p.address || '').split('\\n')[0]}</option>`).join('');
+                filtered.map(p => {
+                    const label = (p.address || '').split('\\n')[0] + (p.linkedClientName ? ' — ' + p.linkedClientName : '');
+                    return `<option value="${p.id}">${label}</option>`;
+                }).join('');
+
+            // Keep the current selection if it's still in the filtered results.
+            if (filtered.some(p => p.id === previousValue)) {
+                jobPropertySelect.value = previousValue;
+            }
         }
 
         // ============================================================
@@ -798,6 +842,11 @@
                 notes: document.getElementById('job-notes').value.trim(),
             };
 
+            if (payload.status === 'Scheduled' && isEngineerUnavailable(payload.assignedEngineer, payload.date)) {
+                const proceed = confirm(`${payload.assignedEngineer} is marked unavailable on ${formatUkDate(payload.date)}. Schedule this job anyway?`);
+                if (!proceed) return;
+            }
+
             let jobId = editId;
             let existingCalendarEventId = null;
             if (editId) {
@@ -823,6 +872,10 @@
         function loadJobForModification(jobId) {
             const j = currentJobs.find(x => x.id === jobId);
             if (!j) return;
+            const searchInput = document.getElementById('job-property-search-input');
+            if (searchInput) searchInput.value = '';
+            filterJobPropertyDropdown();
+
             document.getElementById('job-id-field').value = j.id;
             document.getElementById('job-title').value = j.title || '';
             document.getElementById('job-property-select').value = j.propertyId || '';
@@ -842,6 +895,9 @@
             document.getElementById('job-form').reset();
             document.getElementById('job-id-field').value = '';
             document.getElementById('job-time').value = '09:00';
+            const searchInput = document.getElementById('job-property-search-input');
+            if (searchInput) searchInput.value = '';
+            filterJobPropertyDropdown();
             document.getElementById('job-form-title').innerText = 'Add Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job`;
             document.getElementById('job-cancel-btn').classList.add('hidden');
@@ -855,6 +911,20 @@
                 await deleteCalendarEvent(j.calendarEventId);
             }
             db.collection('jobs').doc(jobId).delete();
+        }
+
+        async function markJobStatus(jobId, newStatus) {
+            const j = currentJobs.find(x => x.id === jobId);
+            if (!j) return;
+
+            // A cancelled job shouldn't linger on (or notify from) the calendar;
+            // a completed job is left in place as an accurate historical record.
+            if (newStatus === 'Cancelled' && j.calendarEventId && isGoogleCalendarConnected()) {
+                await deleteCalendarEvent(j.calendarEventId);
+                await db.collection('jobs').doc(jobId).update({ status: newStatus, calendarEventId: null });
+            } else {
+                await db.collection('jobs').doc(jobId).update({ status: newStatus });
+            }
         }
 
         function renderJobsList() {
@@ -881,6 +951,10 @@
                 const statusColor = j.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                     : j.status === 'Cancelled' ? 'bg-slate-800 text-slate-500 border-slate-700'
                     : 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+                const quickActions = j.status === 'Scheduled' ? `
+                    <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
+                    <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>
+                ` : '';
                 return `
                     <div class="bg-[#283548] border border-slate-600 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg ring-1 ring-white/[0.06]">
                         <div class="min-w-0">
@@ -892,6 +966,7 @@
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
                             <span class="text-[10px] font-bold px-2 py-1 rounded border ${colors.badge}">${j.assignedEngineer}</span>
+                            ${quickActions}
                             <button onclick="loadJobForModification('${j.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                             <button onclick="deleteJob('${j.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                         </div>
@@ -958,6 +1033,8 @@
             grid.innerHTML = weeks.flat().map(cell => {
                 const jobsThisDay = currentJobs.filter(j => j.date === cell.dateISO && j.status !== 'Cancelled' &&
                     (engineerFilter === 'ALL' || j.assignedEngineer === engineerFilter));
+                const unavailableThisDay = getUnavailableEngineersForDay(cell.dateISO)
+                    .filter(u => engineerFilter === 'ALL' || u.engineerName === engineerFilter);
                 const isToday = cell.dateISO === today;
 
                 const dots = jobsThisDay.slice(0, 4).map(j => {
@@ -965,11 +1042,19 @@
                     return `<span class="w-1.5 h-1.5 rounded-full ${colors.dot}"></span>`;
                 }).join('');
 
+                // Unavailability shown as small bars (not dots) so it reads as
+                // distinct from scheduled jobs at a glance, same engineer colors.
+                const unavailableBars = unavailableThisDay.slice(0, 3).map(u => {
+                    const colors = getEngineerColorClass(u.engineerName);
+                    return `<span class="block w-full h-1 rounded-full ${colors.dot} opacity-50" title="${u.engineerName} unavailable"></span>`;
+                }).join('');
+
                 return `
                     <button onclick="openDayDetailModal('${cell.dateISO}')" class="aspect-square rounded-lg p-1.5 flex flex-col items-start justify-start border transition-colors cursor-pointer text-left
                         ${cell.isOtherMonth ? 'bg-slate-900/30 border-slate-800 text-slate-600' : 'bg-slate-900 border-slate-700 hover:border-amber-500 text-slate-200'}
                         ${isToday ? 'ring-2 ring-amber-500' : ''}">
                         <span class="text-[10px] font-bold">${cell.day}</span>
+                        <div class="w-full space-y-0.5 mt-0.5">${unavailableBars}</div>
                         <div class="flex flex-wrap gap-0.5 mt-auto">${dots}</div>
                     </button>
                 `;
@@ -1002,6 +1087,7 @@
                 }).join('');
             }
 
+            renderUnavailableListForSelectedDay();
             document.getElementById('day-detail-modal').classList.remove('hidden');
             lucide.createIcons();
         }
@@ -1017,6 +1103,58 @@
             if (selectedCalendarDate) {
                 document.getElementById('job-date').value = selectedCalendarDate;
             }
+        }
+
+        // ============================================================
+        // ENGINEER UNAVAILABILITY
+        // ============================================================
+        function isEngineerUnavailable(engineerName, dateISO) {
+            return currentUnavailability.some(u => u.engineerName === engineerName && u.date === dateISO);
+        }
+
+        function getUnavailableEngineersForDay(dateISO) {
+            return currentUnavailability.filter(u => u.date === dateISO);
+        }
+
+        function renderUnavailableListForSelectedDay() {
+            if (!selectedCalendarDate) return;
+            const entries = getUnavailableEngineersForDay(selectedCalendarDate);
+            const listEl = document.getElementById('day-detail-unavailable-list');
+
+            if (entries.length === 0) {
+                listEl.innerHTML = `<p class="text-xs text-slate-500">No one's marked unavailable this day.</p>`;
+            } else {
+                listEl.innerHTML = entries.map(u => {
+                    const colors = getEngineerColorClass(u.engineerName);
+                    return `
+                        <div class="bg-slate-900 border border-slate-700 rounded-lg p-2.5 flex items-center justify-between gap-2">
+                            <span class="text-xs font-bold px-2 py-1 rounded border ${colors.badge}">${u.engineerName}</span>
+                            <button onclick="removeEngineerUnavailability('${u.id}')" class="text-slate-400 hover:text-red-400 p-1 cursor-pointer"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    `;
+                }).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function markSelectedEngineerUnavailable() {
+            if (!selectedCalendarDate) return;
+            const engineerName = document.getElementById('day-detail-unavailable-engineer-select').value;
+
+            if (isEngineerUnavailable(engineerName, selectedCalendarDate)) {
+                alert(`${engineerName} is already marked unavailable this day.`);
+                return;
+            }
+
+            db.collection('unavailability').add({
+                engineerName,
+                date: selectedCalendarDate,
+                createdAt: new Date().toISOString()
+            });
+        }
+
+        function removeEngineerUnavailability(id) {
+            db.collection('unavailability').doc(id).delete();
         }
 
         // ============================================================
