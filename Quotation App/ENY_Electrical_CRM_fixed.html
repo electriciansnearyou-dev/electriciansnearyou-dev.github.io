@@ -2681,24 +2681,35 @@
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // html2canvas can't reliably measure/render a raw HTML string that was
-            // never actually placed on the page — it has no real layout to work
-            // from, which is what was producing a blank PDF. Building it into a
-            // real (off-screen, temporarily attached) element gives it genuine
-            // width/layout to render against, then it's removed afterward either way.
+            // Two things were wrong before: (1) a raw HTML string has no real
+            // layout for html2canvas to measure, and (2) pushing the render
+            // target far off-screen (left: -9999px) can ALSO capture blank —
+            // html2canvas has documented issues rendering content positioned
+            // outside the actual browser viewport. So this now places the
+            // content genuinely on-screen at the top-left, but covered by an
+            // opaque loading overlay (added first, so it paints on top before
+            // anything is visible) — real viewport-relative layout for
+            // html2canvas to work with, with nothing visible flashing by.
+            const renderOverlay = document.createElement('div');
+            renderOverlay.style.cssText = 'position:fixed; inset:0; background:#0f172a; z-index:99999; display:flex; align-items:center; justify-content:center; color:#f59e0b; font-family:sans-serif; font-size:14px;';
+            renderOverlay.innerText = 'Generating PDF...';
+            document.body.appendChild(renderOverlay);
+
             const pdfContainer = document.createElement('div');
-            pdfContainer.style.position = 'fixed';
-            pdfContainer.style.top = '0';
-            pdfContainer.style.left = '-9999px';
-            pdfContainer.style.width = '210mm';
+            pdfContainer.style.cssText = 'position:absolute; top:0; left:0; width:210mm; background:#ffffff; z-index:1;';
             pdfContainer.innerHTML = pdfHtml;
             document.body.appendChild(pdfContainer);
 
+            const cleanUpPdfRender = () => {
+                document.body.removeChild(pdfContainer);
+                document.body.removeChild(renderOverlay);
+            };
+
             html2pdf().set(opt).from(pdfContainer).save()
-                .then(() => { document.body.removeChild(pdfContainer); })
+                .then(cleanUpPdfRender)
                 .catch((err) => {
                     console.error('PDF generation failed:', err);
-                    document.body.removeChild(pdfContainer);
+                    cleanUpPdfRender();
                     alert('Could not generate the PDF. Please try again.');
                 });
         }
