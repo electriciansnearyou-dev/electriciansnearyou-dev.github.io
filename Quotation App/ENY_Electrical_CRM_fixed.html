@@ -2575,6 +2575,13 @@
             const docPrefix = isInvoice ? 'Invoice' : 'Quotation';
             const clientName = target.clientDetailsPayload?.name || 'Client';
 
+            // Invoices should show the date they're actually issued (i.e. right
+            // now, when this PDF is generated) rather than the original quote
+            // date — useful since an invoice can be regenerated later. Quotes
+            // keep showing their original date, since that's what "quoted on"
+            // should mean.
+            const documentDateLabel = isInvoice ? new Date().toLocaleDateString('en-GB') : target.timestamp.split(' ')[0];
+
             const docUser = target.ownerOperatorProfileID || 'HUGHES';
             const bankConfig = JSON.parse(localStorage.getItem(`eny_bank_${docUser}`)) || { name: 'ENY Electrical', acc: 'XXXXXXXX', sort: 'XX-XX-XX' };
 
@@ -2618,7 +2625,7 @@
                             <td style="vertical-align: top;">
                                 <div style="font-size: 14px; color: #475569; font-weight: 500; tracking-wide; margin-bottom: 8px;">Electricians Near You</div>
                                 <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #1e3a8a; tracking-tight;">${docPrefix}</h1>
-                                <div style="font-size: 11px; color: #db2777; font-weight: 600; margin-top: 4px;">Submitted on ${target.timestamp.split(' ')[0]}</div>
+                                <div style="font-size: 11px; color: #db2777; font-weight: 600; margin-top: 4px;">Submitted on ${documentDateLabel}</div>
                             </td>
                             <td style="text-align: right; vertical-align: top;">
                                 <div style="display: inline-block; border: 2px solid #e2e8f0; border-radius: 50%; width: 72px; height: 72px; text-align: center; line-height: 68px; font-size: 18px; font-weight: 800; color: #1e3a8a; background-color: #fafafa;">ENY</div>
