@@ -106,11 +106,19 @@
                     <button onclick="switchTab('settings-tab')" id="btn-settings-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
                         <i data-lucide="sliders" class="w-4 h-4"></i> Settings
                     </button>
+                    <button onclick="switchTab('trash-tab')" id="btn-trash-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i> Trash
+                    </button>
                 </nav>
 
-                <button onclick="handleSignOut()" class="text-xs text-slate-400 hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer">
-                    <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
-                </button>
+                <div class="flex items-center gap-3">
+                    <button onclick="openUniversalSearch()" class="text-slate-400 hover:text-amber-400 p-2 rounded-lg bg-slate-900 border border-slate-800 transition-colors cursor-pointer" title="Search everything">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="handleSignOut()" class="text-xs text-slate-400 hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -879,10 +887,76 @@
                 </div>
             </div>
 
+            <div id="trash-tab" class="tab-content space-y-6">
+                <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-400">
+                    Deleted items sit here for 30 days before being permanently removed, in case something was removed by mistake.
+                </div>
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="map-pin" class="text-amber-400 w-4 h-4"></i> Deleted Properties</h2>
+                    <div id="trash-properties-list" class="space-y-2"></div>
+                </div>
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="clipboard-list" class="text-amber-400 w-4 h-4"></i> Deleted Jobs</h2>
+                    <div id="trash-jobs-list" class="space-y-2"></div>
+                </div>
+                <div id="trash-owner-section" class="hidden space-y-6">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="users" class="text-amber-400 w-4 h-4"></i> Deleted Clients</h2>
+                        <div id="trash-clients-list" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="file-text" class="text-amber-400 w-4 h-4"></i> Deleted Quotes/Invoices</h2>
+                        <div id="trash-quotes-list" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="package" class="text-amber-400 w-4 h-4"></i> Deleted Stock Items</h2>
+                        <div id="trash-stock-list" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="layout-template" class="text-amber-400 w-4 h-4"></i> Deleted Templates</h2>
+                        <div id="trash-templates-list" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
     <!-- ================= MODALS ================= -->
+    <div id="send-reminder-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="message-square" class="text-emerald-400"></i> Send Reminder</h3>
+                <button onclick="closeSendReminderModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-400">To: <span id="reminder-client-name" class="text-slate-200 font-semibold"></span> — <span id="reminder-client-phone" class="font-mono text-slate-300"></span></p>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Message (edit if you like)</label>
+                    <textarea id="reminder-message-text" rows="5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+                <p class="text-[11px] text-slate-500">This sends from your own phone's messages app, under your own number — nothing gets sent from here directly.</p>
+            </div>
+            <div class="p-5 border-t border-slate-700 bg-slate-900/50 flex flex-col gap-2">
+                <button onclick="openReminderInMessagesApp()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"><i data-lucide="send" class="w-4 h-4"></i> Open in Messages App</button>
+                <button onclick="copyReminderMessage()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"><i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Text Instead</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="universal-search-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-start justify-center p-4 pt-20">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[70vh]">
+            <div class="p-4 border-b border-slate-700 flex items-center gap-3 bg-slate-900/50">
+                <i data-lucide="search" class="text-amber-400 w-4 h-4 shrink-0"></i>
+                <input type="text" id="universal-search-input" oninput="performUniversalSearch()" placeholder="Search clients, properties, jobs, quotes..." class="w-full bg-transparent text-sm text-slate-100 focus:outline-none" autocomplete="off">
+                <button onclick="closeUniversalSearch()" class="text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="universal-search-results" class="p-4 overflow-y-auto custom-scrollbar flex-1 space-y-4">
+                <p class="text-xs text-slate-500 text-center py-6">Start typing to search.</p>
+            </div>
+        </div>
+    </div>
+
     <div id="day-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
@@ -1143,21 +1217,47 @@
         // ============================================================
         // FIRESTORE LISTENERS
         // ============================================================
+        let trashProperties = [], trashJobs = [], trashClients = [], trashQuotes = [], trashStock = [], trashTemplates = [];
+        const TRASH_RETENTION_DAYS = 30;
+
+        // Permanently removes anything that's been in the trash longer than the
+        // retention window. Runs opportunistically whenever a collection
+        // refreshes — there's no background job on the free plan, so this is
+        // "cleaned up next time someone's using the app" rather than exactly
+        // on schedule, which is a fine tradeoff for a 30-day window.
+        function purgeOldTrashItems(collectionName, trashArray) {
+            const cutoff = Date.now() - (TRASH_RETENTION_DAYS * 86400000);
+            trashArray.forEach(item => {
+                const deletedAtMs = item.deletedAt ? new Date(item.deletedAt).getTime() : 0;
+                if (deletedAtMs && deletedAtMs < cutoff) {
+                    db.collection(collectionName).doc(item.id).delete();
+                }
+            });
+        }
+
         function startFirestoreListeners() {
             // --- Shared collections (everyone) ---
             db.collection('properties').onSnapshot((snapshot) => {
-                currentProperties = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                currentProperties = allDocs.filter(p => !p.deleted);
+                trashProperties = allDocs.filter(p => p.deleted);
+                purgeOldTrashItems('properties', trashProperties);
                 renderPropertiesList();
                 rebuildPropertyDropdowns();
                 renderDashboard();
                 renderCalendarGrid();
+                renderTrashTab();
             }, (err) => console.error('Properties listener error:', err));
 
             db.collection('jobs').onSnapshot((snapshot) => {
-                currentJobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                currentJobs = allDocs.filter(j => !j.deleted);
+                trashJobs = allDocs.filter(j => j.deleted);
+                purgeOldTrashItems('jobs', trashJobs);
                 renderJobsList();
                 renderDashboard();
                 renderCalendarGrid();
+                renderTrashTab();
             }, (err) => console.error('Jobs listener error:', err));
 
             db.collection('unavailability').onSnapshot((snapshot) => {
@@ -1186,33 +1286,49 @@
             // server-side either way) ---
             if (isOwnerLoggedIn()) {
                 db.collection('clients').onSnapshot((snapshot) => {
-                    currentClients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    currentClients = allDocs.filter(c => !c.deleted);
+                    trashClients = allDocs.filter(c => c.deleted);
+                    purgeOldTrashItems('clients', trashClients);
                     rebuildCrmProfilesInterface();
                     rebuildQuoteClientDropdown();
                     rebuildCrmLinkPropertyDropdown();
                     renderDashboard();
+                    renderTrashTab();
                 }, (err) => console.error('Clients listener error:', err));
 
                 db.collection('stock').onSnapshot((snapshot) => {
-                    currentStock = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    currentStock = allDocs.filter(s => !s.deleted);
+                    trashStock = allDocs.filter(s => s.deleted);
+                    purgeOldTrashItems('stock', trashStock);
                     rebuildMasterStockDirectoryTable();
                     rebuildDatalistAssistanceArray();
                     renderCategoryNavigationTabs();
                     filterMaterialCatalog();
                     rebuildTemplateMaterialSelector();
+                    renderTrashTab();
                 }, (err) => console.error('Stock listener error:', err));
 
                 db.collection('quotes').onSnapshot((snapshot) => {
-                    currentQuotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    currentQuotes = allDocs.filter(q => !q.deleted);
+                    trashQuotes = allDocs.filter(q => q.deleted);
+                    purgeOldTrashItems('quotes', trashQuotes);
                     rebuildVaultDataTable();
                     rebuildCrmProfilesInterface();
                     renderDashboard();
+                    renderTrashTab();
                 }, (err) => console.error('Quotes listener error:', err));
 
                 db.collection('templates').onSnapshot((snapshot) => {
-                    currentTemplates = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    currentTemplates = allDocs.filter(t => !t.deleted);
+                    trashTemplates = allDocs.filter(t => t.deleted);
+                    purgeOldTrashItems('templates', trashTemplates);
                     rebuildJobTemplatesDropdown();
                     rebuildTemplateCatalogList();
+                    renderTrashTab();
                 }, (err) => console.error('Templates listener error:', err));
 
                 db.collection('settings').doc('pricing').onSnapshot((doc) => {
@@ -1284,6 +1400,18 @@
         function getJobEngineers(job) {
             if (Array.isArray(job.assignedEngineers)) return job.assignedEngineers;
             return job.assignedEngineer ? [job.assignedEngineer] : [];
+        }
+        // Date-only double-booking check (deliberately ignores time) — flags an
+        // engineer already assigned to a DIFFERENT Scheduled job on the same day.
+        function findDoubleBookedEngineers(assignedEngineers, date, excludeJobId) {
+            const conflicts = [];
+            for (const name of assignedEngineers) {
+                const hasConflict = currentJobs.some(j =>
+                    j.id !== excludeJobId && j.date === date && j.status === 'Scheduled' && getJobEngineers(j).includes(name)
+                );
+                if (hasConflict) conflicts.push(name);
+            }
+            return conflicts;
         }
 
         function loadPricingSettingsIntoForm() {
@@ -1431,9 +1559,11 @@
                     ? `<p class="text-xs text-slate-500 text-center py-6">No jobs scheduled in the next 7 days.</p>`
                     : in7days.map(j => {
                         const badges = getJobEngineers(j).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
+                        const client = isOwnerLoggedIn() ? findClientForJob(j) : null;
+                        const reminderBtn = (client && client.phone) ? `<button onclick="openSendReminderModal('${j.id}')" title="Send reminder to ${client.name}" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-950 border border-slate-700 cursor-pointer shrink-0"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>` : '';
                         return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
                             <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${j.title}</div><div class="text-[10px] text-slate-500">${formatUkDate(j.date)} at ${j.time || '—'}</div></div>
-                            <div class="flex flex-wrap gap-1 justify-end shrink-0">${badges}</div>
+                            <div class="flex flex-wrap gap-1 justify-end items-center shrink-0">${badges}${reminderBtn}</div>
                         </div>`;
                     }).join('');
             }
@@ -1632,6 +1762,11 @@
             if (!selectedCalendarDate) return;
             const engineerName = document.getElementById('day-detail-unavailable-engineer-select').value;
             if (isEngineerUnavailable(engineerName, selectedCalendarDate)) { alert(`${engineerName} is already marked unavailable this day.`); return; }
+            const existingJobs = currentJobs.filter(j => j.date === selectedCalendarDate && j.status === 'Scheduled' && getJobEngineers(j).includes(engineerName));
+            if (existingJobs.length > 0) {
+                const jobTitles = existingJobs.map(j => j.title).join(', ');
+                if (!confirm(`${engineerName} already has a job booked this day (${jobTitles}). Mark them unavailable anyway?`)) return;
+            }
             db.collection('unavailability').add({ engineerName, date: selectedCalendarDate, createdAt: new Date().toISOString() });
         }
         function removeEngineerUnavailability(id) { db.collection('unavailability').doc(id).delete(); }
@@ -1753,6 +1888,10 @@
                 if (unavailableOnes.length > 0) {
                     if (!confirm(`${unavailableOnes.join(' and ')} ${unavailableOnes.length === 1 ? 'is' : 'are'} marked unavailable on ${formatUkDate(payload.date)}. Schedule this job anyway?`)) return;
                 }
+                const doubleBookedOnes = findDoubleBookedEngineers(assignedEngineers, payload.date, editId || null);
+                if (doubleBookedOnes.length > 0) {
+                    if (!confirm(`${doubleBookedOnes.join(' and ')} already ${doubleBookedOnes.length === 1 ? 'has' : 'have'} another job on ${formatUkDate(payload.date)}. Schedule this one too?`)) return;
+                }
             }
             let jobId = editId; let existingCalendarEventId = null;
             if (editId) {
@@ -1805,10 +1944,10 @@
             lucide.createIcons();
         }
         async function deleteJob(jobId) {
-            if (!confirm('Permanently remove this job?')) return;
+            if (!confirm('Move this job to Trash? You can restore it within 30 days.')) return;
             const j = currentJobs.find(x => x.id === jobId);
             if (j && j.calendarEventId && isGoogleCalendarConnected()) await deleteCalendarEvent(j.calendarEventId);
-            db.collection('jobs').doc(jobId).delete();
+            db.collection('jobs').doc(jobId).update({ deleted: true, deletedAt: new Date().toISOString() });
         }
         async function markJobStatus(jobId, newStatus) {
             const j = currentJobs.find(x => x.id === jobId);
@@ -1897,8 +2036,8 @@
             lucide.createIcons();
         }
         function deleteProperty(propertyId) {
-            if (!confirm('Permanently remove this property and its notes?')) return;
-            db.collection('properties').doc(propertyId).delete();
+            if (!confirm('Move this property to Trash? You can restore it within 30 days.')) return;
+            db.collection('properties').doc(propertyId).update({ deleted: true, deletedAt: new Date().toISOString() });
         }
         function markReminderTestedToday(propertyId, field) {
             db.collection('properties').doc(propertyId).update({ [field]: todayISO() });
@@ -1937,11 +2076,149 @@
             lucide.createIcons();
         }
 
+        // ============================================================
+        // TRASH BIN
+        // ============================================================
+        function restoreFromTrash(collectionName, id) {
+            db.collection(collectionName).doc(id).update({ deleted: false, deletedAt: null });
+        }
+        function daysAgoLabel(dateStr) {
+            if (!dateStr) return '';
+            const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+            if (days <= 0) return 'today';
+            return `${days}d ago`;
+        }
+        function buildTrashRow(label, sub, collectionName, id, deletedAt) {
+            return `<div class="bg-slate-900 border border-slate-700 rounded-lg p-3 flex items-center justify-between gap-3">
+                <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${label || '(untitled)'}</div>${sub ? `<div class="text-[10px] text-slate-500 truncate">${sub}</div>` : ''}</div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <span class="text-[10px] text-slate-500">${daysAgoLabel(deletedAt)}</span>
+                    <button onclick="restoreFromTrash('${collectionName}', '${id}')" class="text-[10px] font-bold bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 px-2 py-1.5 rounded-lg border border-slate-700 cursor-pointer">Restore</button>
+                </div>
+            </div>`;
+        }
+        function renderTrashTab() {
+            const propEl = document.getElementById('trash-properties-list');
+            if (!propEl) return; // Trash tab HTML not present yet on first load tick
+            propEl.innerHTML = trashProperties.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashProperties.map(p => buildTrashRow((p.address || '').split('\\n')[0], '', 'properties', p.id, p.deletedAt)).join('');
+
+            const jobsEl = document.getElementById('trash-jobs-list');
+            jobsEl.innerHTML = trashJobs.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashJobs.map(j => buildTrashRow(j.title, formatUkDate(j.date), 'jobs', j.id, j.deletedAt)).join('');
+
+            const ownerSection = document.getElementById('trash-owner-section');
+            if (!isOwnerLoggedIn()) { ownerSection.classList.add('hidden'); return; }
+            ownerSection.classList.remove('hidden');
+
+            document.getElementById('trash-clients-list').innerHTML = trashClients.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashClients.map(c => buildTrashRow(c.name, c.email || c.phone || '', 'clients', c.id, c.deletedAt)).join('');
+            document.getElementById('trash-quotes-list').innerHTML = trashQuotes.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashQuotes.map(q => buildTrashRow(q.jobName, (q.clientDetailsPayload && q.clientDetailsPayload.name) || '', 'quotes', q.id, q.deletedAt)).join('');
+            document.getElementById('trash-stock-list').innerHTML = trashStock.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashStock.map(s => buildTrashRow(s.desc, s.sku, 'stock', s.id, s.deletedAt)).join('');
+            document.getElementById('trash-templates-list').innerHTML = trashTemplates.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashTemplates.map(t => buildTrashRow(t.name, '', 'templates', t.id, t.deletedAt)).join('');
+        }
+
+        // ============================================================
+        // JOB REMINDERS (self-sent — generates the message, you send it
+        // from your own phone number via your own Messages app)
+        // ============================================================
+        let activeReminderPhone = '';
+
+        // A job only stores a propertyId, not a client — so this goes via the
+        // same client<->property link the CRM already uses, finding whichever
+        // client (if any) has this job's property in their linkedPropertyIds.
+        function findClientForJob(job) {
+            if (!job.propertyId) return null;
+            return currentClients.find(c => (c.linkedPropertyIds || []).includes(job.propertyId)) || null;
+        }
+        function buildReminderMessageText(job, client) {
+            const firstName = (client.name || '').split(' ')[0];
+            const addressLine = (job.propertyAddress || '').split('\\n')[0];
+            return `Hi ${firstName}, this is a reminder that ENY Electrical is booked at ${addressLine} on ${formatUkDate(job.date)} at ${job.time} for: ${job.title}. See you then!`;
+        }
+        function openSendReminderModal(jobId) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const client = findClientForJob(job);
+            if (!client || !client.phone) { alert("No linked client with a phone number found for this job's property."); return; }
+            activeReminderPhone = client.phone;
+            document.getElementById('reminder-client-name').innerText = client.name;
+            document.getElementById('reminder-client-phone').innerText = client.phone;
+            document.getElementById('reminder-message-text').value = buildReminderMessageText(job, client);
+            document.getElementById('send-reminder-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeSendReminderModal() { document.getElementById('send-reminder-modal').classList.add('hidden'); }
+        function openReminderInMessagesApp() {
+            const text = document.getElementById('reminder-message-text').value;
+            const cleanPhone = activeReminderPhone.replace(/[^\d+]/g, '');
+            window.location.href = `sms:${cleanPhone}?body=${encodeURIComponent(text)}`;
+        }
+        function copyReminderMessage() {
+            navigator.clipboard.writeText(document.getElementById('reminder-message-text').value).then(() => alert("Message copied — paste it into Messages, WhatsApp, or wherever you'd like to send it."));
+        }
+
         function onTabSwitched(tabId) {
             if (tabId === 'calendar-tab') renderCalendarGrid();
             if (tabId === 'quote-tab') { rebuildJobTemplatesDropdown(); filterMaterialCatalog(); rebuildAllocatedMaterialsTable(); rebuildVaultDataTable(); filterQuotePropertyDropdown(); }
             if (tabId === 'crm-tab') rebuildCrmProfilesInterface();
             if (tabId === 'settings-tab') { rebuildMasterStockDirectoryTable(); rebuildTemplateCatalogList(); rebuildTemplateMaterialSelector(); loadPricingSettingsIntoForm(); loadBankFormFields('HUGHES'); loadBankFormFields('MABBLEY'); }
+            if (tabId === 'trash-tab') renderTrashTab();
+        }
+
+        // ============================================================
+        // UNIVERSAL SEARCH
+        // ============================================================
+        // Non-owner logins never have currentClients/currentQuotes populated
+        // (their Firestore listeners for those owner-only collections are never
+        // started — see startFirestoreListeners), so client/quote results simply
+        // never appear for them here. No extra access check needed on top of
+        // that — the same boundary the rest of the app relies on holds for
+        // search results too.
+        function openUniversalSearch() {
+            document.getElementById('universal-search-modal').classList.remove('hidden');
+            document.getElementById('universal-search-input').focus();
+            lucide.createIcons();
+        }
+        function closeUniversalSearch() {
+            document.getElementById('universal-search-modal').classList.add('hidden');
+            document.getElementById('universal-search-input').value = '';
+            document.getElementById('universal-search-results').innerHTML = '<p class="text-xs text-slate-500 text-center py-6">Start typing to search.</p>';
+        }
+        function buildSearchResultGroup(title, items) {
+            if (items.length === 0) return '';
+            return `<div>
+                <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">${title}</h4>
+                <div class="space-y-1.5">${items.map(i => `
+                    <button onclick="${i.onclick}" class="w-full text-left bg-slate-900 border border-slate-700 hover:border-amber-500 rounded-lg p-2.5 flex items-center justify-between gap-2 cursor-pointer transition-colors">
+                        <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${i.label}</div>${i.sub ? `<div class="text-[10px] text-slate-500 truncate">${i.sub}</div>` : ''}</div>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+                    </button>`).join('')}</div>
+            </div>`;
+        }
+        function performUniversalSearch() {
+            const query = document.getElementById('universal-search-input').value.toLowerCase().trim();
+            const resultsEl = document.getElementById('universal-search-results');
+            if (query.length < 2) { resultsEl.innerHTML = '<p class="text-xs text-slate-500 text-center py-6">Keep typing (2+ characters)...</p>'; return; }
+
+            const matchedProperties = currentProperties.filter(p => (p.address || '').toLowerCase().includes(query) || (p.notes || '').toLowerCase().includes(query)).slice(0, 6);
+            const matchedJobs = currentJobs.filter(j => (j.title || '').toLowerCase().includes(query) || (j.notes || '').toLowerCase().includes(query) || (j.propertyAddress || '').toLowerCase().includes(query)).slice(0, 6);
+            const matchedClients = currentClients.filter(c => (c.name || '').toLowerCase().includes(query) || (c.email || '').toLowerCase().includes(query) || (c.phone || '').toLowerCase().includes(query)).slice(0, 6);
+            const matchedQuotes = currentQuotes.filter(q => (q.jobName || '').toLowerCase().includes(query) || ((q.clientDetailsPayload && q.clientDetailsPayload.name) || '').toLowerCase().includes(query) || (q.id || '').toLowerCase().includes(query)).slice(0, 6);
+
+            const totalResults = matchedProperties.length + matchedJobs.length + matchedClients.length + matchedQuotes.length;
+            if (totalResults === 0) { resultsEl.innerHTML = '<p class="text-xs text-slate-500 text-center py-6">No matches found.</p>'; return; }
+
+            resultsEl.innerHTML = [
+                buildSearchResultGroup('Clients', matchedClients.map(c => ({ label: c.name, sub: c.email || c.phone || '', onclick: `closeUniversalSearch(); switchTab('crm-tab'); loadCrmClientProfileForModification('${c.id}');` }))),
+                buildSearchResultGroup('Properties', matchedProperties.map(p => ({ label: (p.address || '').split('\\n')[0], sub: p.notes ? p.notes.split('\\n')[0] : '', onclick: `closeUniversalSearch(); switchTab('lookup-tab'); loadPropertyForModification('${p.id}');` }))),
+                buildSearchResultGroup('Jobs', matchedJobs.map(j => ({ label: j.title, sub: formatUkDate(j.date), onclick: `closeUniversalSearch(); switchTab('jobs-tab'); loadJobForModification('${j.id}');` }))),
+                buildSearchResultGroup('Quotes & Invoices', matchedQuotes.map(q => ({ label: q.jobName, sub: (q.clientDetailsPayload && q.clientDetailsPayload.name) || '', onclick: `closeUniversalSearch(); switchTab('quote-tab'); loadQuoteForActiveModification('${q.id}');` }))),
+            ].join('');
+            lucide.createIcons();
         }
 
         // ============================================================
@@ -2137,8 +2414,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         }
         function updateQuoteStatus(id, newStatus) { db.collection('quotes').doc(id).update({ status: newStatus }); }
         function deleteVaultRecord(id) {
-            if (!confirm('Permanently delete this record?')) return;
-            db.collection('quotes').doc(id).delete();
+            if (!confirm('Move this record to Trash? You can restore it within 30 days.')) return;
+            db.collection('quotes').doc(id).update({ deleted: true, deletedAt: new Date().toISOString() });
         }
         function toggleQuoteSelection(id, checked) {
             if (checked) selectedVaultQuotes.add(id); else selectedVaultQuotes.delete(id);
@@ -2447,8 +2724,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         }
         function purgeInventoryItem(itemId, event) {
             if (event) event.stopPropagation();
-            if (!confirm('Permanently discard this item?')) return;
-            db.collection('stock').doc(itemId).delete();
+            if (!confirm('Move this item to Trash? You can restore it within 30 days.')) return;
+            db.collection('stock').doc(itemId).update({ deleted: true, deletedAt: new Date().toISOString() });
             activeAllocatedMaterials = activeAllocatedMaterials.filter(i => i.id !== itemId);
             rebuildAllocatedMaterialsTable();
         }
@@ -2893,8 +3170,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             lucide.createIcons();
         }
         function deleteJobTemplatePreset(id) {
-            if (!confirm('Permanently remove this template?')) return;
-            db.collection('templates').doc(id).delete();
+            if (!confirm('Move this template to Trash? You can restore it within 30 days.')) return;
+            db.collection('templates').doc(id).update({ deleted: true, deletedAt: new Date().toISOString() });
         }
 
         // ============================================================
@@ -3026,8 +3303,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             lucide.createIcons();
         }
         function deleteClientProfile(clientId) {
-            if (!confirm('Permanently remove this customer from CRM logs?')) return;
-            db.collection('clients').doc(clientId).delete();
+            if (!confirm('Move this customer to Trash? You can restore it within 30 days.')) return;
+            db.collection('clients').doc(clientId).update({ deleted: true, deletedAt: new Date().toISOString() });
             if (activeLinkedClientId === clientId) { document.getElementById('quote-client-select').value = ''; activeLinkedClientId = ''; }
         }
         function rebuildQuoteClientDropdown() {
