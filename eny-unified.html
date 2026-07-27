@@ -271,8 +271,12 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Last Electrical Inspection (EICR)</label>
-                                <input type="date" id="property-last-electrical" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
-                                <span class="text-[10px] text-slate-500 mt-1 block">Sets a 5-year reminder from this date.</span>
+                                <input type="date" id="property-last-electrical" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 mb-2">
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">EICR Reminder Cycle</label>
+                                <select id="property-electrical-cycle" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                    <option value="5">5 years (rental / commercial)</option>
+                                    <option value="10">10 years (owner-occupied domestic)</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Last Smoke Alarm Test</label>
@@ -1357,7 +1361,7 @@
             let overdueElectrical = 0, overdueSmoke = 0, dueSoonAll = 0;
             const reminderRows = [];
             currentProperties.forEach(p => {
-                const elec = computeReminderStatus(p.lastElectricalInspection, ELECTRICAL_CYCLE_YEARS, ELECTRICAL_DUE_SOON_DAYS);
+                const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
                 const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
                 if (elec.status === 'overdue') overdueElectrical++;
                 if (smoke.status === 'overdue') overdueSmoke++;
@@ -1780,6 +1784,7 @@
                 address: document.getElementById('property-address').value.trim(),
                 notes: document.getElementById('property-notes').value.trim(),
                 lastElectricalInspection: document.getElementById('property-last-electrical').value || null,
+                electricalCycleYears: parseInt(document.getElementById('property-electrical-cycle').value) || 5,
                 lastSmokeAlarmTest: document.getElementById('property-last-smoke').value || null,
             };
             if (editId) {
@@ -1797,6 +1802,7 @@
             document.getElementById('property-address').value = p.address || '';
             document.getElementById('property-notes').value = p.notes || '';
             document.getElementById('property-last-electrical').value = p.lastElectricalInspection || '';
+            document.getElementById('property-electrical-cycle').value = String(p.electricalCycleYears || 5);
             document.getElementById('property-last-smoke').value = p.lastSmokeAlarmTest || '';
             document.getElementById('property-form-title').innerText = 'Modify Property';
             document.getElementById('property-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Property`;
@@ -1807,6 +1813,7 @@
         function clearPropertyForm() {
             document.getElementById('property-form').reset();
             document.getElementById('property-id-field').value = '';
+            document.getElementById('property-electrical-cycle').value = '5';
             document.getElementById('property-form-title').innerText = 'Add Property';
             document.getElementById('property-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Property`;
             document.getElementById('property-cancel-btn').classList.add('hidden');
@@ -1829,7 +1836,7 @@
             if (filtered.length === 0) { emptyEl.classList.remove('hidden'); listEl.innerHTML = ''; return; }
             emptyEl.classList.add('hidden');
             listEl.innerHTML = filtered.map(p => {
-                const elec = computeReminderStatus(p.lastElectricalInspection, ELECTRICAL_CYCLE_YEARS, ELECTRICAL_DUE_SOON_DAYS);
+                const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
                 const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
                 return `<div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06] space-y-3">
                     <div class="flex items-start justify-between gap-3">
@@ -1972,7 +1979,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 const matchByName = currentClients.find(c => c.name.toLowerCase() === formName.toLowerCase());
                 if (matchByName) linkedClientId = matchByName.id;
             }
-            const finalizeSave = (resolvedClientId) => {
+            const finalizeSave = async (resolvedClientId) => {
                 const payload = {
                     jobName, linkedClientId: resolvedClientId,
                     clientDetailsPayload: { name: formName, email: formEmail, phone: formPhone, address: formAddress },
@@ -1987,10 +1994,14 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
                 };
                 if (currentlyEditingQuoteId && overwrite) {
-                    db.collection('quotes').doc(currentlyEditingQuoteId).update(payload);
+                    await db.collection('quotes').doc(currentlyEditingQuoteId).update(payload);
                 } else {
                     payload.status = 'Draft';
-                    db.collection('quotes').add(payload);
+                    await db.collection('quotes').add(payload);
+                }
+                if (formAddress) {
+                    const propertyId = await ensurePropertyExistsForAddress(formAddress);
+                    await linkPropertyToClientIfMissing(resolvedClientId, propertyId);
                 }
                 cancelActiveEditingSessionMode();
                 switchQuoteSubtab('quote-sub-vault');
@@ -2835,7 +2846,41 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             lucide.createIcons();
         }
 
-        function handleCrmClientFormSubmission(event) {
+        // ============================================================
+        // AUTO-PROPERTY-FROM-ADDRESS (shared by Quote Builder and CRM)
+        // ============================================================
+        async function ensurePropertyExistsForAddress(address) {
+            const trimmed = (address || '').trim();
+            if (!trimmed) return null;
+            const existing = currentProperties.find(p => (p.address || '').trim().toLowerCase() === trimmed.toLowerCase());
+            if (existing) return existing.id;
+            const ref = await db.collection('properties').add({
+                address: trimmed, notes: '', lastElectricalInspection: null, lastSmokeAlarmTest: null,
+                electricalCycleYears: 5, createdAt: new Date().toISOString()
+            });
+            // Keep the local cache in sync immediately so a second call in the same
+            // action (e.g. Quote Builder resolving a client right after) sees it
+            // without waiting for the Firestore listener round-trip.
+            currentProperties.push({ id: ref.id, address: trimmed, notes: '', lastElectricalInspection: null, lastSmokeAlarmTest: null, electricalCycleYears: 5 });
+            return ref.id;
+        }
+        async function linkPropertyToClientIfMissing(clientId, propertyId) {
+            if (!clientId || !propertyId) return;
+            // arrayUnion is atomic and inherently dedupes — this avoids a
+            // read-then-write race where a just-created client (whose Firestore
+            // listener hasn't caught up locally yet) would otherwise look like it
+            // doesn't exist and silently skip the link.
+            await db.collection('clients').doc(clientId).update({
+                linkedPropertyIds: firebase.firestore.FieldValue.arrayUnion(propertyId)
+            });
+            const client = currentClients.find(c => c.id === clientId);
+            if (client) {
+                const linked = client.linkedPropertyIds || [];
+                if (!linked.includes(propertyId)) client.linkedPropertyIds = [...linked, propertyId];
+            }
+        }
+
+        async function handleCrmClientFormSubmission(event) {
             event.preventDefault();
             const editId = document.getElementById('crm-client-id-field').value;
             const payload = {
@@ -2845,11 +2890,17 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 address: document.getElementById('crm-client-address').value.trim(),
                 linkedPropertyIds: [...crmLinkedPropertyIdsDraft],
             };
+            let clientId = editId;
             if (editId) {
-                db.collection('clients').doc(editId).update(payload);
+                await db.collection('clients').doc(editId).update(payload);
             } else {
                 payload.createdDate = new Date().toLocaleDateString('en-GB');
-                db.collection('clients').add(payload);
+                const ref = await db.collection('clients').add(payload);
+                clientId = ref.id;
+            }
+            if (payload.address) {
+                const propertyId = await ensurePropertyExistsForAddress(payload.address);
+                await linkPropertyToClientIfMissing(clientId, propertyId);
             }
             clearCrmClientForm();
         }
@@ -2948,7 +2999,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         <div>
                             <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Linked Properties</span>
                             ${linkedProps.length === 0 ? '<span class="text-slate-500 italic">None linked.</span>' : linkedProps.map(p => {
-                                const elec = computeReminderStatus(p.lastElectricalInspection, ELECTRICAL_CYCLE_YEARS, ELECTRICAL_DUE_SOON_DAYS);
+                                const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
                                 return `<div class="bg-slate-900 border border-slate-800 p-2 rounded-lg mb-1.5"><div class="text-[10px] text-slate-300 truncate">${(p.address||'').split('\\n')[0]}</div>${reminderStatusBadge(elec.status, elec.daysUntilDue)}</div>`;
                             }).join('')}
                         </div>
@@ -3052,7 +3103,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const isElectrical = type === 'electrical';
             const lastDate = isElectrical ? p.lastElectricalInspection : p.lastSmokeAlarmTest;
             if (!lastDate) return false;
-            const cycleYears = isElectrical ? ELECTRICAL_CYCLE_YEARS : SMOKE_ALARM_CYCLE_YEARS;
+            const cycleYears = isElectrical ? (p.electricalCycleYears || 5) : SMOKE_ALARM_CYCLE_YEARS;
             const dueDate = addYears(lastDate, cycleYears);
             const endDateObj = new Date(dueDate + 'T00:00:00');
             endDateObj.setDate(endDateObj.getDate() + 1);
