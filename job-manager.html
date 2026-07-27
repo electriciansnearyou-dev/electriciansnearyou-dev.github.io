@@ -198,8 +198,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Assigned Engineer *</label>
-                                <select id="job-engineer-select" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"></select>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Assigned Engineer(s) *</label>
+                                <div id="job-engineers-checklist" class="space-y-1.5 bg-slate-900 border border-slate-700 rounded-xl p-3"></div>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -271,8 +271,12 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Last Electrical Inspection (EICR)</label>
-                                <input type="date" id="property-last-electrical" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
-                                <span class="text-[10px] text-slate-500 mt-1 block">Sets a 5-year reminder from this date.</span>
+                                <input type="date" id="property-last-electrical" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 mb-2">
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">EICR Reminder Cycle</label>
+                                <select id="property-electrical-cycle" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                    <option value="5">5 years (rental / commercial)</option>
+                                    <option value="10">10 years (owner-occupied domestic)</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Last Smoke Alarm Test</label>
@@ -343,6 +347,13 @@
                                         <input type="text" id="job-name" placeholder="e.g., Board Upgrade & Rewire" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                                     </div>
                                 </div>
+                                <div class="pt-4 border-t border-slate-700">
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Link Existing Property</label>
+                                    <input type="text" id="quote-property-search-input" oninput="filterQuotePropertyDropdown()" placeholder="Search properties..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 mb-1.5">
+                                    <select id="quote-property-select" onchange="loadSelectedPropertyIntoQuoteAddress()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                        <option value="">-- Type a new address below --</option>
+                                    </select>
+                                </div>
                                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-slate-700">
                                     <div>
                                         <label class="block text-xs font-medium text-slate-400 mb-1">Contact Name</label>
@@ -358,7 +369,7 @@
                                     </div>
                                     <div>
                                         <label class="block text-xs font-medium text-slate-400 mb-1">Site/Billing Address</label>
-                                        <input type="text" id="client-address" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100">
+                                        <input type="text" id="client-address" oninput="handleQuoteAddressManualEdit()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100">
                                     </div>
                                 </div>
                             </div>
@@ -549,6 +560,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Linked Properties</label>
+                                    <input type="text" id="crm-link-property-search-input" oninput="filterCrmLinkPropertyDropdown()" placeholder="Search properties..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 mb-1.5">
                                     <div class="flex gap-2 mb-2">
                                         <select id="crm-link-property-select" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500"></select>
                                         <button type="button" onclick="addPropertyLinkToClientForm()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 px-3 py-2 rounded-lg text-xs font-bold cursor-pointer">Add</button>
@@ -1110,6 +1122,7 @@
         let selectedCategoryFilter = 'ALL';
         let activeAllocatedMaterials = [];
         let activeLinkedClientId = '';
+        let activeLinkedPropertyId = '';
         let currentlyEditingQuoteId = null;
         let selectedVaultQuotes = new Set();
         let activeLaborBookingFormat = 'DAY';
@@ -1245,14 +1258,32 @@
         }
         function rebuildEngineerDropdowns() {
             const names = getEngineerNames();
-            const jobSelect = document.getElementById('job-engineer-select');
             const calFilter = document.getElementById('calendar-engineer-filter');
             const jobsFilter = document.getElementById('jobs-engineer-filter');
             const unavailableSelect = document.getElementById('day-detail-unavailable-engineer-select');
-            if (jobSelect) jobSelect.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
             if (calFilter) calFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
             if (jobsFilter) jobsFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
             if (unavailableSelect) unavailableSelect.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
+
+            const checklist = document.getElementById('job-engineers-checklist');
+            if (checklist) {
+                const previouslyChecked = getSelectedJobEngineersFromForm();
+                checklist.innerHTML = names.map(n => `
+                    <label class="flex items-center gap-2 text-sm text-slate-200 cursor-pointer select-none">
+                        <input type="checkbox" class="job-engineer-checkbox w-4 h-4 rounded bg-slate-950 border-slate-700 text-amber-500 cursor-pointer" value="${n}">
+                        ${n}
+                    </label>`).join('');
+                document.querySelectorAll('.job-engineer-checkbox').forEach(chk => { if (previouslyChecked.includes(chk.value)) chk.checked = true; });
+            }
+        }
+        function getSelectedJobEngineersFromForm() {
+            return [...document.querySelectorAll('.job-engineer-checkbox:checked')].map(chk => chk.value);
+        }
+        // Backward-compatible reader: older job records only have a single
+        // assignedEngineer string; newer ones have an assignedEngineers array.
+        function getJobEngineers(job) {
+            if (Array.isArray(job.assignedEngineers)) return job.assignedEngineers;
+            return job.assignedEngineer ? [job.assignedEngineer] : [];
         }
 
         function loadPricingSettingsIntoForm() {
@@ -1357,7 +1388,7 @@
             let overdueElectrical = 0, overdueSmoke = 0, dueSoonAll = 0;
             const reminderRows = [];
             currentProperties.forEach(p => {
-                const elec = computeReminderStatus(p.lastElectricalInspection, ELECTRICAL_CYCLE_YEARS, ELECTRICAL_DUE_SOON_DAYS);
+                const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
                 const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
                 if (elec.status === 'overdue') overdueElectrical++;
                 if (smoke.status === 'overdue') overdueSmoke++;
@@ -1399,10 +1430,10 @@
                 upcomingList.innerHTML = in7days.length === 0
                     ? `<p class="text-xs text-slate-500 text-center py-6">No jobs scheduled in the next 7 days.</p>`
                     : in7days.map(j => {
-                        const colors = getEngineerColorClass(j.assignedEngineer);
+                        const badges = getJobEngineers(j).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
                         return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
                             <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${j.title}</div><div class="text-[10px] text-slate-500">${formatUkDate(j.date)} at ${j.time || '—'}</div></div>
-                            <span class="text-[10px] font-bold px-2 py-1 rounded border ${colors.badge} shrink-0">${j.assignedEngineer}</span>
+                            <div class="flex flex-wrap gap-1 justify-end shrink-0">${badges}</div>
                         </div>`;
                     }).join('');
             }
@@ -1524,12 +1555,16 @@
 
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = weeks.flat().map(cell => {
-                const jobsThisDay = currentJobs.filter(j => j.date === cell.dateISO && j.status !== 'Cancelled' && (engineerFilter === 'ALL' || j.assignedEngineer === engineerFilter));
+                const jobsThisDay = currentJobs.filter(j => j.date === cell.dateISO && j.status !== 'Cancelled' && (engineerFilter === 'ALL' || getJobEngineers(j).includes(engineerFilter)));
                 const unavailableThisDay = getUnavailableEngineersForDay(cell.dateISO).filter(u => engineerFilter === 'ALL' || u.engineerName === engineerFilter);
                 const externalThisDay = externalEvents.filter(evt => getGoogleEventDateRange(evt).includes(cell.dateISO));
                 const isToday = cell.dateISO === today;
 
-                const dots = jobsThisDay.slice(0, 4).map(j => { const c = getEngineerColorClass(j.assignedEngineer); return `<span class="w-1.5 h-1.5 rounded-full ${c.dot}"></span>`; }).join('');
+                // One dot per assigned engineer per job (filtered to the selected
+                // engineer when a filter is active), capped so a heavily-staffed
+                // day doesn't overflow the cell.
+                const engineerDots = jobsThisDay.flatMap(j => getJobEngineers(j).filter(name => engineerFilter === 'ALL' || name === engineerFilter))
+                    .slice(0, 4).map(name => { const c = getEngineerColorClass(name); return `<span class="w-1.5 h-1.5 rounded-full ${c.dot}"></span>`; }).join('');
                 const externalDot = externalThisDay.length > 0 ? `<span class="w-1.5 h-1.5 rounded-full bg-slate-400 ring-1 ring-slate-300" title="Also on your Google Calendar"></span>` : '';
                 const unavailableBars = unavailableThisDay.slice(0, 3).map(u => { const c = getEngineerColorClass(u.engineerName); return `<span class="block w-full h-1 rounded-full ${c.dot} opacity-50" title="${u.engineerName} unavailable"></span>`; }).join('');
 
@@ -1538,7 +1573,7 @@
                     ${isToday ? 'ring-2 ring-amber-500' : ''}">
                     <span class="text-[10px] font-bold">${cell.day}</span>
                     <div class="w-full space-y-0.5 mt-0.5">${unavailableBars}</div>
-                    <div class="flex flex-wrap gap-0.5 mt-auto">${dots}${externalDot}</div>
+                    <div class="flex flex-wrap gap-0.5 mt-auto">${engineerDots}${externalDot}</div>
                 </button>`;
             }).join('');
             lucide.createIcons();
@@ -1551,10 +1586,12 @@
             const jobsThisDay = currentJobs.filter(j => j.date === dateISO).sort((a, b) => (a.time || '').localeCompare(b.time || ''));
             const listEl = document.getElementById('day-detail-jobs-list');
             listEl.innerHTML = jobsThisDay.length === 0 ? `<p class="text-xs text-slate-500 text-center py-6">No jobs scheduled this day.</p>` :
-                jobsThisDay.map(j => { const c = getEngineerColorClass(j.assignedEngineer); return `
+                jobsThisDay.map(j => {
+                    const badges = getJobEngineers(j).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
+                    return `
                     <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3 cursor-pointer hover:border-amber-500" onclick="closeDayDetailModal(); loadJobForModification('${j.id}'); switchTab('jobs-tab');">
                         <div class="min-w-0"><div class="text-xs font-semibold text-slate-200">${j.time} — ${j.title}</div>${j.propertyAddress ? `<div class="text-[10px] text-slate-500 truncate">${j.propertyAddress.split('\\n')[0]}</div>` : ''}</div>
-                        <span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge} shrink-0">${j.assignedEngineer}</span>
+                        <div class="flex flex-wrap gap-1 justify-end shrink-0">${badges}</div>
                     </div>`; }).join('');
             renderUnavailableListForSelectedDay();
             renderExternalEventsForSelectedDay();
@@ -1645,6 +1682,8 @@
         function rebuildPropertyDropdowns() {
             const jobPropertySelect = document.getElementById('job-property-select');
             if (jobPropertySelect) filterJobPropertyDropdown();
+            const quotePropertySelect = document.getElementById('quote-property-select');
+            if (quotePropertySelect) filterQuotePropertyDropdown();
         }
         function filterJobPropertyDropdown() {
             const searchInput = document.getElementById('job-property-search-input');
@@ -1658,23 +1697,62 @@
             if (filtered.some(p => p.id === previousValue)) jobPropertySelect.value = previousValue;
         }
 
+        function findPropertyIdByAddress(address) {
+            const trimmed = (address || '').trim().toLowerCase();
+            if (!trimmed) return '';
+            const match = currentProperties.find(p => (p.address || '').trim().toLowerCase() === trimmed);
+            return match ? match.id : '';
+        }
+        function filterQuotePropertyDropdown() {
+            const searchInput = document.getElementById('quote-property-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const select = document.getElementById('quote-property-select');
+            if (!select) return;
+            const previousValue = select.value;
+            const filtered = currentProperties.filter(p => (p.address || '').toLowerCase().includes(filterText));
+            select.innerHTML = '<option value="">-- Type a new address below --</option>' +
+                filtered.map(p => `<option value="${p.id}">${(p.address || '').split('\\n')[0]}</option>`).join('');
+            if (filtered.some(p => p.id === previousValue)) select.value = previousValue;
+        }
+        function loadSelectedPropertyIntoQuoteAddress() {
+            const propertyId = document.getElementById('quote-property-select').value;
+            activeLinkedPropertyId = propertyId;
+            if (!propertyId) return;
+            const property = currentProperties.find(p => p.id === propertyId);
+            if (property) document.getElementById('client-address').value = property.address;
+        }
+        function handleQuoteAddressManualEdit() {
+            // If they've picked a property then typed over the address by hand,
+            // the stored link is no longer trustworthy — drop it so a fresh
+            // address gets its own new/matched property instead of silently
+            // reusing whatever was selected before.
+            activeLinkedPropertyId = '';
+            const select = document.getElementById('quote-property-select');
+            if (select) select.value = '';
+        }
+
         async function saveJobConfig(event) {
             event.preventDefault();
             const editId = document.getElementById('job-id-field').value;
             const propertyId = document.getElementById('job-property-select').value;
             const property = currentProperties.find(p => p.id === propertyId);
+            const assignedEngineers = getSelectedJobEngineersFromForm();
+            if (assignedEngineers.length === 0) { alert('Select at least one engineer for this job.'); return; }
             const payload = {
                 title: document.getElementById('job-title').value.trim(),
                 propertyId: propertyId || null,
                 propertyAddress: property ? property.address : null,
-                assignedEngineer: document.getElementById('job-engineer-select').value,
+                assignedEngineers,
                 date: document.getElementById('job-date').value,
                 time: document.getElementById('job-time').value || '09:00',
                 status: document.getElementById('job-status-select').value,
                 notes: document.getElementById('job-notes').value.trim(),
             };
-            if (payload.status === 'Scheduled' && isEngineerUnavailable(payload.assignedEngineer, payload.date)) {
-                if (!confirm(`${payload.assignedEngineer} is marked unavailable on ${formatUkDate(payload.date)}. Schedule this job anyway?`)) return;
+            if (payload.status === 'Scheduled') {
+                const unavailableOnes = assignedEngineers.filter(name => isEngineerUnavailable(name, payload.date));
+                if (unavailableOnes.length > 0) {
+                    if (!confirm(`${unavailableOnes.join(' and ')} ${unavailableOnes.length === 1 ? 'is' : 'are'} marked unavailable on ${formatUkDate(payload.date)}. Schedule this job anyway?`)) return;
+                }
             }
             let jobId = editId; let existingCalendarEventId = null;
             if (editId) {
@@ -1701,7 +1779,8 @@
             document.getElementById('job-id-field').value = j.id;
             document.getElementById('job-title').value = j.title || '';
             document.getElementById('job-property-select').value = j.propertyId || '';
-            document.getElementById('job-engineer-select').value = j.assignedEngineer || '';
+            const engineersForThisJob = getJobEngineers(j);
+            document.querySelectorAll('.job-engineer-checkbox').forEach(chk => { chk.checked = engineersForThisJob.includes(chk.value); });
             document.getElementById('job-date').value = j.date || '';
             document.getElementById('job-time').value = j.time || '09:00';
             document.getElementById('job-status-select').value = j.status || 'Scheduled';
@@ -1716,6 +1795,7 @@
             document.getElementById('job-form').reset();
             document.getElementById('job-id-field').value = '';
             document.getElementById('job-time').value = '09:00';
+            document.querySelectorAll('.job-engineer-checkbox').forEach(chk => { chk.checked = false; });
             const searchInput = document.getElementById('job-property-search-input');
             if (searchInput) searchInput.value = '';
             filterJobPropertyDropdown();
@@ -1746,7 +1826,7 @@
             if (!engineerFilterEl) return;
             const engineerFilter = engineerFilterEl.value;
             const statusFilter = statusFilterEl.value;
-            const filtered = currentJobs.filter(j => engineerFilter === 'ALL' || j.assignedEngineer === engineerFilter)
+            const filtered = currentJobs.filter(j => engineerFilter === 'ALL' || getJobEngineers(j).includes(engineerFilter))
                 .filter(j => statusFilter === 'ALL' || j.status === statusFilter)
                 .sort((a, b) => (b.date + (b.time || '')).localeCompare(a.date + (a.time || '')));
             const listEl = document.getElementById('jobs-list');
@@ -1754,7 +1834,8 @@
             if (filtered.length === 0) { emptyEl.classList.remove('hidden'); listEl.innerHTML = ''; return; }
             emptyEl.classList.add('hidden');
             listEl.innerHTML = filtered.map(j => {
-                const colors = getEngineerColorClass(j.assignedEngineer);
+                const engineers = getJobEngineers(j);
+                const engineerBadges = engineers.map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
                 const statusColor = j.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : j.status === 'Cancelled' ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-blue-500/10 text-blue-400 border-blue-500/30';
                 const quickActions = j.status === 'Scheduled' ? `
                     <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
@@ -1762,7 +1843,7 @@
                 return `<div class="bg-[#283548] border border-slate-600 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg ring-1 ring-white/[0.06]">
                     <div class="min-w-0"><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-white">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${statusColor}">${j.status}</span></div>
                     <div class="text-[11px] text-slate-400">${formatUkDate(j.date)} at ${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div></div>
-                    <div class="flex items-center gap-2 shrink-0"><span class="text-[10px] font-bold px-2 py-1 rounded border ${colors.badge}">${j.assignedEngineer}</span>${quickActions}
+                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${quickActions}
                     <button onclick="loadJobForModification('${j.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                     <button onclick="deleteJob('${j.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></div>
                 </div>`;
@@ -1780,6 +1861,7 @@
                 address: document.getElementById('property-address').value.trim(),
                 notes: document.getElementById('property-notes').value.trim(),
                 lastElectricalInspection: document.getElementById('property-last-electrical').value || null,
+                electricalCycleYears: parseInt(document.getElementById('property-electrical-cycle').value) || 5,
                 lastSmokeAlarmTest: document.getElementById('property-last-smoke').value || null,
             };
             if (editId) {
@@ -1797,6 +1879,7 @@
             document.getElementById('property-address').value = p.address || '';
             document.getElementById('property-notes').value = p.notes || '';
             document.getElementById('property-last-electrical').value = p.lastElectricalInspection || '';
+            document.getElementById('property-electrical-cycle').value = String(p.electricalCycleYears || 5);
             document.getElementById('property-last-smoke').value = p.lastSmokeAlarmTest || '';
             document.getElementById('property-form-title').innerText = 'Modify Property';
             document.getElementById('property-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Property`;
@@ -1807,6 +1890,7 @@
         function clearPropertyForm() {
             document.getElementById('property-form').reset();
             document.getElementById('property-id-field').value = '';
+            document.getElementById('property-electrical-cycle').value = '5';
             document.getElementById('property-form-title').innerText = 'Add Property';
             document.getElementById('property-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Property`;
             document.getElementById('property-cancel-btn').classList.add('hidden');
@@ -1829,7 +1913,7 @@
             if (filtered.length === 0) { emptyEl.classList.remove('hidden'); listEl.innerHTML = ''; return; }
             emptyEl.classList.add('hidden');
             listEl.innerHTML = filtered.map(p => {
-                const elec = computeReminderStatus(p.lastElectricalInspection, ELECTRICAL_CYCLE_YEARS, ELECTRICAL_DUE_SOON_DAYS);
+                const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
                 const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
                 return `<div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06] space-y-3">
                     <div class="flex items-start justify-between gap-3">
@@ -1855,7 +1939,7 @@
 
         function onTabSwitched(tabId) {
             if (tabId === 'calendar-tab') renderCalendarGrid();
-            if (tabId === 'quote-tab') { rebuildJobTemplatesDropdown(); filterMaterialCatalog(); rebuildAllocatedMaterialsTable(); rebuildVaultDataTable(); }
+            if (tabId === 'quote-tab') { rebuildJobTemplatesDropdown(); filterMaterialCatalog(); rebuildAllocatedMaterialsTable(); rebuildVaultDataTable(); filterQuotePropertyDropdown(); }
             if (tabId === 'crm-tab') rebuildCrmProfilesInterface();
             if (tabId === 'settings-tab') { rebuildMasterStockDirectoryTable(); rebuildTemplateCatalogList(); rebuildTemplateMaterialSelector(); loadPricingSettingsIntoForm(); loadBankFormFields('HUGHES'); loadBankFormFields('MABBLEY'); }
         }
@@ -1972,7 +2056,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 const matchByName = currentClients.find(c => c.name.toLowerCase() === formName.toLowerCase());
                 if (matchByName) linkedClientId = matchByName.id;
             }
-            const finalizeSave = (resolvedClientId) => {
+            const finalizeSave = async (resolvedClientId) => {
                 const payload = {
                     jobName, linkedClientId: resolvedClientId,
                     clientDetailsPayload: { name: formName, email: formEmail, phone: formPhone, address: formAddress },
@@ -1987,10 +2071,14 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
                 };
                 if (currentlyEditingQuoteId && overwrite) {
-                    db.collection('quotes').doc(currentlyEditingQuoteId).update(payload);
+                    await db.collection('quotes').doc(currentlyEditingQuoteId).update(payload);
                 } else {
                     payload.status = 'Draft';
-                    db.collection('quotes').add(payload);
+                    await db.collection('quotes').add(payload);
+                }
+                if (formAddress) {
+                    const propertyId = activeLinkedPropertyId || await ensurePropertyExistsForAddress(formAddress);
+                    await linkPropertyToClientIfMissing(resolvedClientId, propertyId);
                 }
                 cancelActiveEditingSessionMode();
                 switchQuoteSubtab('quote-sub-vault');
@@ -2007,10 +2095,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             }
         }
         function cancelActiveEditingSessionMode() {
-            currentlyEditingQuoteId = null; activeLinkedClientId = ''; activeAllocatedMaterials = [];
+            currentlyEditingQuoteId = null; activeLinkedClientId = ''; activeLinkedPropertyId = ''; activeAllocatedMaterials = [];
             document.getElementById('job-name').value = ''; document.getElementById('client-name').value = '';
             document.getElementById('client-email').value = ''; document.getElementById('client-phone').value = '';
             document.getElementById('client-address').value = ''; document.getElementById('quote-client-select').value = '';
+            const qps = document.getElementById('quote-property-select'); if (qps) qps.value = '';
+            const qpsi = document.getElementById('quote-property-search-input'); if (qpsi) qpsi.value = '';
             document.getElementById('include-testing-toggle').checked = false;
             document.getElementById('editing-mode-banner').classList.add('hidden');
             document.getElementById('standard-save-actions-wrapper').classList.remove('hidden');
@@ -2030,6 +2120,10 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const linkedClient = currentClients.find(c => c.id === activeLinkedClientId);
             document.getElementById('client-phone').value = target.clientDetailsPayload.phone || (linkedClient ? linkedClient.phone : '') || '';
             document.getElementById('client-address').value = target.clientDetailsPayload.address || '';
+            activeLinkedPropertyId = findPropertyIdByAddress(target.clientDetailsPayload.address);
+            const qpsi = document.getElementById('quote-property-search-input'); if (qpsi) qpsi.value = '';
+            filterQuotePropertyDropdown();
+            const qps = document.getElementById('quote-property-select'); if (qps) qps.value = activeLinkedPropertyId;
             activeAllocatedMaterials = target.materials.map(m => ({ ...m }));
             document.getElementById('include-testing-toggle').checked = target.includeTestingCertificate;
             setLaborBookingFormat(target.laborBookingFormat || 'DAY');
@@ -2809,9 +2903,17 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         let crmLinkedPropertyIdsDraft = [];
 
         function rebuildCrmLinkPropertyDropdown() {
+            filterCrmLinkPropertyDropdown();
+        }
+        function filterCrmLinkPropertyDropdown() {
+            const searchInput = document.getElementById('crm-link-property-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const select = document.getElementById('crm-link-property-select');
             if (!select) return;
-            select.innerHTML = currentProperties.map(p => `<option value="${p.id}">${(p.address || '').split('\\n')[0]}</option>`).join('');
+            const previousValue = select.value;
+            const filtered = currentProperties.filter(p => (p.address || '').toLowerCase().includes(filterText));
+            select.innerHTML = filtered.map(p => `<option value="${p.id}">${(p.address || '').split('\\n')[0]}</option>`).join('');
+            if (filtered.some(p => p.id === previousValue)) select.value = previousValue;
         }
         function addPropertyLinkToClientForm() {
             const select = document.getElementById('crm-link-property-select');
@@ -2835,7 +2937,41 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             lucide.createIcons();
         }
 
-        function handleCrmClientFormSubmission(event) {
+        // ============================================================
+        // AUTO-PROPERTY-FROM-ADDRESS (shared by Quote Builder and CRM)
+        // ============================================================
+        async function ensurePropertyExistsForAddress(address) {
+            const trimmed = (address || '').trim();
+            if (!trimmed) return null;
+            const existing = currentProperties.find(p => (p.address || '').trim().toLowerCase() === trimmed.toLowerCase());
+            if (existing) return existing.id;
+            const ref = await db.collection('properties').add({
+                address: trimmed, notes: '', lastElectricalInspection: null, lastSmokeAlarmTest: null,
+                electricalCycleYears: 5, createdAt: new Date().toISOString()
+            });
+            // Keep the local cache in sync immediately so a second call in the same
+            // action (e.g. Quote Builder resolving a client right after) sees it
+            // without waiting for the Firestore listener round-trip.
+            currentProperties.push({ id: ref.id, address: trimmed, notes: '', lastElectricalInspection: null, lastSmokeAlarmTest: null, electricalCycleYears: 5 });
+            return ref.id;
+        }
+        async function linkPropertyToClientIfMissing(clientId, propertyId) {
+            if (!clientId || !propertyId) return;
+            // arrayUnion is atomic and inherently dedupes — this avoids a
+            // read-then-write race where a just-created client (whose Firestore
+            // listener hasn't caught up locally yet) would otherwise look like it
+            // doesn't exist and silently skip the link.
+            await db.collection('clients').doc(clientId).update({
+                linkedPropertyIds: firebase.firestore.FieldValue.arrayUnion(propertyId)
+            });
+            const client = currentClients.find(c => c.id === clientId);
+            if (client) {
+                const linked = client.linkedPropertyIds || [];
+                if (!linked.includes(propertyId)) client.linkedPropertyIds = [...linked, propertyId];
+            }
+        }
+
+        async function handleCrmClientFormSubmission(event) {
             event.preventDefault();
             const editId = document.getElementById('crm-client-id-field').value;
             const payload = {
@@ -2845,11 +2981,17 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 address: document.getElementById('crm-client-address').value.trim(),
                 linkedPropertyIds: [...crmLinkedPropertyIdsDraft],
             };
+            let clientId = editId;
             if (editId) {
-                db.collection('clients').doc(editId).update(payload);
+                await db.collection('clients').doc(editId).update(payload);
             } else {
                 payload.createdDate = new Date().toLocaleDateString('en-GB');
-                db.collection('clients').add(payload);
+                const ref = await db.collection('clients').add(payload);
+                clientId = ref.id;
+            }
+            if (payload.address) {
+                const propertyId = await ensurePropertyExistsForAddress(payload.address);
+                await linkPropertyToClientIfMissing(clientId, propertyId);
             }
             clearCrmClientForm();
         }
@@ -2862,6 +3004,9 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('crm-client-phone').value = c.phone || '';
             document.getElementById('crm-client-address').value = c.address || '';
             crmLinkedPropertyIdsDraft = [...(c.linkedPropertyIds || [])];
+            const searchInput = document.getElementById('crm-link-property-search-input');
+            if (searchInput) searchInput.value = '';
+            filterCrmLinkPropertyDropdown();
             renderCrmLinkedPropertyChips();
             document.getElementById('crm-form-title').innerText = 'Modify Client';
             document.getElementById('crm-client-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Profile`;
@@ -2874,6 +3019,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('crm-client-id-field').value = '';
             crmLinkedPropertyIdsDraft = [];
             renderCrmLinkedPropertyChips();
+            filterCrmLinkPropertyDropdown();
             document.getElementById('crm-form-title').innerText = 'New Client';
             document.getElementById('crm-client-submit-btn').innerHTML = `<i data-lucide="user-plus" class="w-4 h-4"></i> Create Client`;
             document.getElementById('crm-client-cancel-btn').classList.add('hidden');
@@ -2901,6 +3047,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('client-email').value = client.email || '';
             document.getElementById('client-phone').value = client.phone || '';
             document.getElementById('client-address').value = client.address || '';
+            activeLinkedPropertyId = findPropertyIdByAddress(client.address);
+            const qps = document.getElementById('quote-property-select'); if (qps) qps.value = activeLinkedPropertyId;
         }
 
         function rebuildCrmProfilesInterface() {
@@ -2948,7 +3096,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         <div>
                             <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1">Linked Properties</span>
                             ${linkedProps.length === 0 ? '<span class="text-slate-500 italic">None linked.</span>' : linkedProps.map(p => {
-                                const elec = computeReminderStatus(p.lastElectricalInspection, ELECTRICAL_CYCLE_YEARS, ELECTRICAL_DUE_SOON_DAYS);
+                                const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
                                 return `<div class="bg-slate-900 border border-slate-800 p-2 rounded-lg mb-1.5"><div class="text-[10px] text-slate-300 truncate">${(p.address||'').split('\\n')[0]}</div>${reminderStatusBadge(elec.status, elec.daysUntilDue)}</div>`;
                             }).join('')}
                         </div>
@@ -3037,8 +3185,9 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const startDateTime = `${job.date}T${job.time || '09:00'}:00`;
             const endDateTime = computeJobEndTime(job.date, job.time || '09:00');
             const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const engineerNames = getJobEngineers(job).join(' & ');
             const eventPayload = {
-                summary: `${job.title} — ${job.assignedEngineer}`,
+                summary: `${job.title} — ${engineerNames}`,
                 description: `${job.propertyAddress ? 'Property: ' + job.propertyAddress + '\\n' : ''}${job.notes || ''}`,
                 start: { dateTime: startDateTime, timeZone: localTimeZone },
                 end: { dateTime: endDateTime, timeZone: localTimeZone },
@@ -3052,7 +3201,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const isElectrical = type === 'electrical';
             const lastDate = isElectrical ? p.lastElectricalInspection : p.lastSmokeAlarmTest;
             if (!lastDate) return false;
-            const cycleYears = isElectrical ? ELECTRICAL_CYCLE_YEARS : SMOKE_ALARM_CYCLE_YEARS;
+            const cycleYears = isElectrical ? (p.electricalCycleYears || 5) : SMOKE_ALARM_CYCLE_YEARS;
             const dueDate = addYears(lastDate, cycleYears);
             const endDateObj = new Date(dueDate + 'T00:00:00');
             endDateObj.setDate(endDateObj.getDate() + 1);
