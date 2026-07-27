@@ -106,11 +106,19 @@
                     <button onclick="switchTab('settings-tab')" id="btn-settings-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
                         <i data-lucide="sliders" class="w-4 h-4"></i> Settings
                     </button>
+                    <button onclick="switchTab('trash-tab')" id="btn-trash-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i> Trash
+                    </button>
                 </nav>
 
-                <button onclick="handleSignOut()" class="text-xs text-slate-400 hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer">
-                    <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
-                </button>
+                <div class="flex items-center gap-3">
+                    <button onclick="openUniversalSearch()" class="text-slate-400 hover:text-amber-400 p-2 rounded-lg bg-slate-900 border border-slate-800 transition-colors cursor-pointer" title="Search everything">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="handleSignOut()" class="text-xs text-slate-400 hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -209,6 +217,17 @@
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Time</label>
                                     <input type="time" id="job-time" value="09:00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                </div>
+                            </div>
+                            <div id="job-multi-day-row">
+                                <label class="flex items-center gap-2 cursor-pointer select-none">
+                                    <input type="checkbox" id="job-multi-day-toggle" onchange="toggleJobMultiDayField()" class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-amber-500 cursor-pointer">
+                                    <span class="text-xs text-slate-300">Spans multiple days</span>
+                                </label>
+                                <div id="job-end-date-wrapper" class="hidden mt-2">
+                                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Through (inclusive)</label>
+                                    <input type="date" id="job-end-date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                    <p class="text-[10px] text-slate-500 mt-1">Creates a separate job entry for each day, so each day can be completed or cancelled independently.</p>
                                 </div>
                             </div>
                             <div>
@@ -879,10 +898,76 @@
                 </div>
             </div>
 
+            <div id="trash-tab" class="tab-content space-y-6">
+                <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-400">
+                    Deleted items sit here for 30 days before being permanently removed, in case something was removed by mistake.
+                </div>
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="map-pin" class="text-amber-400 w-4 h-4"></i> Deleted Properties</h2>
+                    <div id="trash-properties-list" class="space-y-2"></div>
+                </div>
+                <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="clipboard-list" class="text-amber-400 w-4 h-4"></i> Deleted Jobs</h2>
+                    <div id="trash-jobs-list" class="space-y-2"></div>
+                </div>
+                <div id="trash-owner-section" class="hidden space-y-6">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="users" class="text-amber-400 w-4 h-4"></i> Deleted Clients</h2>
+                        <div id="trash-clients-list" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="file-text" class="text-amber-400 w-4 h-4"></i> Deleted Quotes/Invoices</h2>
+                        <div id="trash-quotes-list" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="package" class="text-amber-400 w-4 h-4"></i> Deleted Stock Items</h2>
+                        <div id="trash-stock-list" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2 mb-4"><i data-lucide="layout-template" class="text-amber-400 w-4 h-4"></i> Deleted Templates</h2>
+                        <div id="trash-templates-list" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
     <!-- ================= MODALS ================= -->
+    <div id="send-reminder-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="message-square" class="text-emerald-400"></i> Send Message</h3>
+                <button onclick="closeSendReminderModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-400">To: <span id="reminder-client-name" class="text-slate-200 font-semibold"></span> — <span id="reminder-client-phone" class="font-mono text-slate-300"></span></p>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Message (edit if you like)</label>
+                    <textarea id="reminder-message-text" rows="5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+                <p class="text-[11px] text-slate-500">This sends from your own phone's messages app, under your own number — nothing gets sent from here directly.</p>
+            </div>
+            <div class="p-5 border-t border-slate-700 bg-slate-900/50 flex flex-col gap-2">
+                <button onclick="openReminderInMessagesApp()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"><i data-lucide="send" class="w-4 h-4"></i> Open in Messages App</button>
+                <button onclick="copyReminderMessage()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium py-2.5 rounded-xl text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"><i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy Text Instead</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="universal-search-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-start justify-center p-4 pt-20">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[70vh]">
+            <div class="p-4 border-b border-slate-700 flex items-center gap-3 bg-slate-900/50">
+                <i data-lucide="search" class="text-amber-400 w-4 h-4 shrink-0"></i>
+                <input type="text" id="universal-search-input" oninput="performUniversalSearch()" placeholder="Search clients, properties, jobs, quotes..." class="w-full bg-transparent text-sm text-slate-100 focus:outline-none" autocomplete="off">
+                <button onclick="closeUniversalSearch()" class="text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="universal-search-results" class="p-4 overflow-y-auto custom-scrollbar flex-1 space-y-4">
+                <p class="text-xs text-slate-500 text-center py-6">Start typing to search.</p>
+            </div>
+        </div>
+    </div>
+
     <div id="day-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
@@ -897,9 +982,13 @@
                 <div class="border-t border-slate-700 pt-4">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5"><i data-lucide="user-x" class="w-3.5 h-3.5"></i> Unavailable This Day</h4>
                     <div id="day-detail-unavailable-list" class="space-y-2 mb-3"></div>
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 mb-2">
                         <select id="day-detail-unavailable-engineer-select" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500"></select>
                         <button onclick="markSelectedEngineerUnavailable()" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400 font-semibold px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"><i data-lucide="user-x" class="w-3.5 h-3.5"></i> Mark Unavailable</button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-[10px] text-slate-500 shrink-0">Through (optional, for a run of days off):</label>
+                        <input type="date" id="day-detail-unavailable-end-date" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-[11px] text-slate-100 focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
                 <div id="day-detail-external-events-section" class="hidden border-t border-slate-700 pt-4">
@@ -1143,21 +1232,66 @@
         // ============================================================
         // FIRESTORE LISTENERS
         // ============================================================
+        let trashProperties = [], trashJobs = [], trashClients = [], trashQuotes = [], trashStock = [], trashTemplates = [];
+        const TRASH_RETENTION_DAYS = 30;
+
+        // Permanently removes anything that's been in the trash longer than the
+        // retention window. Runs opportunistically whenever a collection
+        // refreshes — there's no background job on the free plan, so this is
+        // "cleaned up next time someone's using the app" rather than exactly
+        // on schedule, which is a fine tradeoff for a 30-day window.
+        function purgeOldTrashItems(collectionName, trashArray) {
+            const cutoff = Date.now() - (TRASH_RETENTION_DAYS * 86400000);
+            trashArray.forEach(item => {
+                const deletedAtMs = item.deletedAt ? new Date(item.deletedAt).getTime() : 0;
+                if (deletedAtMs && deletedAtMs < cutoff) {
+                    db.collection(collectionName).doc(item.id).delete();
+                }
+            });
+        }
+
+        // Self-healing fix for quotes imported from the pre-merge app before the
+        // import tool correctly mapped its field names (itemsSnapshot ->
+        // materials, laborFormatBoundType -> laborBookingFormat). Runs on every
+        // load, fixes anything still affected in Firestore so it only ever
+        // needs fixing once per record, and updates the in-memory copy
+        // immediately so this same render already shows it correctly.
+        function repairLegacyImportedQuotes(allDocs) {
+            allDocs.forEach(q => {
+                const needsMaterialsFix = (!q.materials || q.materials.length === 0) && q.itemsSnapshot && q.itemsSnapshot.length > 0;
+                const needsLaborFormatFix = !q.laborBookingFormat && q.laborFormatBoundType;
+                if (!needsMaterialsFix && !needsLaborFormatFix) return;
+                const fix = {};
+                if (needsMaterialsFix) fix.materials = q.itemsSnapshot;
+                if (needsLaborFormatFix) fix.laborBookingFormat = q.laborFormatBoundType;
+                Object.assign(q, fix);
+                db.collection('quotes').doc(q.id).update(fix);
+            });
+        }
+
         function startFirestoreListeners() {
             // --- Shared collections (everyone) ---
             db.collection('properties').onSnapshot((snapshot) => {
-                currentProperties = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                currentProperties = allDocs.filter(p => !p.deleted);
+                trashProperties = allDocs.filter(p => p.deleted);
+                purgeOldTrashItems('properties', trashProperties);
                 renderPropertiesList();
                 rebuildPropertyDropdowns();
                 renderDashboard();
                 renderCalendarGrid();
+                renderTrashTab();
             }, (err) => console.error('Properties listener error:', err));
 
             db.collection('jobs').onSnapshot((snapshot) => {
-                currentJobs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                currentJobs = allDocs.filter(j => !j.deleted);
+                trashJobs = allDocs.filter(j => j.deleted);
+                purgeOldTrashItems('jobs', trashJobs);
                 renderJobsList();
                 renderDashboard();
                 renderCalendarGrid();
+                renderTrashTab();
             }, (err) => console.error('Jobs listener error:', err));
 
             db.collection('unavailability').onSnapshot((snapshot) => {
@@ -1186,33 +1320,50 @@
             // server-side either way) ---
             if (isOwnerLoggedIn()) {
                 db.collection('clients').onSnapshot((snapshot) => {
-                    currentClients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    currentClients = allDocs.filter(c => !c.deleted);
+                    trashClients = allDocs.filter(c => c.deleted);
+                    purgeOldTrashItems('clients', trashClients);
                     rebuildCrmProfilesInterface();
                     rebuildQuoteClientDropdown();
                     rebuildCrmLinkPropertyDropdown();
                     renderDashboard();
+                    renderTrashTab();
                 }, (err) => console.error('Clients listener error:', err));
 
                 db.collection('stock').onSnapshot((snapshot) => {
-                    currentStock = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    currentStock = allDocs.filter(s => !s.deleted);
+                    trashStock = allDocs.filter(s => s.deleted);
+                    purgeOldTrashItems('stock', trashStock);
                     rebuildMasterStockDirectoryTable();
                     rebuildDatalistAssistanceArray();
                     renderCategoryNavigationTabs();
                     filterMaterialCatalog();
                     rebuildTemplateMaterialSelector();
+                    renderTrashTab();
                 }, (err) => console.error('Stock listener error:', err));
 
                 db.collection('quotes').onSnapshot((snapshot) => {
-                    currentQuotes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    repairLegacyImportedQuotes(allDocs);
+                    currentQuotes = allDocs.filter(q => !q.deleted);
+                    trashQuotes = allDocs.filter(q => q.deleted);
+                    purgeOldTrashItems('quotes', trashQuotes);
                     rebuildVaultDataTable();
                     rebuildCrmProfilesInterface();
                     renderDashboard();
+                    renderTrashTab();
                 }, (err) => console.error('Quotes listener error:', err));
 
                 db.collection('templates').onSnapshot((snapshot) => {
-                    currentTemplates = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    currentTemplates = allDocs.filter(t => !t.deleted);
+                    trashTemplates = allDocs.filter(t => t.deleted);
+                    purgeOldTrashItems('templates', trashTemplates);
                     rebuildJobTemplatesDropdown();
                     rebuildTemplateCatalogList();
+                    renderTrashTab();
                 }, (err) => console.error('Templates listener error:', err));
 
                 db.collection('settings').doc('pricing').onSnapshot((doc) => {
@@ -1284,6 +1435,18 @@
         function getJobEngineers(job) {
             if (Array.isArray(job.assignedEngineers)) return job.assignedEngineers;
             return job.assignedEngineer ? [job.assignedEngineer] : [];
+        }
+        // Date-only double-booking check (deliberately ignores time) — flags an
+        // engineer already assigned to a DIFFERENT Scheduled job on the same day.
+        function findDoubleBookedEngineers(assignedEngineers, date, excludeJobId) {
+            const conflicts = [];
+            for (const name of assignedEngineers) {
+                const hasConflict = currentJobs.some(j =>
+                    j.id !== excludeJobId && j.date === date && j.status === 'Scheduled' && getJobEngineers(j).includes(name)
+                );
+                if (hasConflict) conflicts.push(name);
+            }
+            return conflicts;
         }
 
         function loadPricingSettingsIntoForm() {
@@ -1431,9 +1594,11 @@
                     ? `<p class="text-xs text-slate-500 text-center py-6">No jobs scheduled in the next 7 days.</p>`
                     : in7days.map(j => {
                         const badges = getJobEngineers(j).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
+                        const client = isOwnerLoggedIn() ? findClientForJob(j) : null;
+                        const reminderBtn = (client && client.phone) ? `<button onclick="openSendReminderModal('${j.id}')" title="Send reminder to ${client.name}" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-950 border border-slate-700 cursor-pointer shrink-0"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>` : '';
                         return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
                             <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${j.title}</div><div class="text-[10px] text-slate-500">${formatUkDate(j.date)} at ${j.time || '—'}</div></div>
-                            <div class="flex flex-wrap gap-1 justify-end shrink-0">${badges}</div>
+                            <div class="flex flex-wrap gap-1 justify-end items-center shrink-0">${badges}${reminderBtn}</div>
                         </div>`;
                     }).join('');
             }
@@ -1598,7 +1763,10 @@
             document.getElementById('day-detail-modal').classList.remove('hidden');
             lucide.createIcons();
         }
-        function closeDayDetailModal() { document.getElementById('day-detail-modal').classList.add('hidden'); }
+        function closeDayDetailModal() {
+            document.getElementById('day-detail-modal').classList.add('hidden');
+            document.getElementById('day-detail-unavailable-end-date').value = '';
+        }
         function addJobForSelectedDay() {
             closeDayDetailModal();
             switchTab('jobs-tab');
@@ -1631,8 +1799,35 @@
         function markSelectedEngineerUnavailable() {
             if (!selectedCalendarDate) return;
             const engineerName = document.getElementById('day-detail-unavailable-engineer-select').value;
-            if (isEngineerUnavailable(engineerName, selectedCalendarDate)) { alert(`${engineerName} is already marked unavailable this day.`); return; }
-            db.collection('unavailability').add({ engineerName, date: selectedCalendarDate, createdAt: new Date().toISOString() });
+            const endDateRaw = document.getElementById('day-detail-unavailable-end-date').value;
+
+            let dates = [selectedCalendarDate];
+            if (endDateRaw && endDateRaw > selectedCalendarDate) {
+                dates = [];
+                let cursor = new Date(selectedCalendarDate + 'T00:00:00');
+                const endCursor = new Date(endDateRaw + 'T00:00:00');
+                let safety = 0;
+                while (cursor <= endCursor && safety < 366) {
+                    dates.push(toLocalISODate(cursor));
+                    cursor.setDate(cursor.getDate() + 1);
+                    safety++;
+                }
+            }
+
+            const datesToAdd = dates.filter(d => !isEngineerUnavailable(engineerName, d));
+            if (datesToAdd.length === 0) { alert(`${engineerName} is already marked unavailable for all of the selected day(s).`); return; }
+
+            const affectedJobs = currentJobs.filter(j => datesToAdd.includes(j.date) && j.status === 'Scheduled' && getJobEngineers(j).includes(engineerName));
+            if (affectedJobs.length > 0) {
+                const jobTitles = [...new Set(affectedJobs.map(j => j.title))].join(', ');
+                const dayWord = datesToAdd.length > 1 ? 'this range' : 'this day';
+                if (!confirm(`${engineerName} already has job(s) booked in ${dayWord} (${jobTitles}). Mark them unavailable anyway?`)) return;
+            }
+
+            datesToAdd.forEach(d => {
+                db.collection('unavailability').add({ engineerName, date: d, createdAt: new Date().toISOString() });
+            });
+            document.getElementById('day-detail-unavailable-end-date').value = '';
         }
         function removeEngineerUnavailability(id) { db.collection('unavailability').doc(id).delete(); }
 
@@ -1738,37 +1933,78 @@
             const property = currentProperties.find(p => p.id === propertyId);
             const assignedEngineers = getSelectedJobEngineersFromForm();
             if (assignedEngineers.length === 0) { alert('Select at least one engineer for this job.'); return; }
-            const payload = {
+
+            const basePayload = {
                 title: document.getElementById('job-title').value.trim(),
                 propertyId: propertyId || null,
                 propertyAddress: property ? property.address : null,
                 assignedEngineers,
-                date: document.getElementById('job-date').value,
                 time: document.getElementById('job-time').value || '09:00',
                 status: document.getElementById('job-status-select').value,
                 notes: document.getElementById('job-notes').value.trim(),
             };
-            if (payload.status === 'Scheduled') {
-                const unavailableOnes = assignedEngineers.filter(name => isEngineerUnavailable(name, payload.date));
-                if (unavailableOnes.length > 0) {
-                    if (!confirm(`${unavailableOnes.join(' and ')} ${unavailableOnes.length === 1 ? 'is' : 'are'} marked unavailable on ${formatUkDate(payload.date)}. Schedule this job anyway?`)) return;
+
+            const startDate = document.getElementById('job-date').value;
+            let jobDates = [startDate];
+            // Multi-day only applies to brand-new jobs — editing an existing
+            // single job record into several was more likely to cause confusion
+            // than help, so the toggle is hidden in edit mode and ignored here.
+            if (!editId && document.getElementById('job-multi-day-toggle').checked) {
+                const endDateRaw = document.getElementById('job-end-date').value;
+                if (endDateRaw && endDateRaw > startDate) {
+                    jobDates = [];
+                    let cursor = new Date(startDate + 'T00:00:00');
+                    const endCursor = new Date(endDateRaw + 'T00:00:00');
+                    let safety = 0;
+                    while (cursor <= endCursor && safety < 366) {
+                        jobDates.push(toLocalISODate(cursor));
+                        cursor.setDate(cursor.getDate() + 1);
+                        safety++;
+                    }
                 }
             }
-            let jobId = editId; let existingCalendarEventId = null;
+
+            if (basePayload.status === 'Scheduled') {
+                const allUnavailable = new Set();
+                const allDoubleBooked = new Set();
+                jobDates.forEach(d => {
+                    assignedEngineers.filter(name => isEngineerUnavailable(name, d)).forEach(n => allUnavailable.add(n));
+                    findDoubleBookedEngineers(assignedEngineers, d, editId || null).forEach(n => allDoubleBooked.add(n));
+                });
+                if (allUnavailable.size > 0) {
+                    const names = [...allUnavailable].join(' and ');
+                    if (!confirm(`${names} ${allUnavailable.size === 1 ? 'is' : 'are'} marked unavailable on one or more of these day(s). Schedule anyway?`)) return;
+                }
+                if (allDoubleBooked.size > 0) {
+                    const names = [...allDoubleBooked].join(' and ');
+                    if (!confirm(`${names} already ${allDoubleBooked.size === 1 ? 'has' : 'have'} another job on one or more of these day(s). Schedule this too?`)) return;
+                }
+            }
+
             if (editId) {
                 const existing = currentJobs.find(j => j.id === editId);
-                existingCalendarEventId = existing ? existing.calendarEventId : null;
+                const existingCalendarEventId = existing ? existing.calendarEventId : null;
+                const payload = { ...basePayload, date: startDate };
                 await db.collection('jobs').doc(editId).update(payload);
+                if (isGoogleCalendarConnected()) {
+                    const eventId = await pushJobToCalendar(payload, existingCalendarEventId);
+                    if (eventId) db.collection('jobs').doc(editId).update({ calendarEventId: eventId });
+                }
             } else {
-                payload.createdAt = new Date().toISOString();
-                const ref = await db.collection('jobs').add(payload);
-                jobId = ref.id;
-            }
-            if (isGoogleCalendarConnected()) {
-                const eventId = await pushJobToCalendar(payload, existingCalendarEventId);
-                if (eventId) db.collection('jobs').doc(jobId).update({ calendarEventId: eventId });
+                for (const d of jobDates) {
+                    const payload = { ...basePayload, date: d, createdAt: new Date().toISOString() };
+                    const ref = await db.collection('jobs').add(payload);
+                    if (isGoogleCalendarConnected()) {
+                        const eventId = await pushJobToCalendar(payload, null);
+                        if (eventId) db.collection('jobs').doc(ref.id).update({ calendarEventId: eventId });
+                    }
+                }
             }
             clearJobForm();
+        }
+        function toggleJobMultiDayField() {
+            const checked = document.getElementById('job-multi-day-toggle').checked;
+            document.getElementById('job-end-date-wrapper').classList.toggle('hidden', !checked);
         }
         function loadJobForModification(jobId) {
             const j = currentJobs.find(x => x.id === jobId);
@@ -1785,6 +2021,7 @@
             document.getElementById('job-time').value = j.time || '09:00';
             document.getElementById('job-status-select').value = j.status || 'Scheduled';
             document.getElementById('job-notes').value = j.notes || '';
+            document.getElementById('job-multi-day-row').classList.add('hidden');
             document.getElementById('job-form-title').innerText = 'Modify Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Job`;
             document.getElementById('job-cancel-btn').classList.remove('hidden');
@@ -1799,16 +2036,20 @@
             const searchInput = document.getElementById('job-property-search-input');
             if (searchInput) searchInput.value = '';
             filterJobPropertyDropdown();
+            document.getElementById('job-multi-day-row').classList.remove('hidden');
+            document.getElementById('job-multi-day-toggle').checked = false;
+            document.getElementById('job-end-date').value = '';
+            document.getElementById('job-end-date-wrapper').classList.add('hidden');
             document.getElementById('job-form-title').innerText = 'Add Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job`;
             document.getElementById('job-cancel-btn').classList.add('hidden');
             lucide.createIcons();
         }
         async function deleteJob(jobId) {
-            if (!confirm('Permanently remove this job?')) return;
+            if (!confirm('Move this job to Trash? You can restore it within 30 days.')) return;
             const j = currentJobs.find(x => x.id === jobId);
             if (j && j.calendarEventId && isGoogleCalendarConnected()) await deleteCalendarEvent(j.calendarEventId);
-            db.collection('jobs').doc(jobId).delete();
+            db.collection('jobs').doc(jobId).update({ deleted: true, deletedAt: new Date().toISOString() });
         }
         async function markJobStatus(jobId, newStatus) {
             const j = currentJobs.find(x => x.id === jobId);
@@ -1840,10 +2081,12 @@
                 const quickActions = j.status === 'Scheduled' ? `
                     <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
                     <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>` : '';
+                const reviewClient = (j.status === 'Completed' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
+                const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
                 return `<div class="bg-[#283548] border border-slate-600 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg ring-1 ring-white/[0.06]">
                     <div class="min-w-0"><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-white">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${statusColor}">${j.status}</span></div>
                     <div class="text-[11px] text-slate-400">${formatUkDate(j.date)} at ${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div></div>
-                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${quickActions}
+                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${quickActions}${reviewBtn}
                     <button onclick="loadJobForModification('${j.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                     <button onclick="deleteJob('${j.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></div>
                 </div>`;
@@ -1897,8 +2140,8 @@
             lucide.createIcons();
         }
         function deleteProperty(propertyId) {
-            if (!confirm('Permanently remove this property and its notes?')) return;
-            db.collection('properties').doc(propertyId).delete();
+            if (!confirm('Move this property to Trash? You can restore it within 30 days.')) return;
+            db.collection('properties').doc(propertyId).update({ deleted: true, deletedAt: new Date().toISOString() });
         }
         function markReminderTestedToday(propertyId, field) {
             db.collection('properties').doc(propertyId).update({ [field]: todayISO() });
@@ -1937,11 +2180,167 @@
             lucide.createIcons();
         }
 
+        // ============================================================
+        // TRASH BIN
+        // ============================================================
+        function restoreFromTrash(collectionName, id) {
+            db.collection(collectionName).doc(id).update({ deleted: false, deletedAt: null });
+        }
+        function daysAgoLabel(dateStr) {
+            if (!dateStr) return '';
+            const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+            if (days <= 0) return 'today';
+            return `${days}d ago`;
+        }
+        function buildTrashRow(label, sub, collectionName, id, deletedAt) {
+            return `<div class="bg-slate-900 border border-slate-700 rounded-lg p-3 flex items-center justify-between gap-3">
+                <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${label || '(untitled)'}</div>${sub ? `<div class="text-[10px] text-slate-500 truncate">${sub}</div>` : ''}</div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <span class="text-[10px] text-slate-500">${daysAgoLabel(deletedAt)}</span>
+                    <button onclick="restoreFromTrash('${collectionName}', '${id}')" class="text-[10px] font-bold bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 px-2 py-1.5 rounded-lg border border-slate-700 cursor-pointer">Restore</button>
+                </div>
+            </div>`;
+        }
+        function renderTrashTab() {
+            const propEl = document.getElementById('trash-properties-list');
+            if (!propEl) return; // Trash tab HTML not present yet on first load tick
+            propEl.innerHTML = trashProperties.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashProperties.map(p => buildTrashRow((p.address || '').split('\\n')[0], '', 'properties', p.id, p.deletedAt)).join('');
+
+            const jobsEl = document.getElementById('trash-jobs-list');
+            jobsEl.innerHTML = trashJobs.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashJobs.map(j => buildTrashRow(j.title, formatUkDate(j.date), 'jobs', j.id, j.deletedAt)).join('');
+
+            const ownerSection = document.getElementById('trash-owner-section');
+            if (!isOwnerLoggedIn()) { ownerSection.classList.add('hidden'); return; }
+            ownerSection.classList.remove('hidden');
+
+            document.getElementById('trash-clients-list').innerHTML = trashClients.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashClients.map(c => buildTrashRow(c.name, c.email || c.phone || '', 'clients', c.id, c.deletedAt)).join('');
+            document.getElementById('trash-quotes-list').innerHTML = trashQuotes.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashQuotes.map(q => buildTrashRow(q.jobName, (q.clientDetailsPayload && q.clientDetailsPayload.name) || '', 'quotes', q.id, q.deletedAt)).join('');
+            document.getElementById('trash-stock-list').innerHTML = trashStock.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashStock.map(s => buildTrashRow(s.desc, s.sku, 'stock', s.id, s.deletedAt)).join('');
+            document.getElementById('trash-templates-list').innerHTML = trashTemplates.length === 0 ? '<p class="text-xs text-slate-500">Nothing here.</p>' :
+                trashTemplates.map(t => buildTrashRow(t.name, '', 'templates', t.id, t.deletedAt)).join('');
+        }
+
+        // ============================================================
+        // JOB REMINDERS (self-sent — generates the message, you send it
+        // from your own phone number via your own Messages app)
+        // ============================================================
+        let activeReminderPhone = '';
+
+        // A job only stores a propertyId, not a client — so this goes via the
+        // same client<->property link the CRM already uses, finding whichever
+        // client (if any) has this job's property in their linkedPropertyIds.
+        function findClientForJob(job) {
+            if (!job.propertyId) return null;
+            return currentClients.find(c => (c.linkedPropertyIds || []).includes(job.propertyId)) || null;
+        }
+        function buildReminderMessageText(job, client) {
+            const firstName = (client.name || '').split(' ')[0];
+            const addressLine = (job.propertyAddress || '').split('\\n')[0];
+            return `Hi ${firstName}, this is a reminder that ENY Electrical is booked at ${addressLine} on ${formatUkDate(job.date)} at ${job.time} for: ${job.title}. See you then!`;
+        }
+        function openSendMessageModal(clientName, phone, messageText) {
+            activeReminderPhone = phone;
+            document.getElementById('reminder-client-name').innerText = clientName;
+            document.getElementById('reminder-client-phone').innerText = phone;
+            document.getElementById('reminder-message-text').value = messageText;
+            document.getElementById('send-reminder-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function openSendReminderModal(jobId) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const client = findClientForJob(job);
+            if (!client || !client.phone) { alert("No linked client with a phone number found for this job's property."); return; }
+            openSendMessageModal(client.name, client.phone, buildReminderMessageText(job, client));
+        }
+        // Google's own short review-link format (g.page/r/.../review) is already
+        // as short as it gets for this purpose — routing it through a further
+        // shortener would just add a second, less-trustworthy-looking hop.
+        const REVIEW_LINK = 'https://g.page/r/CR0naPwKfXB_EBE/review';
+        function buildReviewRequestMessageText(client) {
+            const firstName = (client.name || '').split(' ')[0];
+            return `Hi ${firstName}, thank you for choosing ENY Electrical! If you have a moment, we'd really appreciate a quick review: ${REVIEW_LINK} Thanks again!`;
+        }
+        function openSendReviewRequestModal(jobId) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const client = findClientForJob(job);
+            if (!client || !client.phone) { alert("No linked client with a phone number found for this job's property."); return; }
+            openSendMessageModal(client.name, client.phone, buildReviewRequestMessageText(client));
+        }
+        function closeSendReminderModal() { document.getElementById('send-reminder-modal').classList.add('hidden'); }
+        function openReminderInMessagesApp() {
+            const text = document.getElementById('reminder-message-text').value;
+            const cleanPhone = activeReminderPhone.replace(/[^\d+]/g, '');
+            window.location.href = `sms:${cleanPhone}?body=${encodeURIComponent(text)}`;
+        }
+        function copyReminderMessage() {
+            navigator.clipboard.writeText(document.getElementById('reminder-message-text').value).then(() => alert("Message copied — paste it into Messages, WhatsApp, or wherever you'd like to send it."));
+        }
+
         function onTabSwitched(tabId) {
             if (tabId === 'calendar-tab') renderCalendarGrid();
             if (tabId === 'quote-tab') { rebuildJobTemplatesDropdown(); filterMaterialCatalog(); rebuildAllocatedMaterialsTable(); rebuildVaultDataTable(); filterQuotePropertyDropdown(); }
             if (tabId === 'crm-tab') rebuildCrmProfilesInterface();
             if (tabId === 'settings-tab') { rebuildMasterStockDirectoryTable(); rebuildTemplateCatalogList(); rebuildTemplateMaterialSelector(); loadPricingSettingsIntoForm(); loadBankFormFields('HUGHES'); loadBankFormFields('MABBLEY'); }
+            if (tabId === 'trash-tab') renderTrashTab();
+        }
+
+        // ============================================================
+        // UNIVERSAL SEARCH
+        // ============================================================
+        // Non-owner logins never have currentClients/currentQuotes populated
+        // (their Firestore listeners for those owner-only collections are never
+        // started — see startFirestoreListeners), so client/quote results simply
+        // never appear for them here. No extra access check needed on top of
+        // that — the same boundary the rest of the app relies on holds for
+        // search results too.
+        function openUniversalSearch() {
+            document.getElementById('universal-search-modal').classList.remove('hidden');
+            document.getElementById('universal-search-input').focus();
+            lucide.createIcons();
+        }
+        function closeUniversalSearch() {
+            document.getElementById('universal-search-modal').classList.add('hidden');
+            document.getElementById('universal-search-input').value = '';
+            document.getElementById('universal-search-results').innerHTML = '<p class="text-xs text-slate-500 text-center py-6">Start typing to search.</p>';
+        }
+        function buildSearchResultGroup(title, items) {
+            if (items.length === 0) return '';
+            return `<div>
+                <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">${title}</h4>
+                <div class="space-y-1.5">${items.map(i => `
+                    <button onclick="${i.onclick}" class="w-full text-left bg-slate-900 border border-slate-700 hover:border-amber-500 rounded-lg p-2.5 flex items-center justify-between gap-2 cursor-pointer transition-colors">
+                        <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${i.label}</div>${i.sub ? `<div class="text-[10px] text-slate-500 truncate">${i.sub}</div>` : ''}</div>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+                    </button>`).join('')}</div>
+            </div>`;
+        }
+        function performUniversalSearch() {
+            const query = document.getElementById('universal-search-input').value.toLowerCase().trim();
+            const resultsEl = document.getElementById('universal-search-results');
+            if (query.length < 2) { resultsEl.innerHTML = '<p class="text-xs text-slate-500 text-center py-6">Keep typing (2+ characters)...</p>'; return; }
+
+            const matchedProperties = currentProperties.filter(p => (p.address || '').toLowerCase().includes(query) || (p.notes || '').toLowerCase().includes(query)).slice(0, 6);
+            const matchedJobs = currentJobs.filter(j => (j.title || '').toLowerCase().includes(query) || (j.notes || '').toLowerCase().includes(query) || (j.propertyAddress || '').toLowerCase().includes(query)).slice(0, 6);
+            const matchedClients = currentClients.filter(c => (c.name || '').toLowerCase().includes(query) || (c.email || '').toLowerCase().includes(query) || (c.phone || '').toLowerCase().includes(query)).slice(0, 6);
+            const matchedQuotes = currentQuotes.filter(q => (q.jobName || '').toLowerCase().includes(query) || ((q.clientDetailsPayload && q.clientDetailsPayload.name) || '').toLowerCase().includes(query) || (q.id || '').toLowerCase().includes(query)).slice(0, 6);
+
+            const totalResults = matchedProperties.length + matchedJobs.length + matchedClients.length + matchedQuotes.length;
+            if (totalResults === 0) { resultsEl.innerHTML = '<p class="text-xs text-slate-500 text-center py-6">No matches found.</p>'; return; }
+
+            resultsEl.innerHTML = [
+                buildSearchResultGroup('Clients', matchedClients.map(c => ({ label: c.name, sub: c.email || c.phone || '', onclick: `closeUniversalSearch(); switchTab('crm-tab'); loadCrmClientProfileForModification('${c.id}');` }))),
+                buildSearchResultGroup('Properties', matchedProperties.map(p => ({ label: (p.address || '').split('\\n')[0], sub: p.notes ? p.notes.split('\\n')[0] : '', onclick: `closeUniversalSearch(); switchTab('lookup-tab'); loadPropertyForModification('${p.id}');` }))),
+                buildSearchResultGroup('Jobs', matchedJobs.map(j => ({ label: j.title, sub: formatUkDate(j.date), onclick: `closeUniversalSearch(); switchTab('jobs-tab'); loadJobForModification('${j.id}');` }))),
+                buildSearchResultGroup('Quotes & Invoices', matchedQuotes.map(q => ({ label: q.jobName, sub: (q.clientDetailsPayload && q.clientDetailsPayload.name) || '', onclick: `closeUniversalSearch(); switchTab('quote-tab'); loadQuoteForActiveModification('${q.id}');` }))),
+            ].join('');
+            lucide.createIcons();
         }
 
         // ============================================================
@@ -1982,9 +2381,28 @@
                 for (const record of localVault) {
                     const exists = currentQuotes.some(q => q.id === record.id) || currentQuotes.some(q => q.timestamp === record.timestamp && q.jobName === record.jobName);
                     if (exists) { summary.quotesSkipped++; continue; }
-                    const { id, ...rest } = record;
-                    if (rest.linkedClientId && localToFirestoreClientId[rest.linkedClientId]) rest.linkedClientId = localToFirestoreClientId[rest.linkedClientId];
-                    await db.collection('quotes').add(rest);
+
+                    // The old (pre-merge) app used different field names for a
+                    // couple of things — map them across explicitly rather than
+                    // assuming they match, or materials/labour format silently
+                    // come through empty.
+                    const mapped = {
+                        timestamp: record.timestamp,
+                        status: record.status,
+                        jobName: record.jobName,
+                        linkedClientId: record.linkedClientId,
+                        clientDetailsPayload: record.clientDetailsPayload,
+                        includeTestingCertificate: record.includeTestingCertificate,
+                        financials: record.financials,
+                        materials: record.itemsSnapshot || record.materials || [],
+                        laborBookingFormat: record.laborFormatBoundType || record.laborBookingFormat || 'DAY',
+                    };
+                    if (record.ownerOperatorProfileID && (record.status === 'Invoiced' || record.status === 'Paid')) {
+                        mapped.invoicingOperative = record.ownerOperatorProfileID;
+                    }
+                    if (mapped.linkedClientId && localToFirestoreClientId[mapped.linkedClientId]) mapped.linkedClientId = localToFirestoreClientId[mapped.linkedClientId];
+
+                    await db.collection('quotes').add(mapped);
                     summary.quotesAdded++;
                 }
             } catch (e) { console.error('Quotes import error:', e); }
@@ -2057,31 +2475,36 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 if (matchByName) linkedClientId = matchByName.id;
             }
             const finalizeSave = async (resolvedClientId) => {
-                const payload = {
-                    jobName, linkedClientId: resolvedClientId,
-                    clientDetailsPayload: { name: formName, email: formEmail, phone: formPhone, address: formAddress },
-                    financials: {
-                        netMaterialsExVat: metrics.netMaterialsExVat, materialsVat: metrics.materialsVat,
-                        markedMaterials: metrics.markedMaterials, laborCosts: metrics.laborCosts,
-                        testingCosts: metrics.computedTestingCharge, grossTotal: metrics.grossTotal, markupApplied: metrics.markup,
-                    },
-                    includeTestingCertificate: metrics.isTestingIncluded,
-                    materials: activeAllocatedMaterials.map(m => ({ ...m })),
-                    laborBookingFormat: activeLaborBookingFormat,
-                    timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
-                };
-                if (currentlyEditingQuoteId && overwrite) {
-                    await db.collection('quotes').doc(currentlyEditingQuoteId).update(payload);
-                } else {
-                    payload.status = 'Draft';
-                    await db.collection('quotes').add(payload);
+                try {
+                    const payload = {
+                        jobName, linkedClientId: resolvedClientId,
+                        clientDetailsPayload: { name: formName, email: formEmail, phone: formPhone, address: formAddress },
+                        financials: {
+                            netMaterialsExVat: metrics.netMaterialsExVat, materialsVat: metrics.materialsVat,
+                            markedMaterials: metrics.markedMaterials, laborCosts: metrics.laborCosts,
+                            testingCosts: metrics.computedTestingCharge, grossTotal: metrics.grossTotal, markupApplied: metrics.markup,
+                        },
+                        includeTestingCertificate: metrics.isTestingIncluded,
+                        materials: activeAllocatedMaterials.map(m => ({ ...m })),
+                        laborBookingFormat: activeLaborBookingFormat,
+                        timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+                    };
+                    if (currentlyEditingQuoteId && overwrite) {
+                        await db.collection('quotes').doc(currentlyEditingQuoteId).update(payload);
+                    } else {
+                        payload.status = 'Draft';
+                        await db.collection('quotes').add(payload);
+                    }
+                    if (formAddress) {
+                        const propertyId = activeLinkedPropertyId || await ensurePropertyExistsForAddress(formAddress);
+                        await linkPropertyToClientIfMissing(resolvedClientId, propertyId);
+                    }
+                    cancelActiveEditingSessionMode();
+                    switchQuoteSubtab('quote-sub-vault');
+                } catch (err) {
+                    console.error('Failed to save quote:', err);
+                    alert('Could not save this quote/invoice. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over. Your changes have not been lost — the form still has them.');
                 }
-                if (formAddress) {
-                    const propertyId = activeLinkedPropertyId || await ensurePropertyExistsForAddress(formAddress);
-                    await linkPropertyToClientIfMissing(resolvedClientId, propertyId);
-                }
-                cancelActiveEditingSessionMode();
-                switchQuoteSubtab('quote-sub-vault');
             };
 
             if (linkedClientId) {
@@ -2091,7 +2514,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 if (Object.keys(updates).length > 0) db.collection('clients').doc(linkedClientId).update(updates);
                 finalizeSave(linkedClientId);
             } else {
-                db.collection('clients').add({ name: formName, email: formEmail, phone: formPhone, address: formAddress, createdDate: new Date().toLocaleDateString('en-GB'), linkedPropertyIds: [] }).then(ref => finalizeSave(ref.id));
+                db.collection('clients').add({ name: formName, email: formEmail, phone: formPhone, address: formAddress, createdDate: new Date().toLocaleDateString('en-GB'), linkedPropertyIds: [] })
+                    .then(ref => finalizeSave(ref.id))
+                    .catch(err => {
+                        console.error('Failed to create client while saving quote:', err);
+                        alert('Could not save this quote/invoice (failed while creating the client record). Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+                    });
             }
         }
         function cancelActiveEditingSessionMode() {
@@ -2109,36 +2537,41 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             setLaborBookingFormat('DAY');
         }
         function loadQuoteForActiveModification(quoteId) {
-            const target = currentQuotes.find(q => q.id === quoteId);
-            if (!target) return;
-            currentlyEditingQuoteId = quoteId;
-            activeLinkedClientId = target.linkedClientId || '';
-            document.getElementById('quote-client-select').value = activeLinkedClientId;
-            document.getElementById('job-name').value = target.jobName;
-            document.getElementById('client-name').value = target.clientDetailsPayload.name;
-            document.getElementById('client-email').value = target.clientDetailsPayload.email || '';
-            const linkedClient = currentClients.find(c => c.id === activeLinkedClientId);
-            document.getElementById('client-phone').value = target.clientDetailsPayload.phone || (linkedClient ? linkedClient.phone : '') || '';
-            document.getElementById('client-address').value = target.clientDetailsPayload.address || '';
-            activeLinkedPropertyId = findPropertyIdByAddress(target.clientDetailsPayload.address);
-            const qpsi = document.getElementById('quote-property-search-input'); if (qpsi) qpsi.value = '';
-            filterQuotePropertyDropdown();
-            const qps = document.getElementById('quote-property-select'); if (qps) qps.value = activeLinkedPropertyId;
-            activeAllocatedMaterials = target.materials.map(m => ({ ...m }));
-            document.getElementById('include-testing-toggle').checked = target.includeTestingCertificate;
-            setLaborBookingFormat(target.laborBookingFormat || 'DAY');
-            rebuildAllocatedMaterialsTable();
-            document.getElementById('editing-record-id-display').innerText = quoteId;
-            document.getElementById('editing-mode-banner').classList.remove('hidden');
-            document.getElementById('standard-save-actions-wrapper').classList.add('hidden');
-            document.getElementById('editing-save-actions-wrapper').classList.remove('hidden');
-            switchQuoteSubtab('quote-sub-build');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            try {
+                const target = currentQuotes.find(q => q.id === quoteId);
+                if (!target) { alert('Could not find that quote/invoice (id: ' + quoteId + ').'); return; }
+                currentlyEditingQuoteId = quoteId;
+                activeLinkedClientId = target.linkedClientId || '';
+                document.getElementById('quote-client-select').value = activeLinkedClientId;
+                document.getElementById('job-name').value = target.jobName || '';
+                document.getElementById('client-name').value = (target.clientDetailsPayload && target.clientDetailsPayload.name) || '';
+                document.getElementById('client-email').value = (target.clientDetailsPayload && target.clientDetailsPayload.email) || '';
+                const linkedClient = currentClients.find(c => c.id === activeLinkedClientId);
+                document.getElementById('client-phone').value = (target.clientDetailsPayload && target.clientDetailsPayload.phone) || (linkedClient ? linkedClient.phone : '') || '';
+                document.getElementById('client-address').value = (target.clientDetailsPayload && target.clientDetailsPayload.address) || '';
+                activeLinkedPropertyId = findPropertyIdByAddress(target.clientDetailsPayload && target.clientDetailsPayload.address);
+                const qpsi = document.getElementById('quote-property-search-input'); if (qpsi) qpsi.value = '';
+                filterQuotePropertyDropdown();
+                const qps = document.getElementById('quote-property-select'); if (qps) qps.value = activeLinkedPropertyId;
+                activeAllocatedMaterials = (target.materials || []).map(m => ({ ...m }));
+                document.getElementById('include-testing-toggle').checked = !!target.includeTestingCertificate;
+                setLaborBookingFormat(target.laborBookingFormat || 'DAY');
+                rebuildAllocatedMaterialsTable();
+                document.getElementById('editing-record-id-display').innerText = quoteId;
+                document.getElementById('editing-mode-banner').classList.remove('hidden');
+                document.getElementById('standard-save-actions-wrapper').classList.add('hidden');
+                document.getElementById('editing-save-actions-wrapper').classList.remove('hidden');
+                switchQuoteSubtab('quote-sub-build');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) {
+                console.error('Failed to load quote for editing:', err);
+                alert('Could not open this quote for editing. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+            }
         }
         function updateQuoteStatus(id, newStatus) { db.collection('quotes').doc(id).update({ status: newStatus }); }
         function deleteVaultRecord(id) {
-            if (!confirm('Permanently delete this record?')) return;
-            db.collection('quotes').doc(id).delete();
+            if (!confirm('Move this record to Trash? You can restore it within 30 days.')) return;
+            db.collection('quotes').doc(id).update({ deleted: true, deletedAt: new Date().toISOString() });
         }
         function toggleQuoteSelection(id, checked) {
             if (checked) selectedVaultQuotes.add(id); else selectedVaultQuotes.delete(id);
@@ -2447,8 +2880,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         }
         function purgeInventoryItem(itemId, event) {
             if (event) event.stopPropagation();
-            if (!confirm('Permanently discard this item?')) return;
-            db.collection('stock').doc(itemId).delete();
+            if (!confirm('Move this item to Trash? You can restore it within 30 days.')) return;
+            db.collection('stock').doc(itemId).update({ deleted: true, deletedAt: new Date().toISOString() });
             activeAllocatedMaterials = activeAllocatedMaterials.filter(i => i.id !== itemId);
             rebuildAllocatedMaterialsTable();
         }
@@ -2893,8 +3326,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             lucide.createIcons();
         }
         function deleteJobTemplatePreset(id) {
-            if (!confirm('Permanently remove this template?')) return;
-            db.collection('templates').doc(id).delete();
+            if (!confirm('Move this template to Trash? You can restore it within 30 days.')) return;
+            db.collection('templates').doc(id).update({ deleted: true, deletedAt: new Date().toISOString() });
         }
 
         // ============================================================
@@ -3026,8 +3459,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             lucide.createIcons();
         }
         function deleteClientProfile(clientId) {
-            if (!confirm('Permanently remove this customer from CRM logs?')) return;
-            db.collection('clients').doc(clientId).delete();
+            if (!confirm('Move this customer to Trash? You can restore it within 30 days.')) return;
+            db.collection('clients').doc(clientId).update({ deleted: true, deletedAt: new Date().toISOString() });
             if (activeLinkedClientId === clientId) { document.getElementById('quote-client-select').value = ''; activeLinkedClientId = ''; }
         }
         function rebuildQuoteClientDropdown() {
