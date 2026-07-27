@@ -302,6 +302,14 @@
                                 <input type="date" id="property-last-smoke" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                                 <span class="text-[10px] text-slate-500 mt-1 block">Sets a 1-year reminder from this date.</span>
                             </div>
+                            <div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button type="button" onclick="captureCurrentLocationForProperty()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-blue-400 font-semibold py-2 rounded-xl text-[11px] transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Stand There & Capture</button>
+                                    <button type="button" onclick="lookUpCoordinatesFromAddress()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-blue-400 font-semibold py-2 rounded-xl text-[11px] transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="search" class="w-3.5 h-3.5"></i> Look Up From Address</button>
+                                </div>
+                                <p id="property-location-status" class="text-[10px] text-slate-500 mt-1"></p>
+                                <p class="text-[9px] text-slate-600 mt-1">Address lookup uses OpenStreetMap — location data © OpenStreetMap contributors.</p>
+                            </div>
                             <div class="flex gap-2">
                                 <button type="submit" id="property-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                                     <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Property
@@ -934,6 +942,24 @@
     </div>
 
     <!-- ================= MODALS ================= -->
+    <div id="signature-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="pen-tool" class="text-amber-400"></i> Client Sign-Off</h3>
+                <button onclick="closeSignatureModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p id="signature-confirmation-text" class="text-xs text-slate-300 bg-slate-900 border border-slate-700 p-3 rounded-lg"></p>
+                <canvas id="signature-canvas" class="bg-white rounded-lg w-full touch-none" style="height:180px;"></canvas>
+                <p id="signature-signed-at" class="text-[10px] text-slate-500"></p>
+            </div>
+            <div class="p-5 border-t border-slate-700 bg-slate-900/50 flex gap-2">
+                <button onclick="clearSignatureCanvas()" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium py-2.5 rounded-xl text-xs transition-colors cursor-pointer">Clear</button>
+                <button onclick="saveSignature()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer">Save Signature</button>
+            </div>
+        </div>
+    </div>
+
     <div id="send-reminder-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
             <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
@@ -2083,10 +2109,13 @@
                     <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>` : '';
                 const reviewClient = (j.status === 'Completed' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
                 const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
+                const signatureBtn = j.status === 'Completed' ? `<button onclick="openSignatureModal('${j.id}')" title="${j.signature ? 'View/redo signature' : 'Get client signature'}" class="${j.signature ? 'text-emerald-400 hover:text-emerald-300' : 'text-slate-400 hover:text-amber-400'} p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="${j.signature ? 'file-check' : 'pen-tool'}" class="w-3.5 h-3.5"></i></button>` : '';
+                const onMyWayClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
+                const onMyWayBtn = (onMyWayClient && onMyWayClient.phone) ? `<button onclick="sendOnMyWayMessage('${j.id}')" title="Send 'on my way' to ${onMyWayClient.name}" class="text-slate-400 hover:text-blue-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="navigation" class="w-3.5 h-3.5"></i></button>` : '';
                 return `<div class="bg-[#283548] border border-slate-600 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg ring-1 ring-white/[0.06]">
                     <div class="min-w-0"><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-white">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${statusColor}">${j.status}</span></div>
                     <div class="text-[11px] text-slate-400">${formatUkDate(j.date)} at ${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div></div>
-                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${quickActions}${reviewBtn}
+                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${quickActions}${onMyWayBtn}${reviewBtn}${signatureBtn}
                     <button onclick="loadJobForModification('${j.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                     <button onclick="deleteJob('${j.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></div>
                 </div>`;
@@ -2097,6 +2126,45 @@
         // ============================================================
         // PROPERTY LOOKUP (shared — address/notes/reminders only)
         // ============================================================
+        let capturedPropertyLat = null, capturedPropertyLng = null;
+        function captureCurrentLocationForProperty() {
+            if (!navigator.geolocation) { alert('Location services are not available on this device/browser.'); return; }
+            const statusEl = document.getElementById('property-location-status');
+            statusEl.innerText = 'Getting location...';
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    capturedPropertyLat = pos.coords.latitude;
+                    capturedPropertyLng = pos.coords.longitude;
+                    statusEl.innerText = `Location captured (±${Math.round(pos.coords.accuracy)}m accuracy) — will be saved with this property.`;
+                },
+                (err) => { statusEl.innerText = 'Could not get location: ' + err.message; },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+        // For quoting a property remotely, without physically visiting —
+        // looks the typed address up via OpenStreetMap's free Nominatim
+        // service. Approximate (matches the address text to a place, not a
+        // precise on-site GPS fix), so it's a reasonable starting point but
+        // worth re-capturing with "Stand There & Capture" on the first actual
+        // visit if the ETA accuracy matters for that property.
+        async function lookUpCoordinatesFromAddress() {
+            const address = document.getElementById('property-address').value.trim();
+            if (!address) { alert('Enter the property address first.'); return; }
+            const statusEl = document.getElementById('property-location-status');
+            statusEl.innerText = 'Looking up address...';
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`);
+                if (!res.ok) { statusEl.innerText = 'Lookup failed — try again in a moment.'; return; }
+                const results = await res.json();
+                if (!results || results.length === 0) { statusEl.innerText = 'No match found for that address — try Stand There & Capture instead, or adjust the address.'; return; }
+                capturedPropertyLat = parseFloat(results[0].lat);
+                capturedPropertyLng = parseFloat(results[0].lon);
+                statusEl.innerText = `Approximate location found — will be saved with this property. Re-capture on-site later for a more precise ETA.`;
+            } catch (e) {
+                console.error('Address lookup failed:', e);
+                statusEl.innerText = 'Lookup failed — check your connection and try again.';
+            }
+        }
         async function savePropertyConfig(event) {
             event.preventDefault();
             const editId = document.getElementById('property-id-field').value;
@@ -2107,6 +2175,13 @@
                 electricalCycleYears: parseInt(document.getElementById('property-electrical-cycle').value) || 5,
                 lastSmokeAlarmTest: document.getElementById('property-last-smoke').value || null,
             };
+            // Only include lat/lng if freshly captured this session — otherwise
+            // an edit-without-recapturing would wipe out coordinates already
+            // saved from before.
+            if (capturedPropertyLat !== null && capturedPropertyLng !== null) {
+                payload.lat = capturedPropertyLat;
+                payload.lng = capturedPropertyLng;
+            }
             if (editId) {
                 await db.collection('properties').doc(editId).update(payload);
             } else {
@@ -2124,6 +2199,8 @@
             document.getElementById('property-last-electrical').value = p.lastElectricalInspection || '';
             document.getElementById('property-electrical-cycle').value = String(p.electricalCycleYears || 5);
             document.getElementById('property-last-smoke').value = p.lastSmokeAlarmTest || '';
+            capturedPropertyLat = null; capturedPropertyLng = null;
+            document.getElementById('property-location-status').innerText = (p.lat != null && p.lng != null) ? 'Location already saved for this property.' : 'No location saved yet.';
             document.getElementById('property-form-title').innerText = 'Modify Property';
             document.getElementById('property-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Property`;
             document.getElementById('property-cancel-btn').classList.remove('hidden');
@@ -2134,6 +2211,8 @@
             document.getElementById('property-form').reset();
             document.getElementById('property-id-field').value = '';
             document.getElementById('property-electrical-cycle').value = '5';
+            capturedPropertyLat = null; capturedPropertyLng = null;
+            document.getElementById('property-location-status').innerText = '';
             document.getElementById('property-form-title').innerText = 'Add Property';
             document.getElementById('property-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Property`;
             document.getElementById('property-cancel-btn').classList.add('hidden');
@@ -2273,6 +2352,40 @@
             if (!client || !client.phone) { alert("No linked client with a phone number found for this job's property."); return; }
             openSendMessageModal(client.name, client.phone, buildReviewRequestMessageText(client));
         }
+
+        // Straight-line (not routed) distance in miles — no paid mapping/routing
+        // service involved, just two GPS readings and geometry.
+        function haversineDistanceMiles(lat1, lon1, lat2, lon2) {
+            const R = 3958.8;
+            const toRad = deg => deg * Math.PI / 180;
+            const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+        const ASSUMED_AVERAGE_MPH = 25; // rough local/urban driving average — this is an estimate, not a routed ETA
+        async function sendOnMyWayMessage(jobId) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const client = findClientForJob(job);
+            if (!client || !client.phone) { alert("No linked client with a phone number found for this job's property."); return; }
+
+            const property = job.propertyId ? currentProperties.find(p => p.id === job.propertyId) : null;
+            let etaText = '';
+            if (property && property.lat != null && property.lng != null && navigator.geolocation) {
+                try {
+                    const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 }));
+                    const distanceMiles = haversineDistanceMiles(position.coords.latitude, position.coords.longitude, property.lat, property.lng);
+                    const estimatedMinutes = Math.max(2, Math.round((distanceMiles / ASSUMED_AVERAGE_MPH) * 60));
+                    etaText = ` I'm about ${estimatedMinutes} minutes away.`;
+                } catch (e) {
+                    console.warn('Could not get location for ETA — sending without one:', e);
+                }
+            }
+            const firstName = (client.name || '').split(' ')[0];
+            const message = `Hi ${firstName}, this is ENY Electrical — I'm on my way to you now!${etaText}`;
+            openSendMessageModal(client.name, client.phone, message);
+        }
+
         function closeSendReminderModal() { document.getElementById('send-reminder-modal').classList.add('hidden'); }
         function openReminderInMessagesApp() {
             const text = document.getElementById('reminder-message-text').value;
@@ -2281,6 +2394,106 @@
         }
         function copyReminderMessage() {
             navigator.clipboard.writeText(document.getElementById('reminder-message-text').value).then(() => alert("Message copied — paste it into Messages, WhatsApp, or wherever you'd like to send it."));
+        }
+
+        // ============================================================
+        // DIGITAL SIGNATURE (captured as compact stroke-path data, never
+        // an image — keeps this entirely within free Firestore usage,
+        // unlike a photo would)
+        // ============================================================
+        const SIGNATURE_CONFIRMATION_TEXT = "By signing below, I confirm that the electrical works described have been completed to my satisfaction and in accordance with the agreed specification. I agree to settle the invoice in full within 14 days of the invoice date. This signature represents my acceptance of both the completed works and the associated payment obligation.";
+        let signatureStrokes = [];
+        let activeSignatureStroke = null;
+        let signatureCanvasCtx = null;
+        let activeSignatureJobId = null;
+
+        function initSignatureCanvas() {
+            const canvas = document.getElementById('signature-canvas');
+            // Match the canvas's internal pixel grid to its displayed size so
+            // strokes land under the finger/pen exactly, not offset.
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            signatureCanvasCtx = canvas.getContext('2d');
+            signatureCanvasCtx.strokeStyle = '#1e293b';
+            signatureCanvasCtx.lineWidth = 2.5;
+            signatureCanvasCtx.lineCap = 'round';
+            signatureCanvasCtx.lineJoin = 'round';
+
+            canvas.onpointerdown = (e) => {
+                e.preventDefault();
+                canvas.setPointerCapture(e.pointerId);
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                activeSignatureStroke = [{ x, y }];
+                signatureCanvasCtx.beginPath();
+                signatureCanvasCtx.moveTo(x, y);
+            };
+            canvas.onpointermove = (e) => {
+                if (!activeSignatureStroke) return;
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                const last = activeSignatureStroke[activeSignatureStroke.length - 1];
+                if (last && Math.abs(x - last.x) < 1.5 && Math.abs(y - last.y) < 1.5) return;
+                activeSignatureStroke.push({ x, y });
+                signatureCanvasCtx.lineTo(x, y);
+                signatureCanvasCtx.stroke();
+            };
+            const endStroke = () => {
+                if (activeSignatureStroke && activeSignatureStroke.length > 1) signatureStrokes.push(activeSignatureStroke);
+                activeSignatureStroke = null;
+            };
+            canvas.onpointerup = endStroke;
+            canvas.onpointercancel = endStroke;
+        }
+        function redrawSignatureFromStrokes(strokes) {
+            const canvas = document.getElementById('signature-canvas');
+            if (!signatureCanvasCtx) return;
+            signatureCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            strokes.forEach(stroke => {
+                if (stroke.length < 2) return;
+                signatureCanvasCtx.beginPath();
+                signatureCanvasCtx.moveTo(stroke[0].x, stroke[0].y);
+                stroke.slice(1).forEach(pt => signatureCanvasCtx.lineTo(pt.x, pt.y));
+                signatureCanvasCtx.stroke();
+            });
+        }
+        function clearSignatureCanvas() {
+            signatureStrokes = [];
+            activeSignatureStroke = null;
+            const canvas = document.getElementById('signature-canvas');
+            if (signatureCanvasCtx) signatureCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        function openSignatureModal(jobId) {
+            activeSignatureJobId = jobId;
+            const job = currentJobs.find(j => j.id === jobId);
+            document.getElementById('signature-confirmation-text').innerText = SIGNATURE_CONFIRMATION_TEXT;
+            document.getElementById('signature-signed-at').innerText = (job && job.signature && job.signature.signedAt) ? `Previously signed ${formatUkDate(job.signature.signedAt.slice(0,10))} — signing again will replace it.` : '';
+            document.getElementById('signature-modal').classList.remove('hidden');
+            // The canvas needs to be visible (and thus have real dimensions)
+            // before its size/context can be set up correctly.
+            setTimeout(() => {
+                initSignatureCanvas();
+                if (job && job.signature && job.signature.strokes) {
+                    signatureStrokes = job.signature.strokes.map(s => [...s]);
+                    redrawSignatureFromStrokes(signatureStrokes);
+                } else {
+                    signatureStrokes = [];
+                }
+            }, 50);
+            lucide.createIcons();
+        }
+        function closeSignatureModal() {
+            document.getElementById('signature-modal').classList.add('hidden');
+            activeSignatureJobId = null;
+        }
+        function saveSignature() {
+            if (signatureStrokes.length === 0) { alert('Please sign before saving.'); return; }
+            if (!activeSignatureJobId) return;
+            db.collection('jobs').doc(activeSignatureJobId).update({
+                signature: { strokes: signatureStrokes, confirmationText: SIGNATURE_CONFIRMATION_TEXT, signedAt: new Date().toISOString() }
+            });
+            closeSignatureModal();
         }
 
         function onTabSwitched(tabId) {
