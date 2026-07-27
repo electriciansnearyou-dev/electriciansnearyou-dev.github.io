@@ -2354,31 +2354,36 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 if (matchByName) linkedClientId = matchByName.id;
             }
             const finalizeSave = async (resolvedClientId) => {
-                const payload = {
-                    jobName, linkedClientId: resolvedClientId,
-                    clientDetailsPayload: { name: formName, email: formEmail, phone: formPhone, address: formAddress },
-                    financials: {
-                        netMaterialsExVat: metrics.netMaterialsExVat, materialsVat: metrics.materialsVat,
-                        markedMaterials: metrics.markedMaterials, laborCosts: metrics.laborCosts,
-                        testingCosts: metrics.computedTestingCharge, grossTotal: metrics.grossTotal, markupApplied: metrics.markup,
-                    },
-                    includeTestingCertificate: metrics.isTestingIncluded,
-                    materials: activeAllocatedMaterials.map(m => ({ ...m })),
-                    laborBookingFormat: activeLaborBookingFormat,
-                    timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
-                };
-                if (currentlyEditingQuoteId && overwrite) {
-                    await db.collection('quotes').doc(currentlyEditingQuoteId).update(payload);
-                } else {
-                    payload.status = 'Draft';
-                    await db.collection('quotes').add(payload);
+                try {
+                    const payload = {
+                        jobName, linkedClientId: resolvedClientId,
+                        clientDetailsPayload: { name: formName, email: formEmail, phone: formPhone, address: formAddress },
+                        financials: {
+                            netMaterialsExVat: metrics.netMaterialsExVat, materialsVat: metrics.materialsVat,
+                            markedMaterials: metrics.markedMaterials, laborCosts: metrics.laborCosts,
+                            testingCosts: metrics.computedTestingCharge, grossTotal: metrics.grossTotal, markupApplied: metrics.markup,
+                        },
+                        includeTestingCertificate: metrics.isTestingIncluded,
+                        materials: activeAllocatedMaterials.map(m => ({ ...m })),
+                        laborBookingFormat: activeLaborBookingFormat,
+                        timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+                    };
+                    if (currentlyEditingQuoteId && overwrite) {
+                        await db.collection('quotes').doc(currentlyEditingQuoteId).update(payload);
+                    } else {
+                        payload.status = 'Draft';
+                        await db.collection('quotes').add(payload);
+                    }
+                    if (formAddress) {
+                        const propertyId = activeLinkedPropertyId || await ensurePropertyExistsForAddress(formAddress);
+                        await linkPropertyToClientIfMissing(resolvedClientId, propertyId);
+                    }
+                    cancelActiveEditingSessionMode();
+                    switchQuoteSubtab('quote-sub-vault');
+                } catch (err) {
+                    console.error('Failed to save quote:', err);
+                    alert('Could not save this quote/invoice. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over. Your changes have not been lost — the form still has them.');
                 }
-                if (formAddress) {
-                    const propertyId = activeLinkedPropertyId || await ensurePropertyExistsForAddress(formAddress);
-                    await linkPropertyToClientIfMissing(resolvedClientId, propertyId);
-                }
-                cancelActiveEditingSessionMode();
-                switchQuoteSubtab('quote-sub-vault');
             };
 
             if (linkedClientId) {
@@ -2388,7 +2393,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 if (Object.keys(updates).length > 0) db.collection('clients').doc(linkedClientId).update(updates);
                 finalizeSave(linkedClientId);
             } else {
-                db.collection('clients').add({ name: formName, email: formEmail, phone: formPhone, address: formAddress, createdDate: new Date().toLocaleDateString('en-GB'), linkedPropertyIds: [] }).then(ref => finalizeSave(ref.id));
+                db.collection('clients').add({ name: formName, email: formEmail, phone: formPhone, address: formAddress, createdDate: new Date().toLocaleDateString('en-GB'), linkedPropertyIds: [] })
+                    .then(ref => finalizeSave(ref.id))
+                    .catch(err => {
+                        console.error('Failed to create client while saving quote:', err);
+                        alert('Could not save this quote/invoice (failed while creating the client record). Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+                    });
             }
         }
         function cancelActiveEditingSessionMode() {
@@ -2406,31 +2416,36 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             setLaborBookingFormat('DAY');
         }
         function loadQuoteForActiveModification(quoteId) {
-            const target = currentQuotes.find(q => q.id === quoteId);
-            if (!target) return;
-            currentlyEditingQuoteId = quoteId;
-            activeLinkedClientId = target.linkedClientId || '';
-            document.getElementById('quote-client-select').value = activeLinkedClientId;
-            document.getElementById('job-name').value = target.jobName;
-            document.getElementById('client-name').value = target.clientDetailsPayload.name;
-            document.getElementById('client-email').value = target.clientDetailsPayload.email || '';
-            const linkedClient = currentClients.find(c => c.id === activeLinkedClientId);
-            document.getElementById('client-phone').value = target.clientDetailsPayload.phone || (linkedClient ? linkedClient.phone : '') || '';
-            document.getElementById('client-address').value = target.clientDetailsPayload.address || '';
-            activeLinkedPropertyId = findPropertyIdByAddress(target.clientDetailsPayload.address);
-            const qpsi = document.getElementById('quote-property-search-input'); if (qpsi) qpsi.value = '';
-            filterQuotePropertyDropdown();
-            const qps = document.getElementById('quote-property-select'); if (qps) qps.value = activeLinkedPropertyId;
-            activeAllocatedMaterials = target.materials.map(m => ({ ...m }));
-            document.getElementById('include-testing-toggle').checked = target.includeTestingCertificate;
-            setLaborBookingFormat(target.laborBookingFormat || 'DAY');
-            rebuildAllocatedMaterialsTable();
-            document.getElementById('editing-record-id-display').innerText = quoteId;
-            document.getElementById('editing-mode-banner').classList.remove('hidden');
-            document.getElementById('standard-save-actions-wrapper').classList.add('hidden');
-            document.getElementById('editing-save-actions-wrapper').classList.remove('hidden');
-            switchQuoteSubtab('quote-sub-build');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            try {
+                const target = currentQuotes.find(q => q.id === quoteId);
+                if (!target) { alert('Could not find that quote/invoice (id: ' + quoteId + ').'); return; }
+                currentlyEditingQuoteId = quoteId;
+                activeLinkedClientId = target.linkedClientId || '';
+                document.getElementById('quote-client-select').value = activeLinkedClientId;
+                document.getElementById('job-name').value = target.jobName || '';
+                document.getElementById('client-name').value = (target.clientDetailsPayload && target.clientDetailsPayload.name) || '';
+                document.getElementById('client-email').value = (target.clientDetailsPayload && target.clientDetailsPayload.email) || '';
+                const linkedClient = currentClients.find(c => c.id === activeLinkedClientId);
+                document.getElementById('client-phone').value = (target.clientDetailsPayload && target.clientDetailsPayload.phone) || (linkedClient ? linkedClient.phone : '') || '';
+                document.getElementById('client-address').value = (target.clientDetailsPayload && target.clientDetailsPayload.address) || '';
+                activeLinkedPropertyId = findPropertyIdByAddress(target.clientDetailsPayload && target.clientDetailsPayload.address);
+                const qpsi = document.getElementById('quote-property-search-input'); if (qpsi) qpsi.value = '';
+                filterQuotePropertyDropdown();
+                const qps = document.getElementById('quote-property-select'); if (qps) qps.value = activeLinkedPropertyId;
+                activeAllocatedMaterials = (target.materials || []).map(m => ({ ...m }));
+                document.getElementById('include-testing-toggle').checked = !!target.includeTestingCertificate;
+                setLaborBookingFormat(target.laborBookingFormat || 'DAY');
+                rebuildAllocatedMaterialsTable();
+                document.getElementById('editing-record-id-display').innerText = quoteId;
+                document.getElementById('editing-mode-banner').classList.remove('hidden');
+                document.getElementById('standard-save-actions-wrapper').classList.add('hidden');
+                document.getElementById('editing-save-actions-wrapper').classList.remove('hidden');
+                switchQuoteSubtab('quote-sub-build');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (err) {
+                console.error('Failed to load quote for editing:', err);
+                alert('Could not open this quote for editing. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+            }
         }
         function updateQuoteStatus(id, newStatus) { db.collection('quotes').doc(id).update({ status: newStatus }); }
         function deleteVaultRecord(id) {
