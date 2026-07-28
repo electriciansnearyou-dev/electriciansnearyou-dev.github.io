@@ -192,6 +192,11 @@
                         <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4"><i data-lucide="user-round-x" class="text-amber-400 w-5 h-5"></i> Gone Quiet (1yr+)</h2>
                         <div id="dashboard-gone-quiet-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] lg:col-span-2">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4"><i data-lucide="package-plus" class="text-amber-400 w-5 h-5"></i> Pending Job Additions</h2>
+                        <p class="text-xs text-slate-400 mb-3">Materials/time flagged on-site by engineers — add these to the relevant quote yourself, then mark reviewed.</p>
+                        <div id="dashboard-pending-additions-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
                 </div>
             </div>
 
@@ -991,32 +996,50 @@
                 <div class="p-6 space-y-4">
                     <div id="job-detail-status-badge"></div>
                     <div id="job-detail-hazard-warning"></div>
+                    <div id="job-detail-notes-wrapper" class="hidden bg-amber-500/5 border border-amber-500/20 rounded-xl p-3">
+                        <div class="text-[10px] uppercase font-bold text-amber-400 mb-1 flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Job Details / Notes</div>
+                        <div id="job-detail-notes" class="text-sm text-slate-200 whitespace-pre-line"></div>
+                    </div>
                     <div class="bg-slate-900 border border-slate-700 rounded-xl p-3">
                         <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Property</div>
                         <a id="job-detail-address-link" href="#" target="_blank" rel="noopener" class="text-sm text-blue-400 hover:text-blue-300 underline flex items-start gap-1.5">
                             <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i> <span id="job-detail-address-text"></span>
                         </a>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-slate-900 border border-slate-700 rounded-xl p-3">
-                            <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Date & Time</div>
-                            <div id="job-detail-datetime" class="text-sm text-slate-200"></div>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-700 rounded-xl p-3">
-                            <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Engineer(s)</div>
-                            <div id="job-detail-engineers" class="flex flex-wrap gap-1"></div>
-                        </div>
-                    </div>
-                    <div id="job-detail-notes-wrapper" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3">
-                        <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Notes</div>
-                        <div id="job-detail-notes" class="text-sm text-slate-300 whitespace-pre-line"></div>
-                    </div>
-                    <div id="job-detail-timer-wrapper" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-center">
-                        <div class="text-[10px] uppercase font-bold text-amber-400 mb-1">Time On Job</div>
-                        <div id="job-detail-timer-display" class="text-3xl font-black font-mono text-white">00:00:00</div>
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-3">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Date & Time</div>
+                        <div id="job-detail-datetime" class="text-sm text-slate-200"></div>
                     </div>
 
                     <div id="job-detail-action-area" class="space-y-2"></div>
+
+                    <div id="job-detail-engineer-timers" class="space-y-2"></div>
+
+                    <div id="job-no-quote-notice" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3 text-[11px] text-slate-500">No quote linked to this job yet — materials/hours added here will queue and apply once one is.</div>
+
+                    <div id="job-materials-hours-section" class="border-t border-slate-700 pt-4">
+                        <div class="flex gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-slate-800 w-fit mb-3">
+                            <button type="button" onclick="switchJobAdditionsSubtab('materials')" id="btn-job-additions-materials" class="job-additions-subtab-btn px-3 py-1.5 text-[11px] font-bold rounded-lg bg-amber-500 text-slate-950">Materials</button>
+                            <button type="button" onclick="switchJobAdditionsSubtab('hours')" id="btn-job-additions-hours" class="job-additions-subtab-btn px-3 py-1.5 text-[11px] font-bold rounded-lg text-slate-400">Hours</button>
+                        </div>
+
+                        <div id="job-additions-materials-panel" class="space-y-2">
+                            <input type="text" id="job-material-search-input" oninput="renderJobMaterialsPicker()" placeholder="Search materials..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            <div id="job-materials-picker-list" class="max-h-48 overflow-y-auto space-y-1.5 custom-scrollbar pr-1"></div>
+                            <div id="job-materials-added-list" class="space-y-1.5 pt-2 border-t border-slate-800"></div>
+                        </div>
+
+                        <div id="job-additions-hours-panel" class="hidden space-y-2">
+                            <div class="flex gap-2">
+                                <input type="number" step="0.5" min="0" id="job-addition-hours" placeholder="Hours" class="w-24 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                                <input type="text" id="job-addition-hours-reason" placeholder="Reason (e.g. extra circuit requested)" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <button type="button" onclick="submitJobHoursAddition()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 font-semibold py-2 rounded-lg text-xs cursor-pointer">Add Hours</button>
+                            <div id="job-hours-added-list" class="space-y-1.5 pt-2 border-t border-slate-800"></div>
+                        </div>
+                        <p id="job-additions-owner-note" class="hidden text-[10px] text-slate-500 mt-2">Added directly to the linked quote's total.</p>
+                        <p id="job-additions-nonowner-note" class="hidden text-[10px] text-slate-500 mt-2">These add straight to the quote — no pricing shown here, that stays with the owner.</p>
+                    </div>
 
                     <div id="job-detail-comments-section" class="hidden space-y-3 border-t border-slate-700 pt-4">
                         <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Operative Comments</label>
@@ -1228,14 +1251,32 @@
             appId: "1:862567904137:web:59a7292a52da1b5c6fa758"
         };
         const GOOGLE_CLIENT_ID = "862567904137-5c5hugdh0ftvids0bi7325bj1u515upi.apps.googleusercontent.com";
-        const OWNER_EMAIL = 'electriciansnearyou@gmail.com';
+        // Anyone in this list gets full owner access (all tabs, quoting,
+        // pricing, CRM). Mirrors the isOwner() check in the Firestore
+        // security rules — that server-side check is what actually enforces
+        // this, this list is just what drives the app's own UI.
+        const OWNER_EMAILS = ['electriciansnearyou@gmail.com', 'jmabbley@yahoo.com'];
+        // Maps each person's own login to their name as used everywhere else
+        // in the app (job assignment, timers, etc.) — this is what lets the
+        // Today page know whose jobs to default to.
+        const EMAIL_TO_ENGINEER_NAME = {
+            'electriciansnearyou@gmail.com': 'Hughes',
+            'jmabbley@yahoo.com': 'Mabbley',
+            'willbutler1404@gmail.com': 'Butler',
+        };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         function isOwnerLoggedIn() {
-            return !!(auth.currentUser && auth.currentUser.email && auth.currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase());
+            const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
+            return OWNER_EMAILS.some(e => e.toLowerCase() === email);
+        }
+        function getCurrentUserEngineerName() {
+            const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
+            const matchedEmail = Object.keys(EMAIL_TO_ENGINEER_NAME).find(e => e.toLowerCase() === email);
+            return matchedEmail ? EMAIL_TO_ENGINEER_NAME[matchedEmail] : null;
         }
 
         let firestoreListenersStarted = false;
@@ -1352,6 +1393,48 @@
         let trashProperties = [], trashJobs = [], trashClients = [], trashQuotes = [], trashStock = [], trashTemplates = [];
         const TRASH_RETENTION_DAYS = 30;
 
+        // Cost-stripped mirror of stock (name/SKU/category only), shared with
+        // everyone — this is what non-owner logins pick materials from. Kept in
+        // sync automatically from the real stock list, but only ever contains
+        // fields safe for non-owners to see.
+        let currentStockPublic = [];
+        let lastMirroredStockSignature = new Map();
+        // Quietly links a job to its likely quote, via the same
+        // property<->client linkage the CRM already uses. Only ever runs (and
+        // can only ever find anything) on the owner's own device, since only
+        // that login has quote/client data loaded — non-owner devices simply
+        // see the link once the owner's device has synced it. Only links when
+        // there's exactly one confident match, to avoid guessing wrong.
+        function autoLinkJobsToQuotes() {
+            if (!isOwnerLoggedIn()) return;
+            currentJobs.forEach(job => {
+                if (job.linkedQuoteId || !job.propertyId) return;
+                const relatedClientIds = currentClients.filter(c => (c.linkedPropertyIds || []).includes(job.propertyId)).map(c => c.id);
+                if (relatedClientIds.length === 0) return;
+                const candidateQuotes = currentQuotes.filter(q => relatedClientIds.includes(q.linkedClientId) && ['Approved', 'Invoiced', 'Paid'].includes(q.status));
+                if (candidateQuotes.length === 1) {
+                    db.collection('jobs').doc(job.id).update({ linkedQuoteId: candidateQuotes[0].id });
+                }
+            });
+        }
+        function syncStockPublicMirror(stockItems) {
+            const currentIds = new Set(stockItems.map(s => s.id));
+            stockItems.forEach(item => {
+                const sig = `${item.sku}|${item.desc}|${item.category}`;
+                if (lastMirroredStockSignature.get(item.id) !== sig) {
+                    db.collection('stockPublic').doc(item.id).set({ sku: item.sku, desc: item.desc, category: item.category });
+                    lastMirroredStockSignature.set(item.id, sig);
+                }
+            });
+            for (const id of [...lastMirroredStockSignature.keys()]) {
+                if (!currentIds.has(id)) {
+                    db.collection('stockPublic').doc(id).delete();
+                    lastMirroredStockSignature.delete(id);
+                }
+            }
+        }
+
+
         // Permanently removes anything that's been in the trash longer than the
         // retention window. Runs opportunistically whenever a collection
         // refreshes — there's no background job on the free plan, so this is
@@ -1439,6 +1522,7 @@
                 renderCalendarGrid();
                 renderTrashTab();
                 renderTodayTab();
+                autoLinkJobsToQuotes();
                 if (activeJobDetailId) {
                     const openJob = currentJobs.find(j => j.id === activeJobDetailId);
                     if (openJob) renderJobDetailPageContent(openJob);
@@ -1464,6 +1548,11 @@
                 renderJobsList();
                 renderCalendarGrid();
             }, (err) => console.error('Engineers listener error:', err));
+
+            db.collection('stockPublic').onSnapshot((snapshot) => {
+                currentStockPublic = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (activeJobDetailId) renderJobMaterialsPicker();
+            }, (err) => console.error('Stock (public mirror) listener error:', err));
 
             // --- Owner-only collections (rules will reject reads for non-owners
             // automatically; these listeners simply won't be attached for them
@@ -1493,6 +1582,7 @@
                     filterMaterialCatalog();
                     rebuildTemplateMaterialSelector();
                     renderTrashTab();
+                    syncStockPublicMirror(currentStock);
                 }, (err) => console.error('Stock listener error:', err));
 
                 db.collection('quotes').onSnapshot((snapshot) => {
@@ -1507,6 +1597,7 @@
                     rebuildCrmProfilesInterface();
                     renderDashboard();
                     renderTrashTab();
+                    autoLinkJobsToQuotes();
                 }, (err) => console.error('Quotes listener error:', err));
 
                 db.collection('templates').onSnapshot((snapshot) => {
@@ -1568,7 +1659,16 @@
             const unavailableSelect = document.getElementById('day-detail-unavailable-engineer-select');
             if (calFilter) calFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
             if (jobsFilter) jobsFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
-            if (todayFilter) todayFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+            if (todayFilter) {
+                const previousValue = todayFilter.value;
+                todayFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+                if (previousValue && (previousValue === 'ALL' || names.includes(previousValue))) {
+                    todayFilter.value = previousValue; // keep whatever they'd already picked
+                } else {
+                    const myName = getCurrentUserEngineerName();
+                    todayFilter.value = (myName && names.includes(myName)) ? myName : 'ALL';
+                }
+            }
             if (unavailableSelect) unavailableSelect.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
 
             const checklist = document.getElementById('job-engineers-checklist');
@@ -1821,6 +1921,24 @@
                             </div>`;
                         }).join('');
                 }
+
+                const quotesWithOnSiteAdditions = currentQuotes.filter(q =>
+                    (q.materials || []).some(m => m.addedOnSite && m.cost == null) || (q.pendingHoursAdditions || []).length > 0
+                );
+                const pendingAdditionsListEl = document.getElementById('dashboard-pending-additions-list');
+                if (pendingAdditionsListEl) {
+                    pendingAdditionsListEl.innerHTML = quotesWithOnSiteAdditions.length === 0 ? `<p class="text-xs text-slate-500 text-center py-6">Nothing pending.</p>` :
+                        quotesWithOnSiteAdditions.map(q => {
+                            const unpriced = (q.materials || []).filter(m => m.addedOnSite && m.cost == null);
+                            const pendingHours = q.pendingHoursAdditions || [];
+                            const parts = [...unpriced.map(m => `${m.desc} x${m.qty} (unpriced)`), ...pendingHours.map(h => `+${h.hours}h — ${h.reason}`)];
+                            return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                                <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${q.jobName} — ${q.clientDetailsPayload.name}</div><div class="text-[10px] text-amber-400 truncate">${parts.join('; ')}</div></div>
+                                <button onclick="loadQuoteForActiveModification('${q.id}')" class="text-[10px] font-bold bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-slate-700 cursor-pointer shrink-0">Price It In</button>
+                            </div>`;
+                        }).join('');
+                }
+
                 const followUpSection = document.getElementById('dashboard-owner-followup-section');
                 if (followUpSection) followUpSection.classList.remove('hidden');
             }
@@ -2337,23 +2455,42 @@
         }
 
         let activeJobDetailId = null;
-        let jobDetailTimerInterval = null;
+        let jobDetailTimerIntervals = {}; // keyed by array index, since engineer names aren't guaranteed DOM-id-safe
 
         function openJobDetailPage(jobId) {
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
             activeJobDetailId = jobId;
+            nonOwnerSessionAdditions = { materials: [], hours: [] };
             renderJobDetailPageContent(job);
             document.getElementById('job-detail-page-modal').classList.remove('hidden');
             lucide.createIcons();
         }
         function closeJobDetailPage() {
             document.getElementById('job-detail-page-modal').classList.add('hidden');
-            stopLiveJobTimer();
+            stopAllLiveJobTimerDisplays();
             activeJobDetailId = null;
             document.getElementById('job-detail-comments-section').classList.add('hidden');
             document.getElementById('job-detail-comments-text').value = '';
         }
+
+        // Per-engineer work state, backward-compatible with jobs saved before
+        // this existed (which had one flat status/timerStartedAt for the whole
+        // job) — mapped onto the first assigned engineer so old records still
+        // display sensibly rather than just losing that history.
+        function getEngineerJobState(job, engineerName) {
+            if (job.engineerState && job.engineerState[engineerName]) return job.engineerState[engineerName];
+            const engineers = getJobEngineers(job);
+            if (!job.engineerState && engineers[0] === engineerName && job.status && job.status !== 'Scheduled' && job.status !== 'Accepted') {
+                return { status: job.status === 'Started' ? 'Started' : 'Stopped', timerStartedAt: job.timerStartedAt || null, totalMinutes: 0 };
+            }
+            return { status: 'NotStarted', timerStartedAt: null, totalMinutes: 0 };
+        }
+        function formatMinutesLong(totalMinutes) {
+            const h = Math.floor(totalMinutes / 60), m = Math.round(totalMinutes % 60);
+            return h > 0 ? `${h}h ${m}m` : `${m}m`;
+        }
+
         function renderJobDetailPageContent(job) {
             const colors = getJobStatusColorClasses(job.status);
             document.getElementById('job-detail-title').innerText = job.title;
@@ -2362,58 +2499,78 @@
             const property = job.propertyId ? currentProperties.find(p => p.id === job.propertyId) : null;
             document.getElementById('job-detail-hazard-warning').innerHTML = property ? buildHazardBadgesHtml(property) : '';
 
-            const addressLine = job.propertyAddress || 'No property linked';
-            document.getElementById('job-detail-address-text').innerText = addressLine;
-            document.getElementById('job-detail-address-link').href = buildMapsLink(job.propertyAddress || '');
-
-            document.getElementById('job-detail-datetime').innerText = `${formatUkDate(job.date)} at ${job.time}`;
-            document.getElementById('job-detail-engineers').innerHTML = getJobEngineers(job).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
-
             const notesWrapper = document.getElementById('job-detail-notes-wrapper');
             if (job.notes) { notesWrapper.classList.remove('hidden'); document.getElementById('job-detail-notes').innerText = job.notes; }
             else { notesWrapper.classList.add('hidden'); }
 
-            const timerWrapper = document.getElementById('job-detail-timer-wrapper');
-            if (job.status === 'Started' && job.timerStartedAt) {
-                timerWrapper.classList.remove('hidden');
-                startLiveJobTimer(job.timerStartedAt);
-            } else {
-                timerWrapper.classList.add('hidden');
-                stopLiveJobTimer();
-            }
+            const addressLine = job.propertyAddress || 'No property linked';
+            document.getElementById('job-detail-address-text').innerText = addressLine;
+            document.getElementById('job-detail-address-link').href = buildMapsLink(job.propertyAddress || '');
+            document.getElementById('job-detail-datetime').innerText = `${formatUkDate(job.date)} at ${job.time}`;
 
             renderJobDetailActionArea(job);
+            renderEngineerTimerCards(job);
+            renderJobMaterialsPicker();
         }
         function renderJobDetailActionArea(job) {
             const area = document.getElementById('job-detail-action-area');
             document.getElementById('job-detail-comments-section').classList.add('hidden');
             if (job.status === 'Scheduled') {
                 area.innerHTML = `<button onclick="acceptJob('${job.id}')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="thumbs-up" class="w-4 h-4"></i> Accept Job</button>`;
-            } else if (job.status === 'Accepted') {
-                area.innerHTML = `<button onclick="startJob('${job.id}')" class="w-full bg-orange-500 hover:bg-orange-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="play" class="w-4 h-4"></i> Start Job</button>`;
-            } else if (job.status === 'Started') {
-                area.innerHTML = `<button onclick="beginJobCompletion('${job.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="flag" class="w-4 h-4"></i> Complete Job</button>`;
             } else if (job.status === 'Completed') {
-                const durationText = (job.timerStartedAt && job.timerStoppedAt) ? formatElapsedTime(new Date(job.timerStoppedAt) - new Date(job.timerStartedAt)) : null;
+                const totalAllEngineers = getJobEngineers(job).reduce((sum, name) => sum + (getEngineerJobState(job, name).totalMinutes || 0), 0);
                 area.innerHTML = `<div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-center space-y-1">
                     <div class="text-xs font-bold text-emerald-400">Job Completed</div>
-                    ${durationText ? `<div class="text-[11px] text-slate-400">Time on job: ${durationText}</div>` : ''}
+                    ${totalAllEngineers > 0 ? `<div class="text-[11px] text-slate-400">Total time logged: ${formatMinutesLong(totalAllEngineers)}</div>` : ''}
                     <div class="text-[11px] text-slate-400">${job.signature ? 'Signed off by client' : 'No signature on file'}</div>
                 </div>`;
+            } else if (job.status === 'Cancelled') {
+                area.innerHTML = `<div class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center text-xs text-slate-400">Job Cancelled</div>`;
             } else {
-                area.innerHTML = '';
+                // Accepted or Started — per-engineer cards below handle the actual
+                // work timers; this closes the whole job out once ready.
+                area.innerHTML = `<button onclick="beginJobCompletion('${job.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="flag" class="w-4 h-4"></i> Complete Job</button>`;
             }
         }
-        function startLiveJobTimer(startedAtISO) {
-            stopLiveJobTimer();
-            const display = document.getElementById('job-detail-timer-display');
-            const startedAtMs = new Date(startedAtISO).getTime();
-            const tick = () => { if (display) display.innerText = formatElapsedTime(Date.now() - startedAtMs); };
-            tick();
-            jobDetailTimerInterval = setInterval(tick, 1000);
+        function renderEngineerTimerCards(job) {
+            const container = document.getElementById('job-detail-engineer-timers');
+            stopAllLiveJobTimerDisplays();
+            if (job.status === 'Scheduled' || job.status === 'Completed' || job.status === 'Cancelled') {
+                container.innerHTML = '';
+                return;
+            }
+            const engineers = getJobEngineers(job);
+            container.innerHTML = engineers.map((name, idx) => {
+                const state = getEngineerJobState(job, name);
+                const colors = getEngineerColorClass(name);
+                const totalDisplay = state.totalMinutes > 0 ? `<div class="text-[10px] text-slate-500">Logged so far: ${formatMinutesLong(state.totalMinutes)}</div>` : '';
+                let controlHtml;
+                if (state.status === 'Started' && state.timerStartedAt) {
+                    controlHtml = `<div class="text-lg font-black font-mono text-white" id="engineer-timer-${idx}">00:00:00</div>
+                        <button onclick="stopEngineerTimer('${job.id}', '${name.replace(/'/g, "\\'")}')" class="text-[10px] font-bold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg cursor-pointer">Stop</button>`;
+                } else {
+                    controlHtml = `<button onclick="startEngineerTimer('${job.id}', '${name.replace(/'/g, "\\'")}')" class="text-[10px] font-bold bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 px-3 py-1.5 rounded-lg cursor-pointer flex items-center gap-1"><i data-lucide="play" class="w-3 h-3"></i> Start</button>`;
+                }
+                return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                    <div class="min-w-0"><span class="text-xs font-bold px-2 py-1 rounded border ${colors.badge}">${name}</span>${totalDisplay}</div>
+                    <div class="flex items-center gap-2 shrink-0">${controlHtml}</div>
+                </div>`;
+            }).join('');
+            engineers.forEach((name, idx) => {
+                const state = getEngineerJobState(job, name);
+                if (state.status === 'Started' && state.timerStartedAt) startLiveEngineerTimerDisplay(idx, state.timerStartedAt);
+            });
+            lucide.createIcons();
         }
-        function stopLiveJobTimer() {
-            if (jobDetailTimerInterval) { clearInterval(jobDetailTimerInterval); jobDetailTimerInterval = null; }
+        function startLiveEngineerTimerDisplay(idx, startedAtISO) {
+            const startedAtMs = new Date(startedAtISO).getTime();
+            const tick = () => { const el = document.getElementById(`engineer-timer-${idx}`); if (el) el.innerText = formatElapsedTime(Date.now() - startedAtMs); };
+            tick();
+            jobDetailTimerIntervals[idx] = setInterval(tick, 1000);
+        }
+        function stopAllLiveJobTimerDisplays() {
+            Object.values(jobDetailTimerIntervals).forEach(id => clearInterval(id));
+            jobDetailTimerIntervals = {};
         }
 
         async function acceptJob(jobId) {
@@ -2426,11 +2583,42 @@
             // non-owner login, which never has client data loaded).
             if (isOwnerLoggedIn()) sendOnMyWayMessage(jobId);
         }
-        async function startJob(jobId) {
-            const startedAt = new Date().toISOString();
-            await db.collection('jobs').doc(jobId).update({ status: 'Started', timerStartedAt: startedAt });
+        async function startEngineerTimer(jobId, engineerName) {
             const job = currentJobs.find(j => j.id === jobId);
-            if (job) renderJobDetailPageContent({ ...job, status: 'Started', timerStartedAt: startedAt });
+            if (!job) return;
+            const state = getEngineerJobState(job, engineerName);
+            const newEngineerState = { ...(job.engineerState || {}), [engineerName]: { status: 'Started', timerStartedAt: new Date().toISOString(), totalMinutes: state.totalMinutes || 0 } };
+            const newJobStatus = job.status === 'Accepted' ? 'Started' : job.status;
+            await db.collection('jobs').doc(jobId).update({ engineerState: newEngineerState, status: newJobStatus });
+            renderJobDetailPageContent({ ...job, engineerState: newEngineerState, status: newJobStatus });
+        }
+        async function stopEngineerTimer(jobId, engineerName) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const state = getEngineerJobState(job, engineerName);
+            if (state.status !== 'Started' || !state.timerStartedAt) return;
+            const elapsedMinutes = Math.round((Date.now() - new Date(state.timerStartedAt).getTime()) / 60000);
+            const newEngineerState = { ...(job.engineerState || {}), [engineerName]: { status: 'Stopped', timerStartedAt: null, totalMinutes: (state.totalMinutes || 0) + Math.max(0, elapsedMinutes) } };
+            await db.collection('jobs').doc(jobId).update({ engineerState: newEngineerState });
+            renderJobDetailPageContent({ ...job, engineerState: newEngineerState });
+        }
+        // Stops (and compounds the elapsed time of) any engineer timers still
+        // running when the job as a whole gets completed/rebooked/add-timed —
+        // nobody's clock should keep running once the job page moves on.
+        async function stopAllRunningEngineerTimersForJob(job) {
+            const engineers = getJobEngineers(job);
+            const newEngineerState = { ...(job.engineerState || {}) };
+            let changed = false;
+            engineers.forEach(name => {
+                const state = getEngineerJobState(job, name);
+                if (state.status === 'Started' && state.timerStartedAt) {
+                    const elapsedMinutes = Math.round((Date.now() - new Date(state.timerStartedAt).getTime()) / 60000);
+                    newEngineerState[name] = { status: 'Stopped', timerStartedAt: null, totalMinutes: (state.totalMinutes || 0) + Math.max(0, elapsedMinutes) };
+                    changed = true;
+                }
+            });
+            if (changed) await db.collection('jobs').doc(job.id).update({ engineerState: newEngineerState });
+            return newEngineerState;
         }
         function beginJobCompletion(jobId) {
             document.getElementById('job-detail-comments-section').classList.remove('hidden');
@@ -2441,13 +2629,10 @@
             const job = currentJobs.find(j => j.id === jobId);
             if (!job || !jobId) return;
             const comments = document.getElementById('job-detail-comments-text').value.trim();
-            const stoppedAt = new Date().toISOString();
-            stopLiveJobTimer();
+            const settledEngineerState = await stopAllRunningEngineerTimersForJob(job);
 
             if (outcome === 'Completed') {
-                await db.collection('jobs').doc(jobId).update({
-                    operativeComments: comments, completionOutcome: 'Completed', timerStoppedAt: stoppedAt,
-                });
+                await db.collection('jobs').doc(jobId).update({ operativeComments: comments, completionOutcome: 'Completed' });
                 // Signature capture already stops here with its own Save flow —
                 // the job is marked Completed once that's actually saved, not
                 // before, so a job never shows "done" without being signed off
@@ -2458,17 +2643,178 @@
             } else {
                 const newDateRaw = prompt(outcome === 'Rebook' ? 'Rebook for which date? (YYYY-MM-DD)' : 'Additional visit date? (YYYY-MM-DD)', job.date);
                 if (!newDateRaw) return; // cancelled the prompt — leave the job as-is rather than losing their comments silently
+                // Each engineer's totalMinutes carries over untouched — only
+                // their per-visit status resets, so time compounds across
+                // visits rather than resetting to zero each time.
+                const resetEngineerState = {};
+                getJobEngineers(job).forEach(name => {
+                    const state = settledEngineerState[name] || getEngineerJobState(job, name);
+                    resetEngineerState[name] = { status: 'NotStarted', timerStartedAt: null, totalMinutes: state.totalMinutes || 0 };
+                });
                 await db.collection('jobs').doc(jobId).update({
-                    status: 'Scheduled', date: newDateRaw, timerStartedAt: null, timerStoppedAt: null,
-                    operativeComments: comments, completionOutcome: outcome, acceptedAt: null,
+                    status: 'Accepted', date: newDateRaw, engineerState: resetEngineerState,
+                    operativeComments: comments, completionOutcome: outcome,
                 });
                 closeJobDetailPage();
-                alert(`Job ${outcome === 'Rebook' ? 're-booked' : 'flagged for another visit'} for ${formatUkDate(newDateRaw)}.`);
+                alert(`Job ${outcome === 'Rebook' ? 're-booked' : 'flagged for another visit'} for ${formatUkDate(newDateRaw)}. Logged time so far carries over.`);
             }
         }
         // Set right before opening the signature modal from resolveJobOutcome,
         // so we know to actually mark the job Completed once they save it.
         let pendingJobCompletionAfterSignature = null;
+
+        // ============================================================
+        // ON-SITE MATERIALS / HOURS -> AUTO-APPLIED TO THE LINKED QUOTE
+        // Owner: full real stock list with prices, adds straight into the
+        // quote and recalculates its total live.
+        // Non-owner: the cost-stripped stockPublic mirror only, adds an
+        // unpriced line via a Firestore rule that permits ONLY this narrow
+        // append — they can never read the quote itself, so no pricing is
+        // ever exposed to them at any point in this flow.
+        // ============================================================
+        let nonOwnerSessionAdditions = { materials: [], hours: [] }; // non-owners can't read the quote back, so this is just local confirmation of what THEY added this session
+
+        function switchJobAdditionsSubtab(tab) {
+            document.getElementById('job-additions-materials-panel').classList.toggle('hidden', tab !== 'materials');
+            document.getElementById('job-additions-hours-panel').classList.toggle('hidden', tab !== 'hours');
+            const matBtn = document.getElementById('btn-job-additions-materials'), hrBtn = document.getElementById('btn-job-additions-hours');
+            matBtn.classList.toggle('bg-amber-500', tab === 'materials'); matBtn.classList.toggle('text-slate-950', tab === 'materials'); matBtn.classList.toggle('text-slate-400', tab !== 'materials');
+            hrBtn.classList.toggle('bg-amber-500', tab === 'hours'); hrBtn.classList.toggle('text-slate-950', tab === 'hours'); hrBtn.classList.toggle('text-slate-400', tab !== 'hours');
+            if (tab === 'materials') renderJobMaterialsPicker();
+            else renderJobHoursAddedList(currentJobs.find(j => j.id === activeJobDetailId));
+        }
+        function recalculateQuoteFinancialsAfterAddition(quote, updatedMaterials, laborCosts) {
+            const netMaterialsExVat = updatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost || 0) * curr.qty), 0);
+            const materialsVat = netMaterialsExVat * 0.20;
+            const netMaterialsIncVat = netMaterialsExVat + materialsVat;
+            const markup = quote.financials.markupApplied || currentPricing.markup || 0;
+            const markedMaterials = netMaterialsIncVat * (1 + (markup / 100));
+            const testingCosts = quote.financials.testingCosts || 0;
+            return { ...quote.financials, netMaterialsExVat, materialsVat, markedMaterials, laborCosts, grossTotal: markedMaterials + laborCosts + testingCosts };
+        }
+        function renderJobMaterialsPicker() {
+            const jobId = activeJobDetailId;
+            if (!jobId) return;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const noQuoteNotice = document.getElementById('job-no-quote-notice');
+            if (noQuoteNotice) noQuoteNotice.classList.toggle('hidden', !!job.linkedQuoteId);
+            const ownerNote = document.getElementById('job-additions-owner-note'), nonOwnerNote = document.getElementById('job-additions-nonowner-note');
+            if (ownerNote) ownerNote.classList.toggle('hidden', !isOwnerLoggedIn());
+            if (nonOwnerNote) nonOwnerNote.classList.toggle('hidden', isOwnerLoggedIn());
+
+            const searchInput = document.getElementById('job-material-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const listEl = document.getElementById('job-materials-picker-list');
+            if (!listEl) return;
+            const sourceList = isOwnerLoggedIn() ? currentStock : currentStockPublic;
+            const filtered = (filterText ? sourceList.filter(i => i.desc.toLowerCase().includes(filterText) || i.sku.toLowerCase().includes(filterText)) : sourceList).slice(0, 15);
+
+            listEl.innerHTML = filtered.map(item => `
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-2 flex items-center justify-between gap-2">
+                    <div class="min-w-0 text-[11px] text-slate-300 truncate">${item.desc} ${isOwnerLoggedIn() ? `<span class="text-slate-500 font-mono">£${parseFloat(item.cost).toFixed(2)}</span>` : ''}</div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <input type="number" min="1" value="1" id="job-mat-qty-${item.id}" class="w-12 bg-slate-950 border border-slate-700 rounded text-center text-[11px] text-white p-1">
+                        <button onclick="addMaterialToJob('${item.id}')" class="text-[10px] font-bold bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1 rounded cursor-pointer">Add</button>
+                    </div>
+                </div>`).join('');
+            renderJobAddedMaterialsList(job);
+        }
+        async function addMaterialToJob(stockItemId) {
+            const jobId = activeJobDetailId;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const qtyInput = document.getElementById(`job-mat-qty-${stockItemId}`);
+            const qty = parseInt(qtyInput ? qtyInput.value : 1) || 1;
+
+            if (isOwnerLoggedIn()) {
+                const stockItem = currentStock.find(s => s.id === stockItemId);
+                if (!stockItem) return;
+                if (!job.linkedQuoteId) { alert("No quote linked to this job yet — it'll apply automatically once one is."); return; }
+                const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
+                if (!quote) { alert('Linked quote could not be found.'); return; }
+                const newMaterial = { id: stockItem.id, sku: stockItem.sku, desc: stockItem.desc, cost: stockItem.cost, category: stockItem.category, qty, addedOnSite: true, addedAt: new Date().toISOString() };
+                const updatedMaterials = [...(quote.materials || []), newMaterial];
+                const newFinancials = recalculateQuoteFinancialsAfterAddition(quote, updatedMaterials, quote.financials.laborCosts);
+                await db.collection('quotes').doc(quote.id).update({ materials: updatedMaterials, financials: newFinancials });
+            } else {
+                const publicItem = currentStockPublic.find(s => s.id === stockItemId);
+                if (!publicItem) return;
+                if (!job.linkedQuoteId) { alert('No quote linked to this job yet — ask the owner to check the property/client link, then try again shortly.'); return; }
+                const newMaterial = { id: publicItem.id, sku: publicItem.sku, desc: publicItem.desc, cost: null, category: publicItem.category, qty, addedOnSite: true, addedAt: new Date().toISOString(), addedByNonOwner: true };
+                try {
+                    await db.collection('quotes').doc(job.linkedQuoteId).update({ materials: firebase.firestore.FieldValue.arrayUnion(newMaterial) });
+                    nonOwnerSessionAdditions.materials.push(newMaterial);
+                } catch (err) {
+                    console.error('Failed to add material on-site:', err);
+                    alert('Could not add this — please tell the owner.');
+                    return;
+                }
+            }
+            renderJobMaterialsPicker();
+        }
+        function renderJobAddedMaterialsList(job) {
+            const listEl = document.getElementById('job-materials-added-list');
+            if (!listEl) return;
+            if (isOwnerLoggedIn() && job.linkedQuoteId) {
+                const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
+                const onSiteItems = quote ? (quote.materials || []).filter(m => m.addedOnSite) : [];
+                listEl.innerHTML = onSiteItems.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added on-site:</div>` + onSiteItems.map(m => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 flex items-center justify-between gap-2">
+                        <div class="text-[11px] text-slate-300">${m.desc} x${m.qty}</div>
+                        <span class="text-[10px] font-mono ${m.cost == null ? 'text-amber-400' : 'text-slate-400'}">${m.cost == null ? 'Unpriced' : '£' + (parseFloat(m.cost) * m.qty).toFixed(2)}</span>
+                    </div>`).join('');
+            } else {
+                listEl.innerHTML = nonOwnerSessionAdditions.materials.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added this session:</div>` + nonOwnerSessionAdditions.materials.map(m => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-[11px] text-slate-300">${m.desc} x${m.qty}</div>`).join('');
+            }
+        }
+        async function submitJobHoursAddition() {
+            const jobId = activeJobDetailId;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const hours = parseFloat(document.getElementById('job-addition-hours').value);
+            const reason = document.getElementById('job-addition-hours-reason').value.trim();
+            if (!hours || hours <= 0) { alert('Enter how many additional hours.'); return; }
+
+            if (isOwnerLoggedIn()) {
+                if (!job.linkedQuoteId) { alert("No quote linked to this job yet — it'll apply automatically once one is."); return; }
+                const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
+                if (!quote) { alert('Linked quote could not be found.'); return; }
+                const additionalCost = hours * (currentPricing.rateHourNext || 45);
+                const newLaborCosts = (quote.financials.laborCosts || 0) + additionalCost;
+                const newFinancials = recalculateQuoteFinancialsAfterAddition(quote, quote.materials || [], newLaborCosts);
+                await db.collection('quotes').doc(quote.id).update({ financials: newFinancials });
+                alert(`Added ${hours}h (£${additionalCost.toFixed(2)}) to the quote.`);
+            } else {
+                if (!job.linkedQuoteId) { alert('No quote linked to this job yet — ask the owner to check the property/client link.'); return; }
+                const newEntry = { hours, reason: reason || 'Additional time needed', requestedAt: new Date().toISOString() };
+                try {
+                    await db.collection('quotes').doc(job.linkedQuoteId).update({ pendingHoursAdditions: firebase.firestore.FieldValue.arrayUnion(newEntry) });
+                    nonOwnerSessionAdditions.hours.push(newEntry);
+                } catch (err) {
+                    console.error('Failed to add hours on-site:', err);
+                    alert('Could not add this — please tell the owner.');
+                    return;
+                }
+            }
+            document.getElementById('job-addition-hours').value = '';
+            document.getElementById('job-addition-hours-reason').value = '';
+            renderJobHoursAddedList(job);
+        }
+        function renderJobHoursAddedList(job) {
+            const listEl = document.getElementById('job-hours-added-list');
+            if (!listEl || !job) return;
+            if (isOwnerLoggedIn() && job.linkedQuoteId) {
+                const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
+                const pending = quote ? (quote.pendingHoursAdditions || []) : [];
+                listEl.innerHTML = pending.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Flagged by non-owner, not yet priced in:</div>` + pending.map(h => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-[11px] text-amber-400">+${h.hours}h — ${h.reason}</div>`).join('');
+            } else {
+                listEl.innerHTML = nonOwnerSessionAdditions.hours.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added this session:</div>` + nonOwnerSessionAdditions.hours.map(h => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-[11px] text-slate-300">+${h.hours}h — ${h.reason}</div>`).join('');
+            }
+        }
 
         function buildJobActionButtons(j) {
             const quickActions = j.status === 'Scheduled' ? `
@@ -3826,16 +4172,30 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const tbody = document.getElementById('allocated-materials-body');
             if (!tbody) return;
             if (activeAllocatedMaterials.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">No items selected.</td></tr>`; calculateComprehensiveMetrics(); return; }
-            tbody.innerHTML = activeAllocatedMaterials.map(item => `
-                <tr class="border-b border-slate-800 text-xs text-slate-200">
-                    <td class="py-3 px-2"><div>${item.desc}</div><div class="text-[10px] font-mono text-slate-500 mt-0.5">${item.sku}</div></td>
+            tbody.innerHTML = activeAllocatedMaterials.map(item => {
+                const isUnpriced = item.cost == null;
+                const costCell = isUnpriced
+                    ? `<input type="number" step="0.01" min="0" placeholder="Set price" onchange="setUnpricedItemCost('${item.id}', this.value)" class="w-20 bg-amber-500/10 border border-amber-500/50 text-right rounded p-1 font-mono text-amber-400 text-xs">`
+                    : `£${parseFloat(item.cost).toFixed(2)}`;
+                const subtotalCell = isUnpriced ? `<span class="text-amber-400">Needs price</span>` : `£${(parseFloat(item.cost) * item.qty).toFixed(2)}`;
+                return `
+                <tr class="border-b border-slate-800 text-xs text-slate-200 ${isUnpriced ? 'bg-amber-500/5' : ''}">
+                    <td class="py-3 px-2"><div>${item.desc} ${isUnpriced ? '<span class="text-[9px] font-bold text-amber-400 uppercase ml-1">Added on-site</span>' : ''}</div><div class="text-[10px] font-mono text-slate-500 mt-0.5">${item.sku}</div></td>
                     <td class="py-3 px-2 text-center"><input type="number" value="${item.qty}" min="1" onchange="updateAllocationQty('${item.id}', this.value)" class="w-12 bg-slate-900 border border-slate-700 text-center rounded p-1 font-mono text-white"></td>
-                    <td class="py-3 px-2 text-right font-mono">£${parseFloat(item.cost).toFixed(2)}</td>
-                    <td class="py-3 px-2 text-right font-mono font-bold text-white">£${(parseFloat(item.cost) * item.qty).toFixed(2)}</td>
+                    <td class="py-3 px-2 text-right font-mono">${costCell}</td>
+                    <td class="py-3 px-2 text-right font-mono font-bold text-white">${subtotalCell}</td>
                     <td class="py-3 px-2 text-center"><button onclick="activeAllocatedMaterials=activeAllocatedMaterials.filter(i=>i.id!='${item.id}');rebuildAllocatedMaterialsTable();" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></td>
-                </tr>`).join('');
+                </tr>`;
+            }).join('');
             lucide.createIcons();
             calculateComprehensiveMetrics();
+        }
+        function setUnpricedItemCost(itemId, newCost) {
+            const idx = activeAllocatedMaterials.findIndex(i => i.id === itemId);
+            if (idx === -1) return;
+            const cost = parseFloat(newCost);
+            activeAllocatedMaterials[idx].cost = isNaN(cost) ? 0 : cost;
+            rebuildAllocatedMaterialsTable();
         }
         function allocateOneOffItemToQuote() {
             const descInput = document.getElementById('oneoff-desc'), costInput = document.getElementById('oneoff-cost'), qtyInput = document.getElementById('oneoff-qty');
@@ -3847,7 +4207,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         }
 
         function calculateComprehensiveMetrics() {
-            const netMaterialsExVat = activeAllocatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost) * curr.qty), 0);
+            const netMaterialsExVat = activeAllocatedMaterials.reduce((acc, curr) => acc + ((parseFloat(curr.cost) || 0) * curr.qty), 0);
             const materialsVat = netMaterialsExVat * 0.20;
             const netMaterialsIncVat = netMaterialsExVat + materialsVat;
             const markup = currentPricing.markup || 0;
