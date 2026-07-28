@@ -166,6 +166,17 @@
                         <div id="dashboard-upcoming-jobs-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
                 </div>
+
+                <div id="dashboard-owner-followup-section" class="owner-only-tab hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4"><i data-lucide="clock-alert" class="text-amber-400 w-5 h-5"></i> Quotes Needing Follow-Up</h2>
+                        <div id="dashboard-stale-quotes-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4"><i data-lucide="user-round-x" class="text-amber-400 w-5 h-5"></i> Gone Quiet (1yr+)</h2>
+                        <div id="dashboard-gone-quiet-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
+                </div>
             </div>
 
             <div id="calendar-tab" class="tab-content space-y-6">
@@ -201,9 +212,10 @@
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Property</label>
                                 <input type="text" id="job-property-search-input" oninput="filterJobPropertyDropdown()" placeholder="Search properties..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 mb-1.5">
-                                <select id="job-property-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                <select id="job-property-select" onchange="renderJobPropertyHazardWarning()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                                     <option value="">-- None / Not linked --</option>
                                 </select>
+                                <div id="job-property-hazard-warning" class="hidden mt-2 p-2.5 rounded-lg hazard-stripe border border-amber-500"></div>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Assigned Engineer(s) *</label>
@@ -287,6 +299,11 @@
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Access Notes (keysafe / gate codes)</label>
                                 <textarea id="property-notes" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="Keysafe code 1234, gate code #56, dog on site..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Hazards / Site Warnings</label>
+                                <div id="property-hazard-checklist" class="grid grid-cols-2 gap-1.5 bg-slate-900 border border-slate-700 rounded-xl p-3"></div>
+                                <input type="text" id="property-hazard-other" placeholder="Other hazard (optional)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 mt-2">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Last Electrical Inspection (EICR)</label>
@@ -536,9 +553,15 @@
                     <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                             <h2 class="text-lg font-bold text-white">Quotes & Invoices</h2>
-                            <button id="btn-generate-shopping-list" onclick="openShoppingListModal()" class="bg-slate-800 text-slate-400 opacity-50 cursor-not-allowed px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
-                                <i data-lucide="clipboard-list" class="w-4 h-4"></i> <span id="shopping-btn-text">Generate Shopping List</span>
-                            </button>
+                            <div class="flex items-center gap-3">
+                                <label class="flex items-center gap-1.5 text-xs text-slate-400 cursor-pointer select-none">
+                                    <input type="checkbox" id="vault-show-archived-toggle" onchange="rebuildVaultDataTable()" class="w-3.5 h-3.5 rounded bg-slate-900 border-slate-700 text-amber-500 cursor-pointer">
+                                    Show Archived
+                                </label>
+                                <button id="btn-generate-shopping-list" onclick="openShoppingListModal()" class="bg-slate-800 text-slate-400 opacity-50 cursor-not-allowed px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
+                                    <i data-lucide="clipboard-list" class="w-4 h-4"></i> <span id="shopping-btn-text">Generate Shopping List</span>
+                                </button>
+                            </div>
                         </div>
                         <div id="vault-empty-state" class="text-center py-16 text-slate-500 text-sm">
                             <i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Vault is empty.
@@ -1295,6 +1318,21 @@
                 db.collection('quotes').doc(q.id).update(fix);
             });
         }
+        const ARCHIVE_AFTER_DAYS = 365;
+        // Archiving is purely a decluttering flag — archived quotes stay in
+        // Firestore untouched, still show in CRM client history, and are
+        // still fully reachable in the Vault via the "Show Archived" toggle.
+        // Never deleted, nothing here is destructive.
+        function autoArchiveOldPaidQuotes(allDocs) {
+            const now = Date.now();
+            allDocs.forEach(q => {
+                if (q.archived || q.status !== 'Paid') return;
+                const ageDays = (now - parseUkTimestamp(q.timestamp)) / 86400000;
+                if (ageDays < ARCHIVE_AFTER_DAYS) return;
+                q.archived = true;
+                db.collection('quotes').doc(q.id).update({ archived: true });
+            });
+        }
 
         function startFirestoreListeners() {
             // --- Shared collections (everyone) ---
@@ -1374,6 +1412,7 @@
                 db.collection('quotes').onSnapshot((snapshot) => {
                     const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     repairLegacyImportedQuotes(allDocs);
+                    autoArchiveOldPaidQuotes(allDocs);
                     currentQuotes = allDocs.filter(q => !q.deleted);
                     trashQuotes = allDocs.filter(q => q.deleted);
                     purgeOldTrashItems('quotes', trashQuotes);
@@ -1648,6 +1687,52 @@
                     `;
                     lucide.createIcons();
                 }
+
+                const STALE_QUOTE_DAYS = 7;
+                const GONE_QUIET_DAYS = 365;
+                const now = Date.now();
+
+                const staleQuotes = currentQuotes.filter(q => q.status === 'Sent' && (now - parseUkTimestamp(q.timestamp)) / 86400000 >= STALE_QUOTE_DAYS)
+                    .sort((a, b) => parseUkTimestamp(a.timestamp) - parseUkTimestamp(b.timestamp));
+                const staleListEl = document.getElementById('dashboard-stale-quotes-list');
+                if (staleListEl) {
+                    staleListEl.innerHTML = staleQuotes.length === 0 ? `<p class="text-xs text-slate-500 text-center py-6">Nothing waiting on a follow-up.</p>` :
+                        staleQuotes.map(q => {
+                            const daysWaiting = Math.floor((now - parseUkTimestamp(q.timestamp)) / 86400000);
+                            return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                                <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${q.clientDetailsPayload.name} — ${q.jobName}</div><div class="text-[10px] text-slate-500">Sent ${daysWaiting} days ago • £${q.financials.grossTotal.toFixed(2)}</div></div>
+                                <button onclick="loadQuoteForActiveModification('${q.id}')" class="text-[10px] font-bold bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-slate-700 cursor-pointer shrink-0">Review</button>
+                            </div>`;
+                        }).join('');
+                }
+
+                const clientLastActivity = {};
+                currentQuotes.forEach(q => {
+                    if (!q.linkedClientId) return;
+                    const t = parseUkTimestamp(q.timestamp);
+                    if (!clientLastActivity[q.linkedClientId] || t > clientLastActivity[q.linkedClientId]) clientLastActivity[q.linkedClientId] = t;
+                });
+                const goneQuietClients = currentClients.filter(c => {
+                    const lastActivity = clientLastActivity[c.id];
+                    if (!lastActivity) return false; // never had a job — not "gone quiet", just never active yet
+                    return (now - lastActivity) / 86400000 >= GONE_QUIET_DAYS;
+                }).sort((a, b) => clientLastActivity[a.id] - clientLastActivity[b.id]);
+                const goneQuietListEl = document.getElementById('dashboard-gone-quiet-list');
+                if (goneQuietListEl) {
+                    goneQuietListEl.innerHTML = goneQuietClients.length === 0 ? `<p class="text-xs text-slate-500 text-center py-6">No clients have gone quiet.</p>` :
+                        goneQuietClients.map(c => {
+                            const monthsSince = Math.floor((now - clientLastActivity[c.id]) / 86400000 / 30);
+                            return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                                <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${c.name}</div><div class="text-[10px] text-slate-500">Last job ~${monthsSince} months ago</div></div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    ${c.phone ? `<a href="tel:${c.phone}" class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-slate-950 border border-slate-700"><i data-lucide="phone-call" class="w-3.5 h-3.5"></i></a>` : ''}
+                                    ${c.email ? `<a href="mailto:${c.email}" class="text-blue-400 hover:text-blue-300 p-1.5 rounded-lg bg-slate-950 border border-slate-700"><i data-lucide="mail" class="w-3.5 h-3.5"></i></a>` : ''}
+                                </div>
+                            </div>`;
+                        }).join('');
+                }
+                const followUpSection = document.getElementById('dashboard-owner-followup-section');
+                if (followUpSection) followUpSection.classList.remove('hidden');
             }
             lucide.createIcons();
         }
@@ -1781,7 +1866,7 @@
                 jobsThisDay.map(j => {
                     const badges = getJobEngineers(j).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
                     return `
-                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3 cursor-pointer hover:border-amber-500" onclick="closeDayDetailModal(); loadJobForModification('${j.id}'); switchTab('jobs-tab');">
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3 cursor-pointer hover:border-amber-500" onclick="closeDayDetailModal(); loadJobForModification('${j.id}');">
                         <div class="min-w-0"><div class="text-xs font-semibold text-slate-200">${j.time} — ${j.title}</div>${j.propertyAddress ? `<div class="text-[10px] text-slate-500 truncate">${j.propertyAddress.split('\\n')[0]}</div>` : ''}</div>
                         <div class="flex flex-wrap gap-1 justify-end shrink-0">${badges}</div>
                     </div>`; }).join('');
@@ -1917,6 +2002,20 @@
             jobPropertySelect.innerHTML = '<option value="">-- None / Not linked --</option>' +
                 filtered.map(p => `<option value="${p.id}">${(p.address || '').split('\\n')[0]}</option>`).join('');
             if (filtered.some(p => p.id === previousValue)) jobPropertySelect.value = previousValue;
+            renderJobPropertyHazardWarning();
+        }
+        function renderJobPropertyHazardWarning() {
+            const select = document.getElementById('job-property-select');
+            const warningEl = document.getElementById('job-property-hazard-warning');
+            if (!select || !warningEl) return;
+            const property = currentProperties.find(p => p.id === select.value);
+            const tags = property ? (property.hazardTags || []) : [];
+            const other = property ? property.hazardOther : null;
+            if (!property || (tags.length === 0 && !other)) { warningEl.classList.add('hidden'); warningEl.innerHTML = ''; return; }
+            const labels = [...tags.map(hazardKeyToLabel), ...(other ? [other] : [])].join(', ');
+            warningEl.innerHTML = `<span class="text-[11px] font-bold text-white flex items-center gap-1.5"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> This property is flagged: ${labels}</span>`;
+            warningEl.classList.remove('hidden');
+            lucide.createIcons();
         }
 
         function findPropertyIdByAddress(address) {
@@ -2036,6 +2135,7 @@
         function loadJobForModification(jobId) {
             const j = currentJobs.find(x => x.id === jobId);
             if (!j) return;
+            switchTab('jobs-tab');
             const searchInput = document.getElementById('job-property-search-input');
             if (searchInput) searchInput.value = '';
             filterJobPropertyDropdown();
@@ -2176,12 +2276,50 @@
                 statusEl.innerText = 'Lookup failed — this usually means a connection or browser-blocking issue, not a bad address. Check your connection and try again.';
             }
         }
+        const HAZARD_TAG_OPTIONS = [
+            { key: 'asbestos', label: 'Asbestos' },
+            { key: 'high_voltage', label: 'High Voltage / 3-Phase' },
+            { key: 'confined_space', label: 'Confined Space' },
+            { key: 'dog_on_site', label: 'Dog On Site' },
+            { key: 'vulnerable_occupant', label: 'Vulnerable Occupant' },
+        ];
+        function rebuildPropertyHazardChecklist() {
+            const container = document.getElementById('property-hazard-checklist');
+            if (!container) return;
+            container.innerHTML = HAZARD_TAG_OPTIONS.map(h => `
+                <label class="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                    <input type="checkbox" class="property-hazard-checkbox w-3.5 h-3.5 rounded bg-slate-950 border-slate-700 text-red-500 cursor-pointer" value="${h.key}">
+                    ${h.label}
+                </label>`).join('');
+        }
+        function getSelectedPropertyHazardsFromForm() {
+            return [...document.querySelectorAll('.property-hazard-checkbox:checked')].map(chk => chk.value);
+        }
+        function hazardKeyToLabel(key) {
+            const match = HAZARD_TAG_OPTIONS.find(h => h.key === key);
+            return match ? match.label : key;
+        }
+        // Small reusable badge row — used on property cards, the job form
+        // warning banner, and job list entries, so hazards stay visible
+        // everywhere they're actually relevant, not just on the property itself.
+        function buildHazardBadgesHtml(property) {
+            if (!property) return '';
+            const tags = property.hazardTags || [];
+            const other = property.hazardOther;
+            if (tags.length === 0 && !other) return '';
+            const badges = tags.map(key => `<span class="hazard-stripe text-[9px] font-bold uppercase px-2 py-0.5 rounded text-white border border-amber-500">${hazardKeyToLabel(key)}</span>`).join(' ');
+            const otherBadge = other ? `<span class="hazard-stripe text-[9px] font-bold uppercase px-2 py-0.5 rounded text-white border border-amber-500">${other}</span>` : '';
+            return `<div class="flex flex-wrap gap-1 mt-1">${badges}${otherBadge}</div>`;
+        }
+
         async function savePropertyConfig(event) {
             event.preventDefault();
             const editId = document.getElementById('property-id-field').value;
             const payload = {
                 address: document.getElementById('property-address').value.trim(),
                 notes: document.getElementById('property-notes').value.trim(),
+                hazardTags: getSelectedPropertyHazardsFromForm(),
+                hazardOther: document.getElementById('property-hazard-other').value.trim() || null,
                 lastElectricalInspection: document.getElementById('property-last-electrical').value || null,
                 electricalCycleYears: parseInt(document.getElementById('property-electrical-cycle').value) || 5,
                 lastSmokeAlarmTest: document.getElementById('property-last-smoke').value || null,
@@ -2207,6 +2345,10 @@
             document.getElementById('property-id-field').value = p.id;
             document.getElementById('property-address').value = p.address || '';
             document.getElementById('property-notes').value = p.notes || '';
+            rebuildPropertyHazardChecklist();
+            const hazardTags = p.hazardTags || [];
+            document.querySelectorAll('.property-hazard-checkbox').forEach(chk => { chk.checked = hazardTags.includes(chk.value); });
+            document.getElementById('property-hazard-other').value = p.hazardOther || '';
             document.getElementById('property-last-electrical').value = p.lastElectricalInspection || '';
             document.getElementById('property-electrical-cycle').value = String(p.electricalCycleYears || 5);
             document.getElementById('property-last-smoke').value = p.lastSmokeAlarmTest || '';
@@ -2222,6 +2364,8 @@
             document.getElementById('property-form').reset();
             document.getElementById('property-id-field').value = '';
             document.getElementById('property-electrical-cycle').value = '5';
+            rebuildPropertyHazardChecklist();
+            document.getElementById('property-hazard-other').value = '';
             capturedPropertyLat = null; capturedPropertyLng = null;
             document.getElementById('property-location-status').innerText = '';
             document.getElementById('property-form-title').innerText = 'Add Property';
@@ -2250,7 +2394,7 @@
                 const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
                 return `<div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06] space-y-3">
                     <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0"><div class="text-sm font-bold text-white whitespace-pre-line">${p.address}</div></div>
+                        <div class="min-w-0"><div class="text-sm font-bold text-white whitespace-pre-line">${p.address}</div>${buildHazardBadgesHtml(p)}</div>
                         <div class="flex items-center gap-1.5 shrink-0">
                             <button onclick="loadPropertyForModification('${p.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                             <button onclick="deleteProperty('${p.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
@@ -2596,7 +2740,7 @@
             resultsEl.innerHTML = [
                 buildSearchResultGroup('Clients', matchedClients.map(c => ({ label: c.name, sub: c.email || c.phone || '', onclick: `closeUniversalSearch(); switchTab('crm-tab'); loadCrmClientProfileForModification('${c.id}');` }))),
                 buildSearchResultGroup('Properties', matchedProperties.map(p => ({ label: (p.address || '').split('\\n')[0], sub: p.notes ? p.notes.split('\\n')[0] : '', onclick: `closeUniversalSearch(); switchTab('lookup-tab'); loadPropertyForModification('${p.id}');` }))),
-                buildSearchResultGroup('Jobs', matchedJobs.map(j => ({ label: j.title, sub: formatUkDate(j.date), onclick: `closeUniversalSearch(); switchTab('jobs-tab'); loadJobForModification('${j.id}');` }))),
+                buildSearchResultGroup('Jobs', matchedJobs.map(j => ({ label: j.title, sub: formatUkDate(j.date), onclick: `closeUniversalSearch(); loadJobForModification('${j.id}');` }))),
                 buildSearchResultGroup('Quotes & Invoices', matchedQuotes.map(q => ({ label: q.jobName, sub: (q.clientDetailsPayload && q.clientDetailsPayload.name) || '', onclick: `closeUniversalSearch(); switchTab('quote-tab'); loadQuoteForActiveModification('${q.id}');` }))),
             ].join('');
             lucide.createIcons();
@@ -2866,16 +3010,27 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const emptyState = document.getElementById('vault-empty-state');
             const table = document.getElementById('vault-table');
             if (!tbody) return;
-            const sorted = [...currentQuotes].sort((a, b) => parseUkTimestamp(b.timestamp) - parseUkTimestamp(a.timestamp));
-            if (sorted.length === 0) { emptyState.classList.remove('hidden'); table.classList.add('hidden'); return; }
+            const showArchivedToggle = document.getElementById('vault-show-archived-toggle');
+            const showArchived = showArchivedToggle ? showArchivedToggle.checked : false;
+            const visible = showArchived ? currentQuotes : currentQuotes.filter(q => !q.archived);
+            const sorted = [...visible].sort((a, b) => parseUkTimestamp(b.timestamp) - parseUkTimestamp(a.timestamp));
+            if (sorted.length === 0) {
+                emptyState.classList.remove('hidden'); table.classList.add('hidden');
+                const archivedCount = currentQuotes.filter(q => q.archived).length;
+                emptyState.innerHTML = (!showArchived && archivedCount > 0)
+                    ? `<i data-lucide="archive" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Everything here is archived — tick "Show Archived" above to see it.`
+                    : `<i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Vault is empty.`;
+                lucide.createIcons();
+                return;
+            }
             emptyState.classList.add('hidden'); table.classList.remove('hidden');
             const statusColors = { Draft: 'bg-slate-800 text-slate-400 border-slate-700', Sent: 'bg-blue-500/10 text-blue-400 border-blue-500/30', Approved: 'bg-purple-500/10 text-purple-400 border-purple-500/30', Invoiced: 'bg-amber-500/10 text-amber-400 border-amber-500/30', Paid: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' };
             tbody.innerHTML = sorted.map(r => {
                 const isInvoiceOrPaid = r.status === 'Invoiced' || r.status === 'Paid';
-                return `<tr class="hover:bg-slate-800/40 transition-colors">
+                return `<tr class="hover:bg-slate-800/40 transition-colors ${r.archived ? 'opacity-60' : ''}">
                     <td class="py-3 px-3 text-center"><input type="checkbox" onchange="toggleQuoteSelection('${r.id}', this.checked)" class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-amber-500 cursor-pointer"></td>
-                    <td class="py-3 px-3 text-xs"><div class="text-slate-300">${r.timestamp}</div><span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${statusColors[r.status] || statusColors.Draft}">${r.status}</span></td>
-                    <td class="py-3 px-3 text-xs"><div class="font-semibold text-white">${r.clientDetailsPayload.name}</div><div class="text-slate-500">${r.jobName}</div></td>
+                    <td class="py-3 px-3 text-xs"><div class="text-slate-300">${r.timestamp}</div><span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${statusColors[r.status] || statusColors.Draft}">${r.status}</span>${r.archived ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded border bg-slate-800 text-slate-500 border-slate-700 ml-1">Archived</span>` : ''}</td>
+                    <td class="py-3 px-3 text-xs"><div class="font-semibold text-white">${r.clientDetailsPayload.name}</div><div class="text-slate-500">${r.jobName}</div>${r.invoiceNumber ? `<div class="text-[10px] font-mono text-amber-400 mt-0.5">${r.invoiceNumber}</div>` : ''}</td>
                     <td class="py-3 px-3 text-right text-xs font-mono font-bold text-white">£${r.financials.grossTotal.toFixed(2)}</td>
                     <td class="py-3 px-3 text-center">
                         <select onchange="updateQuoteStatus('${r.id}', this.value)" class="bg-slate-900 border border-slate-700 rounded-lg text-[10px] px-2 py-1 text-slate-300">
@@ -2906,13 +3061,35 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('invoice-reconciliation-modal').classList.remove('hidden');
         }
         function closeInvoiceModal() { document.getElementById('invoice-reconciliation-modal').classList.add('hidden'); }
-        function confirmInvoiceConversion() {
+        async function confirmInvoiceConversion() {
             const id = document.getElementById('recon-quote-id').value;
             const actualMaterials = parseFloat(document.getElementById('recon-actual-materials').value) || 0;
             const actualLabor = parseFloat(document.getElementById('recon-actual-labor').value) || 0;
             const operative = document.getElementById('recon-operative-select').value;
-            db.collection('quotes').doc(id).update({ status: 'Invoiced', invoicingOperative: operative, actualCosts: { materials: actualMaterials, labor: actualLabor } });
-            closeInvoiceModal();
+            try {
+                const existing = currentQuotes.find(q => q.id === id);
+                const updatePayload = { status: 'Invoiced', invoicingOperative: operative, actualCosts: { materials: actualMaterials, labor: actualLabor } };
+
+                // Only assign a fresh sequential number the first time this
+                // quote becomes an invoice — re-confirming later (e.g. to
+                // correct actual costs) shouldn't burn a second number.
+                if (!existing || !existing.invoiceNumber) {
+                    const counterRef = db.collection('settings').doc('invoiceCounter');
+                    const assignedNumber = await db.runTransaction(async (transaction) => {
+                        const counterDoc = await transaction.get(counterRef);
+                        const nextNumber = counterDoc.exists ? counterDoc.data().nextNumber : 1;
+                        transaction.set(counterRef, { nextNumber: nextNumber + 1 });
+                        return nextNumber;
+                    });
+                    updatePayload.invoiceNumber = 'INV-' + String(assignedNumber).padStart(5, '0');
+                }
+
+                await db.collection('quotes').doc(id).update(updatePayload);
+                closeInvoiceModal();
+            } catch (err) {
+                console.error('Failed to convert to invoice:', err);
+                alert('Could not convert this to an invoice. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+            }
         }
         function openProfitModal(id) {
             const target = currentQuotes.find(q => q.id === id);
@@ -2965,8 +3142,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #1e3a8a;">${docPrefix}</h1>
                         <div style="font-size: 11px; color: #db2777; font-weight: 600; margin-top: 4px;">Submitted on ${documentDateLabel}</div>
                     </td><td style="vertical-align: top; text-align: right;">
-                        <div style="font-size: 12px; color: #64748b;">${docPrefix} ID</div>
-                        <div style="font-size: 14px; font-weight: 700; color: #1e293b; font-family: monospace;">${target.id}</div>
+                        <div style="font-size: 12px; color: #64748b;">${docPrefix} ${target.invoiceNumber ? 'Number' : 'ID'}</div>
+                        <div style="font-size: 14px; font-weight: 700; color: #1e293b; font-family: monospace;">${target.invoiceNumber || target.id}</div>
                     </td></tr></table>
                     <table style="width: 100%; margin-bottom: 25px;"><tr><td style="vertical-align: top; width: 50%;">
                         <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Billed To</div>
@@ -2989,7 +3166,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     </td></tr></table>
                 </div>`;
 
-            const filename = `${docPrefix.toLowerCase()}_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${target.id}.pdf`;
+            const filename = `${docPrefix.toLowerCase()}_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${target.invoiceNumber || target.id}.pdf`;
             const renderOverlay = document.createElement('div');
             renderOverlay.style.cssText = 'position:fixed; inset:0; background:#0f172a; z-index:99999; display:flex; align-items:center; justify-content:center; color:#f59e0b; font-family:sans-serif; font-size:14px;';
             renderOverlay.innerText = 'Generating PDF...';
@@ -3982,6 +4159,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
 
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
+            rebuildPropertyHazardChecklist();
         });
     </script>
 </body>
