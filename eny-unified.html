@@ -2530,7 +2530,6 @@
         }
 
         let activeJobDetailId = null;
-        let jobDetailTimerIntervals = {}; // keyed by array index, since engineer names aren't guaranteed DOM-id-safe
 
         function openJobDetailPage(jobId) {
             const job = currentJobs.find(j => j.id === jobId);
@@ -2601,6 +2600,7 @@
             const area = document.getElementById('job-detail-action-area');
             if (jobDetailShowingCompletionForm) return; // leave the open comments form alone — don't let a background re-render reset it
             document.getElementById('job-detail-comments-section').classList.add('hidden');
+            stopLiveMyTimerDisplay();
             if (job.status === 'Scheduled') {
                 area.innerHTML = `<button onclick="acceptJob('${job.id}')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="thumbs-up" class="w-4 h-4"></i> Accept Job</button>`;
             } else if (job.status === 'Completed') {
@@ -2613,45 +2613,54 @@
             } else if (job.status === 'Cancelled') {
                 area.innerHTML = `<div class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center text-xs text-slate-400">Job Cancelled</div>`;
             } else {
-                // Accepted or Started — per-engineer cards below handle the actual
-                // work timers; this closes the whole job out once ready.
-                area.innerHTML = `<button onclick="beginJobCompletion('${job.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="flag" class="w-4 h-4"></i> Complete Job</button>`;
+                // Accepted or Started — Start/timer here is specifically MY OWN
+                // (whoever's logged in), the primary next step same as Accept
+                // and Complete. If this device isn't assigned to the job at
+                // all (e.g. the owner just checking on someone else's job),
+                // there's no personal timer to show — just the completion
+                // action.
+                const myName = getCurrentUserEngineerName();
+                const iAmAssigned = myName && getJobEngineers(job).includes(myName);
+                const myState = iAmAssigned ? getEngineerJobState(job, myName) : null;
+                let html = '';
+                if (iAmAssigned && myState.status === 'Started' && myState.timerStartedAt) {
+                    html += `<div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-center">
+                        <div class="text-[10px] uppercase font-bold text-amber-400 mb-1">Time On Job</div>
+                        <div class="text-3xl font-black font-mono text-white" id="my-job-timer-display">00:00:00</div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 text-center mb-2">Stops automatically when the job is completed, rebooked, or add-timed.</p>`;
+                    startLiveMyTimerDisplay(myState.timerStartedAt);
+                } else if (iAmAssigned) {
+                    const safeName = myName.replace(/'/g, "\\'");
+                    html += `<button onclick="startEngineerTimer('${job.id}', '${safeName}')" class="w-full bg-orange-500 hover:bg-orange-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="play" class="w-4 h-4"></i> Start Job</button>`;
+                }
+                html += `<button onclick="beginJobCompletion('${job.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="flag" class="w-4 h-4"></i> Complete Job</button>`;
+                area.innerHTML = html;
             }
+            lucide.createIcons();
         }
+        // Read-only status of everyone assigned — no buttons here, since
+        // starting/stopping is a personal action each person takes from their
+        // own device via the primary action button above, not something one
+        // person can do on another's behalf.
         function renderEngineerTimerCards(job) {
             const container = document.getElementById('job-detail-engineer-timers');
-            stopAllLiveJobTimerDisplays();
             if (job.status === 'Scheduled' || job.status === 'Completed' || job.status === 'Cancelled') {
                 container.innerHTML = '';
                 return;
             }
             const engineers = getJobEngineers(job);
-            container.innerHTML = engineers.map((name, idx) => {
+            if (engineers.length <= 1) { container.innerHTML = ''; return; } // one person on the job — the primary action area above already covers it, no need to repeat it
+            container.innerHTML = `<div class="text-[10px] uppercase font-bold text-slate-500 mb-1.5">Team Status</div>` + engineers.map(name => {
                 const state = getEngineerJobState(job, name);
                 const colors = getEngineerColorClass(name);
-                const totalDisplay = state.totalMinutes > 0 ? `<span class="text-[10px] text-slate-500">Logged so far: ${formatMinutesLong(state.totalMinutes)}</span>` : '';
-                const isRunning = state.status === 'Started' && state.timerStartedAt;
-                const safeName = name.replace(/'/g, "\\'");
-                const clockHtml = isRunning ? `
-                    <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-center">
-                        <div class="text-[10px] uppercase font-bold text-amber-400 mb-1">Time On Job</div>
-                        <div class="text-3xl font-black font-mono text-white" id="engineer-timer-${idx}">00:00:00</div>
-                    </div>
-                    <p class="text-[10px] text-slate-500 text-center">Stops automatically when the job is completed, rebooked, or add-timed.</p>`
-                    : `<button onclick="startEngineerTimer('${job.id}', '${safeName}')" class="w-full bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 font-bold py-2.5 rounded-xl text-xs cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="play" class="w-3.5 h-3.5"></i> Start</button>`;
-                return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold px-2.5 py-1 rounded border ${colors.badge}">${name}</span>
-                        ${totalDisplay}
-                    </div>
-                    ${clockHtml}
+                const statusText = state.status === 'Started' ? 'Working now' : state.totalMinutes > 0 ? 'Paused' : 'Not started yet';
+                const totalDisplay = state.totalMinutes > 0 ? ` • ${formatMinutesLong(state.totalMinutes)} logged` : '';
+                return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                    <span class="text-xs font-bold px-2 py-1 rounded border ${colors.badge}">${name}</span>
+                    <span class="text-[11px] text-slate-400">${statusText}${totalDisplay}</span>
                 </div>`;
             }).join('');
-            engineers.forEach((name, idx) => {
-                const state = getEngineerJobState(job, name);
-                if (state.status === 'Started' && state.timerStartedAt) startLiveEngineerTimerDisplay(idx, state.timerStartedAt);
-            });
-            lucide.createIcons();
         }
         function openJobMaterialsModal() {
             const job = currentJobs.find(j => j.id === activeJobDetailId);
@@ -2662,15 +2671,19 @@
         function closeJobMaterialsModal() {
             document.getElementById('job-materials-modal').classList.add('hidden');
         }
-        function startLiveEngineerTimerDisplay(idx, startedAtISO) {
+        let myJobTimerInterval = null;
+        function startLiveMyTimerDisplay(startedAtISO) {
+            stopLiveMyTimerDisplay();
             const startedAtMs = new Date(startedAtISO).getTime();
-            const tick = () => { const el = document.getElementById(`engineer-timer-${idx}`); if (el) el.innerText = formatElapsedTime(Date.now() - startedAtMs); };
+            const tick = () => { const el = document.getElementById('my-job-timer-display'); if (el) el.innerText = formatElapsedTime(Date.now() - startedAtMs); };
             tick();
-            jobDetailTimerIntervals[idx] = setInterval(tick, 1000);
+            myJobTimerInterval = setInterval(tick, 1000);
+        }
+        function stopLiveMyTimerDisplay() {
+            if (myJobTimerInterval) { clearInterval(myJobTimerInterval); myJobTimerInterval = null; }
         }
         function stopAllLiveJobTimerDisplays() {
-            Object.values(jobDetailTimerIntervals).forEach(id => clearInterval(id));
-            jobDetailTimerIntervals = {};
+            stopLiveMyTimerDisplay();
         }
 
         async function acceptJob(jobId) {
