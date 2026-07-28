@@ -951,6 +951,7 @@
             <div class="p-6 space-y-4">
                 <p id="signature-confirmation-text" class="text-xs text-slate-300 bg-slate-900 border border-slate-700 p-3 rounded-lg"></p>
                 <canvas id="signature-canvas" class="bg-white rounded-lg w-full touch-none" style="height:180px;"></canvas>
+                <p id="signature-stroke-counter" class="text-[10px] text-slate-400">Nothing drawn yet</p>
                 <p id="signature-signed-at" class="text-[10px] text-slate-500"></p>
             </div>
             <div class="p-5 border-t border-slate-700 bg-slate-900/50 flex gap-2">
@@ -2148,21 +2149,28 @@
         // worth re-capturing with "Stand There & Capture" on the first actual
         // visit if the ETA accuracy matters for that property.
         async function lookUpCoordinatesFromAddress() {
-            const address = document.getElementById('property-address').value.trim();
-            if (!address) { alert('Enter the property address first.'); return; }
+            const rawAddress = document.getElementById('property-address').value.trim();
+            if (!rawAddress) { alert('Enter the property address first.'); return; }
+            // The address field is a multi-line textarea, so a typical entry has
+            // real newline characters between each line (street / town /
+            // postcode). Sent as-is, that confuses Nominatim's address parser —
+            // and the more detail/lines someone adds, the worse it gets. A
+            // clean single-line, comma-separated address is what a geocoder
+            // actually expects.
+            const address = rawAddress.split('\n').map(line => line.trim()).filter(Boolean).join(', ');
             const statusEl = document.getElementById('property-location-status');
             statusEl.innerText = 'Looking up address...';
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`);
-                if (!res.ok) { statusEl.innerText = 'Lookup failed — try again in a moment.'; return; }
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1&addressdetails=1`);
+                if (!res.ok) { statusEl.innerText = `Lookup failed (server responded ${res.status}) — try again in a moment.`; return; }
                 const results = await res.json();
-                if (!results || results.length === 0) { statusEl.innerText = 'No match found for that address — try Stand There & Capture instead, or adjust the address.'; return; }
+                if (!results || results.length === 0) { statusEl.innerText = `No match found for "${address}" — try Stand There & Capture instead, or simplify the address.`; return; }
                 capturedPropertyLat = parseFloat(results[0].lat);
                 capturedPropertyLng = parseFloat(results[0].lon);
-                statusEl.innerText = `Approximate location found — will be saved with this property. Re-capture on-site later for a more precise ETA.`;
+                statusEl.innerText = `Approximate location found (matched: ${results[0].display_name}) — will be saved with this property.`;
             } catch (e) {
                 console.error('Address lookup failed:', e);
-                statusEl.innerText = 'Lookup failed — check your connection and try again.';
+                statusEl.innerText = 'Lookup failed — this usually means a connection or browser-blocking issue, not a bad address. Check your connection and try again.';
             }
         }
         async function savePropertyConfig(event) {
@@ -2421,7 +2429,7 @@
 
             canvas.onpointerdown = (e) => {
                 e.preventDefault();
-                canvas.setPointerCapture(e.pointerId);
+                try { canvas.setPointerCapture(e.pointerId); } catch (err) { console.warn('setPointerCapture failed (continuing without it):', err); }
                 const rect = canvas.getBoundingClientRect();
                 const x = e.clientX - rect.left, y = e.clientY - rect.top;
                 activeSignatureStroke = [{ x, y }];
@@ -2442,9 +2450,15 @@
             const endStroke = () => {
                 if (activeSignatureStroke && activeSignatureStroke.length > 1) signatureStrokes.push(activeSignatureStroke);
                 activeSignatureStroke = null;
+                updateSignatureStrokeCounter();
             };
             canvas.onpointerup = endStroke;
             canvas.onpointercancel = endStroke;
+            updateSignatureStrokeCounter();
+        }
+        function updateSignatureStrokeCounter() {
+            const el = document.getElementById('signature-stroke-counter');
+            if (el) el.innerText = signatureStrokes.length > 0 ? `${signatureStrokes.length} stroke(s) drawn` : 'Nothing drawn yet';
         }
         function redrawSignatureFromStrokes(strokes) {
             const canvas = document.getElementById('signature-canvas');
@@ -2457,12 +2471,14 @@
                 stroke.slice(1).forEach(pt => signatureCanvasCtx.lineTo(pt.x, pt.y));
                 signatureCanvasCtx.stroke();
             });
+            updateSignatureStrokeCounter();
         }
         function clearSignatureCanvas() {
             signatureStrokes = [];
             activeSignatureStroke = null;
             const canvas = document.getElementById('signature-canvas');
             if (signatureCanvasCtx) signatureCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            updateSignatureStrokeCounter();
         }
         function openSignatureModal(jobId) {
             activeSignatureJobId = jobId;
@@ -2470,17 +2486,19 @@
             document.getElementById('signature-confirmation-text').innerText = SIGNATURE_CONFIRMATION_TEXT;
             document.getElementById('signature-signed-at').innerText = (job && job.signature && job.signature.signedAt) ? `Previously signed ${formatUkDate(job.signature.signedAt.slice(0,10))} — signing again will replace it.` : '';
             document.getElementById('signature-modal').classList.remove('hidden');
-            // The canvas needs to be visible (and thus have real dimensions)
-            // before its size/context can be set up correctly.
-            setTimeout(() => {
+            // A fixed timeout was guessing how long layout takes; double-rAF
+            // reliably waits until the browser has actually painted the now-
+            // visible modal before measuring the canvas, so it's never too early.
+            requestAnimationFrame(() => requestAnimationFrame(() => {
                 initSignatureCanvas();
                 if (job && job.signature && job.signature.strokes) {
                     signatureStrokes = job.signature.strokes.map(s => [...s]);
                     redrawSignatureFromStrokes(signatureStrokes);
                 } else {
                     signatureStrokes = [];
+                    updateSignatureStrokeCounter();
                 }
-            }, 50);
+            }));
             lucide.createIcons();
         }
         function closeSignatureModal() {
@@ -2488,12 +2506,21 @@
             activeSignatureJobId = null;
         }
         function saveSignature() {
-            if (signatureStrokes.length === 0) { alert('Please sign before saving.'); return; }
-            if (!activeSignatureJobId) return;
-            db.collection('jobs').doc(activeSignatureJobId).update({
-                signature: { strokes: signatureStrokes, confirmationText: SIGNATURE_CONFIRMATION_TEXT, signedAt: new Date().toISOString() }
-            });
-            closeSignatureModal();
+            try {
+                if (signatureStrokes.length === 0) { alert('Please sign before saving — nothing has been drawn yet.'); return; }
+                if (!activeSignatureJobId) { alert("Could not tell which job this signature belongs to — please close this and try again."); return; }
+                db.collection('jobs').doc(activeSignatureJobId).update({
+                    signature: { strokes: signatureStrokes, confirmationText: SIGNATURE_CONFIRMATION_TEXT, signedAt: new Date().toISOString() }
+                }).then(() => {
+                    closeSignatureModal();
+                }).catch((err) => {
+                    console.error('Failed to save signature:', err);
+                    alert('Could not save the signature. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+                });
+            } catch (err) {
+                console.error('Signature save threw before reaching Firestore:', err);
+                alert('Something went wrong saving the signature. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+            }
         }
 
         function onTabSwitched(tabId) {
