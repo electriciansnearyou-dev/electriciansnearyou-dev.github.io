@@ -239,6 +239,14 @@
                                 </select>
                                 <div id="job-property-hazard-warning" class="hidden mt-2 p-2.5 rounded-lg hazard-stripe border border-amber-500"></div>
                             </div>
+                            <div id="job-form-quote-link-wrapper" class="hidden">
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Link to Quote (optional)</label>
+                                <input type="text" id="job-form-quote-search-input" oninput="filterJobFormQuoteDropdown()" placeholder="Search quotes by client or job name..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 mb-1.5">
+                                <select id="job-form-quote-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                    <option value="">-- None / Not linked --</option>
+                                </select>
+                                <p class="text-[10px] text-slate-500 mt-1">Materials/hours added on the job page will apply straight to this quote.</p>
+                            </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Assigned Engineer(s) *</label>
                                 <div id="job-engineers-checklist" class="space-y-1.5 bg-slate-900 border border-slate-700 rounded-xl p-3"></div>
@@ -1016,7 +1024,18 @@
 
                     <div id="job-detail-engineer-timers" class="space-y-2"></div>
 
-                    <div id="job-no-quote-notice" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3 text-[11px] text-slate-500">No quote linked to this job yet — materials/hours added here will queue and apply once one is.</div>
+                    <div id="job-no-quote-notice" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3 text-[11px] text-slate-500">No quote linked to this job yet — ask the owner to link one so materials/hours added here apply automatically.</div>
+                    <div id="job-linked-quote-section" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 mb-1.5">Linked Quote</div>
+                        <div id="job-linked-quote-display" class="hidden flex items-center justify-between gap-2">
+                            <span id="job-linked-quote-name" class="text-sm text-slate-200"></span>
+                            <button onclick="unlinkJobQuote()" class="text-[10px] font-bold text-red-400 hover:text-red-300 cursor-pointer">Unlink</button>
+                        </div>
+                        <div id="job-linked-quote-picker" class="hidden space-y-2">
+                            <input type="text" id="job-link-quote-search" oninput="renderJobQuoteLinkOptions()" placeholder="Search quotes by client or job name..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            <div id="job-link-quote-options" class="max-h-40 overflow-y-auto space-y-1 custom-scrollbar"></div>
+                        </div>
+                    </div>
 
                     <div id="job-materials-hours-section" class="border-t border-slate-700 pt-4">
                         <div class="flex gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-slate-800 w-fit mb-3">
@@ -1600,6 +1619,7 @@
                     renderDashboard();
                     renderTrashTab();
                     autoLinkJobsToQuotes();
+                    filterJobFormQuoteDropdown();
                 }, (err) => console.error('Quotes listener error:', err));
 
                 db.collection('templates').onSnapshot((snapshot) => {
@@ -2216,6 +2236,23 @@
             warningEl.classList.remove('hidden');
             lucide.createIcons();
         }
+        // Owner-only "link ahead of time" option in the Jobs form — non-owners
+        // never see this, since they can't see quotes to pick from anyway.
+        function filterJobFormQuoteDropdown() {
+            const wrapper = document.getElementById('job-form-quote-link-wrapper');
+            if (!wrapper) return;
+            wrapper.classList.toggle('hidden', !isOwnerLoggedIn());
+            if (!isOwnerLoggedIn()) return;
+            const searchInput = document.getElementById('job-form-quote-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const select = document.getElementById('job-form-quote-select');
+            if (!select) return;
+            const previousValue = select.value;
+            const filtered = currentQuotes.filter(q => !filterText || q.jobName.toLowerCase().includes(filterText) || q.clientDetailsPayload.name.toLowerCase().includes(filterText));
+            select.innerHTML = '<option value="">-- None / Not linked --</option>' +
+                filtered.map(q => `<option value="${q.id}">${q.jobName} — ${q.clientDetailsPayload.name} (${q.status})</option>`).join('');
+            if (filtered.some(q => q.id === previousValue)) select.value = previousValue;
+        }
 
         function findPropertyIdByAddress(address) {
             const trimmed = (address || '').trim().toLowerCase();
@@ -2268,6 +2305,14 @@
                 status: document.getElementById('job-status-select').value,
                 notes: document.getElementById('job-notes').value.trim(),
             };
+            // Only the owner can see/set this field — if a non-owner saves the
+            // same job, leave whatever link already exists completely
+            // untouched rather than silently wiping it via an empty field
+            // they never had the chance to see.
+            if (isOwnerLoggedIn()) {
+                const selectedQuoteId = document.getElementById('job-form-quote-select').value;
+                basePayload.linkedQuoteId = selectedQuoteId || null;
+            }
 
             const startDate = document.getElementById('job-date').value;
             let jobDates = [startDate];
@@ -2349,6 +2394,10 @@
             document.getElementById('job-status-select').value = j.status || 'Scheduled';
             document.getElementById('job-notes').value = j.notes || '';
             document.getElementById('job-multi-day-row').classList.add('hidden');
+            const quoteSearchInput = document.getElementById('job-form-quote-search-input');
+            if (quoteSearchInput) quoteSearchInput.value = '';
+            filterJobFormQuoteDropdown();
+            document.getElementById('job-form-quote-select').value = j.linkedQuoteId || '';
             document.getElementById('job-form-title').innerText = 'Modify Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Job`;
             document.getElementById('job-cancel-btn').classList.remove('hidden');
@@ -2367,6 +2416,9 @@
             document.getElementById('job-multi-day-toggle').checked = false;
             document.getElementById('job-end-date').value = '';
             document.getElementById('job-end-date-wrapper').classList.add('hidden');
+            const quoteSearchInput = document.getElementById('job-form-quote-search-input');
+            if (quoteSearchInput) quoteSearchInput.value = '';
+            filterJobFormQuoteDropdown();
             document.getElementById('job-form-title').innerText = 'Add Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job`;
             document.getElementById('job-cancel-btn').classList.add('hidden');
@@ -2517,6 +2569,7 @@
 
             renderJobDetailActionArea(job);
             renderEngineerTimerCards(job);
+            renderJobLinkedQuoteSection(job);
             renderJobMaterialsPicker();
         }
         function renderJobDetailActionArea(job) {
@@ -2699,13 +2752,63 @@
             const testingCosts = quote.financials.testingCosts || 0;
             return { ...quote.financials, netMaterialsExVat, materialsVat, markedMaterials, laborCosts, grossTotal: markedMaterials + laborCosts + testingCosts };
         }
+        // Manual quote linking — the automatic "quiet" link only fires when
+        // there's exactly one confident match; this covers everything else
+        // (ambiguous matches, no property link yet, or just picking a
+        // different quote than the one auto-matched). Owner-only, since
+        // picking requires being able to see quotes in the first place.
+        function renderJobLinkedQuoteSection(job) {
+            const section = document.getElementById('job-linked-quote-section');
+            const noQuoteNotice = document.getElementById('job-no-quote-notice');
+            if (!section) return;
+            if (!isOwnerLoggedIn()) {
+                section.classList.add('hidden');
+                if (noQuoteNotice) noQuoteNotice.classList.toggle('hidden', !!job.linkedQuoteId);
+                return;
+            }
+            if (noQuoteNotice) noQuoteNotice.classList.add('hidden'); // owner gets the interactive section instead
+            section.classList.remove('hidden');
+            const displayEl = document.getElementById('job-linked-quote-display');
+            const pickerEl = document.getElementById('job-linked-quote-picker');
+            if (job.linkedQuoteId) {
+                const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
+                displayEl.classList.remove('hidden');
+                pickerEl.classList.add('hidden');
+                document.getElementById('job-linked-quote-name').innerText = quote ? `${quote.jobName} — ${quote.clientDetailsPayload.name}` : 'Quote not found (may have been deleted)';
+            } else {
+                displayEl.classList.add('hidden');
+                pickerEl.classList.remove('hidden');
+                renderJobQuoteLinkOptions();
+            }
+        }
+        function renderJobQuoteLinkOptions() {
+            const searchInput = document.getElementById('job-link-quote-search');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const optionsEl = document.getElementById('job-link-quote-options');
+            if (!optionsEl) return;
+            const filtered = currentQuotes.filter(q => !filterText || q.jobName.toLowerCase().includes(filterText) || q.clientDetailsPayload.name.toLowerCase().includes(filterText)).slice(0, 10);
+            optionsEl.innerHTML = filtered.length === 0 ? `<p class="text-[11px] text-slate-500 text-center py-2">No matching quotes.</p>` : filtered.map(q => `
+                <button onclick="linkJobToQuote('${q.id}')" class="w-full text-left bg-slate-950 border border-slate-700 hover:border-amber-500 rounded-lg p-2 text-[11px] text-slate-300 cursor-pointer">
+                    ${q.jobName} — ${q.clientDetailsPayload.name} <span class="text-slate-500">(${q.status})</span>
+                </button>`).join('');
+        }
+        async function linkJobToQuote(quoteId) {
+            const jobId = activeJobDetailId;
+            if (!jobId) return;
+            await db.collection('jobs').doc(jobId).update({ linkedQuoteId: quoteId });
+        }
+        async function unlinkJobQuote() {
+            const jobId = activeJobDetailId;
+            if (!jobId) return;
+            if (!confirm('Unlink this quote? Materials/hours added here will stop applying automatically until you link one again.')) return;
+            await db.collection('jobs').doc(jobId).update({ linkedQuoteId: null });
+        }
+
         function renderJobMaterialsPicker() {
             const jobId = activeJobDetailId;
             if (!jobId) return;
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
-            const noQuoteNotice = document.getElementById('job-no-quote-notice');
-            if (noQuoteNotice) noQuoteNotice.classList.toggle('hidden', !!job.linkedQuoteId);
             const ownerNote = document.getElementById('job-additions-owner-note'), nonOwnerNote = document.getElementById('job-additions-nonowner-note');
             if (ownerNote) ownerNote.classList.toggle('hidden', !isOwnerLoggedIn());
             if (nonOwnerNote) nonOwnerNote.classList.toggle('hidden', isOwnerLoggedIn());
