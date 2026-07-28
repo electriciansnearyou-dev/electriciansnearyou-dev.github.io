@@ -2687,9 +2687,16 @@
         }
 
         async function acceptJob(jobId) {
-            await db.collection('jobs').doc(jobId).update({ status: 'Accepted', acceptedAt: new Date().toISOString() });
             const job = currentJobs.find(j => j.id === jobId);
-            if (job) renderJobDetailPageContent({ ...job, status: 'Accepted' });
+            if (!job) return;
+            // Always start from a clean slate on Accept — without this, any
+            // leftover engineerState from before (an earlier visit, or just
+            // prior testing on the same job) could show as already running
+            // the moment the job is viewed, before anyone's pressed Start.
+            const freshEngineerState = {};
+            getJobEngineers(job).forEach(name => { freshEngineerState[name] = { status: 'NotStarted', timerStartedAt: null, totalMinutes: 0 }; });
+            await db.collection('jobs').doc(jobId).update({ status: 'Accepted', acceptedAt: new Date().toISOString(), engineerState: freshEngineerState });
+            renderJobDetailPageContent({ ...job, status: 'Accepted', engineerState: freshEngineerState });
             // Accepting implies heading there now — offer the on-my-way message
             // with its ETA immediately, same feature as the Jobs tab button.
             // Gracefully does nothing if there's no resolvable client (e.g. a
