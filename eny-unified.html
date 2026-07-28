@@ -2637,7 +2637,7 @@
                         <div class="text-[10px] uppercase font-bold text-amber-400 mb-1">Time On Job</div>
                         <div class="text-3xl font-black font-mono text-white" id="engineer-timer-${idx}">00:00:00</div>
                     </div>
-                    <button onclick="stopEngineerTimer('${job.id}', '${safeName}')" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Stop</button>`
+                    <p class="text-[10px] text-slate-500 text-center">Stops automatically when the job is completed, rebooked, or add-timed.</p>`
                     : `<button onclick="startEngineerTimer('${job.id}', '${safeName}')" class="w-full bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 font-bold py-2.5 rounded-xl text-xs cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="play" class="w-3.5 h-3.5"></i> Start</button>`;
                 return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-3">
                     <div class="flex items-center justify-between">
@@ -2691,16 +2691,6 @@
             const newJobStatus = job.status === 'Accepted' ? 'Started' : job.status;
             await db.collection('jobs').doc(jobId).update({ engineerState: newEngineerState, status: newJobStatus });
             renderJobDetailPageContent({ ...job, engineerState: newEngineerState, status: newJobStatus });
-        }
-        async function stopEngineerTimer(jobId, engineerName) {
-            const job = currentJobs.find(j => j.id === jobId);
-            if (!job) return;
-            const state = getEngineerJobState(job, engineerName);
-            if (state.status !== 'Started' || !state.timerStartedAt) return;
-            const elapsedMinutes = Math.round((Date.now() - new Date(state.timerStartedAt).getTime()) / 60000);
-            const newEngineerState = { ...(job.engineerState || {}), [engineerName]: { status: 'Stopped', timerStartedAt: null, totalMinutes: (state.totalMinutes || 0) + Math.max(0, elapsedMinutes) } };
-            await db.collection('jobs').doc(jobId).update({ engineerState: newEngineerState });
-            renderJobDetailPageContent({ ...job, engineerState: newEngineerState });
         }
         // Stops (and compounds the elapsed time of) any engineer timers still
         // running when the job as a whole gets completed/rebooked/add-timed —
@@ -2909,15 +2899,45 @@
             if (!listEl) return;
             if (isOwnerLoggedIn() && job.linkedQuoteId) {
                 const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
-                const onSiteItems = quote ? (quote.materials || []).filter(m => m.addedOnSite) : [];
+                const onSiteItems = quote ? (quote.materials || []).map((m, idx) => ({ ...m, _idx: idx })).filter(m => m.addedOnSite) : [];
                 listEl.innerHTML = onSiteItems.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added on-site:</div>` + onSiteItems.map(m => `
                     <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 flex items-center justify-between gap-2">
                         <div class="text-[11px] text-slate-300">${m.desc} x${m.qty}</div>
-                        <span class="text-[10px] font-mono ${m.cost == null ? 'text-amber-400' : 'text-slate-400'}">${m.cost == null ? 'Unpriced' : '£' + (parseFloat(m.cost) * m.qty).toFixed(2)}</span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[10px] font-mono ${m.cost == null ? 'text-amber-400' : 'text-slate-400'}">${m.cost == null ? 'Unpriced' : '£' + (parseFloat(m.cost) * m.qty).toFixed(2)}</span>
+                            <button onclick="removeOnSiteMaterial('${quote.id}', ${m._idx})" title="Remove" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
                     </div>`).join('');
             } else {
-                listEl.innerHTML = nonOwnerSessionAdditions.materials.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added this session:</div>` + nonOwnerSessionAdditions.materials.map(m => `
-                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-[11px] text-slate-300">${m.desc} x${m.qty}</div>`).join('');
+                listEl.innerHTML = nonOwnerSessionAdditions.materials.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added this session:</div>` + nonOwnerSessionAdditions.materials.map((m, idx) => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 flex items-center justify-between gap-2">
+                        <div class="text-[11px] text-slate-300">${m.desc} x${m.qty}</div>
+                        <button onclick="removeNonOwnerSessionMaterial(${idx})" title="Remove" class="text-slate-500 hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>`).join('');
+            }
+            lucide.createIcons();
+        }
+        async function removeOnSiteMaterial(quoteId, materialIndex) {
+            const quote = currentQuotes.find(q => q.id === quoteId);
+            if (!quote) return;
+            if (!confirm('Remove this item?')) return;
+            const updatedMaterials = quote.materials.filter((m, idx) => idx !== materialIndex);
+            const newFinancials = recalculateQuoteFinancialsAfterAddition(quote, updatedMaterials, quote.financials.laborCosts);
+            await db.collection('quotes').doc(quoteId).update({ materials: updatedMaterials, financials: newFinancials });
+        }
+        async function removeNonOwnerSessionMaterial(sessionIndex) {
+            const jobId = activeJobDetailId;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job || !job.linkedQuoteId) return;
+            const item = nonOwnerSessionAdditions.materials[sessionIndex];
+            if (!item) return;
+            try {
+                await db.collection('quotes').doc(job.linkedQuoteId).update({ materials: firebase.firestore.FieldValue.arrayRemove(item) });
+                nonOwnerSessionAdditions.materials.splice(sessionIndex, 1);
+                renderJobAddedMaterialsList(job);
+            } catch (err) {
+                console.error('Failed to remove material on-site:', err);
+                alert('Could not remove this — please tell the owner.');
             }
         }
         async function submitJobHoursAddition() {
@@ -2959,11 +2979,40 @@
             if (isOwnerLoggedIn() && job.linkedQuoteId) {
                 const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
                 const pending = quote ? (quote.pendingHoursAdditions || []) : [];
-                listEl.innerHTML = pending.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Flagged by non-owner, not yet priced in:</div>` + pending.map(h => `
-                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-[11px] text-amber-400">+${h.hours}h — ${h.reason}</div>`).join('');
+                listEl.innerHTML = pending.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Flagged by non-owner, not yet priced in:</div>` + pending.map((h, idx) => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 flex items-center justify-between gap-2">
+                        <span class="text-[11px] text-amber-400">+${h.hours}h — ${h.reason}</span>
+                        <button onclick="removePendingHoursAddition('${quote.id}', ${idx})" title="Remove" class="text-slate-500 hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>`).join('');
             } else {
-                listEl.innerHTML = nonOwnerSessionAdditions.hours.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added this session:</div>` + nonOwnerSessionAdditions.hours.map(h => `
-                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-[11px] text-slate-300">+${h.hours}h — ${h.reason}</div>`).join('');
+                listEl.innerHTML = nonOwnerSessionAdditions.hours.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added this session:</div>` + nonOwnerSessionAdditions.hours.map((h, idx) => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 flex items-center justify-between gap-2">
+                        <span class="text-[11px] text-slate-300">+${h.hours}h — ${h.reason}</span>
+                        <button onclick="removeNonOwnerSessionHours(${idx})" title="Remove" class="text-slate-500 hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>`).join('');
+            }
+            lucide.createIcons();
+        }
+        async function removePendingHoursAddition(quoteId, entryIndex) {
+            const quote = currentQuotes.find(q => q.id === quoteId);
+            if (!quote) return;
+            if (!confirm('Remove this hours request?')) return;
+            const updated = quote.pendingHoursAdditions.filter((h, idx) => idx !== entryIndex);
+            await db.collection('quotes').doc(quoteId).update({ pendingHoursAdditions: updated });
+        }
+        async function removeNonOwnerSessionHours(sessionIndex) {
+            const jobId = activeJobDetailId;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job || !job.linkedQuoteId) return;
+            const entry = nonOwnerSessionAdditions.hours[sessionIndex];
+            if (!entry) return;
+            try {
+                await db.collection('quotes').doc(job.linkedQuoteId).update({ pendingHoursAdditions: firebase.firestore.FieldValue.arrayRemove(entry) });
+                nonOwnerSessionAdditions.hours.splice(sessionIndex, 1);
+                renderJobHoursAddedList(job);
+            } catch (err) {
+                console.error('Failed to remove hours on-site:', err);
+                alert('Could not remove this — please tell the owner.');
             }
         }
 
