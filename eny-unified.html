@@ -1020,10 +1020,36 @@
                         <div id="job-detail-datetime" class="text-sm text-slate-200"></div>
                     </div>
 
+                    <div id="job-detail-engineer-timers" class="space-y-3"></div>
+
                     <div id="job-detail-action-area" class="space-y-2"></div>
 
-                    <div id="job-detail-engineer-timers" class="space-y-2"></div>
+                    <button type="button" onclick="openJobMaterialsModal()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400 font-semibold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                        <i data-lucide="package-plus" class="w-4 h-4"></i> Materials & Hours
+                    </button>
 
+                    <div id="job-detail-comments-section" class="hidden space-y-3 border-t border-slate-700 pt-4">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Operative Comments</label>
+                        <textarea id="job-detail-comments-text" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="What happened on this job..."></textarea>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="resolveJobOutcome('Completed')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="check-circle" class="w-4 h-4"></i> Job Complete</button>
+                            <button onclick="resolveJobOutcome('Rebook')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4"></i> Rebook Required</button>
+                            <button onclick="resolveJobOutcome('AddTime')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Additional Time Needed (Another Visit)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="job-materials-modal" class="fixed inset-0 bg-slate-950/90 z-[58] hidden overflow-y-auto">
+        <div class="min-h-screen p-4 flex items-start justify-center py-8">
+            <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06]">
+                <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50 rounded-t-2xl">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="package-plus" class="text-amber-400"></i> Materials & Hours</h3>
+                    <button onclick="closeJobMaterialsModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-6 space-y-4">
                     <div id="job-no-quote-notice" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3 text-[11px] text-slate-500">No quote linked to this job yet — ask the owner to link one so materials/hours added here apply automatically.</div>
                     <div id="job-linked-quote-section" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3">
                         <div class="text-[10px] uppercase font-bold text-slate-500 mb-1.5">Linked Quote</div>
@@ -1037,7 +1063,7 @@
                         </div>
                     </div>
 
-                    <div id="job-materials-hours-section" class="border-t border-slate-700 pt-4">
+                    <div id="job-materials-hours-section">
                         <div class="flex gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-slate-800 w-fit mb-3">
                             <button type="button" onclick="switchJobAdditionsSubtab('materials')" id="btn-job-additions-materials" class="job-additions-subtab-btn px-3 py-1.5 text-[11px] font-bold rounded-lg bg-amber-500 text-slate-950">Materials</button>
                             <button type="button" onclick="switchJobAdditionsSubtab('hours')" id="btn-job-additions-hours" class="job-additions-subtab-btn px-3 py-1.5 text-[11px] font-bold rounded-lg text-slate-400">Hours</button>
@@ -1059,16 +1085,6 @@
                         </div>
                         <p id="job-additions-owner-note" class="hidden text-[10px] text-slate-500 mt-2">Added directly to the linked quote's total.</p>
                         <p id="job-additions-nonowner-note" class="hidden text-[10px] text-slate-500 mt-2">These add straight to the quote — no pricing shown here, that stays with the owner.</p>
-                    </div>
-
-                    <div id="job-detail-comments-section" class="hidden space-y-3 border-t border-slate-700 pt-4">
-                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Operative Comments</label>
-                        <textarea id="job-detail-comments-text" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="What happened on this job..."></textarea>
-                        <div class="grid grid-cols-1 gap-2">
-                            <button onclick="resolveJobOutcome('Completed')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="check-circle" class="w-4 h-4"></i> Job Complete</button>
-                            <button onclick="resolveJobOutcome('Rebook')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4"></i> Rebook Required</button>
-                            <button onclick="resolveJobOutcome('AddTime')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Additional Time Needed (Another Visit)</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -2529,9 +2545,18 @@
             document.getElementById('job-detail-page-modal').classList.add('hidden');
             stopAllLiveJobTimerDisplays();
             activeJobDetailId = null;
+            jobDetailShowingCompletionForm = false;
             document.getElementById('job-detail-comments-section').classList.add('hidden');
             document.getElementById('job-detail-comments-text').value = '';
         }
+        // Tracks whether the operative-comments form is currently open. This
+        // is local UI state, not something derivable from job.status — the
+        // page re-renders constantly (any engineer starting/stopping their
+        // timer refreshes it), and without this flag every one of those
+        // re-renders would silently reset the comments form back to the
+        // "Complete Job" button, making it look like completing a job just
+        // didn't work.
+        let jobDetailShowingCompletionForm = false;
 
         // Per-engineer work state, backward-compatible with jobs saved before
         // this existed (which had one flat status/timerStartedAt for the whole
@@ -2574,6 +2599,7 @@
         }
         function renderJobDetailActionArea(job) {
             const area = document.getElementById('job-detail-action-area');
+            if (jobDetailShowingCompletionForm) return; // leave the open comments form alone — don't let a background re-render reset it
             document.getElementById('job-detail-comments-section').classList.add('hidden');
             if (job.status === 'Scheduled') {
                 area.innerHTML = `<button onclick="acceptJob('${job.id}')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="thumbs-up" class="w-4 h-4"></i> Accept Job</button>`;
@@ -2603,17 +2629,22 @@
             container.innerHTML = engineers.map((name, idx) => {
                 const state = getEngineerJobState(job, name);
                 const colors = getEngineerColorClass(name);
-                const totalDisplay = state.totalMinutes > 0 ? `<div class="text-[10px] text-slate-500">Logged so far: ${formatMinutesLong(state.totalMinutes)}</div>` : '';
-                let controlHtml;
-                if (state.status === 'Started' && state.timerStartedAt) {
-                    controlHtml = `<div class="text-lg font-black font-mono text-white" id="engineer-timer-${idx}">00:00:00</div>
-                        <button onclick="stopEngineerTimer('${job.id}', '${name.replace(/'/g, "\\'")}')" class="text-[10px] font-bold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-lg cursor-pointer">Stop</button>`;
-                } else {
-                    controlHtml = `<button onclick="startEngineerTimer('${job.id}', '${name.replace(/'/g, "\\'")}')" class="text-[10px] font-bold bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 px-3 py-1.5 rounded-lg cursor-pointer flex items-center gap-1"><i data-lucide="play" class="w-3 h-3"></i> Start</button>`;
-                }
-                return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
-                    <div class="min-w-0"><span class="text-xs font-bold px-2 py-1 rounded border ${colors.badge}">${name}</span>${totalDisplay}</div>
-                    <div class="flex items-center gap-2 shrink-0">${controlHtml}</div>
+                const totalDisplay = state.totalMinutes > 0 ? `<span class="text-[10px] text-slate-500">Logged so far: ${formatMinutesLong(state.totalMinutes)}</span>` : '';
+                const isRunning = state.status === 'Started' && state.timerStartedAt;
+                const safeName = name.replace(/'/g, "\\'");
+                const clockHtml = isRunning ? `
+                    <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-center">
+                        <div class="text-[10px] uppercase font-bold text-amber-400 mb-1">Time On Job</div>
+                        <div class="text-3xl font-black font-mono text-white" id="engineer-timer-${idx}">00:00:00</div>
+                    </div>
+                    <button onclick="stopEngineerTimer('${job.id}', '${safeName}')" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Stop</button>`
+                    : `<button onclick="startEngineerTimer('${job.id}', '${safeName}')" class="w-full bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 font-bold py-2.5 rounded-xl text-xs cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="play" class="w-3.5 h-3.5"></i> Start</button>`;
+                return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold px-2.5 py-1 rounded border ${colors.badge}">${name}</span>
+                        ${totalDisplay}
+                    </div>
+                    ${clockHtml}
                 </div>`;
             }).join('');
             engineers.forEach((name, idx) => {
@@ -2621,6 +2652,15 @@
                 if (state.status === 'Started' && state.timerStartedAt) startLiveEngineerTimerDisplay(idx, state.timerStartedAt);
             });
             lucide.createIcons();
+        }
+        function openJobMaterialsModal() {
+            const job = currentJobs.find(j => j.id === activeJobDetailId);
+            if (job) { renderJobLinkedQuoteSection(job); renderJobMaterialsPicker(); }
+            document.getElementById('job-materials-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeJobMaterialsModal() {
+            document.getElementById('job-materials-modal').classList.add('hidden');
         }
         function startLiveEngineerTimerDisplay(idx, startedAtISO) {
             const startedAtMs = new Date(startedAtISO).getTime();
@@ -2681,6 +2721,7 @@
             return newEngineerState;
         }
         function beginJobCompletion(jobId) {
+            jobDetailShowingCompletionForm = true;
             document.getElementById('job-detail-comments-section').classList.remove('hidden');
             document.getElementById('job-detail-action-area').innerHTML = '';
         }
