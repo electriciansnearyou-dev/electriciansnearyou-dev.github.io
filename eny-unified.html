@@ -1625,7 +1625,7 @@
                         const reminderBtn = (client && client.phone) ? `<button onclick="openSendReminderModal('${j.id}')" title="Send reminder to ${client.name}" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-950 border border-slate-700 cursor-pointer shrink-0"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>` : '';
                         return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
                             <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${j.title}</div><div class="text-[10px] text-slate-500">${formatUkDate(j.date)} at ${j.time || '—'}</div></div>
-                            <div class="flex flex-wrap gap-1 justify-end items-center shrink-0">${badges}${reminderBtn}</div>
+                            <div class="flex flex-wrap gap-1 justify-end items-center shrink-0">${badges}${reminderBtn}${buildJobActionButtons(j)}</div>
                         </div>`;
                     }).join('');
             }
@@ -2088,6 +2088,19 @@
                 await db.collection('jobs').doc(jobId).update({ status: newStatus });
             }
         }
+        function buildJobActionButtons(j) {
+            const quickActions = j.status === 'Scheduled' ? `
+                <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
+                <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>` : '';
+            const reviewClient = (j.status === 'Completed' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
+            const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
+            const signatureBtn = j.status === 'Completed' ? `<button onclick="openSignatureModal('${j.id}')" title="${j.signature ? 'View/redo signature' : 'Get client signature'}" class="${j.signature ? 'text-emerald-400 hover:text-emerald-300' : 'text-slate-400 hover:text-amber-400'} p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="${j.signature ? 'file-check' : 'pen-tool'}" class="w-3.5 h-3.5"></i></button>` : '';
+            const onMyWayClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
+            const onMyWayBtn = (onMyWayClient && onMyWayClient.phone) ? `<button onclick="sendOnMyWayMessage('${j.id}')" title="Send 'on my way' to ${onMyWayClient.name}" class="text-slate-400 hover:text-blue-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="navigation" class="w-3.5 h-3.5"></i></button>` : '';
+            return `${quickActions}${onMyWayBtn}${reviewBtn}${signatureBtn}
+                <button onclick="loadJobForModification('${j.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                <button onclick="deleteJob('${j.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
+        }
         function renderJobsList() {
             const engineerFilterEl = document.getElementById('jobs-engineer-filter');
             const statusFilterEl = document.getElementById('jobs-status-filter');
@@ -2105,20 +2118,10 @@
                 const engineers = getJobEngineers(j);
                 const engineerBadges = engineers.map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
                 const statusColor = j.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : j.status === 'Cancelled' ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-blue-500/10 text-blue-400 border-blue-500/30';
-                const quickActions = j.status === 'Scheduled' ? `
-                    <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
-                    <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>` : '';
-                const reviewClient = (j.status === 'Completed' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
-                const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
-                const signatureBtn = j.status === 'Completed' ? `<button onclick="openSignatureModal('${j.id}')" title="${j.signature ? 'View/redo signature' : 'Get client signature'}" class="${j.signature ? 'text-emerald-400 hover:text-emerald-300' : 'text-slate-400 hover:text-amber-400'} p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="${j.signature ? 'file-check' : 'pen-tool'}" class="w-3.5 h-3.5"></i></button>` : '';
-                const onMyWayClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
-                const onMyWayBtn = (onMyWayClient && onMyWayClient.phone) ? `<button onclick="sendOnMyWayMessage('${j.id}')" title="Send 'on my way' to ${onMyWayClient.name}" class="text-slate-400 hover:text-blue-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="navigation" class="w-3.5 h-3.5"></i></button>` : '';
                 return `<div class="bg-[#283548] border border-slate-600 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg ring-1 ring-white/[0.06]">
                     <div class="min-w-0"><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-white">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${statusColor}">${j.status}</span></div>
                     <div class="text-[11px] text-slate-400">${formatUkDate(j.date)} at ${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div></div>
-                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${quickActions}${onMyWayBtn}${reviewBtn}${signatureBtn}
-                    <button onclick="loadJobForModification('${j.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-                    <button onclick="deleteJob('${j.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></div>
+                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${buildJobActionButtons(j)}</div>
                 </div>`;
             }).join('');
             lucide.createIcons();
@@ -2370,7 +2373,13 @@
             const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
-        const ASSUMED_AVERAGE_MPH = 25; // rough local/urban driving average — this is an estimate, not a routed ETA
+        // These three numbers are the whole calibration — straight-line
+        // distance and a flat speed will never match real driving exactly,
+        // but tuned like this they land close for typical local trade jobs.
+        // Adjust freely if it's still off for your area.
+        const ASSUMED_AVERAGE_MPH = 20;       // local/stop-start driving, not open-road speed
+        const ROAD_DISTANCE_FACTOR = 1.3;     // roads curve — straight-line distance underestimates real route distance by roughly this much
+        const FIXED_TRIP_OVERHEAD_MINUTES = 5; // leaving, first junction, parking/walking to the door — a flat cost pure distance÷speed misses, especially on short trips
         async function sendOnMyWayMessage(jobId) {
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
@@ -2382,8 +2391,9 @@
             if (property && property.lat != null && property.lng != null && navigator.geolocation) {
                 try {
                     const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 }));
-                    const distanceMiles = haversineDistanceMiles(position.coords.latitude, position.coords.longitude, property.lat, property.lng);
-                    const estimatedMinutes = Math.max(2, Math.round((distanceMiles / ASSUMED_AVERAGE_MPH) * 60));
+                    const straightLineMiles = haversineDistanceMiles(position.coords.latitude, position.coords.longitude, property.lat, property.lng);
+                    const roadMiles = straightLineMiles * ROAD_DISTANCE_FACTOR;
+                    const estimatedMinutes = Math.max(2, Math.round((roadMiles / ASSUMED_AVERAGE_MPH) * 60) + FIXED_TRIP_OVERHEAD_MINUTES);
                     etaText = ` I'm about ${estimatedMinutes} minutes away.`;
                 } catch (e) {
                     console.warn('Could not get location for ETA — sending without one:', e);
@@ -2492,7 +2502,10 @@
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 initSignatureCanvas();
                 if (job && job.signature && job.signature.strokes) {
-                    signatureStrokes = job.signature.strokes.map(s => [...s]);
+                    // Stored strokes are wrapped as {points: [...]} (Firestore
+                    // doesn't allow an array directly inside another array) —
+                    // unwrap back to plain point-arrays for drawing/redraw.
+                    signatureStrokes = job.signature.strokes.map(s => (s.points || s).map(p => ({ ...p })));
                     redrawSignatureFromStrokes(signatureStrokes);
                 } else {
                     signatureStrokes = [];
@@ -2509,8 +2522,14 @@
             try {
                 if (signatureStrokes.length === 0) { alert('Please sign before saving — nothing has been drawn yet.'); return; }
                 if (!activeSignatureJobId) { alert("Could not tell which job this signature belongs to — please close this and try again."); return; }
+                // Firestore rejects an array nested directly inside another
+                // array — a stroke (array of points) inside strokes (array of
+                // strokes) is exactly that shape. Wrapping each stroke in a
+                // small object sidesteps the restriction; only done at the
+                // point of saving, the live drawing logic never needs to know.
+                const strokesForFirestore = signatureStrokes.map(stroke => ({ points: stroke }));
                 db.collection('jobs').doc(activeSignatureJobId).update({
-                    signature: { strokes: signatureStrokes, confirmationText: SIGNATURE_CONFIRMATION_TEXT, signedAt: new Date().toISOString() }
+                    signature: { strokes: strokesForFirestore, confirmationText: SIGNATURE_CONFIRMATION_TEXT, signedAt: new Date().toISOString() }
                 }).then(() => {
                     closeSignatureModal();
                 }).catch((err) => {
