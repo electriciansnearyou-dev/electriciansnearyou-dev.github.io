@@ -129,9 +129,10 @@
             <div id="today-tab" class="tab-content active space-y-6">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <h2 class="text-lg font-bold text-white" id="today-date-label"></h2>
-                    <select id="today-engineer-filter" onchange="renderTodayTab()" class="bg-[#283548] border border-slate-600 rounded-xl px-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
-                        <option value="ALL">All Engineers</option>
-                    </select>
+                    <span id="today-viewing-as-label" class="text-xs font-semibold text-slate-400 bg-[#283548] border border-slate-600 rounded-xl px-4 py-2"></span>
+                </div>
+                <div id="today-no-identity-notice" class="hidden text-center py-16 text-slate-500 text-sm bg-[#283548] border border-slate-600 rounded-2xl px-6">
+                    <i data-lucide="user-x" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Your login isn't linked to an engineer name yet — ask the owner to add it in Settings.
                 </div>
                 <div id="today-empty-state" class="hidden text-center py-16 text-slate-500 text-sm bg-[#283548] border border-slate-600 rounded-2xl">
                     <i data-lucide="coffee" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Nothing on today.
@@ -1286,6 +1287,7 @@
                 document.getElementById('login-gate').classList.add('hidden');
                 document.getElementById('app-root').classList.remove('hidden');
                 applyOwnerVisibility();
+                renderTodayTab();
                 if (!firestoreListenersStarted) {
                     startFirestoreListeners();
                     firestoreListenersStarted = true;
@@ -1655,20 +1657,9 @@
             const names = getEngineerNames();
             const calFilter = document.getElementById('calendar-engineer-filter');
             const jobsFilter = document.getElementById('jobs-engineer-filter');
-            const todayFilter = document.getElementById('today-engineer-filter');
             const unavailableSelect = document.getElementById('day-detail-unavailable-engineer-select');
             if (calFilter) calFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
             if (jobsFilter) jobsFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
-            if (todayFilter) {
-                const previousValue = todayFilter.value;
-                todayFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
-                if (previousValue && (previousValue === 'ALL' || names.includes(previousValue))) {
-                    todayFilter.value = previousValue; // keep whatever they'd already picked
-                } else {
-                    const myName = getCurrentUserEngineerName();
-                    todayFilter.value = (myName && names.includes(myName)) ? myName : 'ALL';
-                }
-            }
             if (unavailableSelect) unavailableSelect.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
 
             const checklist = document.getElementById('job-engineers-checklist');
@@ -2424,15 +2415,31 @@
             const dateLabel = document.getElementById('today-date-label');
             if (dateLabel) dateLabel.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
-            const engineerFilterEl = document.getElementById('today-engineer-filter');
-            const engineerFilter = engineerFilterEl ? engineerFilterEl.value : 'ALL';
-            const today = todayISO();
-            const todaysJobs = currentJobs.filter(j => j.date === today && j.status !== 'Cancelled' && (engineerFilter === 'ALL' || getJobEngineers(j).includes(engineerFilter)))
-                .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-
             const listEl = document.getElementById('today-jobs-list');
             const emptyEl = document.getElementById('today-empty-state');
+            const noIdentityEl = document.getElementById('today-no-identity-notice');
+            const viewingAsLabel = document.getElementById('today-viewing-as-label');
             if (!listEl) return;
+
+            // Hard-locked to the logged-in person's own name — deliberately no
+            // way to switch and see anyone else's day, including for owner
+            // logins. If their login isn't mapped to an engineer name at all,
+            // show nothing rather than falling back to "show everyone".
+            const myName = getCurrentUserEngineerName();
+            if (!myName) {
+                noIdentityEl.classList.remove('hidden');
+                emptyEl.classList.add('hidden');
+                listEl.innerHTML = '';
+                if (viewingAsLabel) viewingAsLabel.innerText = '';
+                return;
+            }
+            noIdentityEl.classList.add('hidden');
+            if (viewingAsLabel) viewingAsLabel.innerText = `Showing: ${myName}`;
+
+            const today = todayISO();
+            const todaysJobs = currentJobs.filter(j => j.date === today && j.status !== 'Cancelled' && getJobEngineers(j).includes(myName))
+                .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
             if (todaysJobs.length === 0) { emptyEl.classList.remove('hidden'); listEl.innerHTML = ''; return; }
             emptyEl.classList.add('hidden');
 
