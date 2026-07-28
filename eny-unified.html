@@ -85,7 +85,10 @@
                 </div>
 
                 <nav class="flex flex-wrap items-center justify-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
-                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10">
+                    <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10">
+                        <i data-lucide="sun" class="w-4 h-4"></i> Today
+                    </button>
+                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
                     </button>
                     <button onclick="switchTab('calendar-tab')" id="btn-calendar-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
@@ -123,7 +126,20 @@
         </header>
 
         <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
-            <div id="dashboard-tab" class="tab-content active space-y-6">
+            <div id="today-tab" class="tab-content active space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <h2 class="text-lg font-bold text-white" id="today-date-label"></h2>
+                    <select id="today-engineer-filter" onchange="renderTodayTab()" class="bg-[#283548] border border-slate-600 rounded-xl px-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                        <option value="ALL">All Engineers</option>
+                    </select>
+                </div>
+                <div id="today-empty-state" class="hidden text-center py-16 text-slate-500 text-sm bg-[#283548] border border-slate-600 rounded-2xl">
+                    <i data-lucide="coffee" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Nothing on today.
+                </div>
+                <div id="today-jobs-list" class="space-y-3"></div>
+            </div>
+
+            <div id="dashboard-tab" class="tab-content space-y-6">
                 <div id="dashboard-owner-stats" class="owner-only-tab grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
@@ -965,6 +981,57 @@
     </div>
 
     <!-- ================= MODALS ================= -->
+    <div id="job-detail-page-modal" class="fixed inset-0 bg-slate-950/90 z-[55] hidden overflow-y-auto">
+        <div class="min-h-screen p-4 flex items-start justify-center py-8">
+            <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06]">
+                <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50 rounded-t-2xl">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2 min-w-0"><i data-lucide="clipboard-list" class="text-amber-400 shrink-0"></i> <span id="job-detail-title" class="truncate"></span></h3>
+                    <button onclick="closeJobDetailPage()" class="text-slate-400 hover:text-white cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div id="job-detail-status-badge"></div>
+                    <div id="job-detail-hazard-warning"></div>
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-3">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Property</div>
+                        <a id="job-detail-address-link" href="#" target="_blank" rel="noopener" class="text-sm text-blue-400 hover:text-blue-300 underline flex items-start gap-1.5">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i> <span id="job-detail-address-text"></span>
+                        </a>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-900 border border-slate-700 rounded-xl p-3">
+                            <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Date & Time</div>
+                            <div id="job-detail-datetime" class="text-sm text-slate-200"></div>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-700 rounded-xl p-3">
+                            <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Engineer(s)</div>
+                            <div id="job-detail-engineers" class="flex flex-wrap gap-1"></div>
+                        </div>
+                    </div>
+                    <div id="job-detail-notes-wrapper" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Notes</div>
+                        <div id="job-detail-notes" class="text-sm text-slate-300 whitespace-pre-line"></div>
+                    </div>
+                    <div id="job-detail-timer-wrapper" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-center">
+                        <div class="text-[10px] uppercase font-bold text-amber-400 mb-1">Time On Job</div>
+                        <div id="job-detail-timer-display" class="text-3xl font-black font-mono text-white">00:00:00</div>
+                    </div>
+
+                    <div id="job-detail-action-area" class="space-y-2"></div>
+
+                    <div id="job-detail-comments-section" class="hidden space-y-3 border-t border-slate-700 pt-4">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Operative Comments</label>
+                        <textarea id="job-detail-comments-text" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="What happened on this job..."></textarea>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="resolveJobOutcome('Completed')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="check-circle" class="w-4 h-4"></i> Job Complete</button>
+                            <button onclick="resolveJobOutcome('Rebook')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4"></i> Rebook Required</button>
+                            <button onclick="resolveJobOutcome('AddTime')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Additional Time Needed (Another Visit)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="signature-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
             <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
@@ -1333,6 +1400,19 @@
                 db.collection('quotes').doc(q.id).update({ archived: true });
             });
         }
+        const QUOTE_EXPIRE_AFTER_DAYS = 30;
+        // Only Draft/Sent quotes expire — anything that's progressed to
+        // Approved/Invoiced/Paid has already been actioned and is left alone.
+        function autoExpireOldQuotes(allDocs) {
+            const now = Date.now();
+            allDocs.forEach(q => {
+                if (q.status !== 'Draft' && q.status !== 'Sent') return;
+                const ageDays = (now - parseUkTimestamp(q.timestamp)) / 86400000;
+                if (ageDays < QUOTE_EXPIRE_AFTER_DAYS) return;
+                q.status = 'Expired';
+                db.collection('quotes').doc(q.id).update({ status: 'Expired' });
+            });
+        }
 
         function startFirestoreListeners() {
             // --- Shared collections (everyone) ---
@@ -1346,6 +1426,7 @@
                 renderDashboard();
                 renderCalendarGrid();
                 renderTrashTab();
+                renderTodayTab();
             }, (err) => console.error('Properties listener error:', err));
 
             db.collection('jobs').onSnapshot((snapshot) => {
@@ -1357,6 +1438,11 @@
                 renderDashboard();
                 renderCalendarGrid();
                 renderTrashTab();
+                renderTodayTab();
+                if (activeJobDetailId) {
+                    const openJob = currentJobs.find(j => j.id === activeJobDetailId);
+                    if (openJob) renderJobDetailPageContent(openJob);
+                }
             }, (err) => console.error('Jobs listener error:', err));
 
             db.collection('unavailability').onSnapshot((snapshot) => {
@@ -1413,6 +1499,7 @@
                     const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     repairLegacyImportedQuotes(allDocs);
                     autoArchiveOldPaidQuotes(allDocs);
+                    autoExpireOldQuotes(allDocs);
                     currentQuotes = allDocs.filter(q => !q.deleted);
                     trashQuotes = allDocs.filter(q => q.deleted);
                     purgeOldTrashItems('quotes', trashQuotes);
@@ -1477,9 +1564,11 @@
             const names = getEngineerNames();
             const calFilter = document.getElementById('calendar-engineer-filter');
             const jobsFilter = document.getElementById('jobs-engineer-filter');
+            const todayFilter = document.getElementById('today-engineer-filter');
             const unavailableSelect = document.getElementById('day-detail-unavailable-engineer-select');
             if (calFilter) calFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
             if (jobsFilter) jobsFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+            if (todayFilter) todayFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
             if (unavailableSelect) unavailableSelect.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
 
             const checklist = document.getElementById('job-engineers-checklist');
@@ -1492,6 +1581,7 @@
                     </label>`).join('');
                 document.querySelectorAll('.job-engineer-checkbox').forEach(chk => { if (previouslyChecked.includes(chk.value)) chk.checked = true; });
             }
+            renderTodayTab();
         }
         function getSelectedJobEngineersFromForm() {
             return [...document.querySelectorAll('.job-engineer-checkbox:checked')].map(chk => chk.value);
@@ -2118,7 +2208,8 @@
                 }
             } else {
                 for (const d of jobDates) {
-                    const payload = { ...basePayload, date: d, createdAt: new Date().toISOString() };
+                    const jobNumber = await getNextSequentialNumber('jobNumberCounter', 'JOB');
+                    const payload = { ...basePayload, date: d, jobNumber, createdAt: new Date().toISOString() };
                     const ref = await db.collection('jobs').add(payload);
                     if (isGoogleCalendarConnected()) {
                         const eventId = await pushJobToCalendar(payload, null);
@@ -2188,6 +2279,197 @@
                 await db.collection('jobs').doc(jobId).update({ status: newStatus });
             }
         }
+        // ============================================================
+        // TODAY TAB + JOB WORKFLOW (Accept -> Start -> Complete)
+        // ============================================================
+        function getJobStatusColorClasses(status) {
+            switch (status) {
+                case 'Accepted': return { badge: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30', dot: 'bg-yellow-400' };
+                case 'Started': return { badge: 'bg-orange-500/10 text-orange-400 border-orange-500/30', dot: 'bg-orange-400' };
+                case 'Completed': return { badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30', dot: 'bg-emerald-400' };
+                case 'Cancelled': return { badge: 'bg-slate-800 text-slate-500 border-slate-700', dot: 'bg-slate-500' };
+                default: return { badge: 'bg-blue-500/10 text-blue-400 border-blue-500/30', dot: 'bg-blue-400' }; // Scheduled
+            }
+        }
+        function buildMapsLink(address) {
+            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((address || '').replace(/\n/g, ', '))}`;
+        }
+        function formatElapsedTime(ms) {
+            const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+            const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const s = String(totalSeconds % 60).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        function renderTodayTab() {
+            const dateLabel = document.getElementById('today-date-label');
+            if (dateLabel) dateLabel.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+            const engineerFilterEl = document.getElementById('today-engineer-filter');
+            const engineerFilter = engineerFilterEl ? engineerFilterEl.value : 'ALL';
+            const today = todayISO();
+            const todaysJobs = currentJobs.filter(j => j.date === today && j.status !== 'Cancelled' && (engineerFilter === 'ALL' || getJobEngineers(j).includes(engineerFilter)))
+                .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
+            const listEl = document.getElementById('today-jobs-list');
+            const emptyEl = document.getElementById('today-empty-state');
+            if (!listEl) return;
+            if (todaysJobs.length === 0) { emptyEl.classList.remove('hidden'); listEl.innerHTML = ''; return; }
+            emptyEl.classList.add('hidden');
+
+            listEl.innerHTML = todaysJobs.map(j => {
+                const colors = getJobStatusColorClasses(j.status);
+                const engineerBadges = getJobEngineers(j).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
+                const property = j.propertyId ? currentProperties.find(p => p.id === j.propertyId) : null;
+                return `<button onclick="openJobDetailPage('${j.id}')" class="w-full text-left bg-[#283548] border border-slate-600 hover:border-amber-500 rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06] transition-colors cursor-pointer flex items-center gap-3">
+                    <span class="w-1.5 self-stretch rounded-full ${colors.dot} shrink-0"></span>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-white">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${colors.badge}">${j.status}</span></div>
+                        <div class="text-[11px] text-slate-400">${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div>
+                        <div class="flex flex-wrap gap-1 mt-1">${engineerBadges}</div>
+                        ${buildHazardBadgesHtml(property)}
+                    </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-500 shrink-0"></i>
+                </button>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        let activeJobDetailId = null;
+        let jobDetailTimerInterval = null;
+
+        function openJobDetailPage(jobId) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            activeJobDetailId = jobId;
+            renderJobDetailPageContent(job);
+            document.getElementById('job-detail-page-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeJobDetailPage() {
+            document.getElementById('job-detail-page-modal').classList.add('hidden');
+            stopLiveJobTimer();
+            activeJobDetailId = null;
+            document.getElementById('job-detail-comments-section').classList.add('hidden');
+            document.getElementById('job-detail-comments-text').value = '';
+        }
+        function renderJobDetailPageContent(job) {
+            const colors = getJobStatusColorClasses(job.status);
+            document.getElementById('job-detail-title').innerText = job.title;
+            document.getElementById('job-detail-status-badge').innerHTML = `<span class="text-xs font-bold px-3 py-1.5 rounded-lg border ${colors.badge}">${job.status}</span>${job.jobNumber ? `<span class="text-[10px] font-mono text-slate-500 ml-2">${job.jobNumber}</span>` : ''}`;
+
+            const property = job.propertyId ? currentProperties.find(p => p.id === job.propertyId) : null;
+            document.getElementById('job-detail-hazard-warning').innerHTML = property ? buildHazardBadgesHtml(property) : '';
+
+            const addressLine = job.propertyAddress || 'No property linked';
+            document.getElementById('job-detail-address-text').innerText = addressLine;
+            document.getElementById('job-detail-address-link').href = buildMapsLink(job.propertyAddress || '');
+
+            document.getElementById('job-detail-datetime').innerText = `${formatUkDate(job.date)} at ${job.time}`;
+            document.getElementById('job-detail-engineers').innerHTML = getJobEngineers(job).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
+
+            const notesWrapper = document.getElementById('job-detail-notes-wrapper');
+            if (job.notes) { notesWrapper.classList.remove('hidden'); document.getElementById('job-detail-notes').innerText = job.notes; }
+            else { notesWrapper.classList.add('hidden'); }
+
+            const timerWrapper = document.getElementById('job-detail-timer-wrapper');
+            if (job.status === 'Started' && job.timerStartedAt) {
+                timerWrapper.classList.remove('hidden');
+                startLiveJobTimer(job.timerStartedAt);
+            } else {
+                timerWrapper.classList.add('hidden');
+                stopLiveJobTimer();
+            }
+
+            renderJobDetailActionArea(job);
+        }
+        function renderJobDetailActionArea(job) {
+            const area = document.getElementById('job-detail-action-area');
+            document.getElementById('job-detail-comments-section').classList.add('hidden');
+            if (job.status === 'Scheduled') {
+                area.innerHTML = `<button onclick="acceptJob('${job.id}')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="thumbs-up" class="w-4 h-4"></i> Accept Job</button>`;
+            } else if (job.status === 'Accepted') {
+                area.innerHTML = `<button onclick="startJob('${job.id}')" class="w-full bg-orange-500 hover:bg-orange-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="play" class="w-4 h-4"></i> Start Job</button>`;
+            } else if (job.status === 'Started') {
+                area.innerHTML = `<button onclick="beginJobCompletion('${job.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="flag" class="w-4 h-4"></i> Complete Job</button>`;
+            } else if (job.status === 'Completed') {
+                const durationText = (job.timerStartedAt && job.timerStoppedAt) ? formatElapsedTime(new Date(job.timerStoppedAt) - new Date(job.timerStartedAt)) : null;
+                area.innerHTML = `<div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-center space-y-1">
+                    <div class="text-xs font-bold text-emerald-400">Job Completed</div>
+                    ${durationText ? `<div class="text-[11px] text-slate-400">Time on job: ${durationText}</div>` : ''}
+                    <div class="text-[11px] text-slate-400">${job.signature ? 'Signed off by client' : 'No signature on file'}</div>
+                </div>`;
+            } else {
+                area.innerHTML = '';
+            }
+        }
+        function startLiveJobTimer(startedAtISO) {
+            stopLiveJobTimer();
+            const display = document.getElementById('job-detail-timer-display');
+            const startedAtMs = new Date(startedAtISO).getTime();
+            const tick = () => { if (display) display.innerText = formatElapsedTime(Date.now() - startedAtMs); };
+            tick();
+            jobDetailTimerInterval = setInterval(tick, 1000);
+        }
+        function stopLiveJobTimer() {
+            if (jobDetailTimerInterval) { clearInterval(jobDetailTimerInterval); jobDetailTimerInterval = null; }
+        }
+
+        async function acceptJob(jobId) {
+            await db.collection('jobs').doc(jobId).update({ status: 'Accepted', acceptedAt: new Date().toISOString() });
+            const job = currentJobs.find(j => j.id === jobId);
+            if (job) renderJobDetailPageContent({ ...job, status: 'Accepted' });
+            // Accepting implies heading there now — offer the on-my-way message
+            // with its ETA immediately, same feature as the Jobs tab button.
+            // Gracefully does nothing if there's no resolvable client (e.g. a
+            // non-owner login, which never has client data loaded).
+            if (isOwnerLoggedIn()) sendOnMyWayMessage(jobId);
+        }
+        async function startJob(jobId) {
+            const startedAt = new Date().toISOString();
+            await db.collection('jobs').doc(jobId).update({ status: 'Started', timerStartedAt: startedAt });
+            const job = currentJobs.find(j => j.id === jobId);
+            if (job) renderJobDetailPageContent({ ...job, status: 'Started', timerStartedAt: startedAt });
+        }
+        function beginJobCompletion(jobId) {
+            document.getElementById('job-detail-comments-section').classList.remove('hidden');
+            document.getElementById('job-detail-action-area').innerHTML = '';
+        }
+        async function resolveJobOutcome(outcome) {
+            const jobId = activeJobDetailId;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job || !jobId) return;
+            const comments = document.getElementById('job-detail-comments-text').value.trim();
+            const stoppedAt = new Date().toISOString();
+            stopLiveJobTimer();
+
+            if (outcome === 'Completed') {
+                await db.collection('jobs').doc(jobId).update({
+                    operativeComments: comments, completionOutcome: 'Completed', timerStoppedAt: stoppedAt,
+                });
+                // Signature capture already stops here with its own Save flow —
+                // the job is marked Completed once that's actually saved, not
+                // before, so a job never shows "done" without being signed off
+                // (or explicitly closed out of the signature step).
+                closeJobDetailPage();
+                openSignatureModal(jobId);
+                pendingJobCompletionAfterSignature = jobId;
+            } else {
+                const newDateRaw = prompt(outcome === 'Rebook' ? 'Rebook for which date? (YYYY-MM-DD)' : 'Additional visit date? (YYYY-MM-DD)', job.date);
+                if (!newDateRaw) return; // cancelled the prompt — leave the job as-is rather than losing their comments silently
+                await db.collection('jobs').doc(jobId).update({
+                    status: 'Scheduled', date: newDateRaw, timerStartedAt: null, timerStoppedAt: null,
+                    operativeComments: comments, completionOutcome: outcome, acceptedAt: null,
+                });
+                closeJobDetailPage();
+                alert(`Job ${outcome === 'Rebook' ? 're-booked' : 'flagged for another visit'} for ${formatUkDate(newDateRaw)}.`);
+            }
+        }
+        // Set right before opening the signature modal from resolveJobOutcome,
+        // so we know to actually mark the job Completed once they save it.
+        let pendingJobCompletionAfterSignature = null;
+
         function buildJobActionButtons(j) {
             const quickActions = j.status === 'Scheduled' ? `
                 <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
@@ -2217,10 +2499,10 @@
             listEl.innerHTML = filtered.map(j => {
                 const engineers = getJobEngineers(j);
                 const engineerBadges = engineers.map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
-                const statusColor = j.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : j.status === 'Cancelled' ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+                const colors = getJobStatusColorClasses(j.status);
                 return `<div class="bg-[#283548] border border-slate-600 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg ring-1 ring-white/[0.06]">
-                    <div class="min-w-0"><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-white">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${statusColor}">${j.status}</span></div>
-                    <div class="text-[11px] text-slate-400">${formatUkDate(j.date)} at ${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div></div>
+                    <div class="min-w-0"><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-white">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${colors.badge}">${j.status}</span></div>
+                    <div class="text-[11px] text-slate-400">${formatUkDate(j.date)} at ${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div>${j.jobNumber ? `<div class="text-[10px] font-mono text-slate-500 mt-0.5">${j.jobNumber}</div>` : ''}</div>
                     <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${buildJobActionButtons(j)}</div>
                 </div>`;
             }).join('');
@@ -2660,6 +2942,14 @@
         }
         function closeSignatureModal() {
             document.getElementById('signature-modal').classList.add('hidden');
+            // If this was closed WITHOUT saving a signature (X button rather
+            // than Save), the job's still done — the timer/comments were
+            // already committed in resolveJobOutcome — just complete it here
+            // without a signature on file, rather than leaving it stuck.
+            if (pendingJobCompletionAfterSignature === activeSignatureJobId && activeSignatureJobId) {
+                db.collection('jobs').doc(activeSignatureJobId).update({ status: 'Completed' });
+                pendingJobCompletionAfterSignature = null;
+            }
             activeSignatureJobId = null;
         }
         function saveSignature() {
@@ -2672,9 +2962,11 @@
                 // small object sidesteps the restriction; only done at the
                 // point of saving, the live drawing logic never needs to know.
                 const strokesForFirestore = signatureStrokes.map(stroke => ({ points: stroke }));
-                db.collection('jobs').doc(activeSignatureJobId).update({
-                    signature: { strokes: strokesForFirestore, confirmationText: SIGNATURE_CONFIRMATION_TEXT, signedAt: new Date().toISOString() }
-                }).then(() => {
+                const jobIdBeingSigned = activeSignatureJobId;
+                const updatePayload = { signature: { strokes: strokesForFirestore, confirmationText: SIGNATURE_CONFIRMATION_TEXT, signedAt: new Date().toISOString() } };
+                if (pendingJobCompletionAfterSignature === jobIdBeingSigned) updatePayload.status = 'Completed';
+                db.collection('jobs').doc(jobIdBeingSigned).update(updatePayload).then(() => {
+                    if (pendingJobCompletionAfterSignature === jobIdBeingSigned) pendingJobCompletionAfterSignature = null;
                     closeSignatureModal();
                 }).catch((err) => {
                     console.error('Failed to save signature:', err);
@@ -2687,6 +2979,7 @@
         }
 
         function onTabSwitched(tabId) {
+            if (tabId === 'today-tab') renderTodayTab();
             if (tabId === 'calendar-tab') renderCalendarGrid();
             if (tabId === 'quote-tab') { rebuildJobTemplatesDropdown(); filterMaterialCatalog(); rebuildAllocatedMaterialsTable(); rebuildVaultDataTable(); filterQuotePropertyDropdown(); }
             if (tabId === 'crm-tab') rebuildCrmProfilesInterface();
@@ -3024,7 +3317,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 return;
             }
             emptyState.classList.add('hidden'); table.classList.remove('hidden');
-            const statusColors = { Draft: 'bg-slate-800 text-slate-400 border-slate-700', Sent: 'bg-blue-500/10 text-blue-400 border-blue-500/30', Approved: 'bg-purple-500/10 text-purple-400 border-purple-500/30', Invoiced: 'bg-amber-500/10 text-amber-400 border-amber-500/30', Paid: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' };
+            const statusColors = { Draft: 'bg-slate-800 text-slate-400 border-slate-700', Sent: 'bg-blue-500/10 text-blue-400 border-blue-500/30', Approved: 'bg-purple-500/10 text-purple-400 border-purple-500/30', Invoiced: 'bg-amber-500/10 text-amber-400 border-amber-500/30', Paid: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30', Expired: 'bg-red-500/10 text-red-400 border-red-500/30' };
             tbody.innerHTML = sorted.map(r => {
                 const isInvoiceOrPaid = r.status === 'Invoiced' || r.status === 'Paid';
                 return `<tr class="hover:bg-slate-800/40 transition-colors ${r.archived ? 'opacity-60' : ''}">
@@ -3034,7 +3327,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     <td class="py-3 px-3 text-right text-xs font-mono font-bold text-white">£${r.financials.grossTotal.toFixed(2)}</td>
                     <td class="py-3 px-3 text-center">
                         <select onchange="updateQuoteStatus('${r.id}', this.value)" class="bg-slate-900 border border-slate-700 rounded-lg text-[10px] px-2 py-1 text-slate-300">
-                            ${['Draft','Sent','Approved','Invoiced','Paid'].map(s => `<option value="${s}" ${r.status===s?'selected':''}>${s}</option>`).join('')}
+                            ${['Draft','Sent','Approved','Invoiced','Paid','Expired'].map(s => `<option value="${s}" ${r.status===s?'selected':''}>${s}</option>`).join('')}
                         </select>
                     </td>
                     <td class="py-3 px-3 text-right">
@@ -3061,6 +3354,19 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('invoice-reconciliation-modal').classList.remove('hidden');
         }
         function closeInvoiceModal() { document.getElementById('invoice-reconciliation-modal').classList.add('hidden'); }
+        // Shared atomic sequential-numbering helper — used for both invoice
+        // and job numbers, each with their own counter document so they
+        // increment independently.
+        async function getNextSequentialNumber(counterDocId, prefix) {
+            const counterRef = db.collection('settings').doc(counterDocId);
+            const assignedNumber = await db.runTransaction(async (transaction) => {
+                const counterDoc = await transaction.get(counterRef);
+                const nextNumber = counterDoc.exists ? counterDoc.data().nextNumber : 1;
+                transaction.set(counterRef, { nextNumber: nextNumber + 1 });
+                return nextNumber;
+            });
+            return prefix + '-' + String(assignedNumber).padStart(5, '0');
+        }
         async function confirmInvoiceConversion() {
             const id = document.getElementById('recon-quote-id').value;
             const actualMaterials = parseFloat(document.getElementById('recon-actual-materials').value) || 0;
@@ -3074,14 +3380,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 // quote becomes an invoice — re-confirming later (e.g. to
                 // correct actual costs) shouldn't burn a second number.
                 if (!existing || !existing.invoiceNumber) {
-                    const counterRef = db.collection('settings').doc('invoiceCounter');
-                    const assignedNumber = await db.runTransaction(async (transaction) => {
-                        const counterDoc = await transaction.get(counterRef);
-                        const nextNumber = counterDoc.exists ? counterDoc.data().nextNumber : 1;
-                        transaction.set(counterRef, { nextNumber: nextNumber + 1 });
-                        return nextNumber;
-                    });
-                    updatePayload.invoiceNumber = 'INV-' + String(assignedNumber).padStart(5, '0');
+                    updatePayload.invoiceNumber = await getNextSequentialNumber('invoiceCounter', 'INV');
                 }
 
                 await db.collection('quotes').doc(id).update(updatePayload);
