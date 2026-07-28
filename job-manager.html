@@ -85,7 +85,10 @@
                 </div>
 
                 <nav class="flex flex-wrap items-center justify-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
-                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10">
+                    <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10">
+                        <i data-lucide="sun" class="w-4 h-4"></i> Today
+                    </button>
+                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
                     </button>
                     <button onclick="switchTab('calendar-tab')" id="btn-calendar-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
@@ -123,7 +126,21 @@
         </header>
 
         <main class="max-w-7xl mx-auto px-4 lg:px-8 py-8">
-            <div id="dashboard-tab" class="tab-content active space-y-6">
+            <div id="today-tab" class="tab-content active space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <h2 class="text-lg font-bold text-white" id="today-date-label"></h2>
+                    <span id="today-viewing-as-label" class="text-xs font-semibold text-slate-400 bg-[#283548] border border-slate-600 rounded-xl px-4 py-2"></span>
+                </div>
+                <div id="today-no-identity-notice" class="hidden text-center py-16 text-slate-500 text-sm bg-[#283548] border border-slate-600 rounded-2xl px-6">
+                    <i data-lucide="user-x" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Your login isn't linked to an engineer name yet — ask the owner to add it in Settings.
+                </div>
+                <div id="today-empty-state" class="hidden text-center py-16 text-slate-500 text-sm bg-[#283548] border border-slate-600 rounded-2xl">
+                    <i data-lucide="coffee" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Nothing on today.
+                </div>
+                <div id="today-jobs-list" class="space-y-3"></div>
+            </div>
+
+            <div id="dashboard-tab" class="tab-content space-y-6">
                 <div id="dashboard-owner-stats" class="owner-only-tab grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
@@ -166,6 +183,22 @@
                         <div id="dashboard-upcoming-jobs-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
                 </div>
+
+                <div id="dashboard-owner-followup-section" class="owner-only-tab hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4"><i data-lucide="clock-alert" class="text-amber-400 w-5 h-5"></i> Quotes Needing Follow-Up</h2>
+                        <div id="dashboard-stale-quotes-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4"><i data-lucide="user-round-x" class="text-amber-400 w-5 h-5"></i> Gone Quiet (1yr+)</h2>
+                        <div id="dashboard-gone-quiet-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
+                    <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] lg:col-span-2">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-white mb-4"><i data-lucide="package-plus" class="text-amber-400 w-5 h-5"></i> Pending Job Additions</h2>
+                        <p class="text-xs text-slate-400 mb-3">Materials/time flagged on-site by engineers — add these to the relevant quote yourself, then mark reviewed.</p>
+                        <div id="dashboard-pending-additions-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
+                </div>
             </div>
 
             <div id="calendar-tab" class="tab-content space-y-6">
@@ -201,9 +234,18 @@
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Property</label>
                                 <input type="text" id="job-property-search-input" oninput="filterJobPropertyDropdown()" placeholder="Search properties..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 mb-1.5">
-                                <select id="job-property-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                <select id="job-property-select" onchange="renderJobPropertyHazardWarning()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                                     <option value="">-- None / Not linked --</option>
                                 </select>
+                                <div id="job-property-hazard-warning" class="hidden mt-2 p-2.5 rounded-lg hazard-stripe border border-amber-500"></div>
+                            </div>
+                            <div id="job-form-quote-link-wrapper" class="hidden">
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Link to Quote (optional)</label>
+                                <input type="text" id="job-form-quote-search-input" oninput="filterJobFormQuoteDropdown()" placeholder="Search quotes by client or job name..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 mb-1.5">
+                                <select id="job-form-quote-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+                                    <option value="">-- None / Not linked --</option>
+                                </select>
+                                <p class="text-[10px] text-slate-500 mt-1">Materials/hours added on the job page will apply straight to this quote.</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Assigned Engineer(s) *</label>
@@ -289,6 +331,11 @@
                                 <textarea id="property-notes" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="Keysafe code 1234, gate code #56, dog on site..."></textarea>
                             </div>
                             <div>
+                                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Hazards / Site Warnings</label>
+                                <div id="property-hazard-checklist" class="grid grid-cols-2 gap-1.5 bg-slate-900 border border-slate-700 rounded-xl p-3"></div>
+                                <input type="text" id="property-hazard-other" placeholder="Other hazard (optional)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500 mt-2">
+                            </div>
+                            <div>
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Last Electrical Inspection (EICR)</label>
                                 <input type="date" id="property-last-electrical" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 mb-2">
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">EICR Reminder Cycle</label>
@@ -301,6 +348,14 @@
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Last Smoke Alarm Test</label>
                                 <input type="date" id="property-last-smoke" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                                 <span class="text-[10px] text-slate-500 mt-1 block">Sets a 1-year reminder from this date.</span>
+                            </div>
+                            <div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button type="button" onclick="captureCurrentLocationForProperty()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-blue-400 font-semibold py-2 rounded-xl text-[11px] transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Stand There & Capture</button>
+                                    <button type="button" onclick="lookUpCoordinatesFromAddress()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-blue-400 font-semibold py-2 rounded-xl text-[11px] transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="search" class="w-3.5 h-3.5"></i> Look Up From Address</button>
+                                </div>
+                                <p id="property-location-status" class="text-[10px] text-slate-500 mt-1"></p>
+                                <p class="text-[9px] text-slate-600 mt-1">Address lookup uses OpenStreetMap — location data © OpenStreetMap contributors.</p>
                             </div>
                             <div class="flex gap-2">
                                 <button type="submit" id="property-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
@@ -528,9 +583,15 @@
                     <div class="bg-[#283548] border border-slate-600 rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                             <h2 class="text-lg font-bold text-white">Quotes & Invoices</h2>
-                            <button id="btn-generate-shopping-list" onclick="openShoppingListModal()" class="bg-slate-800 text-slate-400 opacity-50 cursor-not-allowed px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
-                                <i data-lucide="clipboard-list" class="w-4 h-4"></i> <span id="shopping-btn-text">Generate Shopping List</span>
-                            </button>
+                            <div class="flex items-center gap-3">
+                                <label class="flex items-center gap-1.5 text-xs text-slate-400 cursor-pointer select-none">
+                                    <input type="checkbox" id="vault-show-archived-toggle" onchange="rebuildVaultDataTable()" class="w-3.5 h-3.5 rounded bg-slate-900 border-slate-700 text-amber-500 cursor-pointer">
+                                    Show Archived
+                                </label>
+                                <button id="btn-generate-shopping-list" onclick="openShoppingListModal()" class="bg-slate-800 text-slate-400 opacity-50 cursor-not-allowed px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
+                                    <i data-lucide="clipboard-list" class="w-4 h-4"></i> <span id="shopping-btn-text">Generate Shopping List</span>
+                                </button>
+                            </div>
                         </div>
                         <div id="vault-empty-state" class="text-center py-16 text-slate-500 text-sm">
                             <i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Vault is empty.
@@ -934,6 +995,121 @@
     </div>
 
     <!-- ================= MODALS ================= -->
+    <div id="job-detail-page-modal" class="fixed inset-0 bg-slate-950/90 z-[55] hidden overflow-y-auto">
+        <div class="min-h-screen p-4 flex items-start justify-center py-8">
+            <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06]">
+                <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50 rounded-t-2xl">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2 min-w-0"><i data-lucide="clipboard-list" class="text-amber-400 shrink-0"></i> <span id="job-detail-title" class="truncate"></span></h3>
+                    <button onclick="closeJobDetailPage()" class="text-slate-400 hover:text-white cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div id="job-detail-status-badge"></div>
+                    <div id="job-detail-hazard-warning"></div>
+                    <div id="job-detail-notes-wrapper" class="hidden bg-amber-500/5 border border-amber-500/20 rounded-xl p-3">
+                        <div class="text-[10px] uppercase font-bold text-amber-400 mb-1 flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Job Details / Notes</div>
+                        <div id="job-detail-notes" class="text-sm text-slate-200 whitespace-pre-line"></div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-3">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Property</div>
+                        <a id="job-detail-address-link" href="#" target="_blank" rel="noopener" class="text-sm text-blue-400 hover:text-blue-300 underline flex items-start gap-1.5">
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0 mt-0.5"></i> <span id="job-detail-address-text"></span>
+                        </a>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-3">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 mb-1">Date & Time</div>
+                        <div id="job-detail-datetime" class="text-sm text-slate-200"></div>
+                    </div>
+
+                    <div id="job-detail-engineer-timers" class="space-y-3"></div>
+
+                    <div id="job-detail-action-area" class="space-y-2"></div>
+
+                    <button type="button" onclick="openJobMaterialsModal()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400 font-semibold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                        <i data-lucide="package-plus" class="w-4 h-4"></i> Materials & Hours
+                    </button>
+
+                    <div id="job-detail-comments-section" class="hidden space-y-3 border-t border-slate-700 pt-4">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Operative Comments</label>
+                        <textarea id="job-detail-comments-text" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500" placeholder="What happened on this job..."></textarea>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="resolveJobOutcome('Completed')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="check-circle" class="w-4 h-4"></i> Job Complete</button>
+                            <button onclick="resolveJobOutcome('Rebook')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="calendar-clock" class="w-4 h-4"></i> Rebook Required</button>
+                            <button onclick="resolveJobOutcome('AddTime')" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Additional Time Needed (Another Visit)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="job-materials-modal" class="fixed inset-0 bg-slate-950/90 z-[58] hidden overflow-y-auto">
+        <div class="min-h-screen p-4 flex items-start justify-center py-8">
+            <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06]">
+                <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50 rounded-t-2xl">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="package-plus" class="text-amber-400"></i> Materials & Hours</h3>
+                    <button onclick="closeJobMaterialsModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div id="job-no-quote-notice" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3 text-[11px] text-slate-500">No quote linked to this job yet — ask the owner to link one so materials/hours added here apply automatically.</div>
+                    <div id="job-linked-quote-section" class="hidden bg-slate-900 border border-slate-700 rounded-xl p-3">
+                        <div class="text-[10px] uppercase font-bold text-slate-500 mb-1.5">Linked Quote</div>
+                        <div id="job-linked-quote-display" class="hidden flex items-center justify-between gap-2">
+                            <span id="job-linked-quote-name" class="text-sm text-slate-200"></span>
+                            <button onclick="unlinkJobQuote()" class="text-[10px] font-bold text-red-400 hover:text-red-300 cursor-pointer">Unlink</button>
+                        </div>
+                        <div id="job-linked-quote-picker" class="hidden space-y-2">
+                            <input type="text" id="job-link-quote-search" oninput="renderJobQuoteLinkOptions()" placeholder="Search quotes by client or job name..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            <div id="job-link-quote-options" class="max-h-40 overflow-y-auto space-y-1 custom-scrollbar"></div>
+                        </div>
+                    </div>
+
+                    <div id="job-materials-hours-section">
+                        <div class="flex gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-slate-800 w-fit mb-3">
+                            <button type="button" onclick="switchJobAdditionsSubtab('materials')" id="btn-job-additions-materials" class="job-additions-subtab-btn px-3 py-1.5 text-[11px] font-bold rounded-lg bg-amber-500 text-slate-950">Materials</button>
+                            <button type="button" onclick="switchJobAdditionsSubtab('hours')" id="btn-job-additions-hours" class="job-additions-subtab-btn px-3 py-1.5 text-[11px] font-bold rounded-lg text-slate-400">Hours</button>
+                        </div>
+
+                        <div id="job-additions-materials-panel" class="space-y-2">
+                            <input type="text" id="job-material-search-input" oninput="renderJobMaterialsPicker()" placeholder="Search materials..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            <div id="job-materials-picker-list" class="max-h-48 overflow-y-auto space-y-1.5 custom-scrollbar pr-1"></div>
+                            <div id="job-materials-added-list" class="space-y-1.5 pt-2 border-t border-slate-800"></div>
+                        </div>
+
+                        <div id="job-additions-hours-panel" class="hidden space-y-2">
+                            <div class="flex gap-2">
+                                <input type="number" step="0.5" min="0" id="job-addition-hours" placeholder="Hours" class="w-24 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                                <input type="text" id="job-addition-hours-reason" placeholder="Reason (e.g. extra circuit requested)" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <button type="button" onclick="submitJobHoursAddition()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-amber-400 font-semibold py-2 rounded-lg text-xs cursor-pointer">Add Hours</button>
+                            <div id="job-hours-added-list" class="space-y-1.5 pt-2 border-t border-slate-800"></div>
+                        </div>
+                        <p id="job-additions-owner-note" class="hidden text-[10px] text-slate-500 mt-2">Added directly to the linked quote's total.</p>
+                        <p id="job-additions-nonowner-note" class="hidden text-[10px] text-slate-500 mt-2">These add straight to the quote — no pricing shown here, that stays with the owner.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="signature-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="pen-tool" class="text-amber-400"></i> Client Sign-Off</h3>
+                <button onclick="closeSignatureModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p id="signature-confirmation-text" class="text-xs text-slate-300 bg-slate-900 border border-slate-700 p-3 rounded-lg"></p>
+                <canvas id="signature-canvas" class="bg-white rounded-lg w-full touch-none" style="height:180px;"></canvas>
+                <p id="signature-stroke-counter" class="text-[10px] text-slate-400">Nothing drawn yet</p>
+                <p id="signature-signed-at" class="text-[10px] text-slate-500"></p>
+            </div>
+            <div class="p-5 border-t border-slate-700 bg-slate-900/50 flex gap-2">
+                <button onclick="clearSignatureCanvas()" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-medium py-2.5 rounded-xl text-xs transition-colors cursor-pointer">Clear</button>
+                <button onclick="saveSignature()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer">Save Signature</button>
+            </div>
+        </div>
+    </div>
+
     <div id="send-reminder-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
             <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
@@ -1111,14 +1287,32 @@
             appId: "1:862567904137:web:59a7292a52da1b5c6fa758"
         };
         const GOOGLE_CLIENT_ID = "862567904137-5c5hugdh0ftvids0bi7325bj1u515upi.apps.googleusercontent.com";
-        const OWNER_EMAIL = 'electriciansnearyou@gmail.com';
+        // Anyone in this list gets full owner access (all tabs, quoting,
+        // pricing, CRM). Mirrors the isOwner() check in the Firestore
+        // security rules — that server-side check is what actually enforces
+        // this, this list is just what drives the app's own UI.
+        const OWNER_EMAILS = ['electriciansnearyou@gmail.com', 'jmabbley@yahoo.com'];
+        // Maps each person's own login to their name as used everywhere else
+        // in the app (job assignment, timers, etc.) — this is what lets the
+        // Today page know whose jobs to default to.
+        const EMAIL_TO_ENGINEER_NAME = {
+            'electriciansnearyou@gmail.com': 'Hughes',
+            'jmabbley@yahoo.com': 'Mabbley',
+            'willbutler1404@gmail.com': 'Butler',
+        };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
         function isOwnerLoggedIn() {
-            return !!(auth.currentUser && auth.currentUser.email && auth.currentUser.email.toLowerCase() === OWNER_EMAIL.toLowerCase());
+            const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
+            return OWNER_EMAILS.some(e => e.toLowerCase() === email);
+        }
+        function getCurrentUserEngineerName() {
+            const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
+            const matchedEmail = Object.keys(EMAIL_TO_ENGINEER_NAME).find(e => e.toLowerCase() === email);
+            return matchedEmail ? EMAIL_TO_ENGINEER_NAME[matchedEmail] : null;
         }
 
         let firestoreListenersStarted = false;
@@ -1128,6 +1322,7 @@
                 document.getElementById('login-gate').classList.add('hidden');
                 document.getElementById('app-root').classList.remove('hidden');
                 applyOwnerVisibility();
+                renderTodayTab();
                 if (!firestoreListenersStarted) {
                     startFirestoreListeners();
                     firestoreListenersStarted = true;
@@ -1235,6 +1430,48 @@
         let trashProperties = [], trashJobs = [], trashClients = [], trashQuotes = [], trashStock = [], trashTemplates = [];
         const TRASH_RETENTION_DAYS = 30;
 
+        // Cost-stripped mirror of stock (name/SKU/category only), shared with
+        // everyone — this is what non-owner logins pick materials from. Kept in
+        // sync automatically from the real stock list, but only ever contains
+        // fields safe for non-owners to see.
+        let currentStockPublic = [];
+        let lastMirroredStockSignature = new Map();
+        // Quietly links a job to its likely quote, via the same
+        // property<->client linkage the CRM already uses. Only ever runs (and
+        // can only ever find anything) on the owner's own device, since only
+        // that login has quote/client data loaded — non-owner devices simply
+        // see the link once the owner's device has synced it. Only links when
+        // there's exactly one confident match, to avoid guessing wrong.
+        function autoLinkJobsToQuotes() {
+            if (!isOwnerLoggedIn()) return;
+            currentJobs.forEach(job => {
+                if (job.linkedQuoteId || !job.propertyId) return;
+                const relatedClientIds = currentClients.filter(c => (c.linkedPropertyIds || []).includes(job.propertyId)).map(c => c.id);
+                if (relatedClientIds.length === 0) return;
+                const candidateQuotes = currentQuotes.filter(q => relatedClientIds.includes(q.linkedClientId) && ['Approved', 'Invoiced', 'Paid'].includes(q.status));
+                if (candidateQuotes.length === 1) {
+                    db.collection('jobs').doc(job.id).update({ linkedQuoteId: candidateQuotes[0].id });
+                }
+            });
+        }
+        function syncStockPublicMirror(stockItems) {
+            const currentIds = new Set(stockItems.map(s => s.id));
+            stockItems.forEach(item => {
+                const sig = `${item.sku}|${item.desc}|${item.category}`;
+                if (lastMirroredStockSignature.get(item.id) !== sig) {
+                    db.collection('stockPublic').doc(item.id).set({ sku: item.sku, desc: item.desc, category: item.category });
+                    lastMirroredStockSignature.set(item.id, sig);
+                }
+            });
+            for (const id of [...lastMirroredStockSignature.keys()]) {
+                if (!currentIds.has(id)) {
+                    db.collection('stockPublic').doc(id).delete();
+                    lastMirroredStockSignature.delete(id);
+                }
+            }
+        }
+
+
         // Permanently removes anything that's been in the trash longer than the
         // retention window. Runs opportunistically whenever a collection
         // refreshes — there's no background job on the free plan, so this is
@@ -1268,6 +1505,34 @@
                 db.collection('quotes').doc(q.id).update(fix);
             });
         }
+        const ARCHIVE_AFTER_DAYS = 365;
+        // Archiving is purely a decluttering flag — archived quotes stay in
+        // Firestore untouched, still show in CRM client history, and are
+        // still fully reachable in the Vault via the "Show Archived" toggle.
+        // Never deleted, nothing here is destructive.
+        function autoArchiveOldPaidQuotes(allDocs) {
+            const now = Date.now();
+            allDocs.forEach(q => {
+                if (q.archived || q.status !== 'Paid') return;
+                const ageDays = (now - parseUkTimestamp(q.timestamp)) / 86400000;
+                if (ageDays < ARCHIVE_AFTER_DAYS) return;
+                q.archived = true;
+                db.collection('quotes').doc(q.id).update({ archived: true });
+            });
+        }
+        const QUOTE_EXPIRE_AFTER_DAYS = 30;
+        // Only Draft/Sent quotes expire — anything that's progressed to
+        // Approved/Invoiced/Paid has already been actioned and is left alone.
+        function autoExpireOldQuotes(allDocs) {
+            const now = Date.now();
+            allDocs.forEach(q => {
+                if (q.status !== 'Draft' && q.status !== 'Sent') return;
+                const ageDays = (now - parseUkTimestamp(q.timestamp)) / 86400000;
+                if (ageDays < QUOTE_EXPIRE_AFTER_DAYS) return;
+                q.status = 'Expired';
+                db.collection('quotes').doc(q.id).update({ status: 'Expired' });
+            });
+        }
 
         function startFirestoreListeners() {
             // --- Shared collections (everyone) ---
@@ -1281,6 +1546,7 @@
                 renderDashboard();
                 renderCalendarGrid();
                 renderTrashTab();
+                renderTodayTab();
             }, (err) => console.error('Properties listener error:', err));
 
             db.collection('jobs').onSnapshot((snapshot) => {
@@ -1292,6 +1558,12 @@
                 renderDashboard();
                 renderCalendarGrid();
                 renderTrashTab();
+                renderTodayTab();
+                autoLinkJobsToQuotes();
+                if (activeJobDetailId) {
+                    const openJob = currentJobs.find(j => j.id === activeJobDetailId);
+                    if (openJob) renderJobDetailPageContent(openJob);
+                }
             }, (err) => console.error('Jobs listener error:', err));
 
             db.collection('unavailability').onSnapshot((snapshot) => {
@@ -1313,6 +1585,11 @@
                 renderJobsList();
                 renderCalendarGrid();
             }, (err) => console.error('Engineers listener error:', err));
+
+            db.collection('stockPublic').onSnapshot((snapshot) => {
+                currentStockPublic = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (activeJobDetailId) renderJobMaterialsPicker();
+            }, (err) => console.error('Stock (public mirror) listener error:', err));
 
             // --- Owner-only collections (rules will reject reads for non-owners
             // automatically; these listeners simply won't be attached for them
@@ -1342,11 +1619,14 @@
                     filterMaterialCatalog();
                     rebuildTemplateMaterialSelector();
                     renderTrashTab();
+                    syncStockPublicMirror(currentStock);
                 }, (err) => console.error('Stock listener error:', err));
 
                 db.collection('quotes').onSnapshot((snapshot) => {
                     const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     repairLegacyImportedQuotes(allDocs);
+                    autoArchiveOldPaidQuotes(allDocs);
+                    autoExpireOldQuotes(allDocs);
                     currentQuotes = allDocs.filter(q => !q.deleted);
                     trashQuotes = allDocs.filter(q => q.deleted);
                     purgeOldTrashItems('quotes', trashQuotes);
@@ -1354,6 +1634,8 @@
                     rebuildCrmProfilesInterface();
                     renderDashboard();
                     renderTrashTab();
+                    autoLinkJobsToQuotes();
+                    filterJobFormQuoteDropdown();
                 }, (err) => console.error('Quotes listener error:', err));
 
                 db.collection('templates').onSnapshot((snapshot) => {
@@ -1426,6 +1708,7 @@
                     </label>`).join('');
                 document.querySelectorAll('.job-engineer-checkbox').forEach(chk => { if (previouslyChecked.includes(chk.value)) chk.checked = true; });
             }
+            renderTodayTab();
         }
         function getSelectedJobEngineersFromForm() {
             return [...document.querySelectorAll('.job-engineer-checkbox:checked')].map(chk => chk.value);
@@ -1598,7 +1881,7 @@
                         const reminderBtn = (client && client.phone) ? `<button onclick="openSendReminderModal('${j.id}')" title="Send reminder to ${client.name}" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-950 border border-slate-700 cursor-pointer shrink-0"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>` : '';
                         return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
                             <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${j.title}</div><div class="text-[10px] text-slate-500">${formatUkDate(j.date)} at ${j.time || '—'}</div></div>
-                            <div class="flex flex-wrap gap-1 justify-end items-center shrink-0">${badges}${reminderBtn}</div>
+                            <div class="flex flex-wrap gap-1 justify-end items-center shrink-0">${badges}${reminderBtn}${buildJobActionButtons(j)}</div>
                         </div>`;
                     }).join('');
             }
@@ -1621,6 +1904,70 @@
                     `;
                     lucide.createIcons();
                 }
+
+                const STALE_QUOTE_DAYS = 7;
+                const GONE_QUIET_DAYS = 365;
+                const now = Date.now();
+
+                const staleQuotes = currentQuotes.filter(q => q.status === 'Sent' && (now - parseUkTimestamp(q.timestamp)) / 86400000 >= STALE_QUOTE_DAYS)
+                    .sort((a, b) => parseUkTimestamp(a.timestamp) - parseUkTimestamp(b.timestamp));
+                const staleListEl = document.getElementById('dashboard-stale-quotes-list');
+                if (staleListEl) {
+                    staleListEl.innerHTML = staleQuotes.length === 0 ? `<p class="text-xs text-slate-500 text-center py-6">Nothing waiting on a follow-up.</p>` :
+                        staleQuotes.map(q => {
+                            const daysWaiting = Math.floor((now - parseUkTimestamp(q.timestamp)) / 86400000);
+                            return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                                <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${q.clientDetailsPayload.name} — ${q.jobName}</div><div class="text-[10px] text-slate-500">Sent ${daysWaiting} days ago • £${q.financials.grossTotal.toFixed(2)}</div></div>
+                                <button onclick="loadQuoteForActiveModification('${q.id}')" class="text-[10px] font-bold bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-slate-700 cursor-pointer shrink-0">Review</button>
+                            </div>`;
+                        }).join('');
+                }
+
+                const clientLastActivity = {};
+                currentQuotes.forEach(q => {
+                    if (!q.linkedClientId) return;
+                    const t = parseUkTimestamp(q.timestamp);
+                    if (!clientLastActivity[q.linkedClientId] || t > clientLastActivity[q.linkedClientId]) clientLastActivity[q.linkedClientId] = t;
+                });
+                const goneQuietClients = currentClients.filter(c => {
+                    const lastActivity = clientLastActivity[c.id];
+                    if (!lastActivity) return false; // never had a job — not "gone quiet", just never active yet
+                    return (now - lastActivity) / 86400000 >= GONE_QUIET_DAYS;
+                }).sort((a, b) => clientLastActivity[a.id] - clientLastActivity[b.id]);
+                const goneQuietListEl = document.getElementById('dashboard-gone-quiet-list');
+                if (goneQuietListEl) {
+                    goneQuietListEl.innerHTML = goneQuietClients.length === 0 ? `<p class="text-xs text-slate-500 text-center py-6">No clients have gone quiet.</p>` :
+                        goneQuietClients.map(c => {
+                            const monthsSince = Math.floor((now - clientLastActivity[c.id]) / 86400000 / 30);
+                            return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                                <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${c.name}</div><div class="text-[10px] text-slate-500">Last job ~${monthsSince} months ago</div></div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    ${c.phone ? `<a href="tel:${c.phone}" class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-slate-950 border border-slate-700"><i data-lucide="phone-call" class="w-3.5 h-3.5"></i></a>` : ''}
+                                    ${c.email ? `<a href="mailto:${c.email}" class="text-blue-400 hover:text-blue-300 p-1.5 rounded-lg bg-slate-950 border border-slate-700"><i data-lucide="mail" class="w-3.5 h-3.5"></i></a>` : ''}
+                                </div>
+                            </div>`;
+                        }).join('');
+                }
+
+                const quotesWithOnSiteAdditions = currentQuotes.filter(q =>
+                    (q.materials || []).some(m => m.addedOnSite && m.cost == null) || (q.pendingHoursAdditions || []).length > 0
+                );
+                const pendingAdditionsListEl = document.getElementById('dashboard-pending-additions-list');
+                if (pendingAdditionsListEl) {
+                    pendingAdditionsListEl.innerHTML = quotesWithOnSiteAdditions.length === 0 ? `<p class="text-xs text-slate-500 text-center py-6">Nothing pending.</p>` :
+                        quotesWithOnSiteAdditions.map(q => {
+                            const unpriced = (q.materials || []).filter(m => m.addedOnSite && m.cost == null);
+                            const pendingHours = q.pendingHoursAdditions || [];
+                            const parts = [...unpriced.map(m => `${m.desc} x${m.qty} (unpriced)`), ...pendingHours.map(h => `+${h.hours}h — ${h.reason}`)];
+                            return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                                <div class="min-w-0"><div class="text-xs font-semibold text-slate-200 truncate">${q.jobName} — ${q.clientDetailsPayload.name}</div><div class="text-[10px] text-amber-400 truncate">${parts.join('; ')}</div></div>
+                                <button onclick="loadQuoteForActiveModification('${q.id}')" class="text-[10px] font-bold bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-slate-700 cursor-pointer shrink-0">Price It In</button>
+                            </div>`;
+                        }).join('');
+                }
+
+                const followUpSection = document.getElementById('dashboard-owner-followup-section');
+                if (followUpSection) followUpSection.classList.remove('hidden');
             }
             lucide.createIcons();
         }
@@ -1754,7 +2101,7 @@
                 jobsThisDay.map(j => {
                     const badges = getJobEngineers(j).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
                     return `
-                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3 cursor-pointer hover:border-amber-500" onclick="closeDayDetailModal(); loadJobForModification('${j.id}'); switchTab('jobs-tab');">
+                    <div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3 cursor-pointer hover:border-amber-500" onclick="closeDayDetailModal(); loadJobForModification('${j.id}');">
                         <div class="min-w-0"><div class="text-xs font-semibold text-slate-200">${j.time} — ${j.title}</div>${j.propertyAddress ? `<div class="text-[10px] text-slate-500 truncate">${j.propertyAddress.split('\\n')[0]}</div>` : ''}</div>
                         <div class="flex flex-wrap gap-1 justify-end shrink-0">${badges}</div>
                     </div>`; }).join('');
@@ -1890,6 +2237,37 @@
             jobPropertySelect.innerHTML = '<option value="">-- None / Not linked --</option>' +
                 filtered.map(p => `<option value="${p.id}">${(p.address || '').split('\\n')[0]}</option>`).join('');
             if (filtered.some(p => p.id === previousValue)) jobPropertySelect.value = previousValue;
+            renderJobPropertyHazardWarning();
+        }
+        function renderJobPropertyHazardWarning() {
+            const select = document.getElementById('job-property-select');
+            const warningEl = document.getElementById('job-property-hazard-warning');
+            if (!select || !warningEl) return;
+            const property = currentProperties.find(p => p.id === select.value);
+            const tags = property ? (property.hazardTags || []) : [];
+            const other = property ? property.hazardOther : null;
+            if (!property || (tags.length === 0 && !other)) { warningEl.classList.add('hidden'); warningEl.innerHTML = ''; return; }
+            const labels = [...tags.map(hazardKeyToLabel), ...(other ? [other] : [])].join(', ');
+            warningEl.innerHTML = `<span class="text-[11px] font-bold text-white flex items-center gap-1.5"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> This property is flagged: ${labels}</span>`;
+            warningEl.classList.remove('hidden');
+            lucide.createIcons();
+        }
+        // Owner-only "link ahead of time" option in the Jobs form — non-owners
+        // never see this, since they can't see quotes to pick from anyway.
+        function filterJobFormQuoteDropdown() {
+            const wrapper = document.getElementById('job-form-quote-link-wrapper');
+            if (!wrapper) return;
+            wrapper.classList.toggle('hidden', !isOwnerLoggedIn());
+            if (!isOwnerLoggedIn()) return;
+            const searchInput = document.getElementById('job-form-quote-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const select = document.getElementById('job-form-quote-select');
+            if (!select) return;
+            const previousValue = select.value;
+            const filtered = currentQuotes.filter(q => !filterText || q.jobName.toLowerCase().includes(filterText) || q.clientDetailsPayload.name.toLowerCase().includes(filterText));
+            select.innerHTML = '<option value="">-- None / Not linked --</option>' +
+                filtered.map(q => `<option value="${q.id}">${q.jobName} — ${q.clientDetailsPayload.name} (${q.status})</option>`).join('');
+            if (filtered.some(q => q.id === previousValue)) select.value = previousValue;
         }
 
         function findPropertyIdByAddress(address) {
@@ -1943,6 +2321,14 @@
                 status: document.getElementById('job-status-select').value,
                 notes: document.getElementById('job-notes').value.trim(),
             };
+            // Only the owner can see/set this field — if a non-owner saves the
+            // same job, leave whatever link already exists completely
+            // untouched rather than silently wiping it via an empty field
+            // they never had the chance to see.
+            if (isOwnerLoggedIn()) {
+                const selectedQuoteId = document.getElementById('job-form-quote-select').value;
+                basePayload.linkedQuoteId = selectedQuoteId || null;
+            }
 
             const startDate = document.getElementById('job-date').value;
             let jobDates = [startDate];
@@ -1992,7 +2378,8 @@
                 }
             } else {
                 for (const d of jobDates) {
-                    const payload = { ...basePayload, date: d, createdAt: new Date().toISOString() };
+                    const jobNumber = await getNextSequentialNumber('jobNumberCounter', 'JOB');
+                    const payload = { ...basePayload, date: d, jobNumber, createdAt: new Date().toISOString() };
                     const ref = await db.collection('jobs').add(payload);
                     if (isGoogleCalendarConnected()) {
                         const eventId = await pushJobToCalendar(payload, null);
@@ -2009,6 +2396,7 @@
         function loadJobForModification(jobId) {
             const j = currentJobs.find(x => x.id === jobId);
             if (!j) return;
+            switchTab('jobs-tab');
             const searchInput = document.getElementById('job-property-search-input');
             if (searchInput) searchInput.value = '';
             filterJobPropertyDropdown();
@@ -2022,6 +2410,10 @@
             document.getElementById('job-status-select').value = j.status || 'Scheduled';
             document.getElementById('job-notes').value = j.notes || '';
             document.getElementById('job-multi-day-row').classList.add('hidden');
+            const quoteSearchInput = document.getElementById('job-form-quote-search-input');
+            if (quoteSearchInput) quoteSearchInput.value = '';
+            filterJobFormQuoteDropdown();
+            document.getElementById('job-form-quote-select').value = j.linkedQuoteId || '';
             document.getElementById('job-form-title').innerText = 'Modify Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Job`;
             document.getElementById('job-cancel-btn').classList.remove('hidden');
@@ -2040,6 +2432,9 @@
             document.getElementById('job-multi-day-toggle').checked = false;
             document.getElementById('job-end-date').value = '';
             document.getElementById('job-end-date-wrapper').classList.add('hidden');
+            const quoteSearchInput = document.getElementById('job-form-quote-search-input');
+            if (quoteSearchInput) quoteSearchInput.value = '';
+            filterJobFormQuoteDropdown();
             document.getElementById('job-form-title').innerText = 'Add Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job`;
             document.getElementById('job-cancel-btn').classList.add('hidden');
@@ -2061,6 +2456,599 @@
                 await db.collection('jobs').doc(jobId).update({ status: newStatus });
             }
         }
+        // ============================================================
+        // TODAY TAB + JOB WORKFLOW (Accept -> Start -> Complete)
+        // ============================================================
+        function getJobStatusColorClasses(status) {
+            switch (status) {
+                case 'Accepted': return { badge: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30', dot: 'bg-yellow-400' };
+                case 'Started': return { badge: 'bg-orange-500/10 text-orange-400 border-orange-500/30', dot: 'bg-orange-400' };
+                case 'Completed': return { badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30', dot: 'bg-emerald-400' };
+                case 'Cancelled': return { badge: 'bg-slate-800 text-slate-500 border-slate-700', dot: 'bg-slate-500' };
+                default: return { badge: 'bg-blue-500/10 text-blue-400 border-blue-500/30', dot: 'bg-blue-400' }; // Scheduled
+            }
+        }
+        function buildMapsLink(address) {
+            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((address || '').replace(/\n/g, ', '))}`;
+        }
+        function formatElapsedTime(ms) {
+            const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+            const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const s = String(totalSeconds % 60).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        function renderTodayTab() {
+            const dateLabel = document.getElementById('today-date-label');
+            if (dateLabel) dateLabel.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+            const listEl = document.getElementById('today-jobs-list');
+            const emptyEl = document.getElementById('today-empty-state');
+            const noIdentityEl = document.getElementById('today-no-identity-notice');
+            const viewingAsLabel = document.getElementById('today-viewing-as-label');
+            if (!listEl) return;
+
+            // Hard-locked to the logged-in person's own name — deliberately no
+            // way to switch and see anyone else's day, including for owner
+            // logins. If their login isn't mapped to an engineer name at all,
+            // show nothing rather than falling back to "show everyone".
+            const myName = getCurrentUserEngineerName();
+            if (!myName) {
+                noIdentityEl.classList.remove('hidden');
+                emptyEl.classList.add('hidden');
+                listEl.innerHTML = '';
+                if (viewingAsLabel) viewingAsLabel.innerText = '';
+                return;
+            }
+            noIdentityEl.classList.add('hidden');
+            if (viewingAsLabel) viewingAsLabel.innerText = `Showing: ${myName}`;
+
+            const today = todayISO();
+            const todaysJobs = currentJobs.filter(j => j.date === today && j.status !== 'Cancelled' && getJobEngineers(j).includes(myName))
+                .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
+            if (todaysJobs.length === 0) { emptyEl.classList.remove('hidden'); listEl.innerHTML = ''; return; }
+            emptyEl.classList.add('hidden');
+
+            listEl.innerHTML = todaysJobs.map(j => {
+                const colors = getJobStatusColorClasses(j.status);
+                const engineerBadges = getJobEngineers(j).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
+                const property = j.propertyId ? currentProperties.find(p => p.id === j.propertyId) : null;
+                return `<button onclick="openJobDetailPage('${j.id}')" class="w-full text-left bg-[#283548] border border-slate-600 hover:border-amber-500 rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06] transition-colors cursor-pointer flex items-center gap-3">
+                    <span class="w-1.5 self-stretch rounded-full ${colors.dot} shrink-0"></span>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-white">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${colors.badge}">${j.status}</span></div>
+                        <div class="text-[11px] text-slate-400">${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div>
+                        <div class="flex flex-wrap gap-1 mt-1">${engineerBadges}</div>
+                        ${buildHazardBadgesHtml(property)}
+                    </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-500 shrink-0"></i>
+                </button>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        let activeJobDetailId = null;
+
+        function openJobDetailPage(jobId) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            activeJobDetailId = jobId;
+            nonOwnerSessionAdditions = { materials: [], hours: [] };
+            renderJobDetailPageContent(job);
+            document.getElementById('job-detail-page-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeJobDetailPage() {
+            document.getElementById('job-detail-page-modal').classList.add('hidden');
+            stopAllLiveJobTimerDisplays();
+            activeJobDetailId = null;
+            jobDetailShowingCompletionForm = false;
+            document.getElementById('job-detail-comments-section').classList.add('hidden');
+            document.getElementById('job-detail-comments-text').value = '';
+        }
+        // Tracks whether the operative-comments form is currently open. This
+        // is local UI state, not something derivable from job.status — the
+        // page re-renders constantly (any engineer starting/stopping their
+        // timer refreshes it), and without this flag every one of those
+        // re-renders would silently reset the comments form back to the
+        // "Complete Job" button, making it look like completing a job just
+        // didn't work.
+        let jobDetailShowingCompletionForm = false;
+
+        // Per-engineer work state, backward-compatible with jobs saved before
+        // this existed (which had one flat status/timerStartedAt for the whole
+        // job) — mapped onto the first assigned engineer so old records still
+        // display sensibly rather than just losing that history.
+        function getEngineerJobState(job, engineerName) {
+            if (job.engineerState && job.engineerState[engineerName]) return job.engineerState[engineerName];
+            const engineers = getJobEngineers(job);
+            if (!job.engineerState && engineers[0] === engineerName && job.status && job.status !== 'Scheduled' && job.status !== 'Accepted') {
+                return { status: job.status === 'Started' ? 'Started' : 'Stopped', timerStartedAt: job.timerStartedAt || null, totalMinutes: 0 };
+            }
+            return { status: 'NotStarted', timerStartedAt: null, totalMinutes: 0 };
+        }
+        function formatMinutesLong(totalMinutes) {
+            const h = Math.floor(totalMinutes / 60), m = Math.round(totalMinutes % 60);
+            return h > 0 ? `${h}h ${m}m` : `${m}m`;
+        }
+
+        function renderJobDetailPageContent(job) {
+            const colors = getJobStatusColorClasses(job.status);
+            document.getElementById('job-detail-title').innerText = job.title;
+            document.getElementById('job-detail-status-badge').innerHTML = `<span class="text-xs font-bold px-3 py-1.5 rounded-lg border ${colors.badge}">${job.status}</span>${job.jobNumber ? `<span class="text-[10px] font-mono text-slate-500 ml-2">${job.jobNumber}</span>` : ''}`;
+
+            const property = job.propertyId ? currentProperties.find(p => p.id === job.propertyId) : null;
+            document.getElementById('job-detail-hazard-warning').innerHTML = property ? buildHazardBadgesHtml(property) : '';
+
+            const notesWrapper = document.getElementById('job-detail-notes-wrapper');
+            if (job.notes) { notesWrapper.classList.remove('hidden'); document.getElementById('job-detail-notes').innerText = job.notes; }
+            else { notesWrapper.classList.add('hidden'); }
+
+            const addressLine = job.propertyAddress || 'No property linked';
+            document.getElementById('job-detail-address-text').innerText = addressLine;
+            document.getElementById('job-detail-address-link').href = buildMapsLink(job.propertyAddress || '');
+            document.getElementById('job-detail-datetime').innerText = `${formatUkDate(job.date)} at ${job.time}`;
+
+            renderJobDetailActionArea(job);
+            renderEngineerTimerCards(job);
+            renderJobLinkedQuoteSection(job);
+            renderJobMaterialsPicker();
+        }
+        function renderJobDetailActionArea(job) {
+            const area = document.getElementById('job-detail-action-area');
+            if (jobDetailShowingCompletionForm) return; // leave the open comments form alone — don't let a background re-render reset it
+            document.getElementById('job-detail-comments-section').classList.add('hidden');
+            stopLiveMyTimerDisplay();
+            if (job.status === 'Scheduled') {
+                area.innerHTML = `<button onclick="acceptJob('${job.id}')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="thumbs-up" class="w-4 h-4"></i> Accept Job</button>`;
+            } else if (job.status === 'Completed') {
+                const totalAllEngineers = getJobEngineers(job).reduce((sum, name) => sum + (getEngineerJobState(job, name).totalMinutes || 0), 0);
+                area.innerHTML = `<div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-center space-y-1">
+                    <div class="text-xs font-bold text-emerald-400">Job Completed</div>
+                    ${totalAllEngineers > 0 ? `<div class="text-[11px] text-slate-400">Total time logged: ${formatMinutesLong(totalAllEngineers)}</div>` : ''}
+                    <div class="text-[11px] text-slate-400">${job.signature ? 'Signed off by client' : 'No signature on file'}</div>
+                </div>`;
+            } else if (job.status === 'Cancelled') {
+                area.innerHTML = `<div class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-center text-xs text-slate-400">Job Cancelled</div>`;
+            } else {
+                // Accepted or Started — Start/timer here is specifically MY OWN
+                // (whoever's logged in), the primary next step same as Accept
+                // and Complete. If this device isn't assigned to the job at
+                // all (e.g. the owner just checking on someone else's job),
+                // there's no personal timer to show — just the completion
+                // action.
+                const myName = getCurrentUserEngineerName();
+                const iAmAssigned = myName && getJobEngineers(job).includes(myName);
+                const myState = iAmAssigned ? getEngineerJobState(job, myName) : null;
+                let html = '';
+                if (iAmAssigned && myState.status === 'Started' && myState.timerStartedAt) {
+                    html += `<div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-center">
+                        <div class="text-[10px] uppercase font-bold text-amber-400 mb-1">Time On Job</div>
+                        <div class="text-3xl font-black font-mono text-white" id="my-job-timer-display">00:00:00</div>
+                    </div>
+                    <p class="text-[10px] text-slate-500 text-center mb-2">Stops automatically when the job is completed, rebooked, or add-timed.</p>`;
+                    startLiveMyTimerDisplay(myState.timerStartedAt);
+                } else if (iAmAssigned) {
+                    const safeName = myName.replace(/'/g, "\\'");
+                    html += `<button onclick="startEngineerTimer('${job.id}', '${safeName}')" class="w-full bg-orange-500 hover:bg-orange-600 text-slate-950 font-bold py-3.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="play" class="w-4 h-4"></i> Start Job</button>`;
+                }
+                html += `<button onclick="beginJobCompletion('${job.id}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="flag" class="w-4 h-4"></i> Complete Job</button>`;
+                area.innerHTML = html;
+            }
+            lucide.createIcons();
+        }
+        // Read-only status of everyone assigned — no buttons here, since
+        // starting/stopping is a personal action each person takes from their
+        // own device via the primary action button above, not something one
+        // person can do on another's behalf.
+        function renderEngineerTimerCards(job) {
+            const container = document.getElementById('job-detail-engineer-timers');
+            if (job.status === 'Scheduled' || job.status === 'Completed' || job.status === 'Cancelled') {
+                container.innerHTML = '';
+                return;
+            }
+            const engineers = getJobEngineers(job);
+            if (engineers.length <= 1) { container.innerHTML = ''; return; } // one person on the job — the primary action area above already covers it, no need to repeat it
+            container.innerHTML = `<div class="text-[10px] uppercase font-bold text-slate-500 mb-1.5">Team Status</div>` + engineers.map(name => {
+                const state = getEngineerJobState(job, name);
+                const colors = getEngineerColorClass(name);
+                const statusText = state.status === 'Started' ? 'Working now' : state.totalMinutes > 0 ? 'Paused' : 'Not started yet';
+                const totalDisplay = state.totalMinutes > 0 ? ` • ${formatMinutesLong(state.totalMinutes)} logged` : '';
+                return `<div class="bg-slate-900 border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3">
+                    <span class="text-xs font-bold px-2 py-1 rounded border ${colors.badge}">${name}</span>
+                    <span class="text-[11px] text-slate-400">${statusText}${totalDisplay}</span>
+                </div>`;
+            }).join('');
+        }
+        function openJobMaterialsModal() {
+            const job = currentJobs.find(j => j.id === activeJobDetailId);
+            if (job) { renderJobLinkedQuoteSection(job); renderJobMaterialsPicker(); }
+            document.getElementById('job-materials-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeJobMaterialsModal() {
+            document.getElementById('job-materials-modal').classList.add('hidden');
+        }
+        let myJobTimerInterval = null;
+        function startLiveMyTimerDisplay(startedAtISO) {
+            stopLiveMyTimerDisplay();
+            const startedAtMs = new Date(startedAtISO).getTime();
+            const tick = () => { const el = document.getElementById('my-job-timer-display'); if (el) el.innerText = formatElapsedTime(Date.now() - startedAtMs); };
+            tick();
+            myJobTimerInterval = setInterval(tick, 1000);
+        }
+        function stopLiveMyTimerDisplay() {
+            if (myJobTimerInterval) { clearInterval(myJobTimerInterval); myJobTimerInterval = null; }
+        }
+        function stopAllLiveJobTimerDisplays() {
+            stopLiveMyTimerDisplay();
+        }
+
+        async function acceptJob(jobId) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            // Always start from a clean slate on Accept — without this, any
+            // leftover engineerState from before (an earlier visit, or just
+            // prior testing on the same job) could show as already running
+            // the moment the job is viewed, before anyone's pressed Start.
+            const freshEngineerState = {};
+            getJobEngineers(job).forEach(name => { freshEngineerState[name] = { status: 'NotStarted', timerStartedAt: null, totalMinutes: 0 }; });
+            await db.collection('jobs').doc(jobId).update({ status: 'Accepted', acceptedAt: new Date().toISOString(), engineerState: freshEngineerState });
+            renderJobDetailPageContent({ ...job, status: 'Accepted', engineerState: freshEngineerState });
+            // Accepting implies heading there now — offer the on-my-way message
+            // with its ETA immediately, same feature as the Jobs tab button.
+            // Gracefully does nothing if there's no resolvable client (e.g. a
+            // non-owner login, which never has client data loaded).
+            if (isOwnerLoggedIn()) sendOnMyWayMessage(jobId);
+        }
+        async function startEngineerTimer(jobId, engineerName) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const state = getEngineerJobState(job, engineerName);
+            const newEngineerState = { ...(job.engineerState || {}), [engineerName]: { status: 'Started', timerStartedAt: new Date().toISOString(), totalMinutes: state.totalMinutes || 0 } };
+            const newJobStatus = job.status === 'Accepted' ? 'Started' : job.status;
+            await db.collection('jobs').doc(jobId).update({ engineerState: newEngineerState, status: newJobStatus });
+            renderJobDetailPageContent({ ...job, engineerState: newEngineerState, status: newJobStatus });
+        }
+        // Stops (and compounds the elapsed time of) any engineer timers still
+        // running when the job as a whole gets completed/rebooked/add-timed —
+        // nobody's clock should keep running once the job page moves on.
+        async function stopAllRunningEngineerTimersForJob(job) {
+            const engineers = getJobEngineers(job);
+            const newEngineerState = { ...(job.engineerState || {}) };
+            let changed = false;
+            engineers.forEach(name => {
+                const state = getEngineerJobState(job, name);
+                if (state.status === 'Started' && state.timerStartedAt) {
+                    const elapsedMinutes = Math.round((Date.now() - new Date(state.timerStartedAt).getTime()) / 60000);
+                    newEngineerState[name] = { status: 'Stopped', timerStartedAt: null, totalMinutes: (state.totalMinutes || 0) + Math.max(0, elapsedMinutes) };
+                    changed = true;
+                }
+            });
+            if (changed) await db.collection('jobs').doc(job.id).update({ engineerState: newEngineerState });
+            return newEngineerState;
+        }
+        function beginJobCompletion(jobId) {
+            jobDetailShowingCompletionForm = true;
+            document.getElementById('job-detail-comments-section').classList.remove('hidden');
+            document.getElementById('job-detail-action-area').innerHTML = '';
+        }
+        async function resolveJobOutcome(outcome) {
+            const jobId = activeJobDetailId;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job || !jobId) return;
+            const comments = document.getElementById('job-detail-comments-text').value.trim();
+            const settledEngineerState = await stopAllRunningEngineerTimersForJob(job);
+
+            if (outcome === 'Completed') {
+                await db.collection('jobs').doc(jobId).update({ operativeComments: comments, completionOutcome: 'Completed' });
+                // Signature capture already stops here with its own Save flow —
+                // the job is marked Completed once that's actually saved, not
+                // before, so a job never shows "done" without being signed off
+                // (or explicitly closed out of the signature step).
+                closeJobDetailPage();
+                openSignatureModal(jobId);
+                pendingJobCompletionAfterSignature = jobId;
+            } else {
+                const newDateRaw = prompt(outcome === 'Rebook' ? 'Rebook for which date? (YYYY-MM-DD)' : 'Additional visit date? (YYYY-MM-DD)', job.date);
+                if (!newDateRaw) return; // cancelled the prompt — leave the job as-is rather than losing their comments silently
+                // Each engineer's totalMinutes carries over untouched — only
+                // their per-visit status resets, so time compounds across
+                // visits rather than resetting to zero each time.
+                const resetEngineerState = {};
+                getJobEngineers(job).forEach(name => {
+                    const state = settledEngineerState[name] || getEngineerJobState(job, name);
+                    resetEngineerState[name] = { status: 'NotStarted', timerStartedAt: null, totalMinutes: state.totalMinutes || 0 };
+                });
+                await db.collection('jobs').doc(jobId).update({
+                    status: 'Accepted', date: newDateRaw, engineerState: resetEngineerState,
+                    operativeComments: comments, completionOutcome: outcome,
+                });
+                closeJobDetailPage();
+                alert(`Job ${outcome === 'Rebook' ? 're-booked' : 'flagged for another visit'} for ${formatUkDate(newDateRaw)}. Logged time so far carries over.`);
+            }
+        }
+        // Set right before opening the signature modal from resolveJobOutcome,
+        // so we know to actually mark the job Completed once they save it.
+        let pendingJobCompletionAfterSignature = null;
+
+        // ============================================================
+        // ON-SITE MATERIALS / HOURS -> AUTO-APPLIED TO THE LINKED QUOTE
+        // Owner: full real stock list with prices, adds straight into the
+        // quote and recalculates its total live.
+        // Non-owner: the cost-stripped stockPublic mirror only, adds an
+        // unpriced line via a Firestore rule that permits ONLY this narrow
+        // append — they can never read the quote itself, so no pricing is
+        // ever exposed to them at any point in this flow.
+        // ============================================================
+        let nonOwnerSessionAdditions = { materials: [], hours: [] }; // non-owners can't read the quote back, so this is just local confirmation of what THEY added this session
+
+        function switchJobAdditionsSubtab(tab) {
+            document.getElementById('job-additions-materials-panel').classList.toggle('hidden', tab !== 'materials');
+            document.getElementById('job-additions-hours-panel').classList.toggle('hidden', tab !== 'hours');
+            const matBtn = document.getElementById('btn-job-additions-materials'), hrBtn = document.getElementById('btn-job-additions-hours');
+            matBtn.classList.toggle('bg-amber-500', tab === 'materials'); matBtn.classList.toggle('text-slate-950', tab === 'materials'); matBtn.classList.toggle('text-slate-400', tab !== 'materials');
+            hrBtn.classList.toggle('bg-amber-500', tab === 'hours'); hrBtn.classList.toggle('text-slate-950', tab === 'hours'); hrBtn.classList.toggle('text-slate-400', tab !== 'hours');
+            if (tab === 'materials') renderJobMaterialsPicker();
+            else renderJobHoursAddedList(currentJobs.find(j => j.id === activeJobDetailId));
+        }
+        function recalculateQuoteFinancialsAfterAddition(quote, updatedMaterials, laborCosts) {
+            const netMaterialsExVat = updatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost || 0) * curr.qty), 0);
+            const materialsVat = netMaterialsExVat * 0.20;
+            const netMaterialsIncVat = netMaterialsExVat + materialsVat;
+            const markup = quote.financials.markupApplied || currentPricing.markup || 0;
+            const markedMaterials = netMaterialsIncVat * (1 + (markup / 100));
+            const testingCosts = quote.financials.testingCosts || 0;
+            return { ...quote.financials, netMaterialsExVat, materialsVat, markedMaterials, laborCosts, grossTotal: markedMaterials + laborCosts + testingCosts };
+        }
+        // Manual quote linking — the automatic "quiet" link only fires when
+        // there's exactly one confident match; this covers everything else
+        // (ambiguous matches, no property link yet, or just picking a
+        // different quote than the one auto-matched). Owner-only, since
+        // picking requires being able to see quotes in the first place.
+        function renderJobLinkedQuoteSection(job) {
+            const section = document.getElementById('job-linked-quote-section');
+            const noQuoteNotice = document.getElementById('job-no-quote-notice');
+            if (!section) return;
+            if (!isOwnerLoggedIn()) {
+                section.classList.add('hidden');
+                if (noQuoteNotice) noQuoteNotice.classList.toggle('hidden', !!job.linkedQuoteId);
+                return;
+            }
+            if (noQuoteNotice) noQuoteNotice.classList.add('hidden'); // owner gets the interactive section instead
+            section.classList.remove('hidden');
+            const displayEl = document.getElementById('job-linked-quote-display');
+            const pickerEl = document.getElementById('job-linked-quote-picker');
+            if (job.linkedQuoteId) {
+                const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
+                displayEl.classList.remove('hidden');
+                pickerEl.classList.add('hidden');
+                document.getElementById('job-linked-quote-name').innerText = quote ? `${quote.jobName} — ${quote.clientDetailsPayload.name}` : 'Quote not found (may have been deleted)';
+            } else {
+                displayEl.classList.add('hidden');
+                pickerEl.classList.remove('hidden');
+                renderJobQuoteLinkOptions();
+            }
+        }
+        function renderJobQuoteLinkOptions() {
+            const searchInput = document.getElementById('job-link-quote-search');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const optionsEl = document.getElementById('job-link-quote-options');
+            if (!optionsEl) return;
+            const filtered = currentQuotes.filter(q => !filterText || q.jobName.toLowerCase().includes(filterText) || q.clientDetailsPayload.name.toLowerCase().includes(filterText)).slice(0, 10);
+            optionsEl.innerHTML = filtered.length === 0 ? `<p class="text-[11px] text-slate-500 text-center py-2">No matching quotes.</p>` : filtered.map(q => `
+                <button onclick="linkJobToQuote('${q.id}')" class="w-full text-left bg-slate-950 border border-slate-700 hover:border-amber-500 rounded-lg p-2 text-[11px] text-slate-300 cursor-pointer">
+                    ${q.jobName} — ${q.clientDetailsPayload.name} <span class="text-slate-500">(${q.status})</span>
+                </button>`).join('');
+        }
+        async function linkJobToQuote(quoteId) {
+            const jobId = activeJobDetailId;
+            if (!jobId) return;
+            await db.collection('jobs').doc(jobId).update({ linkedQuoteId: quoteId });
+        }
+        async function unlinkJobQuote() {
+            const jobId = activeJobDetailId;
+            if (!jobId) return;
+            if (!confirm('Unlink this quote? Materials/hours added here will stop applying automatically until you link one again.')) return;
+            await db.collection('jobs').doc(jobId).update({ linkedQuoteId: null });
+        }
+
+        function renderJobMaterialsPicker() {
+            const jobId = activeJobDetailId;
+            if (!jobId) return;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const ownerNote = document.getElementById('job-additions-owner-note'), nonOwnerNote = document.getElementById('job-additions-nonowner-note');
+            if (ownerNote) ownerNote.classList.toggle('hidden', !isOwnerLoggedIn());
+            if (nonOwnerNote) nonOwnerNote.classList.toggle('hidden', isOwnerLoggedIn());
+
+            const searchInput = document.getElementById('job-material-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const listEl = document.getElementById('job-materials-picker-list');
+            if (!listEl) return;
+            const sourceList = isOwnerLoggedIn() ? currentStock : currentStockPublic;
+            const filtered = (filterText ? sourceList.filter(i => i.desc.toLowerCase().includes(filterText) || i.sku.toLowerCase().includes(filterText)) : sourceList).slice(0, 15);
+
+            listEl.innerHTML = filtered.map(item => `
+                <div class="bg-slate-900 border border-slate-700 rounded-lg p-2 flex items-center justify-between gap-2">
+                    <div class="min-w-0 text-[11px] text-slate-300 truncate">${item.desc} ${isOwnerLoggedIn() ? `<span class="text-slate-500 font-mono">£${parseFloat(item.cost).toFixed(2)}</span>` : ''}</div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <input type="number" min="1" value="1" id="job-mat-qty-${item.id}" class="w-12 bg-slate-950 border border-slate-700 rounded text-center text-[11px] text-white p-1">
+                        <button onclick="addMaterialToJob('${item.id}')" class="text-[10px] font-bold bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1 rounded cursor-pointer">Add</button>
+                    </div>
+                </div>`).join('');
+            renderJobAddedMaterialsList(job);
+        }
+        async function addMaterialToJob(stockItemId) {
+            const jobId = activeJobDetailId;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const qtyInput = document.getElementById(`job-mat-qty-${stockItemId}`);
+            const qty = parseInt(qtyInput ? qtyInput.value : 1) || 1;
+
+            if (isOwnerLoggedIn()) {
+                const stockItem = currentStock.find(s => s.id === stockItemId);
+                if (!stockItem) return;
+                if (!job.linkedQuoteId) { alert("No quote linked to this job yet — it'll apply automatically once one is."); return; }
+                const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
+                if (!quote) { alert('Linked quote could not be found.'); return; }
+                const newMaterial = { id: stockItem.id, sku: stockItem.sku, desc: stockItem.desc, cost: stockItem.cost, category: stockItem.category, qty, addedOnSite: true, addedAt: new Date().toISOString() };
+                const updatedMaterials = [...(quote.materials || []), newMaterial];
+                const newFinancials = recalculateQuoteFinancialsAfterAddition(quote, updatedMaterials, quote.financials.laborCosts);
+                await db.collection('quotes').doc(quote.id).update({ materials: updatedMaterials, financials: newFinancials });
+            } else {
+                const publicItem = currentStockPublic.find(s => s.id === stockItemId);
+                if (!publicItem) return;
+                if (!job.linkedQuoteId) { alert('No quote linked to this job yet — ask the owner to check the property/client link, then try again shortly.'); return; }
+                const newMaterial = { id: publicItem.id, sku: publicItem.sku, desc: publicItem.desc, cost: null, category: publicItem.category, qty, addedOnSite: true, addedAt: new Date().toISOString(), addedByNonOwner: true };
+                try {
+                    await db.collection('quotes').doc(job.linkedQuoteId).update({ materials: firebase.firestore.FieldValue.arrayUnion(newMaterial) });
+                    nonOwnerSessionAdditions.materials.push(newMaterial);
+                } catch (err) {
+                    console.error('Failed to add material on-site:', err);
+                    alert('Could not add this — please tell the owner.');
+                    return;
+                }
+            }
+            renderJobMaterialsPicker();
+        }
+        function renderJobAddedMaterialsList(job) {
+            const listEl = document.getElementById('job-materials-added-list');
+            if (!listEl) return;
+            if (isOwnerLoggedIn() && job.linkedQuoteId) {
+                const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
+                const onSiteItems = quote ? (quote.materials || []).map((m, idx) => ({ ...m, _idx: idx })).filter(m => m.addedOnSite) : [];
+                listEl.innerHTML = onSiteItems.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added on-site:</div>` + onSiteItems.map(m => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 flex items-center justify-between gap-2">
+                        <div class="text-[11px] text-slate-300">${m.desc} x${m.qty}</div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[10px] font-mono ${m.cost == null ? 'text-amber-400' : 'text-slate-400'}">${m.cost == null ? 'Unpriced' : '£' + (parseFloat(m.cost) * m.qty).toFixed(2)}</span>
+                            <button onclick="removeOnSiteMaterial('${quote.id}', ${m._idx})" title="Remove" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>`).join('');
+            } else {
+                listEl.innerHTML = nonOwnerSessionAdditions.materials.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added this session:</div>` + nonOwnerSessionAdditions.materials.map((m, idx) => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 flex items-center justify-between gap-2">
+                        <div class="text-[11px] text-slate-300">${m.desc} x${m.qty}</div>
+                        <button onclick="removeNonOwnerSessionMaterial(${idx})" title="Remove" class="text-slate-500 hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>`).join('');
+            }
+            lucide.createIcons();
+        }
+        async function removeOnSiteMaterial(quoteId, materialIndex) {
+            const quote = currentQuotes.find(q => q.id === quoteId);
+            if (!quote) return;
+            if (!confirm('Remove this item?')) return;
+            const updatedMaterials = quote.materials.filter((m, idx) => idx !== materialIndex);
+            const newFinancials = recalculateQuoteFinancialsAfterAddition(quote, updatedMaterials, quote.financials.laborCosts);
+            await db.collection('quotes').doc(quoteId).update({ materials: updatedMaterials, financials: newFinancials });
+        }
+        async function removeNonOwnerSessionMaterial(sessionIndex) {
+            const jobId = activeJobDetailId;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job || !job.linkedQuoteId) return;
+            const item = nonOwnerSessionAdditions.materials[sessionIndex];
+            if (!item) return;
+            try {
+                await db.collection('quotes').doc(job.linkedQuoteId).update({ materials: firebase.firestore.FieldValue.arrayRemove(item) });
+                nonOwnerSessionAdditions.materials.splice(sessionIndex, 1);
+                renderJobAddedMaterialsList(job);
+            } catch (err) {
+                console.error('Failed to remove material on-site:', err);
+                alert('Could not remove this — please tell the owner.');
+            }
+        }
+        async function submitJobHoursAddition() {
+            const jobId = activeJobDetailId;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const hours = parseFloat(document.getElementById('job-addition-hours').value);
+            const reason = document.getElementById('job-addition-hours-reason').value.trim();
+            if (!hours || hours <= 0) { alert('Enter how many additional hours.'); return; }
+
+            if (isOwnerLoggedIn()) {
+                if (!job.linkedQuoteId) { alert("No quote linked to this job yet — it'll apply automatically once one is."); return; }
+                const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
+                if (!quote) { alert('Linked quote could not be found.'); return; }
+                const additionalCost = hours * (currentPricing.rateHourNext || 45);
+                const newLaborCosts = (quote.financials.laborCosts || 0) + additionalCost;
+                const newFinancials = recalculateQuoteFinancialsAfterAddition(quote, quote.materials || [], newLaborCosts);
+                await db.collection('quotes').doc(quote.id).update({ financials: newFinancials });
+                alert(`Added ${hours}h (£${additionalCost.toFixed(2)}) to the quote.`);
+            } else {
+                if (!job.linkedQuoteId) { alert('No quote linked to this job yet — ask the owner to check the property/client link.'); return; }
+                const newEntry = { hours, reason: reason || 'Additional time needed', requestedAt: new Date().toISOString() };
+                try {
+                    await db.collection('quotes').doc(job.linkedQuoteId).update({ pendingHoursAdditions: firebase.firestore.FieldValue.arrayUnion(newEntry) });
+                    nonOwnerSessionAdditions.hours.push(newEntry);
+                } catch (err) {
+                    console.error('Failed to add hours on-site:', err);
+                    alert('Could not add this — please tell the owner.');
+                    return;
+                }
+            }
+            document.getElementById('job-addition-hours').value = '';
+            document.getElementById('job-addition-hours-reason').value = '';
+            renderJobHoursAddedList(job);
+        }
+        function renderJobHoursAddedList(job) {
+            const listEl = document.getElementById('job-hours-added-list');
+            if (!listEl || !job) return;
+            if (isOwnerLoggedIn() && job.linkedQuoteId) {
+                const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
+                const pending = quote ? (quote.pendingHoursAdditions || []) : [];
+                listEl.innerHTML = pending.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Flagged by non-owner, not yet priced in:</div>` + pending.map((h, idx) => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 flex items-center justify-between gap-2">
+                        <span class="text-[11px] text-amber-400">+${h.hours}h — ${h.reason}</span>
+                        <button onclick="removePendingHoursAddition('${quote.id}', ${idx})" title="Remove" class="text-slate-500 hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>`).join('');
+            } else {
+                listEl.innerHTML = nonOwnerSessionAdditions.hours.length === 0 ? '' : `<div class="text-[10px] text-slate-500 mb-1">Added this session:</div>` + nonOwnerSessionAdditions.hours.map((h, idx) => `
+                    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2 flex items-center justify-between gap-2">
+                        <span class="text-[11px] text-slate-300">+${h.hours}h — ${h.reason}</span>
+                        <button onclick="removeNonOwnerSessionHours(${idx})" title="Remove" class="text-slate-500 hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>`).join('');
+            }
+            lucide.createIcons();
+        }
+        async function removePendingHoursAddition(quoteId, entryIndex) {
+            const quote = currentQuotes.find(q => q.id === quoteId);
+            if (!quote) return;
+            if (!confirm('Remove this hours request?')) return;
+            const updated = quote.pendingHoursAdditions.filter((h, idx) => idx !== entryIndex);
+            await db.collection('quotes').doc(quoteId).update({ pendingHoursAdditions: updated });
+        }
+        async function removeNonOwnerSessionHours(sessionIndex) {
+            const jobId = activeJobDetailId;
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job || !job.linkedQuoteId) return;
+            const entry = nonOwnerSessionAdditions.hours[sessionIndex];
+            if (!entry) return;
+            try {
+                await db.collection('quotes').doc(job.linkedQuoteId).update({ pendingHoursAdditions: firebase.firestore.FieldValue.arrayRemove(entry) });
+                nonOwnerSessionAdditions.hours.splice(sessionIndex, 1);
+                renderJobHoursAddedList(job);
+            } catch (err) {
+                console.error('Failed to remove hours on-site:', err);
+                alert('Could not remove this — please tell the owner.');
+            }
+        }
+
+        function buildJobActionButtons(j) {
+            const quickActions = j.status === 'Scheduled' ? `
+                <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
+                <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>` : '';
+            const reviewClient = (j.status === 'Completed' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
+            const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
+            const signatureBtn = j.status === 'Completed' ? `<button onclick="openSignatureModal('${j.id}')" title="${j.signature ? 'View/redo signature' : 'Get client signature'}" class="${j.signature ? 'text-emerald-400 hover:text-emerald-300' : 'text-slate-400 hover:text-amber-400'} p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="${j.signature ? 'file-check' : 'pen-tool'}" class="w-3.5 h-3.5"></i></button>` : '';
+            const onMyWayClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
+            const onMyWayBtn = (onMyWayClient && onMyWayClient.phone) ? `<button onclick="sendOnMyWayMessage('${j.id}')" title="Send 'on my way' to ${onMyWayClient.name}" class="text-slate-400 hover:text-blue-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="navigation" class="w-3.5 h-3.5"></i></button>` : '';
+            return `${quickActions}${onMyWayBtn}${reviewBtn}${signatureBtn}
+                <button onclick="loadJobForModification('${j.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                <button onclick="deleteJob('${j.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
+        }
         function renderJobsList() {
             const engineerFilterEl = document.getElementById('jobs-engineer-filter');
             const statusFilterEl = document.getElementById('jobs-status-filter');
@@ -2077,18 +3065,11 @@
             listEl.innerHTML = filtered.map(j => {
                 const engineers = getJobEngineers(j);
                 const engineerBadges = engineers.map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
-                const statusColor = j.status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : j.status === 'Cancelled' ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-blue-500/10 text-blue-400 border-blue-500/30';
-                const quickActions = j.status === 'Scheduled' ? `
-                    <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-slate-400 hover:text-emerald-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
-                    <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>` : '';
-                const reviewClient = (j.status === 'Completed' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
-                const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
+                const colors = getJobStatusColorClasses(j.status);
                 return `<div class="bg-[#283548] border border-slate-600 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg ring-1 ring-white/[0.06]">
-                    <div class="min-w-0"><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-white">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${statusColor}">${j.status}</span></div>
-                    <div class="text-[11px] text-slate-400">${formatUkDate(j.date)} at ${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div></div>
-                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${quickActions}${reviewBtn}
-                    <button onclick="loadJobForModification('${j.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-                    <button onclick="deleteJob('${j.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></div>
+                    <div class="min-w-0"><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-white">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${colors.badge}">${j.status}</span></div>
+                    <div class="text-[11px] text-slate-400">${formatUkDate(j.date)} at ${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div>${j.jobNumber ? `<div class="text-[10px] font-mono text-slate-500 mt-0.5">${j.jobNumber}</div>` : ''}</div>
+                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${buildJobActionButtons(j)}</div>
                 </div>`;
             }).join('');
             lucide.createIcons();
@@ -2097,16 +3078,107 @@
         // ============================================================
         // PROPERTY LOOKUP (shared — address/notes/reminders only)
         // ============================================================
+        let capturedPropertyLat = null, capturedPropertyLng = null;
+        function captureCurrentLocationForProperty() {
+            if (!navigator.geolocation) { alert('Location services are not available on this device/browser.'); return; }
+            const statusEl = document.getElementById('property-location-status');
+            statusEl.innerText = 'Getting location...';
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    capturedPropertyLat = pos.coords.latitude;
+                    capturedPropertyLng = pos.coords.longitude;
+                    statusEl.innerText = `Location captured (±${Math.round(pos.coords.accuracy)}m accuracy) — will be saved with this property.`;
+                },
+                (err) => { statusEl.innerText = 'Could not get location: ' + err.message; },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+        // For quoting a property remotely, without physically visiting —
+        // looks the typed address up via OpenStreetMap's free Nominatim
+        // service. Approximate (matches the address text to a place, not a
+        // precise on-site GPS fix), so it's a reasonable starting point but
+        // worth re-capturing with "Stand There & Capture" on the first actual
+        // visit if the ETA accuracy matters for that property.
+        async function lookUpCoordinatesFromAddress() {
+            const rawAddress = document.getElementById('property-address').value.trim();
+            if (!rawAddress) { alert('Enter the property address first.'); return; }
+            // The address field is a multi-line textarea, so a typical entry has
+            // real newline characters between each line (street / town /
+            // postcode). Sent as-is, that confuses Nominatim's address parser —
+            // and the more detail/lines someone adds, the worse it gets. A
+            // clean single-line, comma-separated address is what a geocoder
+            // actually expects.
+            const address = rawAddress.split('\n').map(line => line.trim()).filter(Boolean).join(', ');
+            const statusEl = document.getElementById('property-location-status');
+            statusEl.innerText = 'Looking up address...';
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1&addressdetails=1`);
+                if (!res.ok) { statusEl.innerText = `Lookup failed (server responded ${res.status}) — try again in a moment.`; return; }
+                const results = await res.json();
+                if (!results || results.length === 0) { statusEl.innerText = `No match found for "${address}" — try Stand There & Capture instead, or simplify the address.`; return; }
+                capturedPropertyLat = parseFloat(results[0].lat);
+                capturedPropertyLng = parseFloat(results[0].lon);
+                statusEl.innerText = `Approximate location found (matched: ${results[0].display_name}) — will be saved with this property.`;
+            } catch (e) {
+                console.error('Address lookup failed:', e);
+                statusEl.innerText = 'Lookup failed — this usually means a connection or browser-blocking issue, not a bad address. Check your connection and try again.';
+            }
+        }
+        const HAZARD_TAG_OPTIONS = [
+            { key: 'asbestos', label: 'Asbestos' },
+            { key: 'high_voltage', label: 'High Voltage / 3-Phase' },
+            { key: 'confined_space', label: 'Confined Space' },
+            { key: 'dog_on_site', label: 'Dog On Site' },
+            { key: 'vulnerable_occupant', label: 'Vulnerable Occupant' },
+        ];
+        function rebuildPropertyHazardChecklist() {
+            const container = document.getElementById('property-hazard-checklist');
+            if (!container) return;
+            container.innerHTML = HAZARD_TAG_OPTIONS.map(h => `
+                <label class="flex items-center gap-1.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                    <input type="checkbox" class="property-hazard-checkbox w-3.5 h-3.5 rounded bg-slate-950 border-slate-700 text-red-500 cursor-pointer" value="${h.key}">
+                    ${h.label}
+                </label>`).join('');
+        }
+        function getSelectedPropertyHazardsFromForm() {
+            return [...document.querySelectorAll('.property-hazard-checkbox:checked')].map(chk => chk.value);
+        }
+        function hazardKeyToLabel(key) {
+            const match = HAZARD_TAG_OPTIONS.find(h => h.key === key);
+            return match ? match.label : key;
+        }
+        // Small reusable badge row — used on property cards, the job form
+        // warning banner, and job list entries, so hazards stay visible
+        // everywhere they're actually relevant, not just on the property itself.
+        function buildHazardBadgesHtml(property) {
+            if (!property) return '';
+            const tags = property.hazardTags || [];
+            const other = property.hazardOther;
+            if (tags.length === 0 && !other) return '';
+            const badges = tags.map(key => `<span class="hazard-stripe text-[9px] font-bold uppercase px-2 py-0.5 rounded text-white border border-amber-500">${hazardKeyToLabel(key)}</span>`).join(' ');
+            const otherBadge = other ? `<span class="hazard-stripe text-[9px] font-bold uppercase px-2 py-0.5 rounded text-white border border-amber-500">${other}</span>` : '';
+            return `<div class="flex flex-wrap gap-1 mt-1">${badges}${otherBadge}</div>`;
+        }
+
         async function savePropertyConfig(event) {
             event.preventDefault();
             const editId = document.getElementById('property-id-field').value;
             const payload = {
                 address: document.getElementById('property-address').value.trim(),
                 notes: document.getElementById('property-notes').value.trim(),
+                hazardTags: getSelectedPropertyHazardsFromForm(),
+                hazardOther: document.getElementById('property-hazard-other').value.trim() || null,
                 lastElectricalInspection: document.getElementById('property-last-electrical').value || null,
                 electricalCycleYears: parseInt(document.getElementById('property-electrical-cycle').value) || 5,
                 lastSmokeAlarmTest: document.getElementById('property-last-smoke').value || null,
             };
+            // Only include lat/lng if freshly captured this session — otherwise
+            // an edit-without-recapturing would wipe out coordinates already
+            // saved from before.
+            if (capturedPropertyLat !== null && capturedPropertyLng !== null) {
+                payload.lat = capturedPropertyLat;
+                payload.lng = capturedPropertyLng;
+            }
             if (editId) {
                 await db.collection('properties').doc(editId).update(payload);
             } else {
@@ -2121,9 +3193,15 @@
             document.getElementById('property-id-field').value = p.id;
             document.getElementById('property-address').value = p.address || '';
             document.getElementById('property-notes').value = p.notes || '';
+            rebuildPropertyHazardChecklist();
+            const hazardTags = p.hazardTags || [];
+            document.querySelectorAll('.property-hazard-checkbox').forEach(chk => { chk.checked = hazardTags.includes(chk.value); });
+            document.getElementById('property-hazard-other').value = p.hazardOther || '';
             document.getElementById('property-last-electrical').value = p.lastElectricalInspection || '';
             document.getElementById('property-electrical-cycle').value = String(p.electricalCycleYears || 5);
             document.getElementById('property-last-smoke').value = p.lastSmokeAlarmTest || '';
+            capturedPropertyLat = null; capturedPropertyLng = null;
+            document.getElementById('property-location-status').innerText = (p.lat != null && p.lng != null) ? 'Location already saved for this property.' : 'No location saved yet.';
             document.getElementById('property-form-title').innerText = 'Modify Property';
             document.getElementById('property-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Property`;
             document.getElementById('property-cancel-btn').classList.remove('hidden');
@@ -2134,6 +3212,10 @@
             document.getElementById('property-form').reset();
             document.getElementById('property-id-field').value = '';
             document.getElementById('property-electrical-cycle').value = '5';
+            rebuildPropertyHazardChecklist();
+            document.getElementById('property-hazard-other').value = '';
+            capturedPropertyLat = null; capturedPropertyLng = null;
+            document.getElementById('property-location-status').innerText = '';
             document.getElementById('property-form-title').innerText = 'Add Property';
             document.getElementById('property-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Property`;
             document.getElementById('property-cancel-btn').classList.add('hidden');
@@ -2160,7 +3242,7 @@
                 const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
                 return `<div class="bg-[#283548] border border-slate-600 rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06] space-y-3">
                     <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0"><div class="text-sm font-bold text-white whitespace-pre-line">${p.address}</div></div>
+                        <div class="min-w-0"><div class="text-sm font-bold text-white whitespace-pre-line">${p.address}</div>${buildHazardBadgesHtml(p)}</div>
                         <div class="flex items-center gap-1.5 shrink-0">
                             <button onclick="loadPropertyForModification('${p.id}')" class="text-slate-400 hover:text-amber-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                             <button onclick="deleteProperty('${p.id}')" class="text-slate-400 hover:text-red-400 p-1.5 rounded-lg bg-slate-900 border border-slate-700 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
@@ -2273,6 +3355,47 @@
             if (!client || !client.phone) { alert("No linked client with a phone number found for this job's property."); return; }
             openSendMessageModal(client.name, client.phone, buildReviewRequestMessageText(client));
         }
+
+        // Straight-line (not routed) distance in miles — no paid mapping/routing
+        // service involved, just two GPS readings and geometry.
+        function haversineDistanceMiles(lat1, lon1, lat2, lon2) {
+            const R = 3958.8;
+            const toRad = deg => deg * Math.PI / 180;
+            const dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+        // These three numbers are the whole calibration — straight-line
+        // distance and a flat speed will never match real driving exactly,
+        // but tuned like this they land close for typical local trade jobs.
+        // Adjust freely if it's still off for your area.
+        const ASSUMED_AVERAGE_MPH = 20;       // local/stop-start driving, not open-road speed
+        const ROAD_DISTANCE_FACTOR = 1.3;     // roads curve — straight-line distance underestimates real route distance by roughly this much
+        const FIXED_TRIP_OVERHEAD_MINUTES = 5; // leaving, first junction, parking/walking to the door — a flat cost pure distance÷speed misses, especially on short trips
+        async function sendOnMyWayMessage(jobId) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const client = findClientForJob(job);
+            if (!client || !client.phone) { alert("No linked client with a phone number found for this job's property."); return; }
+
+            const property = job.propertyId ? currentProperties.find(p => p.id === job.propertyId) : null;
+            let etaText = '';
+            if (property && property.lat != null && property.lng != null && navigator.geolocation) {
+                try {
+                    const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 }));
+                    const straightLineMiles = haversineDistanceMiles(position.coords.latitude, position.coords.longitude, property.lat, property.lng);
+                    const roadMiles = straightLineMiles * ROAD_DISTANCE_FACTOR;
+                    const estimatedMinutes = Math.max(2, Math.round((roadMiles / ASSUMED_AVERAGE_MPH) * 60) + FIXED_TRIP_OVERHEAD_MINUTES);
+                    etaText = ` I'm about ${estimatedMinutes} minutes away.`;
+                } catch (e) {
+                    console.warn('Could not get location for ETA — sending without one:', e);
+                }
+            }
+            const firstName = (client.name || '').split(' ')[0];
+            const message = `Hi ${firstName}, this is ENY Electrical — I'm on my way to you now!${etaText}`;
+            openSendMessageModal(client.name, client.phone, message);
+        }
+
         function closeSendReminderModal() { document.getElementById('send-reminder-modal').classList.add('hidden'); }
         function openReminderInMessagesApp() {
             const text = document.getElementById('reminder-message-text').value;
@@ -2283,7 +3406,146 @@
             navigator.clipboard.writeText(document.getElementById('reminder-message-text').value).then(() => alert("Message copied — paste it into Messages, WhatsApp, or wherever you'd like to send it."));
         }
 
+        // ============================================================
+        // DIGITAL SIGNATURE (captured as compact stroke-path data, never
+        // an image — keeps this entirely within free Firestore usage,
+        // unlike a photo would)
+        // ============================================================
+        const SIGNATURE_CONFIRMATION_TEXT = "By signing below, I confirm that the electrical works described have been completed to my satisfaction and in accordance with the agreed specification. I agree to settle the invoice in full within 14 days of the invoice date. This signature represents my acceptance of both the completed works and the associated payment obligation.";
+        let signatureStrokes = [];
+        let activeSignatureStroke = null;
+        let signatureCanvasCtx = null;
+        let activeSignatureJobId = null;
+
+        function initSignatureCanvas() {
+            const canvas = document.getElementById('signature-canvas');
+            // Match the canvas's internal pixel grid to its displayed size so
+            // strokes land under the finger/pen exactly, not offset.
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            signatureCanvasCtx = canvas.getContext('2d');
+            signatureCanvasCtx.strokeStyle = '#1e293b';
+            signatureCanvasCtx.lineWidth = 2.5;
+            signatureCanvasCtx.lineCap = 'round';
+            signatureCanvasCtx.lineJoin = 'round';
+
+            canvas.onpointerdown = (e) => {
+                e.preventDefault();
+                try { canvas.setPointerCapture(e.pointerId); } catch (err) { console.warn('setPointerCapture failed (continuing without it):', err); }
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                activeSignatureStroke = [{ x, y }];
+                signatureCanvasCtx.beginPath();
+                signatureCanvasCtx.moveTo(x, y);
+            };
+            canvas.onpointermove = (e) => {
+                if (!activeSignatureStroke) return;
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                const last = activeSignatureStroke[activeSignatureStroke.length - 1];
+                if (last && Math.abs(x - last.x) < 1.5 && Math.abs(y - last.y) < 1.5) return;
+                activeSignatureStroke.push({ x, y });
+                signatureCanvasCtx.lineTo(x, y);
+                signatureCanvasCtx.stroke();
+            };
+            const endStroke = () => {
+                if (activeSignatureStroke && activeSignatureStroke.length > 1) signatureStrokes.push(activeSignatureStroke);
+                activeSignatureStroke = null;
+                updateSignatureStrokeCounter();
+            };
+            canvas.onpointerup = endStroke;
+            canvas.onpointercancel = endStroke;
+            updateSignatureStrokeCounter();
+        }
+        function updateSignatureStrokeCounter() {
+            const el = document.getElementById('signature-stroke-counter');
+            if (el) el.innerText = signatureStrokes.length > 0 ? `${signatureStrokes.length} stroke(s) drawn` : 'Nothing drawn yet';
+        }
+        function redrawSignatureFromStrokes(strokes) {
+            const canvas = document.getElementById('signature-canvas');
+            if (!signatureCanvasCtx) return;
+            signatureCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            strokes.forEach(stroke => {
+                if (stroke.length < 2) return;
+                signatureCanvasCtx.beginPath();
+                signatureCanvasCtx.moveTo(stroke[0].x, stroke[0].y);
+                stroke.slice(1).forEach(pt => signatureCanvasCtx.lineTo(pt.x, pt.y));
+                signatureCanvasCtx.stroke();
+            });
+            updateSignatureStrokeCounter();
+        }
+        function clearSignatureCanvas() {
+            signatureStrokes = [];
+            activeSignatureStroke = null;
+            const canvas = document.getElementById('signature-canvas');
+            if (signatureCanvasCtx) signatureCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            updateSignatureStrokeCounter();
+        }
+        function openSignatureModal(jobId) {
+            activeSignatureJobId = jobId;
+            const job = currentJobs.find(j => j.id === jobId);
+            document.getElementById('signature-confirmation-text').innerText = SIGNATURE_CONFIRMATION_TEXT;
+            document.getElementById('signature-signed-at').innerText = (job && job.signature && job.signature.signedAt) ? `Previously signed ${formatUkDate(job.signature.signedAt.slice(0,10))} — signing again will replace it.` : '';
+            document.getElementById('signature-modal').classList.remove('hidden');
+            // A fixed timeout was guessing how long layout takes; double-rAF
+            // reliably waits until the browser has actually painted the now-
+            // visible modal before measuring the canvas, so it's never too early.
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                initSignatureCanvas();
+                if (job && job.signature && job.signature.strokes) {
+                    // Stored strokes are wrapped as {points: [...]} (Firestore
+                    // doesn't allow an array directly inside another array) —
+                    // unwrap back to plain point-arrays for drawing/redraw.
+                    signatureStrokes = job.signature.strokes.map(s => (s.points || s).map(p => ({ ...p })));
+                    redrawSignatureFromStrokes(signatureStrokes);
+                } else {
+                    signatureStrokes = [];
+                    updateSignatureStrokeCounter();
+                }
+            }));
+            lucide.createIcons();
+        }
+        function closeSignatureModal() {
+            document.getElementById('signature-modal').classList.add('hidden');
+            // If this was closed WITHOUT saving a signature (X button rather
+            // than Save), the job's still done — the timer/comments were
+            // already committed in resolveJobOutcome — just complete it here
+            // without a signature on file, rather than leaving it stuck.
+            if (pendingJobCompletionAfterSignature === activeSignatureJobId && activeSignatureJobId) {
+                db.collection('jobs').doc(activeSignatureJobId).update({ status: 'Completed' });
+                pendingJobCompletionAfterSignature = null;
+            }
+            activeSignatureJobId = null;
+        }
+        function saveSignature() {
+            try {
+                if (signatureStrokes.length === 0) { alert('Please sign before saving — nothing has been drawn yet.'); return; }
+                if (!activeSignatureJobId) { alert("Could not tell which job this signature belongs to — please close this and try again."); return; }
+                // Firestore rejects an array nested directly inside another
+                // array — a stroke (array of points) inside strokes (array of
+                // strokes) is exactly that shape. Wrapping each stroke in a
+                // small object sidesteps the restriction; only done at the
+                // point of saving, the live drawing logic never needs to know.
+                const strokesForFirestore = signatureStrokes.map(stroke => ({ points: stroke }));
+                const jobIdBeingSigned = activeSignatureJobId;
+                const updatePayload = { signature: { strokes: strokesForFirestore, confirmationText: SIGNATURE_CONFIRMATION_TEXT, signedAt: new Date().toISOString() } };
+                if (pendingJobCompletionAfterSignature === jobIdBeingSigned) updatePayload.status = 'Completed';
+                db.collection('jobs').doc(jobIdBeingSigned).update(updatePayload).then(() => {
+                    if (pendingJobCompletionAfterSignature === jobIdBeingSigned) pendingJobCompletionAfterSignature = null;
+                    closeSignatureModal();
+                }).catch((err) => {
+                    console.error('Failed to save signature:', err);
+                    alert('Could not save the signature. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+                });
+            } catch (err) {
+                console.error('Signature save threw before reaching Firestore:', err);
+                alert('Something went wrong saving the signature. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+            }
+        }
+
         function onTabSwitched(tabId) {
+            if (tabId === 'today-tab') renderTodayTab();
             if (tabId === 'calendar-tab') renderCalendarGrid();
             if (tabId === 'quote-tab') { rebuildJobTemplatesDropdown(); filterMaterialCatalog(); rebuildAllocatedMaterialsTable(); rebuildVaultDataTable(); filterQuotePropertyDropdown(); }
             if (tabId === 'crm-tab') rebuildCrmProfilesInterface();
@@ -2337,7 +3599,7 @@
             resultsEl.innerHTML = [
                 buildSearchResultGroup('Clients', matchedClients.map(c => ({ label: c.name, sub: c.email || c.phone || '', onclick: `closeUniversalSearch(); switchTab('crm-tab'); loadCrmClientProfileForModification('${c.id}');` }))),
                 buildSearchResultGroup('Properties', matchedProperties.map(p => ({ label: (p.address || '').split('\\n')[0], sub: p.notes ? p.notes.split('\\n')[0] : '', onclick: `closeUniversalSearch(); switchTab('lookup-tab'); loadPropertyForModification('${p.id}');` }))),
-                buildSearchResultGroup('Jobs', matchedJobs.map(j => ({ label: j.title, sub: formatUkDate(j.date), onclick: `closeUniversalSearch(); switchTab('jobs-tab'); loadJobForModification('${j.id}');` }))),
+                buildSearchResultGroup('Jobs', matchedJobs.map(j => ({ label: j.title, sub: formatUkDate(j.date), onclick: `closeUniversalSearch(); loadJobForModification('${j.id}');` }))),
                 buildSearchResultGroup('Quotes & Invoices', matchedQuotes.map(q => ({ label: q.jobName, sub: (q.clientDetailsPayload && q.clientDetailsPayload.name) || '', onclick: `closeUniversalSearch(); switchTab('quote-tab'); loadQuoteForActiveModification('${q.id}');` }))),
             ].join('');
             lucide.createIcons();
@@ -2607,20 +3869,31 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const emptyState = document.getElementById('vault-empty-state');
             const table = document.getElementById('vault-table');
             if (!tbody) return;
-            const sorted = [...currentQuotes].sort((a, b) => parseUkTimestamp(b.timestamp) - parseUkTimestamp(a.timestamp));
-            if (sorted.length === 0) { emptyState.classList.remove('hidden'); table.classList.add('hidden'); return; }
+            const showArchivedToggle = document.getElementById('vault-show-archived-toggle');
+            const showArchived = showArchivedToggle ? showArchivedToggle.checked : false;
+            const visible = showArchived ? currentQuotes : currentQuotes.filter(q => !q.archived);
+            const sorted = [...visible].sort((a, b) => parseUkTimestamp(b.timestamp) - parseUkTimestamp(a.timestamp));
+            if (sorted.length === 0) {
+                emptyState.classList.remove('hidden'); table.classList.add('hidden');
+                const archivedCount = currentQuotes.filter(q => q.archived).length;
+                emptyState.innerHTML = (!showArchived && archivedCount > 0)
+                    ? `<i data-lucide="archive" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Everything here is archived — tick "Show Archived" above to see it.`
+                    : `<i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-slate-700"></i> Vault is empty.`;
+                lucide.createIcons();
+                return;
+            }
             emptyState.classList.add('hidden'); table.classList.remove('hidden');
-            const statusColors = { Draft: 'bg-slate-800 text-slate-400 border-slate-700', Sent: 'bg-blue-500/10 text-blue-400 border-blue-500/30', Approved: 'bg-purple-500/10 text-purple-400 border-purple-500/30', Invoiced: 'bg-amber-500/10 text-amber-400 border-amber-500/30', Paid: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' };
+            const statusColors = { Draft: 'bg-slate-800 text-slate-400 border-slate-700', Sent: 'bg-blue-500/10 text-blue-400 border-blue-500/30', Approved: 'bg-purple-500/10 text-purple-400 border-purple-500/30', Invoiced: 'bg-amber-500/10 text-amber-400 border-amber-500/30', Paid: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30', Expired: 'bg-red-500/10 text-red-400 border-red-500/30' };
             tbody.innerHTML = sorted.map(r => {
                 const isInvoiceOrPaid = r.status === 'Invoiced' || r.status === 'Paid';
-                return `<tr class="hover:bg-slate-800/40 transition-colors">
+                return `<tr class="hover:bg-slate-800/40 transition-colors ${r.archived ? 'opacity-60' : ''}">
                     <td class="py-3 px-3 text-center"><input type="checkbox" onchange="toggleQuoteSelection('${r.id}', this.checked)" class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-amber-500 cursor-pointer"></td>
-                    <td class="py-3 px-3 text-xs"><div class="text-slate-300">${r.timestamp}</div><span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${statusColors[r.status] || statusColors.Draft}">${r.status}</span></td>
-                    <td class="py-3 px-3 text-xs"><div class="font-semibold text-white">${r.clientDetailsPayload.name}</div><div class="text-slate-500">${r.jobName}</div></td>
+                    <td class="py-3 px-3 text-xs"><div class="text-slate-300">${r.timestamp}</div><span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${statusColors[r.status] || statusColors.Draft}">${r.status}</span>${r.archived ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded border bg-slate-800 text-slate-500 border-slate-700 ml-1">Archived</span>` : ''}</td>
+                    <td class="py-3 px-3 text-xs"><div class="font-semibold text-white">${r.clientDetailsPayload.name}</div><div class="text-slate-500">${r.jobName}</div>${r.invoiceNumber ? `<div class="text-[10px] font-mono text-amber-400 mt-0.5">${r.invoiceNumber}</div>` : ''}</td>
                     <td class="py-3 px-3 text-right text-xs font-mono font-bold text-white">£${r.financials.grossTotal.toFixed(2)}</td>
                     <td class="py-3 px-3 text-center">
                         <select onchange="updateQuoteStatus('${r.id}', this.value)" class="bg-slate-900 border border-slate-700 rounded-lg text-[10px] px-2 py-1 text-slate-300">
-                            ${['Draft','Sent','Approved','Invoiced','Paid'].map(s => `<option value="${s}" ${r.status===s?'selected':''}>${s}</option>`).join('')}
+                            ${['Draft','Sent','Approved','Invoiced','Paid','Expired'].map(s => `<option value="${s}" ${r.status===s?'selected':''}>${s}</option>`).join('')}
                         </select>
                     </td>
                     <td class="py-3 px-3 text-right">
@@ -2647,13 +3920,41 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('invoice-reconciliation-modal').classList.remove('hidden');
         }
         function closeInvoiceModal() { document.getElementById('invoice-reconciliation-modal').classList.add('hidden'); }
-        function confirmInvoiceConversion() {
+        // Shared atomic sequential-numbering helper — used for both invoice
+        // and job numbers, each with their own counter document so they
+        // increment independently.
+        async function getNextSequentialNumber(counterDocId, prefix) {
+            const counterRef = db.collection('settings').doc(counterDocId);
+            const assignedNumber = await db.runTransaction(async (transaction) => {
+                const counterDoc = await transaction.get(counterRef);
+                const nextNumber = counterDoc.exists ? counterDoc.data().nextNumber : 1;
+                transaction.set(counterRef, { nextNumber: nextNumber + 1 });
+                return nextNumber;
+            });
+            return prefix + '-' + String(assignedNumber).padStart(5, '0');
+        }
+        async function confirmInvoiceConversion() {
             const id = document.getElementById('recon-quote-id').value;
             const actualMaterials = parseFloat(document.getElementById('recon-actual-materials').value) || 0;
             const actualLabor = parseFloat(document.getElementById('recon-actual-labor').value) || 0;
             const operative = document.getElementById('recon-operative-select').value;
-            db.collection('quotes').doc(id).update({ status: 'Invoiced', invoicingOperative: operative, actualCosts: { materials: actualMaterials, labor: actualLabor } });
-            closeInvoiceModal();
+            try {
+                const existing = currentQuotes.find(q => q.id === id);
+                const updatePayload = { status: 'Invoiced', invoicingOperative: operative, actualCosts: { materials: actualMaterials, labor: actualLabor } };
+
+                // Only assign a fresh sequential number the first time this
+                // quote becomes an invoice — re-confirming later (e.g. to
+                // correct actual costs) shouldn't burn a second number.
+                if (!existing || !existing.invoiceNumber) {
+                    updatePayload.invoiceNumber = await getNextSequentialNumber('invoiceCounter', 'INV');
+                }
+
+                await db.collection('quotes').doc(id).update(updatePayload);
+                closeInvoiceModal();
+            } catch (err) {
+                console.error('Failed to convert to invoice:', err);
+                alert('Could not convert this to an invoice. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+            }
         }
         function openProfitModal(id) {
             const target = currentQuotes.find(q => q.id === id);
@@ -2706,8 +4007,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #1e3a8a;">${docPrefix}</h1>
                         <div style="font-size: 11px; color: #db2777; font-weight: 600; margin-top: 4px;">Submitted on ${documentDateLabel}</div>
                     </td><td style="vertical-align: top; text-align: right;">
-                        <div style="font-size: 12px; color: #64748b;">${docPrefix} ID</div>
-                        <div style="font-size: 14px; font-weight: 700; color: #1e293b; font-family: monospace;">${target.id}</div>
+                        <div style="font-size: 12px; color: #64748b;">${docPrefix} ${target.invoiceNumber ? 'Number' : 'ID'}</div>
+                        <div style="font-size: 14px; font-weight: 700; color: #1e293b; font-family: monospace;">${target.invoiceNumber || target.id}</div>
                     </td></tr></table>
                     <table style="width: 100%; margin-bottom: 25px;"><tr><td style="vertical-align: top; width: 50%;">
                         <div style="font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Billed To</div>
@@ -2730,7 +4031,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     </td></tr></table>
                 </div>`;
 
-            const filename = `${docPrefix.toLowerCase()}_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${target.id}.pdf`;
+            const filename = `${docPrefix.toLowerCase()}_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${target.invoiceNumber || target.id}.pdf`;
             const renderOverlay = document.createElement('div');
             renderOverlay.style.cssText = 'position:fixed; inset:0; background:#0f172a; z-index:99999; display:flex; align-items:center; justify-content:center; color:#f59e0b; font-family:sans-serif; font-size:14px;';
             renderOverlay.innerText = 'Generating PDF...';
@@ -3091,16 +4392,30 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const tbody = document.getElementById('allocated-materials-body');
             if (!tbody) return;
             if (activeAllocatedMaterials.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-slate-500">No items selected.</td></tr>`; calculateComprehensiveMetrics(); return; }
-            tbody.innerHTML = activeAllocatedMaterials.map(item => `
-                <tr class="border-b border-slate-800 text-xs text-slate-200">
-                    <td class="py-3 px-2"><div>${item.desc}</div><div class="text-[10px] font-mono text-slate-500 mt-0.5">${item.sku}</div></td>
+            tbody.innerHTML = activeAllocatedMaterials.map(item => {
+                const isUnpriced = item.cost == null;
+                const costCell = isUnpriced
+                    ? `<input type="number" step="0.01" min="0" placeholder="Set price" onchange="setUnpricedItemCost('${item.id}', this.value)" class="w-20 bg-amber-500/10 border border-amber-500/50 text-right rounded p-1 font-mono text-amber-400 text-xs">`
+                    : `£${parseFloat(item.cost).toFixed(2)}`;
+                const subtotalCell = isUnpriced ? `<span class="text-amber-400">Needs price</span>` : `£${(parseFloat(item.cost) * item.qty).toFixed(2)}`;
+                return `
+                <tr class="border-b border-slate-800 text-xs text-slate-200 ${isUnpriced ? 'bg-amber-500/5' : ''}">
+                    <td class="py-3 px-2"><div>${item.desc} ${isUnpriced ? '<span class="text-[9px] font-bold text-amber-400 uppercase ml-1">Added on-site</span>' : ''}</div><div class="text-[10px] font-mono text-slate-500 mt-0.5">${item.sku}</div></td>
                     <td class="py-3 px-2 text-center"><input type="number" value="${item.qty}" min="1" onchange="updateAllocationQty('${item.id}', this.value)" class="w-12 bg-slate-900 border border-slate-700 text-center rounded p-1 font-mono text-white"></td>
-                    <td class="py-3 px-2 text-right font-mono">£${parseFloat(item.cost).toFixed(2)}</td>
-                    <td class="py-3 px-2 text-right font-mono font-bold text-white">£${(parseFloat(item.cost) * item.qty).toFixed(2)}</td>
+                    <td class="py-3 px-2 text-right font-mono">${costCell}</td>
+                    <td class="py-3 px-2 text-right font-mono font-bold text-white">${subtotalCell}</td>
                     <td class="py-3 px-2 text-center"><button onclick="activeAllocatedMaterials=activeAllocatedMaterials.filter(i=>i.id!='${item.id}');rebuildAllocatedMaterialsTable();" class="text-slate-500 hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button></td>
-                </tr>`).join('');
+                </tr>`;
+            }).join('');
             lucide.createIcons();
             calculateComprehensiveMetrics();
+        }
+        function setUnpricedItemCost(itemId, newCost) {
+            const idx = activeAllocatedMaterials.findIndex(i => i.id === itemId);
+            if (idx === -1) return;
+            const cost = parseFloat(newCost);
+            activeAllocatedMaterials[idx].cost = isNaN(cost) ? 0 : cost;
+            rebuildAllocatedMaterialsTable();
         }
         function allocateOneOffItemToQuote() {
             const descInput = document.getElementById('oneoff-desc'), costInput = document.getElementById('oneoff-cost'), qtyInput = document.getElementById('oneoff-qty');
@@ -3112,7 +4427,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         }
 
         function calculateComprehensiveMetrics() {
-            const netMaterialsExVat = activeAllocatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost) * curr.qty), 0);
+            const netMaterialsExVat = activeAllocatedMaterials.reduce((acc, curr) => acc + ((parseFloat(curr.cost) || 0) * curr.qty), 0);
             const materialsVat = netMaterialsExVat * 0.20;
             const netMaterialsIncVat = netMaterialsExVat + materialsVat;
             const markup = currentPricing.markup || 0;
@@ -3723,7 +5038,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
 
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
+            rebuildPropertyHazardChecklist();
         });
     </script>
 </body>
-    </html>
+                    </html>
