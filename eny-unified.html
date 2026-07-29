@@ -5,8 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENY Electrical - Business Manager</title>
     <meta name="theme-color" content="#0f172a">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect width='24' height='24' rx='6' fill='%23f59e0b'/%3E%3Cpath d='M13 3L5 13h5l-1 8 8-10h-5l1-8z' fill='%230f172a'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/png" href="Logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Remaps the "amber" token (the app's primary accent throughout) to
+        // the ENY logo's blue. Every existing amber-300/400/500/600/700 class
+        // in the app picks this up automatically — nothing else needs to
+        // change. Colors sampled directly from Logo.png.
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        amber: {
+                            50: '#EAF4FC', 100: '#D5E9F8', 200: '#ABD3F1',
+                            300: '#8CC5F0', 400: '#52A3E0', 500: '#1E87C2',
+                            600: '#0A5FB9', 700: '#084A94', 800: '#063868',
+                            900: '#04264A', 950: '#021530',
+                        },
+                    },
+                },
+            },
+        };
+    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- Firebase (compat SDK) -->
@@ -34,7 +54,7 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         .hazard-stripe {
-            background-image: repeating-linear-gradient(135deg, #f59e0b 0px, #f59e0b 10px, #0f172a 10px, #0f172a 20px);
+            background-image: repeating-linear-gradient(135deg, #FFDF27 0px, #FFDF27 10px, #0f172a 10px, #0f172a 20px);
         }
         .settings-subtab-content { display: none; }
         .settings-subtab-content.active { display: block; }
@@ -62,9 +82,7 @@
     <div id="login-gate" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-[#283548] border border-slate-600 rounded-2xl p-8 shadow-lg ring-1 ring-white/[0.06] space-y-5">
             <div class="flex flex-col items-center gap-3 mb-2">
-                <div class="h-12 w-12 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950">
-                    <i data-lucide="zap" class="w-7 h-7 stroke-[2.5]"></i>
-                </div>
+                <img src="Logo.png" alt="ENY Electrical" class="h-16 w-16 rounded-full shadow-lg shadow-amber-500/20">
                 <div class="text-center">
                     <h1 class="font-bold text-lg tracking-tight text-white">ENY ELECTRICAL</h1>
                     <p class="text-xs font-semibold text-amber-400 tracking-wider uppercase">Business Manager</p>
@@ -91,9 +109,7 @@
     <!-- ================= MAIN APP ================= -->
     <div id="initial-load-overlay" class="hidden fixed inset-0 bg-slate-950 z-[90] flex items-center justify-center">
         <div class="text-center space-y-3">
-            <div class="h-12 w-12 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950 mx-auto animate-pulse">
-                <i data-lucide="zap" class="w-7 h-7 stroke-[2.5]"></i>
-            </div>
+            <img src="Logo.png" alt="ENY Electrical" class="h-16 w-16 rounded-full shadow-lg shadow-amber-500/20 mx-auto animate-pulse">
             <p class="text-xs text-slate-500 font-medium tracking-wide">Loading your data...</p>
         </div>
     </div>
@@ -102,9 +118,7 @@
         <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950">
-                        <i data-lucide="zap" class="w-6 h-6 stroke-[2.5]"></i>
-                    </div>
+                    <img src="Logo.png" alt="ENY Electrical" class="h-12 w-12 rounded-full shadow-lg shadow-amber-500/20">
                     <div>
                         <h1 class="font-bold text-xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">ENY ELECTRICAL</h1>
                         <p class="text-xs font-semibold text-amber-400 tracking-wider uppercase">Business Manager</p>
@@ -271,7 +285,7 @@
                                 <select id="job-property-select" onchange="renderJobPropertyHazardWarning()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
                                     <option value="">-- None / Not linked --</option>
                                 </select>
-                                <div id="job-property-hazard-warning" class="hidden mt-2 p-2.5 rounded-lg hazard-stripe border border-amber-500"></div>
+                                <div id="job-property-hazard-warning" class="hidden mt-2 p-2.5 rounded-lg hazard-stripe border border-[#FFDF27]"></div>
                             </div>
                             <div id="job-form-quote-link-wrapper" class="hidden">
                                 <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Link to Quote (optional)</label>
@@ -1896,7 +1910,7 @@
         }
         function reminderStatusBadge(status, daysUntilDue) {
             if (status === 'unknown') return `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-slate-800 text-slate-400 border border-slate-700">Never Tested</span>`;
-            if (status === 'overdue') return `<span class="hazard-stripe text-[10px] font-bold uppercase px-2 py-1 rounded text-white border border-amber-500">Overdue ${Math.abs(daysUntilDue)}d</span>`;
+            if (status === 'overdue') return `<span class="hazard-stripe text-[10px] font-bold uppercase px-2 py-1 rounded text-white border border-[#FFDF27]">Overdue ${Math.abs(daysUntilDue)}d</span>`;
             if (status === 'due-soon') return `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">Due in ${daysUntilDue}d</span>`;
             return `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">OK (${daysUntilDue}d)</span>`;
         }
@@ -3229,8 +3243,8 @@
             const tags = property.hazardTags || [];
             const other = property.hazardOther;
             if (tags.length === 0 && !other) return '';
-            const badges = tags.map(key => `<span class="hazard-stripe text-[9px] font-bold uppercase px-2 py-0.5 rounded text-white border border-amber-500">${hazardKeyToLabel(key)}</span>`).join(' ');
-            const otherBadge = other ? `<span class="hazard-stripe text-[9px] font-bold uppercase px-2 py-0.5 rounded text-white border border-amber-500">${other}</span>` : '';
+            const badges = tags.map(key => `<span class="hazard-stripe text-[9px] font-bold uppercase px-2 py-0.5 rounded text-white border border-[#FFDF27]">${hazardKeyToLabel(key)}</span>`).join(' ');
+            const otherBadge = other ? `<span class="hazard-stripe text-[9px] font-bold uppercase px-2 py-0.5 rounded text-white border border-[#FFDF27]">${other}</span>` : '';
             return `<div class="flex flex-wrap gap-1 mt-1">${badges}${otherBadge}</div>`;
         }
 
@@ -4075,10 +4089,10 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
 
             const pdfHtml = `
                 <div style="padding: 45px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #334155; background-color: #ffffff; min-height: 842px; position: relative;">
-                    <div style="height: 4px; background-color: #2b4c7e; margin: -45px -45px 35px -45px;"></div>
+                    <div style="height: 4px; background-color: #0A5FB9; margin: -45px -45px 35px -45px;"></div>
                     <table style="width: 100%; margin-bottom: 35px;"><tr><td style="vertical-align: top;">
                         <div style="font-size: 14px; color: #475569; font-weight: 500; margin-bottom: 8px;">Electricians Near You</div>
-                        <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #1e3a8a;">${docPrefix}</h1>
+                        <h1 style="margin: 0; font-size: 32px; font-weight: 700; color: #0A5FB9;">${docPrefix}</h1>
                         <div style="font-size: 11px; color: #db2777; font-weight: 600; margin-top: 4px;">Submitted on ${documentDateLabel}</div>
                     </td><td style="vertical-align: top; text-align: right;">
                         <div style="font-size: 12px; color: #64748b;">${docPrefix} ${target.invoiceNumber ? 'Number' : 'ID'}</div>
@@ -4107,7 +4121,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
 
             const filename = `${docPrefix.toLowerCase()}_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${target.invoiceNumber || target.id}.pdf`;
             const renderOverlay = document.createElement('div');
-            renderOverlay.style.cssText = 'position:fixed; inset:0; background:#0f172a; z-index:99999; display:flex; align-items:center; justify-content:center; color:#f59e0b; font-family:sans-serif; font-size:14px;';
+            renderOverlay.style.cssText = 'position:fixed; inset:0; background:#0f172a; z-index:99999; display:flex; align-items:center; justify-content:center; color:#1E87C2; font-family:sans-serif; font-size:14px;';
             renderOverlay.innerText = 'Generating PDF...';
             document.body.appendChild(renderOverlay);
             const pdfContainer = document.createElement('div');
