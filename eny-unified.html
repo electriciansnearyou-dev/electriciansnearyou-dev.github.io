@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENY Electrical - Business Manager</title>
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect width='24' height='24' rx='6' fill='%23f59e0b'/%3E%3Cpath d='M13 3L5 13h5l-1 8 8-10h-5l1-8z' fill='%230f172a'/%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -36,6 +38,22 @@
         }
         .settings-subtab-content { display: none; }
         .settings-subtab-content.active { display: block; }
+
+        @keyframes modalPopIn {
+            from { opacity: 0; transform: scale(0.96) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-pop-in { animation: modalPopIn 0.18s ease-out; }
+
+        @media print {
+            header, nav, button, .fixed, #initial-load-overlay { display: none !important; }
+            body, .tab-content.active, .tab-content.active * {
+                background: white !important;
+                color: black !important;
+                border-color: #ccc !important;
+                box-shadow: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-900">
@@ -71,6 +89,15 @@
     </div>
 
     <!-- ================= MAIN APP ================= -->
+    <div id="initial-load-overlay" class="hidden fixed inset-0 bg-slate-950 z-[90] flex items-center justify-center">
+        <div class="text-center space-y-3">
+            <div class="h-12 w-12 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950 mx-auto animate-pulse">
+                <i data-lucide="zap" class="w-7 h-7 stroke-[2.5]"></i>
+            </div>
+            <p class="text-xs text-slate-500 font-medium tracking-wide">Loading your data...</p>
+        </div>
+    </div>
+
     <div id="app-root" class="hidden">
         <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -85,33 +112,40 @@
                 </div>
 
                 <nav class="flex flex-wrap items-center justify-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
-                    <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10">
+                    <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10 cursor-pointer">
                         <i data-lucide="sun" class="w-4 h-4"></i> Today
                     </button>
-                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white cursor-pointer">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
                     </button>
-                    <button onclick="switchTab('calendar-tab')" id="btn-calendar-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                    <button onclick="switchTab('calendar-tab')" id="btn-calendar-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white cursor-pointer">
                         <i data-lucide="calendar" class="w-4 h-4"></i> Calendar
                     </button>
-                    <button onclick="switchTab('jobs-tab')" id="btn-jobs-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                    <button onclick="switchTab('jobs-tab')" id="btn-jobs-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white cursor-pointer">
                         <i data-lucide="clipboard-list" class="w-4 h-4"></i> Jobs
                     </button>
-                    <button onclick="switchTab('lookup-tab')" id="btn-lookup-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                    <button onclick="switchTab('lookup-tab')" id="btn-lookup-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white cursor-pointer">
                         <i data-lucide="map-pin" class="w-4 h-4"></i> Property Lookup
                     </button>
-                    <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                    <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white cursor-pointer">
                         <i data-lucide="file-text" class="w-4 h-4"></i> Quote Builder
                     </button>
-                    <button onclick="switchTab('crm-tab')" id="btn-crm-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
+                    <button onclick="switchTab('crm-tab')" id="btn-crm-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white cursor-pointer">
                         <i data-lucide="users" class="w-4 h-4"></i> CRM
                     </button>
-                    <button onclick="switchTab('settings-tab')" id="btn-settings-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
-                        <i data-lucide="sliders" class="w-4 h-4"></i> Settings
-                    </button>
-                    <button onclick="switchTab('trash-tab')" id="btn-trash-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i> Trash
-                    </button>
+                    <div class="relative">
+                        <button onclick="toggleMoreMenu()" id="btn-more-menu" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-slate-400 hover:text-white cursor-pointer">
+                            <i data-lucide="more-horizontal" class="w-4 h-4"></i> More
+                        </button>
+                        <div id="more-menu-dropdown" class="hidden absolute top-full right-0 mt-2 bg-[#283548] border border-slate-600 rounded-xl shadow-2xl ring-1 ring-white/[0.06] py-1.5 min-w-[160px] z-50 modal-pop-in">
+                            <button onclick="switchTab('settings-tab'); closeMoreMenu();" id="btn-settings-tab" class="owner-only-nav w-full text-left px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-700/50 hover:text-white flex items-center gap-2 transition-colors cursor-pointer">
+                                <i data-lucide="sliders" class="w-4 h-4"></i> Settings
+                            </button>
+                            <button onclick="switchTab('trash-tab'); closeMoreMenu();" id="btn-trash-tab" class="w-full text-left px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-slate-700/50 hover:text-white flex items-center gap-2 transition-colors cursor-pointer">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i> Trash
+                            </button>
+                        </div>
+                    </div>
                 </nav>
 
                 <div class="flex items-center gap-3">
@@ -288,7 +322,7 @@
                                 <button type="submit" id="job-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                                     <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job
                                 </button>
-                                <button type="button" id="job-cancel-btn" onclick="clearJobForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">Cancel</button>
+                                <button type="button" id="job-cancel-btn" onclick="clearJobForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer">Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -361,7 +395,7 @@
                                 <button type="submit" id="property-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                                     <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Property
                                 </button>
-                                <button type="button" id="property-cancel-btn" onclick="clearPropertyForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">Cancel</button>
+                                <button type="button" id="property-cancel-btn" onclick="clearPropertyForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer">Cancel</button>
                             </div>
                         </form>
                     </div>
@@ -381,8 +415,8 @@
 
             <div id="quote-tab" class="tab-content owner-only-tab space-y-6">
                 <div class="flex flex-wrap gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-slate-800 w-fit">
-                    <button onclick="switchQuoteSubtab('quote-sub-build')" id="btn-quote-sub-build" class="quote-subtab-btn px-3 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950">Build Quote</button>
-                    <button onclick="switchQuoteSubtab('quote-sub-vault')" id="btn-quote-sub-vault" class="quote-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white">Vault (Quotes & Invoices)</button>
+                    <button onclick="switchQuoteSubtab('quote-sub-build')" id="btn-quote-sub-build" class="quote-subtab-btn px-3 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 cursor-pointer">Build Quote</button>
+                    <button onclick="switchQuoteSubtab('quote-sub-vault')" id="btn-quote-sub-vault" class="quote-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white cursor-pointer">Vault (Quotes & Invoices)</button>
                 </div>
 
                 <!-- ===== BUILD QUOTE ===== -->
@@ -395,7 +429,7 @@
                                 <p class="text-xs text-slate-400">Modifying <span id="editing-record-id-display" class="font-mono text-amber-400 font-semibold"></span></p>
                             </div>
                         </div>
-                        <button onclick="cancelActiveEditingSessionMode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors">Discard Modifications</button>
+                        <button onclick="cancelActiveEditingSessionMode()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors cursor-pointer">Discard Modifications</button>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -497,9 +531,9 @@
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Booking Format</label>
                                         <div class="grid grid-cols-3 gap-1 bg-slate-900 p-1 rounded-xl border border-slate-700">
-                                            <button type="button" id="lbl-btn-day" onclick="setLaborBookingFormat('DAY')" class="py-2 text-xs font-bold rounded-lg transition-all text-slate-400">Full Day</button>
-                                            <button type="button" id="lbl-btn-half" onclick="setLaborBookingFormat('HALF')" class="py-2 text-xs font-bold rounded-lg transition-all text-slate-400">Half Day</button>
-                                            <button type="button" id="lbl-btn-hour" onclick="setLaborBookingFormat('HOUR')" class="py-2 text-xs font-bold rounded-lg transition-all text-slate-400">Hourly</button>
+                                            <button type="button" id="lbl-btn-day" onclick="setLaborBookingFormat('DAY')" class="py-2 text-xs font-bold rounded-lg transition-all text-slate-400 cursor-pointer">Full Day</button>
+                                            <button type="button" id="lbl-btn-half" onclick="setLaborBookingFormat('HALF')" class="py-2 text-xs font-bold rounded-lg transition-all text-slate-400 cursor-pointer">Half Day</button>
+                                            <button type="button" id="lbl-btn-hour" onclick="setLaborBookingFormat('HOUR')" class="py-2 text-xs font-bold rounded-lg transition-all text-slate-400 cursor-pointer">Hourly</button>
                                         </div>
                                     </div>
                                     <div id="hourly-selector-context-frame" class="invisible opacity-0 transition-opacity space-y-4">
@@ -651,7 +685,7 @@
                                     <button type="submit" id="crm-client-submit-btn" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                                         <i data-lucide="user-plus" class="w-4 h-4"></i> Create Client
                                     </button>
-                                    <button type="button" id="crm-client-cancel-btn" onclick="clearCrmClientForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">Cancel</button>
+                                    <button type="button" id="crm-client-cancel-btn" onclick="clearCrmClientForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer">Cancel</button>
                                 </div>
                             </form>
                         </div>
@@ -678,13 +712,13 @@
 
             <div id="settings-tab" class="tab-content owner-only-tab space-y-6">
                 <div class="flex flex-wrap gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-slate-800 w-fit">
-                    <button onclick="switchSettingsSubtab('settings-sub-pricing')" id="btn-settings-sub-pricing" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950">Pricing</button>
-                    <button onclick="switchSettingsSubtab('settings-sub-banking')" id="btn-settings-sub-banking" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white">Bank Details</button>
-                    <button onclick="switchSettingsSubtab('settings-sub-stock')" id="btn-settings-sub-stock" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white">Stock Directory</button>
-                    <button onclick="switchSettingsSubtab('settings-sub-templates')" id="btn-settings-sub-templates" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white">Templates</button>
-                    <button onclick="switchSettingsSubtab('settings-sub-engineers')" id="btn-settings-sub-engineers" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white">Engineers</button>
-                    <button onclick="switchSettingsSubtab('settings-sub-calendar')" id="btn-settings-sub-calendar" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white">Google Calendar</button>
-                    <button onclick="switchSettingsSubtab('settings-sub-import')" id="btn-settings-sub-import" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white">Import Local Data</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-pricing')" id="btn-settings-sub-pricing" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 cursor-pointer">Pricing</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-banking')" id="btn-settings-sub-banking" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white cursor-pointer">Bank Details</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-stock')" id="btn-settings-sub-stock" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white cursor-pointer">Stock Directory</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-templates')" id="btn-settings-sub-templates" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white cursor-pointer">Templates</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-engineers')" id="btn-settings-sub-engineers" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white cursor-pointer">Engineers</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-calendar')" id="btn-settings-sub-calendar" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white cursor-pointer">Google Calendar</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-import')" id="btn-settings-sub-import" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-slate-400 hover:text-white cursor-pointer">Import Local Data</button>
                 </div>
 
                 <!-- PRICING -->
@@ -832,7 +866,7 @@
                                     <button type="submit" id="stock-submit-btn" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                                         <i data-lucide="plus-circle" class="w-4 h-4"></i> Append to Database
                                     </button>
-                                    <button type="button" id="stock-cancel-btn" onclick="clearStockForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">Cancel</button>
+                                    <button type="button" id="stock-cancel-btn" onclick="clearStockForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer">Cancel</button>
                                 </div>
                             </form>
                         </div>
@@ -880,7 +914,7 @@
                                     <button type="submit" id="template-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                                         <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Template
                                     </button>
-                                    <button type="button" id="template-cancel-btn" onclick="clearTemplateForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors">Cancel</button>
+                                    <button type="button" id="template-cancel-btn" onclick="clearTemplateForm()" class="hidden bg-slate-950 hover:bg-slate-900 border border-slate-700 text-slate-400 py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer">Cancel</button>
                                 </div>
                             </form>
                         </div>
@@ -997,7 +1031,7 @@
     <!-- ================= MODALS ================= -->
     <div id="job-detail-page-modal" class="fixed inset-0 bg-slate-950/90 z-[55] hidden overflow-y-auto">
         <div class="min-h-screen p-4 flex items-start justify-center py-8">
-            <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06] modal-pop-in">
                 <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50 rounded-t-2xl">
                     <h3 class="text-lg font-bold text-white flex items-center gap-2 min-w-0"><i data-lucide="clipboard-list" class="text-amber-400 shrink-0"></i> <span id="job-detail-title" class="truncate"></span></h3>
                     <button onclick="closeJobDetailPage()" class="text-slate-400 hover:text-white cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1044,7 +1078,7 @@
 
     <div id="job-materials-modal" class="fixed inset-0 bg-slate-950/90 z-[58] hidden overflow-y-auto">
         <div class="min-h-screen p-4 flex items-start justify-center py-8">
-            <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06] modal-pop-in">
                 <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50 rounded-t-2xl">
                     <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="package-plus" class="text-amber-400"></i> Materials & Hours</h3>
                     <button onclick="closeJobMaterialsModal()" class="text-slate-400 hover:text-white cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1065,8 +1099,8 @@
 
                     <div id="job-materials-hours-section">
                         <div class="flex gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-slate-800 w-fit mb-3">
-                            <button type="button" onclick="switchJobAdditionsSubtab('materials')" id="btn-job-additions-materials" class="job-additions-subtab-btn px-3 py-1.5 text-[11px] font-bold rounded-lg bg-amber-500 text-slate-950">Materials</button>
-                            <button type="button" onclick="switchJobAdditionsSubtab('hours')" id="btn-job-additions-hours" class="job-additions-subtab-btn px-3 py-1.5 text-[11px] font-bold rounded-lg text-slate-400">Hours</button>
+                            <button type="button" onclick="switchJobAdditionsSubtab('materials')" id="btn-job-additions-materials" class="job-additions-subtab-btn px-3 py-1.5 text-[11px] font-bold rounded-lg bg-amber-500 text-slate-950 cursor-pointer">Materials</button>
+                            <button type="button" onclick="switchJobAdditionsSubtab('hours')" id="btn-job-additions-hours" class="job-additions-subtab-btn px-3 py-1.5 text-[11px] font-bold rounded-lg text-slate-400 cursor-pointer">Hours</button>
                         </div>
 
                         <div id="job-additions-materials-panel" class="space-y-2">
@@ -1092,7 +1126,7 @@
     </div>
 
     <div id="signature-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
-        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06] modal-pop-in">
             <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="pen-tool" class="text-amber-400"></i> Client Sign-Off</h3>
                 <button onclick="closeSignatureModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1111,7 +1145,7 @@
     </div>
 
     <div id="send-reminder-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
-        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06] modal-pop-in">
             <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-900/50">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="message-square" class="text-emerald-400"></i> Send Message</h3>
                 <button onclick="closeSendReminderModal()" class="text-slate-400 hover:text-white transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1132,7 +1166,7 @@
     </div>
 
     <div id="universal-search-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[60] hidden flex items-start justify-center p-4 pt-20">
-        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[70vh]">
+        <div class="bg-[#283548] border border-slate-600 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[70vh] modal-pop-in">
             <div class="p-4 border-b border-slate-700 flex items-center gap-3 bg-slate-900/50">
                 <i data-lucide="search" class="text-amber-400 w-4 h-4 shrink-0"></i>
                 <input type="text" id="universal-search-input" oninput="performUniversalSearch()" placeholder="Search clients, properties, jobs, quotes..." class="w-full bg-transparent text-sm text-slate-100 focus:outline-none" autocomplete="off">
@@ -1321,12 +1355,17 @@
             if (user) {
                 document.getElementById('login-gate').classList.add('hidden');
                 document.getElementById('app-root').classList.remove('hidden');
+                document.getElementById('initial-load-overlay').classList.remove('hidden');
                 applyOwnerVisibility();
                 renderTodayTab();
                 if (!firestoreListenersStarted) {
                     startFirestoreListeners();
                     firestoreListenersStarted = true;
                 }
+                // Safety net — if something goes wrong and a listener never
+                // fires successfully, don't leave the user staring at a
+                // loading screen forever.
+                setTimeout(() => { const overlay = document.getElementById('initial-load-overlay'); if (overlay) overlay.classList.add('hidden'); }, 8000);
             } else {
                 document.getElementById('login-gate').classList.remove('hidden');
                 document.getElementById('app-root').classList.add('hidden');
@@ -1385,8 +1424,31 @@
                 targetButton.classList.remove('text-slate-400', 'hover:text-white');
                 targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
             }
+            // Settings and Trash live inside the More dropdown now — highlight
+            // that trigger button too, so it's clear which section is active
+            // even once the dropdown itself has closed.
+            if (targetTabId === 'settings-tab' || targetTabId === 'trash-tab') {
+                const moreBtn = document.getElementById('btn-more-menu');
+                if (moreBtn) {
+                    moreBtn.classList.remove('text-slate-400', 'hover:text-white');
+                    moreBtn.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+                }
+            }
             onTabSwitched(targetTabId);
         }
+        function toggleMoreMenu() {
+            document.getElementById('more-menu-dropdown').classList.toggle('hidden');
+        }
+        function closeMoreMenu() {
+            document.getElementById('more-menu-dropdown').classList.add('hidden');
+        }
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('more-menu-dropdown');
+            const trigger = document.getElementById('btn-more-menu');
+            if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
 
         // ============================================================
         // STATE
@@ -1534,6 +1596,14 @@
             });
         }
 
+        let initialLoadFlags = { properties: false, jobs: false };
+        function checkInitialLoadComplete() {
+            if (initialLoadFlags.properties && initialLoadFlags.jobs) {
+                const overlay = document.getElementById('initial-load-overlay');
+                if (overlay) overlay.classList.add('hidden');
+            }
+        }
+
         function startFirestoreListeners() {
             // --- Shared collections (everyone) ---
             db.collection('properties').onSnapshot((snapshot) => {
@@ -1547,6 +1617,8 @@
                 renderCalendarGrid();
                 renderTrashTab();
                 renderTodayTab();
+                initialLoadFlags.properties = true;
+                checkInitialLoadComplete();
             }, (err) => console.error('Properties listener error:', err));
 
             db.collection('jobs').onSnapshot((snapshot) => {
@@ -1564,6 +1636,8 @@
                     const openJob = currentJobs.find(j => j.id === activeJobDetailId);
                     if (openJob) renderJobDetailPageContent(openJob);
                 }
+                initialLoadFlags.jobs = true;
+                checkInitialLoadComplete();
             }, (err) => console.error('Jobs listener error:', err));
 
             db.collection('unavailability').onSnapshot((snapshot) => {
