@@ -602,14 +602,31 @@
                                     <div class="flex items-start gap-3">
                                         <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="circle-dollar-sign" class="w-4 h-4"></i></div>
                                         <div>
-                                            <label for="include-sundries-toggle" class="text-xs font-bold text-[#0F2437] block cursor-pointer">Sundries (round up to nearest £10)</label>
+                                            <label for="include-sundries-toggle" class="text-xs font-bold text-[#0F2437] block cursor-pointer">Sundries</label>
                                             <p class="text-[10px] text-[#71889F]">Not affected by VAT or markup — added straight onto the final total.</p>
                                         </div>
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
-                                        <input type="checkbox" id="include-sundries-toggle" onchange="calculateComprehensiveMetrics()" class="sr-only peer">
+                                        <input type="checkbox" id="include-sundries-toggle" onchange="handleSundriesToggle()" class="sr-only peer">
                                         <div class="w-9 h-5 bg-[#E5EFF9] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#8FA9C2] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-[#DCEAF6]"></div>
                                     </label>
+                                </div>
+                                <div class="bg-[#EFF5FB]/60 border border-[#C3D9EE] rounded-xl p-4 flex items-center justify-between gap-4">
+                                    <div class="flex items-start gap-3">
+                                        <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="target" class="w-4 h-4"></i></div>
+                                        <div>
+                                            <label for="include-custom-cost-toggle" class="text-xs font-bold text-[#0F2437] block cursor-pointer">Custom Cost</label>
+                                            <p class="text-[10px] text-[#71889F]">Set an exact total — the materials figure adjusts to reach it.</p>
+                                            <p id="custom-cost-warning" class="hidden text-[10px] text-red-500 font-semibold mt-0.5"></p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 shrink-0">
+                                        <input type="number" id="custom-cost-target" placeholder="£ Target" step="0.01" min="0" oninput="calculateComprehensiveMetrics()" class="w-24 bg-[#DCEAF6] border border-[#C3D9EE] text-center rounded-lg p-1.5 font-mono text-xs text-[#0F2437] focus:outline-none focus:border-amber-500">
+                                        <label class="relative inline-flex items-center cursor-pointer select-none">
+                                            <input type="checkbox" id="include-custom-cost-toggle" onchange="handleCustomCostToggle()" class="sr-only peer">
+                                            <div class="w-9 h-5 bg-[#E5EFF9] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[#8FA9C2] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-[#DCEAF6]"></div>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -620,10 +637,10 @@
                                 <div class="space-y-3 bg-[#EFF5FB]/50 p-4 rounded-xl border border-[#D3E5F5]/80">
                                     <div class="flex justify-between text-sm"><span class="text-[#5B7591]">Net Materials (Ex VAT):</span><span id="summary-net-materials" class="font-medium">£0.00</span></div>
                                     <div class="flex justify-between text-sm border-b border-[#D3E5F5]/60 pb-2"><span class="text-[#5B7591]">+20% VAT:</span><span id="summary-materials-vat" class="font-medium text-[#2C4A68]">£0.00</span></div>
-                                    <div class="flex justify-between text-sm pt-1"><span class="text-[#5B7591]">Marked-Up Materials:</span><span id="summary-marked-materials" class="font-medium text-amber-400/90">£0.00</span></div>
+                                    <div class="flex justify-between text-sm pt-1"><span class="text-[#5B7591]">Marked-Up Materials: <span id="summary-materials-adjusted-note" class="hidden text-[9px] text-amber-500 font-bold">(adjusted)</span></span><span id="summary-marked-materials" class="font-medium text-amber-400/90">£0.00</span></div>
                                     <div class="flex justify-between text-sm"><span class="text-[#5B7591]">Labor Gross:</span><span id="summary-labor-costs" class="font-medium">£0.00</span></div>
                                     <div class="flex justify-between text-sm"><span class="text-[#5B7591]">Testing & Certs:</span><span id="summary-testing-costs" class="font-medium">£0.00</span></div>
-                                    <div id="summary-sundries-row" class="hidden flex justify-between text-sm"><span class="text-[#5B7591]">Sundries (round-up):</span><span id="summary-sundries" class="font-medium">£0.00</span></div>
+                                    <div id="summary-sundries-row" class="hidden flex justify-between text-sm"><span class="text-[#5B7591]">Sundries:</span><span id="summary-sundries" class="font-medium">£0.00</span></div>
                                     <div class="border-t border-[#C3D9EE] pt-3 mt-1 flex justify-between text-base font-bold text-[#0F2437]"><span>Gross Total:</span><span id="summary-gross-total">£0.00</span></div>
                                 </div>
                                 <div id="standard-save-actions-wrapper" class="space-y-2">
@@ -2901,9 +2918,19 @@
             const materialsVat = netMaterialsExVat * 0.20;
             const netMaterialsIncVat = netMaterialsExVat + materialsVat;
             const markup = quote.financials.markupApplied || currentPricing.markup || 0;
-            const markedMaterials = netMaterialsIncVat * (1 + (markup / 100));
+            const calculatedMarkedMaterials = netMaterialsIncVat * (1 + (markup / 100));
             const testingCosts = quote.financials.testingCosts || 0;
-            const preSundriesTotal = markedMaterials + laborCosts + testingCosts;
+
+            if (quote.customCostEnabled) {
+                // The target total is fixed — materials absorbs the on-site
+                // addition rather than the client-facing total moving, same as
+                // how Custom Cost behaves anywhere else.
+                const target = quote.customCostTarget || 0;
+                const markedMaterials = target - laborCosts - testingCosts;
+                return { ...quote.financials, netMaterialsExVat, materialsVat, markedMaterials, laborCosts, sundriesAmount: 0, grossTotal: target };
+            }
+
+            const preSundriesTotal = calculatedMarkedMaterials + laborCosts + testingCosts;
             // If sundries (round up to nearest £10) was enabled on this quote,
             // recompute it against the new total — otherwise an on-site
             // addition would silently leave the total no longer landing on a
@@ -2913,7 +2940,7 @@
                 const roundedUpToTen = Math.ceil(preSundriesTotal / 10) * 10;
                 sundriesAmount = Math.round((roundedUpToTen - preSundriesTotal) * 100) / 100;
             }
-            return { ...quote.financials, netMaterialsExVat, materialsVat, markedMaterials, laborCosts, sundriesAmount, grossTotal: preSundriesTotal + sundriesAmount };
+            return { ...quote.financials, netMaterialsExVat, materialsVat, markedMaterials: calculatedMarkedMaterials, laborCosts, sundriesAmount, grossTotal: preSundriesTotal + sundriesAmount };
         }
         // Manual quote linking — the automatic "quiet" link only fires when
         // there's exactly one confident match; this covers everything else
@@ -3861,6 +3888,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         },
                         includeTestingCertificate: metrics.isTestingIncluded,
                         sundriesEnabled: metrics.sundriesEnabled,
+                        customCostEnabled: metrics.customCostEnabled,
+                        customCostTarget: metrics.customCostTarget,
                         materials: activeAllocatedMaterials.map(m => ({ ...m })),
                         laborBookingFormat: activeLaborBookingFormat,
                         timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
@@ -3907,6 +3936,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const qpsi = document.getElementById('quote-property-search-input'); if (qpsi) qpsi.value = '';
             document.getElementById('include-testing-toggle').checked = false;
             document.getElementById('include-sundries-toggle').checked = false;
+            document.getElementById('include-custom-cost-toggle').checked = false;
+            document.getElementById('custom-cost-target').value = '';
             document.getElementById('editing-mode-banner').classList.add('hidden');
             document.getElementById('standard-save-actions-wrapper').classList.remove('hidden');
             document.getElementById('editing-save-actions-wrapper').classList.add('hidden');
@@ -3933,6 +3964,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 activeAllocatedMaterials = (target.materials || []).map(m => ({ ...m }));
                 document.getElementById('include-testing-toggle').checked = !!target.includeTestingCertificate;
                 document.getElementById('include-sundries-toggle').checked = !!target.sundriesEnabled;
+                document.getElementById('include-custom-cost-toggle').checked = !!target.customCostEnabled;
+                document.getElementById('custom-cost-target').value = target.customCostTarget || '';
                 setLaborBookingFormat(target.laborBookingFormat || 'DAY');
                 rebuildAllocatedMaterialsTable();
                 document.getElementById('editing-record-id-display').innerText = quoteId;
@@ -4549,7 +4582,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const materialsVat = netMaterialsExVat * 0.20;
             const netMaterialsIncVat = netMaterialsExVat + materialsVat;
             const markup = currentPricing.markup || 0;
-            const markedMaterials = netMaterialsIncVat * (1 + (markup / 100));
+            const calculatedMarkedMaterials = netMaterialsIncVat * (1 + (markup / 100));
             let laborCosts = 0;
             const { rateDay, rateHalf, rateHourFirst, rateHourNext } = currentPricing;
             if (activeLaborBookingFormat === 'DAY') laborCosts = rateDay;
@@ -4567,19 +4600,41 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const isTestingIncluded = document.getElementById('include-testing-toggle').checked;
             const testingCostFixed = parseFloat(document.getElementById('testing-flat-cost').value) || 0;
             const computedTestingCharge = isTestingIncluded ? testingCostFixed : 0;
-            const preSundriesTotal = markedMaterials + laborCosts + computedTestingCharge;
 
-            // Sundries: a flat top-up, never touched by VAT or markup, that
-            // rounds the total up to the next whole £10. Rounding the final
-            // subtraction to 2dp avoids floating-point artifacts like
-            // £6.299999999999997.
             const isSundriesEnabled = document.getElementById('include-sundries-toggle').checked;
+            const isCustomCostEnabled = document.getElementById('include-custom-cost-toggle').checked;
+
+            let markedMaterials = calculatedMarkedMaterials;
             let sundriesAmount = 0;
-            if (isSundriesEnabled) {
+            let grossTotal;
+            let customCostWarning = '';
+            let customCostTarget = 0;
+
+            if (isCustomCostEnabled) {
+                // Custom Cost overrides the materials figure so the grand
+                // total lands exactly on the target — labour and testing stay
+                // as calculated, only materials absorbs the difference.
+                customCostTarget = parseFloat(document.getElementById('custom-cost-target').value) || 0;
+                const minimumPossible = laborCosts + computedTestingCharge;
+                if (customCostTarget > 0 && customCostTarget >= minimumPossible) {
+                    markedMaterials = customCostTarget - laborCosts - computedTestingCharge;
+                    grossTotal = customCostTarget;
+                } else {
+                    grossTotal = calculatedMarkedMaterials + laborCosts + computedTestingCharge;
+                    if (customCostTarget > 0) customCostWarning = `Target must be at least £${minimumPossible.toFixed(2)} to cover labour${computedTestingCharge > 0 ? '/testing' : ''}.`;
+                }
+            } else if (isSundriesEnabled) {
+                // A flat top-up, never touched by VAT or markup, that rounds
+                // the total up to the next whole £10. Rounding the final
+                // subtraction to 2dp avoids floating-point artifacts like
+                // £6.299999999999997.
+                const preSundriesTotal = calculatedMarkedMaterials + laborCosts + computedTestingCharge;
                 const roundedUpToTen = Math.ceil(preSundriesTotal / 10) * 10;
                 sundriesAmount = Math.round((roundedUpToTen - preSundriesTotal) * 100) / 100;
+                grossTotal = preSundriesTotal + sundriesAmount;
+            } else {
+                grossTotal = calculatedMarkedMaterials + laborCosts + computedTestingCharge;
             }
-            const grossTotal = preSundriesTotal + sundriesAmount;
 
             document.getElementById('summary-net-materials').innerText = `£${netMaterialsExVat.toFixed(2)}`;
             document.getElementById('summary-materials-vat').innerText = `£${materialsVat.toFixed(2)}`;
@@ -4587,10 +4642,31 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('summary-labor-costs').innerText = `£${laborCosts.toFixed(2)}`;
             document.getElementById('summary-testing-costs').innerText = `£${computedTestingCharge.toFixed(2)}`;
             const sundriesRow = document.getElementById('summary-sundries-row');
-            if (sundriesRow) sundriesRow.classList.toggle('hidden', !isSundriesEnabled);
+            if (sundriesRow) sundriesRow.classList.toggle('hidden', !isSundriesEnabled || isCustomCostEnabled);
             document.getElementById('summary-sundries').innerText = `£${sundriesAmount.toFixed(2)}`;
+            const adjustedNote = document.getElementById('summary-materials-adjusted-note');
+            if (adjustedNote) adjustedNote.classList.toggle('hidden', !(isCustomCostEnabled && Math.abs(markedMaterials - calculatedMarkedMaterials) > 0.001));
+            const warningEl = document.getElementById('custom-cost-warning');
+            if (warningEl) { warningEl.classList.toggle('hidden', !customCostWarning); warningEl.innerText = customCostWarning; }
             document.getElementById('summary-gross-total').innerText = `£${grossTotal.toFixed(2)}`;
-            return { netMaterialsExVat, materialsVat, netMaterials: netMaterialsIncVat, markedMaterials, laborCosts, computedTestingCharge, sundriesEnabled: isSundriesEnabled, sundriesAmount, grossTotal, markup, isTestingIncluded, testingCostFixed };
+            return {
+                netMaterialsExVat, materialsVat, netMaterials: netMaterialsIncVat, markedMaterials, laborCosts, computedTestingCharge,
+                sundriesEnabled: isSundriesEnabled && !isCustomCostEnabled, sundriesAmount,
+                customCostEnabled: isCustomCostEnabled, customCostTarget,
+                grossTotal, markup, isTestingIncluded, testingCostFixed,
+            };
+        }
+        function handleSundriesToggle() {
+            if (document.getElementById('include-sundries-toggle').checked) {
+                document.getElementById('include-custom-cost-toggle').checked = false;
+            }
+            calculateComprehensiveMetrics();
+        }
+        function handleCustomCostToggle() {
+            if (document.getElementById('include-custom-cost-toggle').checked) {
+                document.getElementById('include-sundries-toggle').checked = false;
+            }
+            calculateComprehensiveMetrics();
         }
         function setLaborBookingFormat(formatMode) {
             activeLaborBookingFormat = formatMode;
