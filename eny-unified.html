@@ -63,15 +63,15 @@
             from { opacity: 0; transform: scale(0.96) translateY(8px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
-        .modal-pop-in { animation: modalPopIn 0.18s ease-out; }
+        .modal-pop-in { animation: modalPopIn 0.28s ease-out; }
 
         @keyframes toastIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(24px); } }
         .toast-in { animation: toastIn 0.2s ease-out; }
         .toast-out { animation: toastOut 0.18s ease-in forwards; }
 
-        @keyframes tabFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-        .tab-content.active { animation: tabFadeIn 0.18s ease-out; }
+        @keyframes tabFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content.active { animation: tabFadeIn 0.4s ease-out; }
 
         button, .cursor-pointer { transition: transform 0.08s ease-out, background-color 0.15s, color 0.15s, border-color 0.15s; }
         button:active, .cursor-pointer:active { transform: scale(0.97); }
@@ -155,9 +155,6 @@
                     </button>
                     <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[#5B7591] hover:text-[#0F2437] cursor-pointer">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
-                    </button>
-                    <button onclick="switchTab('calendar-tab')" id="btn-calendar-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[#5B7591] hover:text-[#0F2437] cursor-pointer">
-                        <i data-lucide="calendar" class="w-4 h-4"></i> Calendar
                     </button>
                     <div class="relative">
                         <button onclick="toggleClientDataMenu()" id="btn-client-data-menu" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[#5B7591] hover:text-[#0F2437] cursor-pointer">
@@ -252,7 +249,7 @@
                 <div class="bg-[#FFFFFF] border border-[#A9C6E3] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                     <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
                         <h2 class="text-lg font-semibold flex items-center gap-2 text-[#0F2437]"><i data-lucide="calendar" class="text-amber-400 w-5 h-5"></i> This Week At A Glance</h2>
-                        <button onclick="switchTab('calendar-tab')" class="text-xs font-semibold text-amber-500 hover:text-amber-600 flex items-center gap-1 cursor-pointer">View Full Calendar <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="openFullCalendarModal()" class="text-xs font-semibold text-amber-500 hover:text-amber-600 flex items-center gap-1 cursor-pointer">View Full Calendar <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button>
                     </div>
                     <div id="dashboard-week-strip" class="grid grid-cols-7 gap-1.5 sm:gap-2"></div>
                 </div>
@@ -290,23 +287,28 @@
                 </div>
             </div>
 
-            <div id="calendar-tab" class="tab-content space-y-6">
-                <div class="bg-[#FFFFFF] border border-[#A9C6E3] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-                        <div class="flex items-center gap-3">
-                            <button onclick="navigateCalendarMonth(-1)" class="p-2 rounded-lg bg-[#EFF5FB] border border-[#C3D9EE] hover:border-amber-500 transition-colors cursor-pointer"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                            <h2 id="calendar-month-label" class="text-lg font-bold text-[#0F2437] w-40 text-center"></h2>
-                            <button onclick="navigateCalendarMonth(1)" class="p-2 rounded-lg bg-[#EFF5FB] border border-[#C3D9EE] hover:border-amber-500 transition-colors cursor-pointer"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
-                            <button onclick="goToCalendarToday()" class="text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-2 rounded-lg bg-[#EFF5FB] border border-[#C3D9EE] cursor-pointer">Today</button>
+            <div id="calendar-modal" class="fixed inset-0 bg-[#DCEAF6]/90 z-[56] hidden overflow-y-auto">
+                <div class="min-h-screen p-4 flex items-start justify-center py-8">
+                    <div class="bg-[#FFFFFF] border border-[#A9C6E3] rounded-2xl w-full max-w-3xl shadow-2xl ring-1 ring-white/[0.06] modal-pop-in p-6">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                            <div class="flex items-center gap-3">
+                                <button onclick="navigateCalendarMonth(-1)" class="p-2 rounded-lg bg-[#EFF5FB] border border-[#C3D9EE] hover:border-amber-500 transition-colors cursor-pointer"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                                <h2 id="calendar-month-label" class="text-lg font-bold text-[#0F2437] w-40 text-center"></h2>
+                                <button onclick="navigateCalendarMonth(1)" class="p-2 rounded-lg bg-[#EFF5FB] border border-[#C3D9EE] hover:border-amber-500 transition-colors cursor-pointer"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                                <button onclick="goToCalendarToday()" class="text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-2 rounded-lg bg-[#EFF5FB] border border-[#C3D9EE] cursor-pointer">Today</button>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <select id="calendar-engineer-filter" onchange="renderCalendarGrid()" class="bg-[#EFF5FB] border border-[#C3D9EE] rounded-xl px-4 py-2 text-sm text-[#16283D] focus:outline-none focus:border-amber-500">
+                                    <option value="ALL">All Engineers</option>
+                                </select>
+                                <button onclick="closeFullCalendarModal()" class="text-[#5B7591] hover:text-[#0F2437] p-2 rounded-lg bg-[#EFF5FB] border border-[#C3D9EE] cursor-pointer shrink-0"><i data-lucide="x" class="w-4 h-4"></i></button>
+                            </div>
                         </div>
-                        <select id="calendar-engineer-filter" onchange="renderCalendarGrid()" class="bg-[#EFF5FB] border border-[#C3D9EE] rounded-xl px-4 py-2 text-sm text-[#16283D] focus:outline-none focus:border-amber-500">
-                            <option value="ALL">All Engineers</option>
-                        </select>
+                        <div class="grid grid-cols-7 gap-1.5 mb-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-[#71889F]">
+                            <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+                        </div>
+                        <div id="calendar-grid" class="grid grid-cols-7 gap-1.5"></div>
                     </div>
-                    <div class="grid grid-cols-7 gap-1.5 mb-1.5 text-center text-[10px] font-bold uppercase tracking-wider text-[#71889F]">
-                        <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
-                    </div>
-                    <div id="calendar-grid" class="grid grid-cols-7 gap-1.5"></div>
                 </div>
             </div>
 
@@ -3874,11 +3876,21 @@
 
         function onTabSwitched(tabId) {
             if (tabId === 'today-tab') renderTodayTab();
-            if (tabId === 'calendar-tab') renderCalendarGrid();
             if (tabId === 'quote-tab') { rebuildJobTemplatesDropdown(); filterMaterialCatalog(); rebuildAllocatedMaterialsTable(); rebuildVaultDataTable(); filterQuotePropertyDropdown(); }
             if (tabId === 'crm-tab') rebuildCrmProfilesInterface();
             if (tabId === 'settings-tab') { rebuildMasterStockDirectoryTable(); rebuildTemplateCatalogList(); rebuildTemplateMaterialSelector(); loadPricingSettingsIntoForm(); loadBankFormFields('HUGHES'); loadBankFormFields('MABBLEY'); }
             if (tabId === 'trash-tab') renderTrashTab();
+        }
+        // Calendar is a popup now, not a permanent tab — keeps Dashboard as
+        // the main hub and the nav bar shorter, since a full month grid is
+        // more of an occasional look-up than something you sit on.
+        function openFullCalendarModal() {
+            document.getElementById('calendar-modal').classList.remove('hidden');
+            renderCalendarGrid();
+            lucide.createIcons();
+        }
+        function closeFullCalendarModal() {
+            document.getElementById('calendar-modal').classList.add('hidden');
         }
 
         // ============================================================
