@@ -1121,6 +1121,24 @@
         </div>
     </div>
 
+    <div id="custom-cost-exceeded-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-[65] hidden flex items-center justify-center p-4">
+        <div class="bg-[#FFFFFF] border border-red-300 rounded-2xl w-full max-w-sm shadow-2xl ring-1 ring-white/[0.06] modal-pop-in overflow-hidden">
+            <div class="p-5 border-b border-red-200 flex items-center gap-2.5 bg-red-50">
+                <i data-lucide="alert-triangle" class="text-red-500 w-5 h-5 shrink-0"></i>
+                <h3 class="text-sm font-bold text-red-700">Custom Cost No Longer Covers Materials</h3>
+            </div>
+            <div class="p-6 space-y-3">
+                <p class="text-sm text-[#2C4A68]">The real materials cost (incl. VAT & markup) is now <span id="custom-cost-exceeded-real" class="font-bold"></span> — more than your Custom Cost target of <span id="custom-cost-exceeded-target" class="font-bold"></span> leaves room for once labour is taken out.</p>
+                <p class="text-xs text-[#71889F]">Increase the target to cover the true cost, or disable Custom Cost to show it as-calculated.</p>
+            </div>
+            <div class="p-5 border-t border-[#D3E5F5] bg-[#EFF5FB]/60 flex flex-col gap-2">
+                <button onclick="adjustCustomCostFromWarning()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer">Increase Target To Cover It</button>
+                <button onclick="disableCustomCostFromWarning()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer">Disable Custom Cost (Show True Cost)</button>
+                <button onclick="closeCustomCostExceededModal()" class="w-full text-[#71889F] hover:text-[#2C4A68] text-xs py-1 transition-colors cursor-pointer">Dismiss — I'll sort it myself</button>
+            </div>
+        </div>
+    </div>
+
     <div id="job-materials-modal" class="fixed inset-0 bg-[#DCEAF6]/90 z-[58] hidden overflow-y-auto">
         <div class="min-h-screen p-4 flex items-start justify-center py-8">
             <div class="bg-[#FFFFFF] border border-[#A9C6E3] rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06] modal-pop-in">
@@ -1515,6 +1533,11 @@
         let activeLinkedClientId = '';
         let activeLinkedPropertyId = '';
         let currentlyEditingQuoteId = null;
+        // Guards the Custom Cost "materials now cost more than the target
+        // allows" popup from firing repeatedly on every recalculation while
+        // the problem persists — only pops again once it's been resolved and
+        // then happens again.
+        let customCostExceededWarningShown = false;
         let selectedVaultQuotes = new Set();
         let activeLaborBookingFormat = 'DAY';
         const STATUS_PROGRESSION_WEIGHTS = { 'Draft': 1, 'Sent': 2, 'Approved': 3, 'Invoiced': 4, 'Paid': 5 };
@@ -3037,6 +3060,20 @@
                 const updatedMaterials = [...(quote.materials || []), newMaterial];
                 const newFinancials = recalculateQuoteFinancialsAfterAddition(quote, updatedMaterials, quote.financials.laborCosts);
                 await db.collection('quotes').doc(quote.id).update({ materials: updatedMaterials, financials: newFinancials });
+
+                // If Custom Cost is active on this quote, check whether the
+                // real materials cost has now outgrown what the fixed target
+                // allows for — same safety check as in the live Quote
+                // Builder, just run against the saved quote instead of an
+                // open form.
+                if (quote.customCostEnabled) {
+                    const realNetExVat = updatedMaterials.reduce((acc, curr) => acc + (parseFloat(curr.cost || 0) * curr.qty), 0);
+                    const realMarkup = quote.financials.markupApplied || currentPricing.markup || 0;
+                    const realMarkedMaterials = (realNetExVat * 1.20) * (1 + realMarkup / 100);
+                    if (realMarkedMaterials > newFinancials.markedMaterials + 0.01) {
+                        openCustomCostExceededModal(realMarkedMaterials, quote.customCostTarget, quote.id);
+                    }
+                }
             } else {
                 const publicItem = currentStockPublic.find(s => s.id === stockItemId);
                 if (!publicItem) return;
@@ -3115,6 +3152,14 @@
                 const newLaborCosts = (quote.financials.laborCosts || 0) + additionalCost;
                 const newFinancials = recalculateQuoteFinancialsAfterAddition(quote, quote.materials || [], newLaborCosts);
                 await db.collection('quotes').doc(quote.id).update({ financials: newFinancials });
+                if (quote.customCostEnabled) {
+                    const realNetExVat = (quote.materials || []).reduce((acc, curr) => acc + (parseFloat(curr.cost || 0) * curr.qty), 0);
+                    const realMarkup = quote.financials.markupApplied || currentPricing.markup || 0;
+                    const realMarkedMaterials = (realNetExVat * 1.20) * (1 + realMarkup / 100);
+                    if (realMarkedMaterials > newFinancials.markedMaterials + 0.01) {
+                        openCustomCostExceededModal(realMarkedMaterials, quote.customCostTarget, quote.id);
+                    }
+                }
                 alert(`Added ${hours}h (£${additionalCost.toFixed(2)}) to the quote.`);
             } else {
                 if (!job.linkedQuoteId) { alert('No quote linked to this job yet — ask the owner to check the property/client link.'); return; }
@@ -4619,6 +4664,18 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 if (customCostTarget > 0 && customCostTarget >= minimumPossible) {
                     markedMaterials = customCostTarget - laborCosts - computedTestingCharge;
                     grossTotal = customCostTarget;
+                    // The target technically covers labour/testing, but the
+                    // REAL materials cost (VAT+markup, from what's actually
+                    // selected) might still be more than what's left over for
+                    // materials once labour's taken out — meaning the job
+                    // would genuinely be under-priced without anyone noticing.
+                    const isExceeded = calculatedMarkedMaterials > markedMaterials + 0.01;
+                    if (isExceeded && !customCostExceededWarningShown) {
+                        customCostExceededWarningShown = true;
+                        openCustomCostExceededModal(calculatedMarkedMaterials, customCostTarget);
+                    } else if (!isExceeded) {
+                        customCostExceededWarningShown = false;
+                    }
                 } else {
                     grossTotal = calculatedMarkedMaterials + laborCosts + computedTestingCharge;
                     if (customCostTarget > 0) customCostWarning = `Target must be at least £${minimumPossible.toFixed(2)} to cover labour${computedTestingCharge > 0 ? '/testing' : ''}.`;
@@ -4665,8 +4722,69 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         function handleCustomCostToggle() {
             if (document.getElementById('include-custom-cost-toggle').checked) {
                 document.getElementById('include-sundries-toggle').checked = false;
+            } else {
+                customCostExceededWarningShown = false; // reset so it can warn fresh next time it's enabled
             }
             calculateComprehensiveMetrics();
+        }
+        // Reused for both the live Quote Builder form and on-site additions to
+        // an already-saved quote — realTotal/target are the only inputs
+        // needed either way, and the two "fix it" buttons branch by context.
+        let customCostWarningContext = 'builder'; // 'builder' or a quoteId string when triggered from an on-site addition
+        function openCustomCostExceededModal(realMaterialsCost, target, context = 'builder') {
+            customCostWarningContext = context;
+            document.getElementById('custom-cost-exceeded-real').innerText = `£${realMaterialsCost.toFixed(2)}`;
+            document.getElementById('custom-cost-exceeded-target').innerText = `£${target.toFixed(2)}`;
+            document.getElementById('custom-cost-exceeded-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeCustomCostExceededModal() {
+            document.getElementById('custom-cost-exceeded-modal').classList.add('hidden');
+        }
+        async function adjustCustomCostFromWarning() {
+            if (customCostWarningContext === 'builder') {
+                const laborCosts = document.getElementById('summary-labor-costs').innerText.replace('£', '') || '0';
+                const testingCosts = document.getElementById('summary-testing-costs').innerText.replace('£', '') || '0';
+                const realMaterials = parseFloat(document.getElementById('custom-cost-exceeded-real').innerText.replace('£', ''));
+                const newTarget = realMaterials + parseFloat(laborCosts) + parseFloat(testingCosts);
+                document.getElementById('custom-cost-target').value = newTarget.toFixed(2);
+                customCostExceededWarningShown = false;
+                closeCustomCostExceededModal();
+                calculateComprehensiveMetrics();
+            } else {
+                // On-site context: customCostWarningContext holds the quote ID
+                const quote = currentQuotes.find(q => q.id === customCostWarningContext);
+                if (quote) {
+                    const realMaterials = parseFloat(document.getElementById('custom-cost-exceeded-real').innerText.replace('£', ''));
+                    const newTarget = realMaterials + (quote.financials.laborCosts || 0) + (quote.financials.testingCosts || 0);
+                    await db.collection('quotes').doc(quote.id).update({
+                        customCostTarget: newTarget,
+                        'financials.markedMaterials': realMaterials,
+                        'financials.grossTotal': newTarget,
+                    });
+                }
+                closeCustomCostExceededModal();
+            }
+        }
+        async function disableCustomCostFromWarning() {
+            if (customCostWarningContext === 'builder') {
+                document.getElementById('include-custom-cost-toggle').checked = false;
+                customCostExceededWarningShown = false;
+                closeCustomCostExceededModal();
+                calculateComprehensiveMetrics();
+            } else {
+                const quote = currentQuotes.find(q => q.id === customCostWarningContext);
+                if (quote) {
+                    const realMaterials = parseFloat(document.getElementById('custom-cost-exceeded-real').innerText.replace('£', ''));
+                    const trueTotal = realMaterials + (quote.financials.laborCosts || 0) + (quote.financials.testingCosts || 0);
+                    await db.collection('quotes').doc(quote.id).update({
+                        customCostEnabled: false,
+                        'financials.markedMaterials': realMaterials,
+                        'financials.grossTotal': trueTotal,
+                    });
+                }
+                closeCustomCostExceededModal();
+            }
         }
         function setLaborBookingFormat(formatMode) {
             activeLaborBookingFormat = formatMode;
