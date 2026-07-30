@@ -65,6 +65,25 @@
         }
         .modal-pop-in { animation: modalPopIn 0.18s ease-out; }
 
+        @keyframes toastIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(24px); } }
+        .toast-in { animation: toastIn 0.2s ease-out; }
+        .toast-out { animation: toastOut 0.18s ease-in forwards; }
+
+        @keyframes tabFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content.active { animation: tabFadeIn 0.18s ease-out; }
+
+        button, .cursor-pointer { transition: transform 0.08s ease-out, background-color 0.15s, color 0.15s, border-color 0.15s; }
+        button:active, .cursor-pointer:active { transform: scale(0.97); }
+
+        /* Today's job view opens as a genuine full page rather than a
+           floating popup — same underlying modal, just stripped of the
+           backdrop/card chrome so it reads as "you're on this screen now",
+           matching that it's the one place you'd want full working room. */
+        #job-detail-page-modal.today-fullpage-mode { background: #EFF5FB; backdrop-filter: none; }
+        #job-detail-page-modal.today-fullpage-mode .job-detail-inner-wrap { padding: 0; max-width: 100%; align-items: stretch; }
+        #job-detail-page-modal.today-fullpage-mode .job-detail-card { max-width: 42rem; margin: 0 auto; border-radius: 0; box-shadow: none; border: none; border-left: 1px solid #C3D9EE; border-right: 1px solid #C3D9EE; min-height: 100vh; }
+
         @media print {
             header, nav, button, .fixed, #initial-load-overlay { display: none !important; }
             body, .tab-content.active, .tab-content.active * {
@@ -114,6 +133,8 @@
         </div>
     </div>
 
+    <div id="toast-container" class="fixed top-4 right-4 z-[200] flex flex-col gap-2 items-end pointer-events-none max-w-[calc(100vw-2rem)]"></div>
+
     <div id="app-root" class="hidden">
         <header class="border-b border-[#D3E5F5] bg-[#DCEAF6]/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -123,6 +144,9 @@
                         <h1 class="font-bold text-xl tracking-tight bg-gradient-to-r from-[#0F2437] via-[#2C4A68] to-[#5B7591] bg-clip-text text-transparent">ENY ELECTRICAL</h1>
                         <p class="text-xs font-semibold text-amber-400 tracking-wider uppercase">Business Manager</p>
                     </div>
+                    <button onclick="openUniversalSearch()" class="text-[#5B7591] hover:text-amber-400 p-2 rounded-lg bg-[#EFF5FB] border border-[#D3E5F5] transition-colors cursor-pointer ml-1" title="Search everything">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </button>
                 </div>
 
                 <nav class="flex flex-wrap items-center justify-center gap-1 bg-[#EFF5FB]/80 p-1 rounded-xl border border-[#D3E5F5]">
@@ -135,17 +159,24 @@
                     <button onclick="switchTab('calendar-tab')" id="btn-calendar-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[#5B7591] hover:text-[#0F2437] cursor-pointer">
                         <i data-lucide="calendar" class="w-4 h-4"></i> Calendar
                     </button>
-                    <button onclick="switchTab('jobs-tab')" id="btn-jobs-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[#5B7591] hover:text-[#0F2437] cursor-pointer">
-                        <i data-lucide="clipboard-list" class="w-4 h-4"></i> Jobs
-                    </button>
-                    <button onclick="switchTab('lookup-tab')" id="btn-lookup-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[#5B7591] hover:text-[#0F2437] cursor-pointer">
-                        <i data-lucide="map-pin" class="w-4 h-4"></i> Property Lookup
-                    </button>
+                    <div class="relative">
+                        <button onclick="toggleClientDataMenu()" id="btn-client-data-menu" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[#5B7591] hover:text-[#0F2437] cursor-pointer">
+                            <i data-lucide="folder-open" class="w-4 h-4"></i> Client Data <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                        </button>
+                        <div id="client-data-dropdown" class="hidden absolute top-full left-0 mt-2 bg-[#FFFFFF] border border-[#A9C6E3] rounded-xl shadow-2xl ring-1 ring-white/[0.06] py-1.5 min-w-[170px] z-50 modal-pop-in">
+                            <button onclick="switchTab('jobs-tab'); closeClientDataMenu();" id="btn-jobs-tab" class="w-full text-left px-4 py-2.5 text-xs font-medium text-[#2C4A68] hover:bg-[#D2E3F3]/50 hover:text-[#0F2437] flex items-center gap-2 transition-colors cursor-pointer">
+                                <i data-lucide="clipboard-list" class="w-4 h-4"></i> Jobs
+                            </button>
+                            <button onclick="switchTab('lookup-tab'); closeClientDataMenu();" id="btn-lookup-tab" class="w-full text-left px-4 py-2.5 text-xs font-medium text-[#2C4A68] hover:bg-[#D2E3F3]/50 hover:text-[#0F2437] flex items-center gap-2 transition-colors cursor-pointer">
+                                <i data-lucide="map-pin" class="w-4 h-4"></i> Property Lookup
+                            </button>
+                            <button onclick="switchTab('crm-tab'); closeClientDataMenu();" id="btn-crm-tab" class="owner-only-nav w-full text-left px-4 py-2.5 text-xs font-medium text-[#2C4A68] hover:bg-[#D2E3F3]/50 hover:text-[#0F2437] flex items-center gap-2 transition-colors cursor-pointer">
+                                <i data-lucide="users" class="w-4 h-4"></i> CRM
+                            </button>
+                        </div>
+                    </div>
                     <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[#5B7591] hover:text-[#0F2437] cursor-pointer">
                         <i data-lucide="file-text" class="w-4 h-4"></i> Quote Builder
-                    </button>
-                    <button onclick="switchTab('crm-tab')" id="btn-crm-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[#5B7591] hover:text-[#0F2437] cursor-pointer">
-                        <i data-lucide="users" class="w-4 h-4"></i> CRM
                     </button>
                     <div class="relative">
                         <button onclick="toggleMoreMenu()" id="btn-more-menu" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[#5B7591] hover:text-[#0F2437] cursor-pointer">
@@ -163,9 +194,6 @@
                 </nav>
 
                 <div class="flex items-center gap-3">
-                    <button onclick="openUniversalSearch()" class="text-[#5B7591] hover:text-amber-400 p-2 rounded-lg bg-[#EFF5FB] border border-[#D3E5F5] transition-colors cursor-pointer" title="Search everything">
-                        <i data-lucide="search" class="w-4 h-4"></i>
-                    </button>
                     <button onclick="handleSignOut()" class="text-xs text-[#5B7591] hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer">
                         <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
                     </button>
@@ -221,13 +249,26 @@
                     </div>
                 </div>
 
+                <div class="bg-[#FFFFFF] border border-[#A9C6E3] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[#0F2437]"><i data-lucide="calendar" class="text-amber-400 w-5 h-5"></i> This Week At A Glance</h2>
+                        <button onclick="switchTab('calendar-tab')" class="text-xs font-semibold text-amber-500 hover:text-amber-600 flex items-center gap-1 cursor-pointer">View Full Calendar <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                    <div id="dashboard-week-strip" class="grid grid-cols-7 gap-1.5 sm:gap-2"></div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-[#FFFFFF] border border-[#A9C6E3] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                         <h2 class="text-lg font-semibold flex items-center gap-2 text-[#0F2437] mb-4"><i data-lucide="shield-alert" class="text-amber-400 w-5 h-5"></i> Inspection & Testing Reminders</h2>
                         <div id="dashboard-reminders-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
                     <div class="bg-[#FFFFFF] border border-[#A9C6E3] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[#0F2437] mb-4"><i data-lucide="calendar-days" class="text-amber-400 w-5 h-5"></i> Next 7 Days</h2>
+                        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                            <h2 class="text-lg font-semibold flex items-center gap-2 text-[#0F2437]"><i data-lucide="calendar-days" class="text-amber-400 w-5 h-5"></i> This Week</h2>
+                            <select id="dashboard-week-engineer-filter" onchange="renderDashboard()" class="bg-[#EFF5FB] border border-[#D3E5F5] rounded-lg px-2.5 py-1.5 text-[11px] text-[#0F2437] focus:outline-none focus:border-amber-500">
+                                <option value="ALL">All Engineers</option>
+                            </select>
+                        </div>
                         <div id="dashboard-upcoming-jobs-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
                 </div>
@@ -1075,11 +1116,11 @@
 
     <!-- ================= MODALS ================= -->
     <div id="job-detail-page-modal" class="fixed inset-0 bg-[#DCEAF6]/90 z-[55] hidden overflow-y-auto">
-        <div class="min-h-screen p-4 flex items-start justify-center py-8">
-            <div class="bg-[#FFFFFF] border border-[#A9C6E3] rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06] modal-pop-in">
-                <div class="p-5 border-b border-[#C3D9EE] flex justify-between items-center bg-[#EFF5FB]/50 rounded-t-2xl">
+        <div class="job-detail-inner-wrap min-h-screen p-4 flex items-start justify-center py-8">
+            <div class="job-detail-card bg-[#FFFFFF] border border-[#A9C6E3] rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06] modal-pop-in">
+                <div id="job-detail-header" class="p-5 border-b border-[#C3D9EE] flex justify-between items-center bg-[#EFF5FB]/50 rounded-t-2xl">
                     <h3 class="text-lg font-bold text-[#0F2437] flex items-center gap-2 min-w-0"><i data-lucide="clipboard-list" class="text-amber-400 shrink-0"></i> <span id="job-detail-title" class="truncate"></span></h3>
-                    <button onclick="closeJobDetailPage()" class="text-[#5B7591] hover:text-[#0F2437] cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    <button onclick="closeJobDetailPage()" id="job-detail-close-btn" class="text-[#5B7591] hover:text-[#0F2437] cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
                 <div class="p-6 space-y-4">
                     <div id="job-detail-status-badge"></div>
@@ -1468,6 +1509,36 @@
             auth.signOut();
         }
 
+        // Replaces alert() throughout the app — non-blocking, styled to match
+        // the theme, auto-dismisses. 'error'/'warning' stay onscreen longer
+        // and get a manual close, since those are worth actually reading.
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) { console.warn('Toast container missing, message was:', message); return; }
+            const styles = {
+                success: { bg: 'bg-emerald-500', icon: 'check-circle' },
+                error: { bg: 'bg-red-500', icon: 'alert-circle' },
+                warning: { bg: 'bg-amber-500', icon: 'alert-triangle' },
+                info: { bg: 'bg-[#0A5FB9]', icon: 'info' },
+            };
+            const style = styles[type] || styles.info;
+            const toastId = 'toast-' + Date.now() + Math.random().toString(36).slice(2, 7);
+            const el = document.createElement('div');
+            el.id = toastId;
+            el.className = `toast-in pointer-events-auto ${style.bg} text-white rounded-xl shadow-2xl px-4 py-3 flex items-start gap-2.5 max-w-sm text-sm font-medium`;
+            el.innerHTML = `<i data-lucide="${style.icon}" class="w-4 h-4 shrink-0 mt-0.5"></i><span class="whitespace-pre-line">${message}</span><button onclick="dismissToast('${toastId}')" class="ml-1 shrink-0 opacity-70 hover:opacity-100 cursor-pointer"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>`;
+            container.appendChild(el);
+            lucide.createIcons();
+            const duration = (type === 'error' || type === 'warning') ? 7000 : 3500;
+            setTimeout(() => dismissToast(toastId), duration);
+        }
+        function dismissToast(toastId) {
+            const el = document.getElementById(toastId);
+            if (!el || el.classList.contains('toast-out')) return;
+            el.classList.add('toast-out');
+            setTimeout(() => el.remove(), 200);
+        }
+
         function switchTab(targetTabId) {
             // Owner-only tabs are simply unreachable for non-owners, even if
             // something tries to switch to them directly.
@@ -1497,19 +1568,41 @@
                     moreBtn.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
                 }
             }
+            // Same idea for Jobs/Property Lookup/CRM, now grouped under
+            // Client Data.
+            if (targetTabId === 'jobs-tab' || targetTabId === 'lookup-tab' || targetTabId === 'crm-tab') {
+                const clientDataBtn = document.getElementById('btn-client-data-menu');
+                if (clientDataBtn) {
+                    clientDataBtn.classList.remove('text-[#5B7591]', 'hover:text-[#0F2437]');
+                    clientDataBtn.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+                }
+            }
             onTabSwitched(targetTabId);
         }
         function toggleMoreMenu() {
             document.getElementById('more-menu-dropdown').classList.toggle('hidden');
+            closeClientDataMenu();
         }
         function closeMoreMenu() {
             document.getElementById('more-menu-dropdown').classList.add('hidden');
+        }
+        function toggleClientDataMenu() {
+            document.getElementById('client-data-dropdown').classList.toggle('hidden');
+            closeMoreMenu();
+        }
+        function closeClientDataMenu() {
+            document.getElementById('client-data-dropdown').classList.add('hidden');
         }
         document.addEventListener('click', (e) => {
             const dropdown = document.getElementById('more-menu-dropdown');
             const trigger = document.getElementById('btn-more-menu');
             if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
                 dropdown.classList.add('hidden');
+            }
+            const clientDropdown = document.getElementById('client-data-dropdown');
+            const clientTrigger = document.getElementById('btn-client-data-menu');
+            if (clientDropdown && !clientDropdown.classList.contains('hidden') && !clientDropdown.contains(e.target) && e.target !== clientTrigger && !clientTrigger.contains(e.target)) {
+                clientDropdown.classList.add('hidden');
             }
         });
 
@@ -1836,9 +1929,15 @@
             const calFilter = document.getElementById('calendar-engineer-filter');
             const jobsFilter = document.getElementById('jobs-engineer-filter');
             const unavailableSelect = document.getElementById('day-detail-unavailable-engineer-select');
+            const weekFilter = document.getElementById('dashboard-week-engineer-filter');
             if (calFilter) calFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
             if (jobsFilter) jobsFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
             if (unavailableSelect) unavailableSelect.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
+            if (weekFilter) {
+                const previousValue = weekFilter.value;
+                weekFilter.innerHTML = '<option value="ALL">All Engineers</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+                if (previousValue && (previousValue === 'ALL' || names.includes(previousValue))) weekFilter.value = previousValue;
+            }
 
             const checklist = document.getElementById('job-engineers-checklist');
             if (checklist) {
@@ -1972,6 +2071,32 @@
         // ============================================================
         // DASHBOARD (merged: shared stats always, financial stats owner-only)
         // ============================================================
+        // A full Mon-Sun week at a glance (unlike the "This Week" job list,
+        // which only shows what's left) — click any day to see it in full via
+        // the same day-detail modal the Calendar tab already uses.
+        function renderDashboardWeekStrip(today, todayDateObj) {
+            const container = document.getElementById('dashboard-week-strip');
+            if (!container) return;
+            const mondayOffset = (todayDateObj.getDay() + 6) % 7;
+            const monday = new Date(todayDateObj);
+            monday.setDate(monday.getDate() - mondayOffset);
+
+            const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            let html = '';
+            for (let i = 0; i < 7; i++) {
+                const cellDate = new Date(monday);
+                cellDate.setDate(cellDate.getDate() + i);
+                const cellISO = toLocalISODate(cellDate);
+                const isToday = cellISO === today;
+                const jobCount = currentJobs.filter(j => j.date === cellISO && j.status !== 'Cancelled').length;
+                html += `<button onclick="openDayDetailModal('${cellISO}')" class="flex flex-col items-center gap-1 py-2.5 rounded-xl border transition-colors cursor-pointer ${isToday ? 'border-amber-500 bg-amber-500/10' : 'border-[#D3E5F5] bg-[#EFF5FB]/50 hover:border-amber-300'}">
+                    <span class="text-[9px] font-bold uppercase tracking-wide ${isToday ? 'text-amber-600' : 'text-[#5B7591]'}">${dayLabels[i]}</span>
+                    <span class="text-sm font-bold ${isToday ? 'text-amber-600' : 'text-[#0F2437]'}">${cellDate.getDate()}</span>
+                    ${jobCount > 0 ? `<span class="text-[9px] font-bold px-1.5 rounded-full bg-amber-500 text-slate-950 min-w-[16px] text-center">${jobCount}</span>` : `<span class="h-[14px]"></span>`}
+                </button>`;
+            }
+            container.innerHTML = html;
+        }
         function renderDashboard() {
             let overdueElectrical = 0, overdueSmoke = 0, dueSoonAll = 0;
             const reminderRows = [];
@@ -2011,13 +2136,23 @@
             const todaysJobs = currentJobs.filter(j => j.date === today && j.status === 'Scheduled');
             if (elById('stat-jobs-today')) elById('stat-jobs-today').innerText = todaysJobs.length;
 
-            const in7days = currentJobs.filter(j => j.status === 'Scheduled' && j.date >= today && daysBetween(today, j.date) <= 7)
+            // "This Week" means what's LEFT of the current Mon-Sun week, not a
+            // rolling 7 days — if today's Thursday, that's Thu through Sun.
+            const todayDateObj = new Date(today + 'T00:00:00');
+            const daysUntilSunday = (7 - todayDateObj.getDay()) % 7; // 0 if today IS Sunday
+            const endOfWeekDateObj = new Date(todayDateObj);
+            endOfWeekDateObj.setDate(endOfWeekDateObj.getDate() + daysUntilSunday);
+            const endOfWeekISO = toLocalISODate(endOfWeekDateObj);
+
+            const weekEngineerFilterEl = document.getElementById('dashboard-week-engineer-filter');
+            const weekEngineerFilter = weekEngineerFilterEl ? weekEngineerFilterEl.value : 'ALL';
+            const thisWeekJobs = currentJobs.filter(j => j.status === 'Scheduled' && j.date >= today && j.date <= endOfWeekISO && (weekEngineerFilter === 'ALL' || getJobEngineers(j).includes(weekEngineerFilter)))
                 .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
             const upcomingList = document.getElementById('dashboard-upcoming-jobs-list');
             if (upcomingList) {
-                upcomingList.innerHTML = in7days.length === 0
-                    ? `<p class="text-xs text-[#71889F] text-center py-6">No jobs scheduled in the next 7 days.</p>`
-                    : in7days.map(j => {
+                upcomingList.innerHTML = thisWeekJobs.length === 0
+                    ? `<p class="text-xs text-[#71889F] text-center py-6">Nothing left scheduled this week.</p>`
+                    : thisWeekJobs.map(j => {
                         const badges = getJobEngineers(j).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
                         const client = isOwnerLoggedIn() ? findClientForJob(j) : null;
                         const reminderBtn = (client && client.phone) ? `<button onclick="openSendReminderModal('${j.id}')" title="Send reminder to ${client.name}" class="text-[#5B7591] hover:text-emerald-400 p-1.5 rounded-lg bg-[#DCEAF6] border border-[#C3D9EE] cursor-pointer shrink-0"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>` : '';
@@ -2027,6 +2162,7 @@
                         </div>`;
                     }).join('');
             }
+            renderDashboardWeekStrip(today, todayDateObj);
 
             if (isOwnerLoggedIn()) {
                 const pendingQuotes = currentQuotes.filter(r => r.status === 'Sent');
@@ -2304,7 +2440,7 @@
             }
 
             const datesToAdd = dates.filter(d => !isEngineerUnavailable(engineerName, d));
-            if (datesToAdd.length === 0) { alert(`${engineerName} is already marked unavailable for all of the selected day(s).`); return; }
+            if (datesToAdd.length === 0) { showToast(`${engineerName} is already marked unavailable for all of the selected day(s).`, 'info'); return; }
 
             const affectedJobs = currentJobs.filter(j => datesToAdd.includes(j.date) && j.status === 'Scheduled' && getJobEngineers(j).includes(engineerName));
             if (affectedJobs.length > 0) {
@@ -2452,7 +2588,7 @@
             const propertyId = document.getElementById('job-property-select').value;
             const property = currentProperties.find(p => p.id === propertyId);
             const assignedEngineers = getSelectedJobEngineersFromForm();
-            if (assignedEngineers.length === 0) { alert('Select at least one engineer for this job.'); return; }
+            if (assignedEngineers.length === 0) { showToast('Select at least one engineer for this job.', 'warning'); return; }
 
             const basePayload = {
                 title: document.getElementById('job-title').value.trim(),
@@ -2657,7 +2793,7 @@
                 const colors = getJobStatusColorClasses(j.status);
                 const engineerBadges = getJobEngineers(j).map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
                 const property = j.propertyId ? currentProperties.find(p => p.id === j.propertyId) : null;
-                return `<button onclick="openJobDetailPage('${j.id}')" class="w-full text-left bg-[#FFFFFF] border border-[#A9C6E3] hover:border-amber-500 rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06] transition-colors cursor-pointer flex items-center gap-3">
+                return `<button onclick="openJobDetailPage('${j.id}', true)" class="w-full text-left bg-[#FFFFFF] border border-[#A9C6E3] hover:border-amber-500 rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06] transition-colors cursor-pointer flex items-center gap-3">
                     <span class="w-1.5 self-stretch rounded-full ${colors.dot} shrink-0"></span>
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-[#0F2437]">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${colors.badge}">${j.status}</span></div>
@@ -2673,17 +2809,25 @@
 
         let activeJobDetailId = null;
 
-        function openJobDetailPage(jobId) {
+        function openJobDetailPage(jobId, fromToday = false) {
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
             activeJobDetailId = jobId;
             nonOwnerSessionAdditions = { materials: [], hours: [] };
             renderJobDetailPageContent(job);
-            document.getElementById('job-detail-page-modal').classList.remove('hidden');
+            const modal = document.getElementById('job-detail-page-modal');
+            modal.classList.remove('hidden');
+            modal.classList.toggle('today-fullpage-mode', fromToday);
+            const closeBtn = document.getElementById('job-detail-close-btn');
+            closeBtn.innerHTML = fromToday
+                ? '<span class="flex items-center gap-1.5 text-sm font-semibold"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back</span>'
+                : '<i data-lucide="x" class="w-5 h-5"></i>';
             lucide.createIcons();
         }
         function closeJobDetailPage() {
-            document.getElementById('job-detail-page-modal').classList.add('hidden');
+            const modal = document.getElementById('job-detail-page-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('today-fullpage-mode');
             stopAllLiveJobTimerDisplays();
             activeJobDetailId = null;
             jobDetailShowingCompletionForm = false;
@@ -2909,7 +3053,7 @@
                     operativeComments: comments, completionOutcome: outcome,
                 });
                 closeJobDetailPage();
-                alert(`Job ${outcome === 'Rebook' ? 're-booked' : 'flagged for another visit'} for ${formatUkDate(newDateRaw)}. Logged time so far carries over.`);
+                showToast(`Job ${outcome === 'Rebook' ? 're-booked' : 'flagged for another visit'} for ${formatUkDate(newDateRaw)}. Logged time so far carries over.`, 'success');
             }
         }
         // Set right before opening the signature modal from resolveJobOutcome,
@@ -3053,9 +3197,9 @@
             if (isOwnerLoggedIn()) {
                 const stockItem = currentStock.find(s => s.id === stockItemId);
                 if (!stockItem) return;
-                if (!job.linkedQuoteId) { alert("No quote linked to this job yet — it'll apply automatically once one is."); return; }
+                if (!job.linkedQuoteId) { showToast("No quote linked to this job yet — it'll apply automatically once one is.", 'warning'); return; }
                 const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
-                if (!quote) { alert('Linked quote could not be found.'); return; }
+                if (!quote) { showToast('Linked quote could not be found.', 'error'); return; }
                 const newMaterial = { id: stockItem.id, sku: stockItem.sku, desc: stockItem.desc, cost: stockItem.cost, category: stockItem.category, qty, addedOnSite: true, addedAt: new Date().toISOString() };
                 const updatedMaterials = [...(quote.materials || []), newMaterial];
                 const newFinancials = recalculateQuoteFinancialsAfterAddition(quote, updatedMaterials, quote.financials.laborCosts);
@@ -3077,14 +3221,14 @@
             } else {
                 const publicItem = currentStockPublic.find(s => s.id === stockItemId);
                 if (!publicItem) return;
-                if (!job.linkedQuoteId) { alert('No quote linked to this job yet — ask the owner to check the property/client link, then try again shortly.'); return; }
+                if (!job.linkedQuoteId) { showToast('No quote linked to this job yet — ask the owner to check the property/client link, then try again shortly.', 'warning'); return; }
                 const newMaterial = { id: publicItem.id, sku: publicItem.sku, desc: publicItem.desc, cost: null, category: publicItem.category, qty, addedOnSite: true, addedAt: new Date().toISOString(), addedByNonOwner: true };
                 try {
                     await db.collection('quotes').doc(job.linkedQuoteId).update({ materials: firebase.firestore.FieldValue.arrayUnion(newMaterial) });
                     nonOwnerSessionAdditions.materials.push(newMaterial);
                 } catch (err) {
                     console.error('Failed to add material on-site:', err);
-                    alert('Could not add this — please tell the owner.');
+                    showToast('Could not add this — please tell the owner.', 'error');
                     return;
                 }
             }
@@ -3133,7 +3277,7 @@
                 renderJobAddedMaterialsList(job);
             } catch (err) {
                 console.error('Failed to remove material on-site:', err);
-                alert('Could not remove this — please tell the owner.');
+                showToast('Could not remove this — please tell the owner.', 'error');
             }
         }
         async function submitJobHoursAddition() {
@@ -3142,12 +3286,12 @@
             if (!job) return;
             const hours = parseFloat(document.getElementById('job-addition-hours').value);
             const reason = document.getElementById('job-addition-hours-reason').value.trim();
-            if (!hours || hours <= 0) { alert('Enter how many additional hours.'); return; }
+            if (!hours || hours <= 0) { showToast('Enter how many additional hours.', 'warning'); return; }
 
             if (isOwnerLoggedIn()) {
-                if (!job.linkedQuoteId) { alert("No quote linked to this job yet — it'll apply automatically once one is."); return; }
+                if (!job.linkedQuoteId) { showToast("No quote linked to this job yet — it'll apply automatically once one is.", 'warning'); return; }
                 const quote = currentQuotes.find(q => q.id === job.linkedQuoteId);
-                if (!quote) { alert('Linked quote could not be found.'); return; }
+                if (!quote) { showToast('Linked quote could not be found.', 'error'); return; }
                 const additionalCost = hours * (currentPricing.rateHourNext || 45);
                 const newLaborCosts = (quote.financials.laborCosts || 0) + additionalCost;
                 const newFinancials = recalculateQuoteFinancialsAfterAddition(quote, quote.materials || [], newLaborCosts);
@@ -3160,16 +3304,16 @@
                         openCustomCostExceededModal(realMarkedMaterials, quote.customCostTarget, quote.id);
                     }
                 }
-                alert(`Added ${hours}h (£${additionalCost.toFixed(2)}) to the quote.`);
+                showToast(`Added ${hours}h (£${additionalCost.toFixed(2)}) to the quote.`, 'success');
             } else {
-                if (!job.linkedQuoteId) { alert('No quote linked to this job yet — ask the owner to check the property/client link.'); return; }
+                if (!job.linkedQuoteId) { showToast('No quote linked to this job yet — ask the owner to check the property/client link.', 'warning'); return; }
                 const newEntry = { hours, reason: reason || 'Additional time needed', requestedAt: new Date().toISOString() };
                 try {
                     await db.collection('quotes').doc(job.linkedQuoteId).update({ pendingHoursAdditions: firebase.firestore.FieldValue.arrayUnion(newEntry) });
                     nonOwnerSessionAdditions.hours.push(newEntry);
                 } catch (err) {
                     console.error('Failed to add hours on-site:', err);
-                    alert('Could not add this — please tell the owner.');
+                    showToast('Could not add this — please tell the owner.', 'error');
                     return;
                 }
             }
@@ -3216,7 +3360,7 @@
                 renderJobHoursAddedList(job);
             } catch (err) {
                 console.error('Failed to remove hours on-site:', err);
-                alert('Could not remove this — please tell the owner.');
+                showToast('Could not remove this — please tell the owner.', 'error');
             }
         }
 
@@ -3264,7 +3408,7 @@
         // ============================================================
         let capturedPropertyLat = null, capturedPropertyLng = null;
         function captureCurrentLocationForProperty() {
-            if (!navigator.geolocation) { alert('Location services are not available on this device/browser.'); return; }
+            if (!navigator.geolocation) { showToast('Location services are not available on this device/browser.', 'info'); return; }
             const statusEl = document.getElementById('property-location-status');
             statusEl.innerText = 'Getting location...';
             navigator.geolocation.getCurrentPosition(
@@ -3285,7 +3429,7 @@
         // visit if the ETA accuracy matters for that property.
         async function lookUpCoordinatesFromAddress() {
             const rawAddress = document.getElementById('property-address').value.trim();
-            if (!rawAddress) { alert('Enter the property address first.'); return; }
+            if (!rawAddress) { showToast('Enter the property address first.', 'warning'); return; }
             // The address field is a multi-line textarea, so a typical entry has
             // real newline characters between each line (street / town /
             // postcode). Sent as-is, that confuses Nominatim's address parser —
@@ -3521,7 +3665,7 @@
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
             const client = findClientForJob(job);
-            if (!client || !client.phone) { alert("No linked client with a phone number found for this job's property."); return; }
+            if (!client || !client.phone) { showToast("No linked client with a phone number found for this job's property.", 'info'); return; }
             openSendMessageModal(client.name, client.phone, buildReminderMessageText(job, client));
         }
         // Google's own short review-link format (g.page/r/.../review) is already
@@ -3536,7 +3680,7 @@
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
             const client = findClientForJob(job);
-            if (!client || !client.phone) { alert("No linked client with a phone number found for this job's property."); return; }
+            if (!client || !client.phone) { showToast("No linked client with a phone number found for this job's property.", 'info'); return; }
             openSendMessageModal(client.name, client.phone, buildReviewRequestMessageText(client));
         }
 
@@ -3560,7 +3704,7 @@
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
             const client = findClientForJob(job);
-            if (!client || !client.phone) { alert("No linked client with a phone number found for this job's property."); return; }
+            if (!client || !client.phone) { showToast("No linked client with a phone number found for this job's property.", 'info'); return; }
 
             const property = job.propertyId ? currentProperties.find(p => p.id === job.propertyId) : null;
             let etaText = '';
@@ -3587,7 +3731,7 @@
             window.location.href = `sms:${cleanPhone}?body=${encodeURIComponent(text)}`;
         }
         function copyReminderMessage() {
-            navigator.clipboard.writeText(document.getElementById('reminder-message-text').value).then(() => alert("Message copied — paste it into Messages, WhatsApp, or wherever you'd like to send it."));
+            navigator.clipboard.writeText(document.getElementById('reminder-message-text').value).then(() => showToast("Message copied — paste it into Messages, WhatsApp, or wherever you'd like to send it.", 'success'));
         }
 
         // ============================================================
@@ -3704,8 +3848,8 @@
         }
         function saveSignature() {
             try {
-                if (signatureStrokes.length === 0) { alert('Please sign before saving — nothing has been drawn yet.'); return; }
-                if (!activeSignatureJobId) { alert("Could not tell which job this signature belongs to — please close this and try again."); return; }
+                if (signatureStrokes.length === 0) { showToast('Please sign before saving — nothing has been drawn yet.', 'warning'); return; }
+                if (!activeSignatureJobId) { showToast("Could not tell which job this signature belongs to — please close this and try again.", 'error'); return; }
                 // Firestore rejects an array nested directly inside another
                 // array — a stroke (array of points) inside strokes (array of
                 // strokes) is exactly that shape. Wrapping each stroke in a
@@ -3720,11 +3864,11 @@
                     closeSignatureModal();
                 }).catch((err) => {
                     console.error('Failed to save signature:', err);
-                    alert('Could not save the signature. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+                    showToast('Could not save the signature. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.', 'error');
                 });
             } catch (err) {
                 console.error('Signature save threw before reaching Firestore:', err);
-                alert('Something went wrong saving the signature. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+                showToast('Something went wrong saving the signature. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.', 'error');
             }
         }
 
@@ -3911,7 +4055,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const formEmail = document.getElementById('client-email').value.trim();
             const formPhone = document.getElementById('client-phone').value.trim();
             const formAddress = document.getElementById('client-address').value.trim();
-            if (!formName) { alert('Please provide a client name before saving.'); return; }
+            if (!formName) { showToast('Please provide a client name before saving.', 'warning'); return; }
             const metrics = calculateComprehensiveMetrics();
 
             let linkedClientId = activeLinkedClientId;
@@ -3953,7 +4097,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     switchQuoteSubtab('quote-sub-vault');
                 } catch (err) {
                     console.error('Failed to save quote:', err);
-                    alert('Could not save this quote/invoice. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over. Your changes have not been lost — the form still has them.');
+                    showToast('Could not save this quote/invoice. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over. Your changes have not been lost — the form still has them.', 'error');
                 }
             };
 
@@ -3968,7 +4112,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     .then(ref => finalizeSave(ref.id))
                     .catch(err => {
                         console.error('Failed to create client while saving quote:', err);
-                        alert('Could not save this quote/invoice (failed while creating the client record). Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+                        showToast('Could not save this quote/invoice (failed while creating the client record). Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.', 'error');
                     });
             }
         }
@@ -3992,7 +4136,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         function loadQuoteForActiveModification(quoteId) {
             try {
                 const target = currentQuotes.find(q => q.id === quoteId);
-                if (!target) { alert('Could not find that quote/invoice (id: ' + quoteId + ').'); return; }
+                if (!target) { showToast('Could not find that quote/invoice (id: ' + quoteId + ').', 'error'); return; }
                 currentlyEditingQuoteId = quoteId;
                 activeLinkedClientId = target.linkedClientId || '';
                 document.getElementById('quote-client-select').value = activeLinkedClientId;
@@ -4021,7 +4165,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) {
                 console.error('Failed to load quote for editing:', err);
-                alert('Could not open this quote for editing. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+                showToast('Could not open this quote for editing. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.', 'error');
             }
         }
         function updateQuoteStatus(id, newStatus) { db.collection('quotes').doc(id).update({ status: newStatus }); }
@@ -4055,7 +4199,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         function closeShoppingListModal() { document.getElementById('shopping-list-modal').classList.add('hidden'); }
         function copyShoppingList() {
             const text = [...document.querySelectorAll('#shopping-list-content li')].map(li => li.innerText).join('\n');
-            navigator.clipboard.writeText(text).then(() => alert('Shopping list copied to clipboard.'));
+            navigator.clipboard.writeText(text).then(() => showToast('Shopping list copied to clipboard.', 'success'));
         }
 
         function rebuildVaultDataTable() {
@@ -4147,12 +4291,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 closeInvoiceModal();
             } catch (err) {
                 console.error('Failed to convert to invoice:', err);
-                alert('Could not convert this to an invoice. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.');
+                showToast('Could not convert this to an invoice. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.', 'error');
             }
         }
         function openProfitModal(id) {
             const target = currentQuotes.find(q => q.id === id);
-            if (!target || !target.actualCosts) { alert('No actual-cost reconciliation recorded for this record yet.'); return; }
+            if (!target || !target.actualCosts) { showToast('No actual-cost reconciliation recorded for this record yet.', 'info'); return; }
             const revenue = target.financials.grossTotal;
             const materials = target.actualCosts.materials, labor = target.actualCosts.labor, testing = target.financials.testingCosts;
             const netProfit = revenue - materials - labor - testing;
@@ -4251,7 +4395,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             }).catch((err) => {
                 console.error('PDF generation failed:', err);
                 cleanUpPdfRender();
-                alert('PDF generation failed with this error:\n\n' + (err && err.message ? err.message : String(err)));
+                showToast('PDF generation failed with this error:\n\n' + (err && err.message ? err.message : String(err)), 'error');
             });
         }
 
@@ -4260,7 +4404,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         // ============================================================
         async function handlePdfUpload(event) {
             const file = event.target.files[0];
-            if (!file || file.type !== 'application/pdf') { alert('Please select a valid PDF file to scan.'); return; }
+            if (!file || file.type !== 'application/pdf') { showToast('Please select a valid PDF file to scan.', 'warning'); return; }
             const btn = document.getElementById('pdf-upload-btn-text');
             const originalText = btn.innerText;
             btn.innerText = 'Scanning Document...';
@@ -4277,12 +4421,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 }
                 document.getElementById('import-text-area').value = tokenSequence.join(' ');
                 processRawImport();
-            } catch (error) { console.error(error); alert('Could not process PDF. Ensure it is a text-based digital file.'); }
+            } catch (error) { console.error(error); showToast('Could not process PDF. Ensure it is a text-based digital file.', 'error'); }
             finally { btn.innerText = originalText; event.target.value = ''; }
         }
         function processRawImport() {
             const rawData = document.getElementById('import-text-area').value;
-            if (!rawData.trim()) { alert('Please upload a PDF or paste data into the import box first.'); return; }
+            if (!rawData.trim()) { showToast('Please upload a PDF or paste data into the import box first.', 'warning'); return; }
             let addedCount = 0, updatedCount = 0;
             const additions = [], updates = [];
             let tokens = rawData.split(/\s+/).filter(t => t.trim() !== '');
@@ -4320,7 +4464,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             additions.forEach(item => batch.set(db.collection('stock').doc(), item));
             updates.forEach(u => batch.update(db.collection('stock').doc(u.id), { cost: u.cost, desc: u.desc }));
             batch.commit().then(() => {
-                alert(`Import Parsing Complete!\n\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items with higher costs.`);
+                showToast(`Import Parsing Complete!\n\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items with higher costs.`, 'success');
                 document.getElementById('import-text-area').value = '';
             });
         }
@@ -4349,7 +4493,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (editId) {
                 db.collection('stock').doc(editId).update({ sku: providedSku, desc: providedDesc, cost: roundedWholeCost, category: providedCategory });
             } else {
-                if (currentStock.some(i => i.sku.toLowerCase() === providedSku.toLowerCase())) { alert('An item with this SKU already exists.'); return; }
+                if (currentStock.some(i => i.sku.toLowerCase() === providedSku.toLowerCase())) { showToast('An item with this SKU already exists.', 'info'); return; }
                 db.collection('stock').add({ sku: providedSku, desc: providedDesc, cost: roundedWholeCost, category: providedCategory });
             }
             clearStockForm();
@@ -4400,7 +4544,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             return result.map(v => v.trim());
         }
         function exportStockListForRepricing() {
-            if (currentStock.length === 0) { alert('Your stock directory is empty — nothing to export.'); return; }
+            if (currentStock.length === 0) { showToast('Your stock directory is empty — nothing to export.', 'info'); return; }
             let csvRows = ['SKU,Description,Category,Current Cost,New Cost (Wholesaler fills in)'];
             currentStock.forEach(item => csvRows.push([csvEscapeField(item.sku), csvEscapeField(item.desc), csvEscapeField(item.category), csvEscapeField(parseFloat(item.cost).toFixed(2)), ''].join(',')));
             const dataBlob = new Blob([csvRows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
@@ -4434,12 +4578,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     document.getElementById('reprice-import-text-area').value = await file.text();
                 }
                 processRepriceImport();
-            } catch (error) { console.error(error); alert('Could not read the uploaded file.'); }
+            } catch (error) { console.error(error); showToast('Could not read the uploaded file.', 'error'); }
             finally { btnText.innerText = originalText; event.target.value = ''; }
         }
         function processRepriceImport() {
             const rawData = document.getElementById('reprice-import-text-area').value;
-            if (!rawData.trim()) { alert('Please upload or paste the wholesaler\'s updated price list first.'); return; }
+            if (!rawData.trim()) { showToast('Please upload or paste the wholesaler\'s updated price list first.', 'warning'); return; }
             let increased = 0, decreased = 0, unchanged = 0, skippedBlank = 0;
             let notFound = [];
             const batch = db.batch();
@@ -4504,7 +4648,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 let summary = `Wholesaler Price Review Applied!\n\n• Prices increased: ${increased}\n• Prices decreased: ${decreased}\n• Unchanged: ${unchanged}\n`;
                 if (skippedBlank > 0) summary += `• Skipped (blank/invalid): ${skippedBlank}\n`;
                 if (notFound.length > 0) summary += `• Not found (${notFound.length}): ${notFound.slice(0, 10).join(', ')}${notFound.length > 10 ? ', ...' : ''}\n`;
-                alert(summary);
+                showToast(summary, 'info');
                 document.getElementById('reprice-import-text-area').value = '';
             };
             if (batchHasOps) batch.commit().then(finish); else finish();
@@ -4616,7 +4760,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         function allocateOneOffItemToQuote() {
             const descInput = document.getElementById('oneoff-desc'), costInput = document.getElementById('oneoff-cost'), qtyInput = document.getElementById('oneoff-qty');
             const desc = descInput.value.trim();
-            if (!desc) { alert('Please provide a custom material description.'); return; }
+            if (!desc) { showToast('Please provide a custom material description.', 'warning'); return; }
             activeAllocatedMaterials.push({ id: 'ONEOFF-' + Date.now(), sku: 'CUSTOM', desc: desc + ' (One-off)', cost: Math.ceil(parseFloat(costInput.value) || 0), category: 'Unclassified', qty: parseInt(qtyInput.value) || 1 });
             rebuildAllocatedMaterialsTable();
             descInput.value = ''; costInput.value = ''; qtyInput.value = '1';
@@ -5229,7 +5373,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         });
 
         function connectGoogleCalendar() {
-            if (!gisTokenClient) { alert('Google sign-in is still loading — try again in a moment.'); return; }
+            if (!gisTokenClient) { showToast('Google sign-in is still loading — try again in a moment.', 'info'); return; }
             gisTokenClient.requestAccessToken();
         }
         function disconnectGoogleCalendar() {
@@ -5294,17 +5438,17 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             return false;
         }
         async function pushReminderToCalendar(propertyId, type) {
-            if (!isGoogleCalendarConnected()) { alert('Connect Google Calendar in Settings first.'); return; }
+            if (!isGoogleCalendarConnected()) { showToast('Connect Google Calendar in Settings first.', 'info'); return; }
             const p = currentProperties.find(x => x.id === propertyId);
             if (!p) return;
             const isElectrical = type === 'electrical';
             const lastDate = isElectrical ? p.lastElectricalInspection : p.lastSmokeAlarmTest;
-            if (!lastDate) { alert('Set a last-tested date for this property first.'); return; }
+            if (!lastDate) { showToast('Set a last-tested date for this property first.', 'info'); return; }
             const success = await pushReminderToCalendarSilent(propertyId, type);
-            alert(success ? 'Reminder pushed to Google Calendar.' : 'Could not push reminder to Google Calendar — try again.');
+            showToast(success ? 'Reminder pushed to Google Calendar.' : 'Could not push reminder to Google Calendar — try again.', 'error');
         }
         async function resyncAllToCalendar() {
-            if (!isGoogleCalendarConnected()) { alert('Connect Google Calendar first.'); return; }
+            if (!isGoogleCalendarConnected()) { showToast('Connect Google Calendar first.', 'info'); return; }
             let pushedJobs = 0;
             for (const job of currentJobs) {
                 if (job.status === 'Scheduled' && !job.calendarEventId) {
@@ -5317,7 +5461,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 if (property.lastElectricalInspection && !property.electricalCalendarEventId) { if (await pushReminderToCalendarSilent(property.id, 'electrical')) pushedReminders++; }
                 if (property.lastSmokeAlarmTest && !property.smokeAlarmCalendarEventId) { if (await pushReminderToCalendarSilent(property.id, 'smoke')) pushedReminders++; }
             }
-            alert(`Resync complete: ${pushedJobs} job(s) and ${pushedReminders} reminder(s) pushed to Google Calendar.`);
+            showToast(`Resync complete: ${pushedJobs} job(s) and ${pushedReminders} reminder(s) pushed to Google Calendar.`, 'info');
         }
         function computeJobEndTime(dateStr, timeStr, durationHours = 2) {
             const start = new Date(`${dateStr}T${timeStr}:00`);
