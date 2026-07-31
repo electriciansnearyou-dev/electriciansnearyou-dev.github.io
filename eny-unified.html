@@ -542,18 +542,18 @@
 
             <div id="smoketest-tab" class="tab-content space-y-6">
                 <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="flame" class="text-amber-400 w-5 h-5"></i> Smoke / CO Detector Test</h2>
+                    <h2 id="smoketest-header-title" class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="clipboard-check" class="text-amber-400 w-5 h-5"></i> Surveys & Tests</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Service Type *</label>
+                            <select id="smoketest-service-type" onchange="switchSmokeTestServiceType()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500"></select>
+                        </div>
                         <div class="sm:col-span-2">
                             <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Linked Job / Property *</label>
                             <input type="text" id="smoketest-property-search-input" oninput="filterSmokeTestPropertyDropdown()" placeholder="Search by address..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-2">
                             <select id="smoketest-property-select" onchange="loadSmokeTestPropertyContext()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                                 <option value="">-- Select property --</option>
                             </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Job Number</label>
-                            <input type="text" id="smoketest-job-number" readonly class="w-full bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-muted)] cursor-not-allowed" placeholder="Auto-filled from linked job">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Test Date</label>
@@ -572,47 +572,54 @@
                     </div>
                 </div>
 
-                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                    <h2 class="text-sm font-bold text-[var(--eny-text-primary)] mb-4">Test Procedure</h2>
-                    <div id="smoketest-questions-list" class="space-y-3"></div>
-                </div>
-
-                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)]">Devices Tested</h2>
-                        <button type="button" onclick="addSmokeTestDeviceRow()" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Add Device</button>
+                <div id="smoketest-smokeonly-section" class="space-y-6">
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)] mb-4">Test Procedure</h2>
+                        <div id="smoketest-questions-list" class="space-y-3"></div>
                     </div>
-                    <div id="smoketest-devices-list" class="space-y-2"></div>
-                </div>
 
-                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
-                    <h2 class="text-sm font-bold text-[var(--eny-text-primary)]">Declaration</h2>
-                    <div id="smoketest-declaration-banner" class="rounded-xl p-4 text-center font-bold text-sm border">Answer the questions above to determine the result.</div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Meets Grade D LD2 Requirements?</label>
-                            <div class="flex gap-2">
-                                <button type="button" onclick="setSmokeTestLd2('Yes')" id="smoketest-ld2-yes-btn" class="flex-1 py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Yes</button>
-                                <button type="button" onclick="setSmokeTestLd2('No')" id="smoketest-ld2-no-btn" class="flex-1 py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">No</button>
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-sm font-bold text-[var(--eny-text-primary)]">Devices Tested</h2>
+                            <button type="button" onclick="addSmokeTestDeviceRow()" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Add Device</button>
+                        </div>
+                        <div id="smoketest-devices-list" class="space-y-2"></div>
+                    </div>
+
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
+                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)]">Declaration</h2>
+                        <div id="smoketest-declaration-banner" class="rounded-xl p-4 text-center font-bold text-sm border">Answer the questions above to determine the result.</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Meets Grade D LD2 Requirements?</label>
+                                <div class="flex gap-2">
+                                    <button type="button" onclick="setSmokeTestLd2('Yes')" id="smoketest-ld2-yes-btn" class="flex-1 py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Yes</button>
+                                    <button type="button" onclick="setSmokeTestLd2('No')" id="smoketest-ld2-no-btn" class="flex-1 py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">No</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">New Devices Installed In</label>
+                                <input type="text" id="smoketest-new-devices" placeholder="e.g. Entire system, or N/A" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Comments (also confirm battery-powered devices here)</label>
+                                <textarea id="smoketest-comments" rows="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 resize-none" placeholder="None"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Deviations From BS 5839-6</label>
+                                <input type="text" id="smoketest-deviations" placeholder="N/A" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Instructions Given To</label>
+                                <input type="text" id="smoketest-instructions-to" placeholder="e.g. Tenant / Landlord" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">New Devices Installed In</label>
-                            <input type="text" id="smoketest-new-devices" placeholder="e.g. Entire system, or N/A" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Comments (also confirm battery-powered devices here)</label>
-                            <textarea id="smoketest-comments" rows="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 resize-none" placeholder="None"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Deviations From BS 5839-6</label>
-                            <input type="text" id="smoketest-deviations" placeholder="N/A" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Instructions Given To</label>
-                            <input type="text" id="smoketest-instructions-to" placeholder="e.g. Tenant / Landlord" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
-                        </div>
                     </div>
+                </div>
+
+                <div id="smoketest-generic-section" class="hidden bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 id="smoketest-generic-title" class="text-sm font-bold text-[var(--eny-text-primary)] mb-4">Survey Checklist</h2>
+                    <div id="smoketest-generic-fields-list" class="space-y-4"></div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3">
@@ -2526,6 +2533,86 @@
         // Each question's "goodAnswer" is the one that lets testing continue
         // normally — note it isn't always Yes (e.g. B and I are meant to be
         // "No" to pass). Any answer that doesn't match goodAnswer is a fault.
+        // Generic survey schemas — each field can optionally reveal a
+        // follow-up field when its answer matches one of `conditional.showWhen`.
+        // The smoke test itself isn't here — it keeps its own bespoke
+        // pass/fail flow below, since a plain checklist doesn't fit it well.
+        const SURVEY_TYPES = {
+            'smoke-test': { label: 'Smoke Alarm Testing + Overhaul', icon: 'flame' },
+            'smoke-compliance': {
+                label: 'Smoke System Compliance Survey (BS5839-6)', icon: 'shield-check',
+                fields: [
+                    { id: 'kitchenDetector', type: 'yesno', label: 'Detector present in kitchen?' },
+                    { id: 'livingRoomDetector', type: 'yesno', label: 'Detector present in principal living room?' },
+                    { id: 'escapeRoutesDetector', type: 'yesno', label: 'Detectors present in all circulation spaces / escape routes?' },
+                    { id: 'spacing75m', type: 'yesno', label: 'Detectors spaced no more than 7.5m apart along hallways / escape routes?' },
+                    { id: 'spacing3mBedroom', type: 'yesno', label: 'Detectors within 3m of all bedroom doors?' },
+                    { id: 'spacing300mm', type: 'yesno', label: 'Detectors at least 300mm from walls and light fittings?' },
+                    { id: 'mainsPowered', type: 'yesno', label: 'Mains-powered with battery backup?' },
+                    { id: 'interlinked', type: 'yesno', label: 'All detectors interlinked?' },
+                    { id: 'coDetector', type: 'yesno', label: 'CO detector present near gas / solid fuel appliances (if applicable)?' },
+                    { id: 'meetsLd2D1', type: 'yesno', label: 'Overall system meets LD2 Grade D1?' },
+                    { id: 'recommendations', type: 'textarea', label: 'Recommendations' },
+                ],
+            },
+            'energy-efficiency': {
+                label: 'Energy Efficiency Survey', icon: 'leaf',
+                fields: [
+                    { id: 'ledLamps', type: 'select3', label: 'LED lamps fitted?', options: ['Yes', 'No', 'Partial'],
+                        conditional: { showWhen: ['No', 'Partial'], type: 'number', label: 'Amount needed' } },
+                    { id: 'ledFittings', type: 'select3', label: 'LED fittings?', options: ['Yes', 'No', 'Partial'],
+                        conditional: { showWhen: ['No', 'Partial'], type: 'textarea', label: 'Which ones are needed' } },
+                    { id: 'heatingType', type: 'select2', label: 'Heating type?', options: ['Gas', 'Electric'],
+                        conditional: { showWhen: ['Electric'], type: 'yesno', label: 'Needs upgrading?' } },
+                    { id: 'insulationOkay', type: 'yesno', label: 'Is insulation okay?' },
+                    { id: 'cylinderJacket', type: 'yesno', label: 'Cylinder jacket fitted?' },
+                    { id: 'solar', type: 'yesno', label: 'Solar fitted?' },
+                    { id: 'ventilationEfficiency', type: 'yesno', label: 'Ventilation adequate to keep windows closed / reduce heat loss?' },
+                    { id: 'recommendations', type: 'textarea', label: 'Recommendations' },
+                ],
+            },
+            'heating': {
+                label: 'Heating Survey (Electric)', icon: 'thermometer',
+                fields: [
+                    { id: 'heaterTypes', type: 'textarea', label: 'Heater type(s) present (e.g. storage, panel, electric boiler, immersion, underfloor)' },
+                    { id: 'ageCondition', type: 'textarea', label: 'Age / condition of each' },
+                    { id: 'allRoomsHeated', type: 'yesno', label: 'All rooms adequately heated?' },
+                    { id: 'controlsWorking', type: 'yesno', label: 'Controls / thermostat working correctly?' },
+                    { id: 'chargingCorrectly', type: 'yesno', label: 'Storage heaters charging correctly on off-peak tariff (if applicable)?' },
+                    { id: 'damageSigns', type: 'yesno', label: 'Any signs of damage, scorching, or exposed elements?' },
+                    { id: 'overhaulCarried', type: 'yesno', label: 'Overhaul carried out (cleaning / minor repairs)?',
+                        conditional: { showWhen: ['Yes'], type: 'textarea', label: 'Notes on overhaul carried out' } },
+                    { id: 'recommendations', type: 'textarea', label: 'Recommendations' },
+                ],
+            },
+            'ventilation': {
+                label: 'Ventilation Survey / Overhaul', icon: 'wind',
+                fields: [
+                    { id: 'kitchenFan', type: 'yesno', label: 'Kitchen extractor fan present and working?' },
+                    { id: 'bathroomFan', type: 'yesno', label: 'Bathroom extractor fan present and working?' },
+                    { id: 'wcFan', type: 'yesno', label: 'WC extractor fan present and working?' },
+                    { id: 'trickleVents', type: 'yesno', label: 'Trickle vents clear and unobstructed?' },
+                    { id: 'condensationMould', type: 'yesno', label: 'Signs of condensation or mould?' },
+                    { id: 'airflowAdequate', type: 'yesno', label: 'Overall airflow adequate?' },
+                    { id: 'fansCleanedOverhaul', type: 'yesno', label: 'Fans cleaned as part of overhaul?' },
+                    { id: 'recommendations', type: 'textarea', label: 'Recommendations' },
+                ],
+            },
+            'storage-heater': {
+                label: 'Storage / Electric Heater Overhaul', icon: 'zap',
+                fields: [
+                    { id: 'heaterLocations', type: 'textarea', label: 'Heater location(s)' },
+                    { id: 'visualCondition', type: 'yesno', label: 'Visual condition satisfactory?' },
+                    { id: 'controlsWorking', type: 'yesno', label: 'Thermostat / controls working?' },
+                    { id: 'elementOutput', type: 'yesno', label: 'Element output checked and satisfactory?' },
+                    { id: 'cleaned', type: 'yesno', label: 'Cleaned as part of overhaul?' },
+                    { id: 'minorRepairs', type: 'yesno', label: 'Minor repairs made?',
+                        conditional: { showWhen: ['Yes'], type: 'textarea', label: 'Describe repairs made' } },
+                    { id: 'safeConnection', type: 'yesno', label: 'Safe connection, no scorching or damage?' },
+                    { id: 'recommendations', type: 'textarea', label: 'Recommendations' },
+                ],
+            },
+        };
         const SMOKE_TEST_QUESTIONS = [
             { id: 'A', text: 'With the mains power on, is the green mains indicator LED on?', goodAnswer: 'Y', yesNote: 'Continue to next check.', noNote: 'Report as a fault.' },
             { id: 'B', text: 'Does the detector flash amber and emit a single beep every 40 seconds?', goodAnswer: 'N', yesNote: 'Report as a fault (or clean if a multi-sensor).', noNote: 'Continue to next check.' },
@@ -2540,15 +2627,122 @@
         let smokeTestState = null;
         function newSmokeTestState() {
             return {
-                id: null, propertyId: null, jobId: null,
+                id: null, propertyId: null, serviceType: 'smoke-test',
                 answers: {}, cleaningConfirmed: false,
                 devices: [{ model: '', location: '', expiry: '' }],
                 ld2: null, comments: '', newDevices: '', deviations: '', instructionsTo: '',
+                genericFields: {}, // for the 5 non-smoke-test survey types
             };
         }
         function ensureSmokeTestState() {
             if (!smokeTestState) smokeTestState = newSmokeTestState();
             return smokeTestState;
+        }
+        function populateSmokeTestServiceTypeDropdown() {
+            const select = document.getElementById('smoketest-service-type');
+            if (!select) return;
+            select.innerHTML = Object.keys(SURVEY_TYPES).map(key => `<option value="${key}">${SURVEY_TYPES[key].label}</option>`).join('');
+        }
+        function switchSmokeTestServiceType() {
+            const select = document.getElementById('smoketest-service-type');
+            const state = ensureSmokeTestState();
+            state.serviceType = select.value;
+            const survey = SURVEY_TYPES[state.serviceType];
+            const smokeOnly = document.getElementById('smoketest-smokeonly-section');
+            const generic = document.getElementById('smoketest-generic-section');
+            const headerTitle = document.getElementById('smoketest-header-title');
+            const isSmokeTest = state.serviceType === 'smoke-test';
+            smokeOnly.classList.toggle('hidden', !isSmokeTest);
+            generic.classList.toggle('hidden', isSmokeTest);
+            headerTitle.innerHTML = `<i data-lucide="${survey.icon}" class="text-amber-400 w-5 h-5"></i> ${survey.label}`;
+            if (!isSmokeTest) {
+                document.getElementById('smoketest-generic-title').innerText = `${survey.label} — Checklist`;
+                renderGenericSurveyFields();
+            }
+            lucide.createIcons();
+        }
+        // Button-type fields (yesno/select2/select3) re-render on change,
+        // since selecting one can reveal or hide a conditional follow-up.
+        function setGenericSurveyField(fieldId, value) {
+            const state = ensureSmokeTestState();
+            if (!state.genericFields[fieldId]) state.genericFields[fieldId] = {};
+            state.genericFields[fieldId].value = value;
+            renderGenericSurveyFields();
+        }
+        // Direct text/number fields (not a conditional follow-up) — also
+        // must NOT re-render on every keystroke, same reasoning as above.
+        function setGenericSurveyTextField(fieldId, value) {
+            const state = ensureSmokeTestState();
+            if (!state.genericFields[fieldId]) state.genericFields[fieldId] = {};
+            state.genericFields[fieldId].value = value;
+        }
+        // Text/number conditional follow-ups must NOT trigger a re-render —
+        // doing so on every keystroke would destroy and recreate the input
+        // mid-type, losing focus and whatever was being typed.
+        function setGenericSurveyConditionalText(fieldId, value) {
+            const state = ensureSmokeTestState();
+            if (!state.genericFields[fieldId]) state.genericFields[fieldId] = {};
+            state.genericFields[fieldId].conditionalValue = value;
+        }
+        // Yes/No conditional follow-ups ARE buttons, so a re-render on click
+        // is safe (and needed, to show which one's now selected).
+        function setGenericSurveyConditionalChoice(fieldId, value) {
+            const state = ensureSmokeTestState();
+            if (!state.genericFields[fieldId]) state.genericFields[fieldId] = {};
+            state.genericFields[fieldId].conditionalValue = value;
+            renderGenericSurveyFields();
+        }
+        function renderGenericButtonGroup(onclickFn, fieldId, options, currentValue) {
+            return options.map(opt => {
+                const active = currentValue === opt;
+                const cls = active ? 'bg-amber-500 border-amber-500 text-slate-950' : 'bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]';
+                return `<button type="button" onclick="${onclickFn}('${fieldId}', '${opt}')" class="px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${cls}">${opt}</button>`;
+            }).join('');
+        }
+        function renderGenericSurveyFields() {
+            const container = document.getElementById('smoketest-generic-fields-list');
+            if (!container) return;
+            const state = ensureSmokeTestState();
+            const survey = SURVEY_TYPES[state.serviceType];
+            if (!survey || !survey.fields) { container.innerHTML = ''; return; }
+            container.innerHTML = survey.fields.map(field => {
+                const stored = state.genericFields[field.id] || {};
+                const value = stored.value;
+                const isButtonType = field.type === 'yesno' || field.type === 'select2' || field.type === 'select3';
+                let fieldHtml;
+                if (isButtonType) {
+                    const options = field.type === 'yesno' ? ['Yes', 'No'] : field.options;
+                    fieldHtml = `<div class="flex items-center justify-between gap-3 flex-wrap">
+                        <div class="text-xs text-[var(--eny-text-200)] font-medium flex-1 min-w-[140px]">${field.label}</div>
+                        <div class="flex gap-1.5 shrink-0">${renderGenericButtonGroup('setGenericSurveyField', field.id, options, value)}</div>
+                    </div>`;
+                } else if (field.type === 'number') {
+                    fieldHtml = `<label class="block text-xs font-medium text-[var(--eny-text-200)] mb-1.5">${field.label}</label>
+                        <input type="number" min="0" value="${value != null ? value : ''}" oninput="setGenericSurveyTextField('${field.id}', this.value)" class="w-32 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">`;
+                } else {
+                    fieldHtml = `<label class="block text-xs font-medium text-[var(--eny-text-200)] mb-1.5">${field.label}</label>
+                        <textarea rows="2" oninput="setGenericSurveyTextField('${field.id}', this.value)" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 resize-none">${value || ''}</textarea>`;
+                }
+                // number/textarea CONDITIONAL follow-ups below use
+                // setGenericSurveyConditionalText instead, since they write to
+                // a different state property (.conditionalValue not .value).
+                let conditionalHtml = '';
+                if (field.conditional && field.conditional.showWhen.includes(value)) {
+                    const c = field.conditional;
+                    const cValue = stored.conditionalValue;
+                    conditionalHtml += `<div class="mt-2.5 pl-3 border-l-2 border-amber-500/40">`;
+                    if (c.type === 'yesno') {
+                        conditionalHtml += `<div class="flex items-center justify-between gap-3 flex-wrap"><div class="text-[11px] text-[var(--eny-text-muted)] font-medium flex-1 min-w-[120px]">${c.label}</div><div class="flex gap-1.5 shrink-0">${renderGenericButtonGroup('setGenericSurveyConditionalChoice', field.id, ['Yes', 'No'], cValue)}</div></div>`;
+                    } else if (c.type === 'number') {
+                        conditionalHtml += `<label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase mb-1">${c.label}</label><input type="number" min="0" value="${cValue != null ? cValue : ''}" oninput="setGenericSurveyConditionalText('${field.id}', this.value)" class="w-32 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">`;
+                    } else if (c.type === 'textarea') {
+                        conditionalHtml += `<label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase mb-1">${c.label}</label><textarea rows="2" oninput="setGenericSurveyConditionalText('${field.id}', this.value)" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 resize-none">${cValue || ''}</textarea>`;
+                    }
+                    conditionalHtml += `</div>`;
+                }
+                return `<div class="border border-[var(--eny-border-standard)] rounded-xl p-3">${fieldHtml}${conditionalHtml}</div>`;
+            }).join('');
+            lucide.createIcons();
         }
         function setSmokeTestAnswer(questionId, answer) {
             ensureSmokeTestState().answers[questionId] = answer;
@@ -2573,13 +2767,14 @@
                 const note = answer === 'Y' ? q.yesNote : (answer === 'N' ? q.noNote : '');
                 const noteColor = answer ? (answer === q.goodAnswer ? 'text-emerald-500' : 'text-red-500') : '';
                 return `<div class="border border-[var(--eny-border-standard)] rounded-xl p-3">
-                    <div class="flex items-start justify-between gap-3 mb-2">
+                    <div class="flex items-start justify-between gap-3 mb-1.5">
                         <div class="text-xs text-[var(--eny-text-200)]"><span class="font-bold text-amber-400">${q.id}.</span> ${q.text}</div>
                         <div class="flex gap-1.5 shrink-0">
                             <button type="button" onclick="setSmokeTestAnswer('${q.id}', 'Y')" class="w-12 py-1.5 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${yesClass}">Yes</button>
                             <button type="button" onclick="setSmokeTestAnswer('${q.id}', 'N')" class="w-12 py-1.5 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${noClass}">No</button>
                         </div>
                     </div>
+                    <p class="text-[10px] font-semibold text-emerald-600 flex items-center gap-1 mb-1"><i data-lucide="check-circle-2" class="w-3 h-3"></i> Pass answer: ${q.goodAnswer === 'Y' ? 'Yes' : 'No'}</p>
                     ${note ? `<p class="text-[10px] font-semibold ${noteColor}">${note}</p>` : ''}
                 </div>`;
             });
@@ -2671,21 +2866,10 @@
             const propertyId = document.getElementById('smoketest-property-select').value;
             const state = ensureSmokeTestState();
             state.propertyId = propertyId || null;
-            state.jobId = null;
             const addressEl = document.getElementById('smoketest-address');
-            const jobNumberEl = document.getElementById('smoketest-job-number');
-            if (!propertyId) { addressEl.value = ''; jobNumberEl.value = ''; return; }
+            if (!propertyId) { addressEl.value = ''; return; }
             const property = currentProperties.find(p => p.id === propertyId);
             addressEl.value = property ? property.address : '';
-            // Pull the job number from the most recently scheduled job linked
-            // to this property, if there is one.
-            const linkedJobs = currentJobs.filter(j => j.propertyId === propertyId && j.jobNumber).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-            if (linkedJobs.length > 0) {
-                jobNumberEl.value = linkedJobs[0].jobNumber;
-                state.jobId = linkedJobs[0].id;
-            } else {
-                jobNumberEl.value = '';
-            }
         }
         function populateSmokeTestInspectorDropdown() {
             const select = document.getElementById('smoketest-inspector');
@@ -2702,24 +2886,30 @@
             if (!inspector) { showToast('Select the inspecting engineer.', 'warning'); return; }
             const testDate = document.getElementById('smoketest-date').value || todayISO();
             const property = currentProperties.find(p => p.id === state.propertyId);
+            const isSmokeTest = state.serviceType === 'smoke-test';
             const payload = {
+                serviceType: state.serviceType,
                 propertyId: state.propertyId,
-                jobId: state.jobId,
-                jobNumber: document.getElementById('smoketest-job-number').value || null,
                 address: property ? property.address : '',
                 testDate,
                 inspector,
-                answers: state.answers,
-                cleaningConfirmed: state.cleaningConfirmed,
-                devices: state.devices.filter(d => d.model || d.location || d.expiry),
-                ld2: state.ld2,
-                comments: document.getElementById('smoketest-comments').value.trim(),
-                newDevices: document.getElementById('smoketest-new-devices').value.trim(),
-                deviations: document.getElementById('smoketest-deviations').value.trim(),
-                instructionsTo: document.getElementById('smoketest-instructions-to').value.trim(),
-                result: computeSmokeTestResult(),
                 updatedAt: new Date().toISOString(),
             };
+            if (isSmokeTest) {
+                Object.assign(payload, {
+                    answers: state.answers,
+                    cleaningConfirmed: state.cleaningConfirmed,
+                    devices: state.devices.filter(d => d.model || d.location || d.expiry),
+                    ld2: state.ld2,
+                    comments: document.getElementById('smoketest-comments').value.trim(),
+                    newDevices: document.getElementById('smoketest-new-devices').value.trim(),
+                    deviations: document.getElementById('smoketest-deviations').value.trim(),
+                    instructionsTo: document.getElementById('smoketest-instructions-to').value.trim(),
+                    result: computeSmokeTestResult(),
+                });
+            } else {
+                payload.genericFields = state.genericFields;
+            }
             if (state.id) {
                 await db.collection('smokeTests').doc(state.id).update(payload);
             } else {
@@ -2727,13 +2917,24 @@
                 const ref = await db.collection('smokeTests').add(payload);
                 state.id = ref.id;
             }
-            showToast('Smoke test record saved.', 'success');
+            // A complete smoke test (every question answered, cleaning
+            // confirmed) resets the yearly reminder clock on the property —
+            // but only moves it forward, so editing an older historical
+            // record later can never accidentally push a more recent
+            // reminder backwards. Doesn't apply to the other survey types.
+            let reminderUpdated = false;
+            if (isSmokeTest && payload.result && property && (!property.lastSmokeAlarmTest || testDate >= property.lastSmokeAlarmTest)) {
+                await db.collection('properties').doc(state.propertyId).update({ lastSmokeAlarmTest: testDate });
+                reminderUpdated = true;
+            }
+            showToast(reminderUpdated ? 'Saved — the property\'s yearly smoke alarm reminder has been updated to this date.' : 'Record saved.', 'success');
         }
         function clearSmokeTestForm() {
+            const currentType = document.getElementById('smoketest-service-type').value || 'smoke-test';
             smokeTestState = newSmokeTestState();
+            smokeTestState.serviceType = currentType; // stay on whatever service type was selected, don't bounce back to smoke test
             document.getElementById('smoketest-property-search-input').value = '';
             document.getElementById('smoketest-property-select').value = '';
-            document.getElementById('smoketest-job-number').value = '';
             document.getElementById('smoketest-address').value = '';
             document.getElementById('smoketest-inspector').value = '';
             document.getElementById('smoketest-date').value = todayISO();
@@ -2746,20 +2947,24 @@
             renderSmokeTestQuestions();
             renderSmokeTestDevices();
             updateSmokeTestDeclarationBanner();
+            renderGenericSurveyFields();
         }
         function loadSmokeTestRecordForEditing(id) {
             const record = currentSmokeTests.find(t => t.id === id);
             if (!record) return;
+            const serviceType = record.serviceType || 'smoke-test';
             smokeTestState = {
-                id: record.id, propertyId: record.propertyId, jobId: record.jobId,
+                id: record.id, propertyId: record.propertyId, serviceType,
                 answers: { ...(record.answers || {}) }, cleaningConfirmed: !!record.cleaningConfirmed,
                 devices: record.devices && record.devices.length ? record.devices.map(d => ({ ...d })) : [{ model: '', location: '', expiry: '' }],
                 ld2: record.ld2 || null,
+                genericFields: record.genericFields ? JSON.parse(JSON.stringify(record.genericFields)) : {},
             };
+            document.getElementById('smoketest-service-type').value = serviceType;
+            switchSmokeTestServiceType();
             document.getElementById('smoketest-property-search-input').value = '';
             filterSmokeTestPropertyDropdown();
             document.getElementById('smoketest-property-select').value = record.propertyId || '';
-            document.getElementById('smoketest-job-number').value = record.jobNumber || '';
             document.getElementById('smoketest-address').value = record.address || '';
             document.getElementById('smoketest-inspector').value = record.inspector || '';
             document.getElementById('smoketest-date').value = record.testDate || todayISO();
@@ -2771,10 +2976,11 @@
             renderSmokeTestQuestions();
             renderSmokeTestDevices();
             updateSmokeTestDeclarationBanner();
+            renderGenericSurveyFields();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         async function deleteSmokeTestRecord(id) {
-            if (!(await showConfirm('Delete this smoke test record? This cannot be undone.', { confirmText: 'Delete', danger: true }))) return;
+            if (!(await showConfirm('Delete this record? This cannot be undone.', { confirmText: 'Delete', danger: true }))) return;
             await db.collection('smokeTests').doc(id).delete();
             showToast('Record deleted.', 'success');
         }
@@ -2782,15 +2988,19 @@
             const container = document.getElementById('smoketest-records-list');
             if (!container) return;
             const sorted = [...currentSmokeTests].sort((a, b) => (b.testDate || '').localeCompare(a.testDate || '') || (b.createdAt || '').localeCompare(a.createdAt || ''));
-            container.innerHTML = sorted.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">No smoke test records yet.</p>` :
+            container.innerHTML = sorted.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">No records yet.</p>` :
                 sorted.map(t => {
-                    const resultBadge = t.result === 'Satisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 border-emerald-500/40 text-emerald-600">Satisfactory</span>`
+                    const serviceType = t.serviceType || 'smoke-test';
+                    const survey = SURVEY_TYPES[serviceType];
+                    const typeBadge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-[var(--eny-bg-secondary)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]">${survey ? survey.label : serviceType}</span>`;
+                    const resultBadge = serviceType !== 'smoke-test' ? '' :
+                        t.result === 'Satisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 border-emerald-500/40 text-emerald-600">Satisfactory</span>`
                         : t.result === 'Unsatisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-red-500/10 border-red-500/40 text-red-600">Unsatisfactory</span>`
                         : `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]">Incomplete</span>`;
                     return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
                         <div class="min-w-0">
                             <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${(t.address || '').split('\n')[0]}</div>
-                            <div class="text-[10px] text-[var(--eny-text-muted2)] flex items-center gap-1.5 flex-wrap">${formatUkDate(t.testDate)} • ${t.inspector || '—'} ${resultBadge}</div>
+                            <div class="text-[10px] text-[var(--eny-text-muted2)] flex items-center gap-1.5 flex-wrap mt-1">${formatUkDate(t.testDate)} • ${t.inspector || '—'} ${typeBadge} ${resultBadge}</div>
                         </div>
                         <div class="flex items-center gap-1.5 shrink-0">
                             <button onclick="loadSmokeTestRecordForEditing('${t.id}')" title="Edit" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
@@ -2817,8 +3027,8 @@
                 const inspector = document.getElementById('smoketest-inspector').value;
                 if (!inspector) { showToast('Select the inspecting engineer.', 'warning'); return; }
                 data = {
+                    serviceType: state.serviceType,
                     address: document.getElementById('smoketest-address').value,
-                    jobNumber: document.getElementById('smoketest-job-number').value,
                     testDate: document.getElementById('smoketest-date').value || todayISO(),
                     inspector,
                     answers: state.answers,
@@ -2830,59 +3040,50 @@
                     deviations: document.getElementById('smoketest-deviations').value.trim(),
                     instructionsTo: document.getElementById('smoketest-instructions-to').value.trim(),
                     result: computeSmokeTestResult(),
+                    genericFields: state.genericFields,
                 };
             }
+            const serviceType = data.serviceType || 'smoke-test';
+            const isSmokeTest = serviceType === 'smoke-test';
+            const survey = SURVEY_TYPES[serviceType];
 
-            const questionRows = SMOKE_TEST_QUESTIONS.map(q => {
-                const answer = data.answers ? data.answers[q.id] : null;
-                const isGood = answer === q.goodAnswer;
-                const badgeColor = !answer ? '#94a3b8' : (isGood ? '#059669' : '#dc2626');
-                const badgeBg = !answer ? '#f1f5f9' : (isGood ? '#d1fae5' : '#fee2e2');
-                const note = answer === 'Y' ? q.yesNote : (answer === 'N' ? q.noNote : '');
-                return `<tr>
-                    <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10px;font-weight:700;color:#0A5FB9;vertical-align:top;width:18px;">${q.id}</td>
-                    <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;vertical-align:top;">${q.text}${note ? `<div style="font-size:9px;color:${badgeColor};margin-top:2px;">${note}</div>` : ''}</td>
-                    <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:center;vertical-align:top;width:36px;">
-                        <span style="display:inline-block;min-width:20px;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;color:${badgeColor};background:${badgeBg};">${answer || '—'}</span>
+            let bodyHtml;
+            if (isSmokeTest) {
+                const questionRows = SMOKE_TEST_QUESTIONS.map(q => {
+                    const answer = data.answers ? data.answers[q.id] : null;
+                    const isGood = answer === q.goodAnswer;
+                    const badgeColor = !answer ? '#94a3b8' : (isGood ? '#059669' : '#dc2626');
+                    const badgeBg = !answer ? '#f1f5f9' : (isGood ? '#d1fae5' : '#fee2e2');
+                    const note = answer === 'Y' ? q.yesNote : (answer === 'N' ? q.noNote : '');
+                    return `<tr>
+                        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10px;font-weight:700;color:#0A5FB9;vertical-align:top;width:18px;">${q.id}</td>
+                        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;vertical-align:top;">${q.text}${note ? `<div style="font-size:9px;color:${badgeColor};margin-top:2px;">${note}</div>` : ''}</td>
+                        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:center;vertical-align:top;width:36px;">
+                            <span style="display:inline-block;min-width:20px;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;color:${badgeColor};background:${badgeBg};">${answer || '—'}</span>
+                        </td>
+                    </tr>`;
+                });
+                const cleaningRow = `<tr>
+                    <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10px;font-weight:700;color:#0A5FB9;vertical-align:top;">F</td>
+                    <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;vertical-align:top;">Cleaning — mains disconnected, sides/slots vacuumed, wiped clean with a damp cloth.</td>
+                    <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:center;vertical-align:top;">
+                        <span style="display:inline-block;min-width:20px;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;color:${data.cleaningConfirmed ? '#059669' : '#94a3b8'};background:${data.cleaningConfirmed ? '#d1fae5' : '#f1f5f9'};">${data.cleaningConfirmed ? 'X' : '—'}</span>
                     </td>
                 </tr>`;
-            });
-            const cleaningRow = `<tr>
-                <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10px;font-weight:700;color:#0A5FB9;vertical-align:top;">F</td>
-                <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;vertical-align:top;">Cleaning — mains disconnected, sides/slots vacuumed, wiped clean with a damp cloth.</td>
-                <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:center;vertical-align:top;">
-                    <span style="display:inline-block;min-width:20px;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;color:${data.cleaningConfirmed ? '#059669' : '#94a3b8'};background:${data.cleaningConfirmed ? '#d1fae5' : '#f1f5f9'};">${data.cleaningConfirmed ? 'X' : '—'}</span>
-                </td>
-            </tr>`;
-            questionRows.splice(5, 0, cleaningRow);
+                questionRows.splice(5, 0, cleaningRow);
 
-            const devices = (data.devices || []).filter(d => d.model || d.location || d.expiry);
-            const deviceRows = devices.length === 0 ? `<tr><td colspan="3" style="padding:10px;font-size:10.5px;color:#94a3b8;text-align:center;">No devices recorded</td></tr>` :
-                devices.map(d => `<tr>
-                    <td style="padding:6px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;">${d.model || ''}</td>
-                    <td style="padding:6px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;">${d.location || ''}</td>
-                    <td style="padding:6px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;">${d.expiry || ''}</td>
-                </tr>`).join('');
+                const devices = (data.devices || []).filter(d => d.model || d.location || d.expiry);
+                const deviceRows = devices.length === 0 ? `<tr><td colspan="3" style="padding:10px;font-size:10.5px;color:#94a3b8;text-align:center;">No devices recorded</td></tr>` :
+                    devices.map(d => `<tr>
+                        <td style="padding:6px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;">${d.model || ''}</td>
+                        <td style="padding:6px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;">${d.location || ''}</td>
+                        <td style="padding:6px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;">${d.expiry || ''}</td>
+                    </tr>`).join('');
 
-            const resultColor = data.result === 'Satisfactory' ? '#059669' : (data.result === 'Unsatisfactory' ? '#dc2626' : '#94a3b8');
-            const resultBg = data.result === 'Satisfactory' ? '#d1fae5' : (data.result === 'Unsatisfactory' ? '#fee2e2' : '#f1f5f9');
+                const resultColor = data.result === 'Satisfactory' ? '#059669' : (data.result === 'Unsatisfactory' ? '#dc2626' : '#94a3b8');
+                const resultBg = data.result === 'Satisfactory' ? '#d1fae5' : (data.result === 'Unsatisfactory' ? '#fee2e2' : '#f1f5f9');
 
-            const pdfHtml = `
-                <div style="padding:40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#334155;background-color:#ffffff;min-height:842px;position:relative;">
-                    <div style="height:4px;background-color:#0A5FB9;margin:-40px -40px 25px -40px;"></div>
-                    <table style="width:100%;margin-bottom:20px;"><tr>
-                        <td style="vertical-align:middle;width:60px;"><img src="Logo.png" style="width:50px;height:50px;border-radius:50%;" /></td>
-                        <td style="vertical-align:middle;">
-                            <div style="font-size:13px;color:#475569;font-weight:500;">ENY Electrical</div>
-                            <h1 style="margin:0;font-size:22px;font-weight:700;color:#0A5FB9;">Smoke / CO Detector Test Certificate</h1>
-                        </td>
-                    </tr></table>
-                    <table style="width:100%;margin-bottom:16px;border-collapse:collapse;">
-                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;width:110px;">Job Number</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${data.jobNumber || '—'}</td>
-                            <td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;width:80px;">Test Date</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${formatUkDate(data.testDate)}</td></tr>
-                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Address</td><td colspan="3" style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${(data.address || '').replace(/\n/g, ', ')}</td></tr>
-                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Inspector</td><td colspan="3" style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${data.inspector || '—'}</td></tr>
-                    </table>
+                bodyHtml = `
                     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
                         <thead><tr style="background:#f1f5f9;"><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">#</th><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">Check</th><th style="padding:6px 10px;text-align:center;font-size:9px;color:#64748b;text-transform:uppercase;">Result</th></tr></thead>
                         <tbody>${questionRows.join('')}</tbody>
@@ -2901,11 +3102,59 @@
                     <table style="width:100%;border-collapse:collapse;">
                         <thead><tr style="background:#f1f5f9;"><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">Model</th><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">Location</th><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">Expiry</th></tr></thead>
                         <tbody>${deviceRows}</tbody>
+                    </table>`;
+            } else {
+                // Generic checklist layout, shared by the 5 non-smoke-test
+                // survey types — a simple check/answer table, with any
+                // conditional follow-up shown as a note under the check, and
+                // Recommendations pulled out into its own highlighted block.
+                const genericFields = data.genericFields || {};
+                const checklistFields = (survey.fields || []).filter(f => f.id !== 'recommendations');
+                const fieldRows = checklistFields.map(f => {
+                    const stored = genericFields[f.id] || {};
+                    const value = stored.value;
+                    const displayValue = (value != null && value !== '') ? value : '—';
+                    let conditionalLine = '';
+                    if (f.conditional && f.conditional.showWhen.includes(value) && stored.conditionalValue) {
+                        conditionalLine = `<div style="font-size:9px;color:#0A5FB9;margin-top:2px;">${f.conditional.label}: ${stored.conditionalValue}</div>`;
+                    }
+                    return `<tr>
+                        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;vertical-align:top;">${f.label}${conditionalLine}</td>
+                        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:right;vertical-align:top;font-size:10.5px;font-weight:700;color:#0A5FB9;white-space:nowrap;">${displayValue}</td>
+                    </tr>`;
+                }).join('');
+                const hasRecommendations = (survey.fields || []).some(f => f.id === 'recommendations');
+                const recommendationsValue = (genericFields.recommendations || {}).value || 'None';
+                bodyHtml = `
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+                        <thead><tr style="background:#f1f5f9;"><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">Check</th><th style="padding:6px 10px;text-align:right;font-size:9px;color:#64748b;text-transform:uppercase;">Answer</th></tr></thead>
+                        <tbody>${fieldRows}</tbody>
                     </table>
+                    ${hasRecommendations ? `<div style="font-size:10px;color:#64748b;font-weight:700;margin-bottom:6px;">Recommendations</div>
+                    <div style="padding:12px;border-radius:6px;background:#f1f5f9;color:#334155;font-size:11px;margin-bottom:16px;white-space:pre-line;">${recommendationsValue}</div>` : ''}`;
+            }
+
+            const pdfHtml = `
+                <div style="padding:40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#334155;background-color:#ffffff;min-height:842px;position:relative;">
+                    <div style="height:4px;background-color:#0A5FB9;margin:-40px -40px 25px -40px;"></div>
+                    <table style="width:100%;margin-bottom:20px;"><tr>
+                        <td style="vertical-align:middle;width:60px;"><img src="Logo.png" style="width:50px;height:50px;border-radius:50%;" /></td>
+                        <td style="vertical-align:middle;">
+                            <div style="font-size:13px;color:#475569;font-weight:500;">ENY Electrical</div>
+                            <h1 style="margin:0;font-size:22px;font-weight:700;color:#0A5FB9;">${survey.label}</h1>
+                        </td>
+                    </tr></table>
+                    <table style="width:100%;margin-bottom:16px;border-collapse:collapse;">
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;width:110px;">Test Date</td><td colspan="3" style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${formatUkDate(data.testDate)}</td></tr>
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Address</td><td colspan="3" style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${(data.address || '').replace(/\n/g, ', ')}</td></tr>
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Inspector</td><td colspan="3" style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${data.inspector || '—'}</td></tr>
+                    </table>
+                    ${bodyHtml}
                 </div>`;
 
             const addressSlug = (data.address || 'property').split('\n')[0].replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            const filename = `smoke_test_${addressSlug}_${data.testDate || todayISO()}.pdf`;
+            const typeSlug = serviceType.replace(/-/g, '_');
+            const filename = `${typeSlug}_${addressSlug}_${data.testDate || todayISO()}.pdf`;
             const renderOverlay = document.createElement('div');
             renderOverlay.style.cssText = 'position:fixed; inset:0; background:#EFF5FB; z-index:99999; display:flex; align-items:center; justify-content:center; color:#0A5FB9; font-family:sans-serif; font-size:14px; font-weight:600;';
             renderOverlay.innerText = 'Generating PDF...';
@@ -4582,8 +4831,11 @@
             }
             if (tabId === 'quote-tab') { rebuildJobTemplatesDropdown(); filterMaterialCatalog(); rebuildAllocatedMaterialsTable(); rebuildVaultDataTable(); filterQuotePropertyDropdown(); }
             if (tabId === 'smoketest-tab') {
-                ensureSmokeTestState();
+                const state = ensureSmokeTestState();
                 if (!document.getElementById('smoketest-date').value) document.getElementById('smoketest-date').value = todayISO();
+                populateSmokeTestServiceTypeDropdown();
+                document.getElementById('smoketest-service-type').value = state.serviceType;
+                switchSmokeTestServiceType();
                 filterSmokeTestPropertyDropdown();
                 populateSmokeTestInspectorDropdown();
                 renderSmokeTestQuestions();
