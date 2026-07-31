@@ -1663,6 +1663,18 @@
                 btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
                 btn.classList.add('text-[var(--eny-text-muted)]', 'hover:text-[var(--eny-text-primary)]');
             });
+            // Dropdown items (inside Client Data / More) use a different
+            // default style than top-level nav buttons and don't carry the
+            // .nav-btn class, so the sweep above never reaches them — without
+            // this, a highlighted dropdown item stayed highlighted forever
+            // after switching away from it.
+            ['btn-jobs-tab', 'btn-lookup-tab', 'btn-crm-tab', 'btn-settings-tab', 'btn-trash-tab'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
+                    el.classList.add('text-[var(--eny-text-300)]');
+                }
+            });
             document.getElementById(targetTabId).classList.add('active');
             const targetButton = document.getElementById(`btn-${targetTabId}`);
             if (targetButton) {
@@ -2235,10 +2247,12 @@
             if (btn) btn.innerHTML = theme === 'dark' ? '<i data-lucide="sun" class="w-4 h-4"></i>' : '<i data-lucide="moon" class="w-4 h-4"></i>';
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
-        // A plain reload — works the same in Chrome and Safari, and gives an
-        // intentional way to refresh now that accidental pull-to-refresh is
-        // disabled. The brief spin is just tactile feedback before the page
-        // unloads.
+        // A plain reload() can quietly serve a cached copy of the page in
+        // some installed-app contexts (notably Chrome's "Install app" on
+        // Android) — the boolean force-reload argument browsers used to
+        // support for this no longer does anything in current versions, so a
+        // cache-busting URL is the reliable way to guarantee an actual fresh
+        // fetch, matching what pull-to-refresh used to do.
         function refreshApp(btn) {
             try {
                 if (btn) {
@@ -2246,7 +2260,9 @@
                     if (icon) icon.classList.add('spin-once');
                 }
             } catch (e) { /* purely cosmetic — never let this stop the actual reload */ }
-            window.location.reload();
+            const url = new URL(window.location.href);
+            url.searchParams.set('_r', Date.now());
+            window.location.href = url.toString();
         }
         function toggleColorTheme() {
             const current = document.documentElement.getAttribute('data-theme') || 'light';
