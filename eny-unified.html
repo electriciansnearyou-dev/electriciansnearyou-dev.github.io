@@ -2240,7 +2240,12 @@
         // disabled. The brief spin is just tactile feedback before the page
         // unloads.
         function refreshApp(btn) {
-            if (btn) btn.querySelector('i').classList.add('spin-once');
+            try {
+                if (btn) {
+                    const icon = btn.querySelector('svg, i'); // lucide replaces <i> with <svg> once icons render
+                    if (icon) icon.classList.add('spin-once');
+                }
+            } catch (e) { /* purely cosmetic — never let this stop the actual reload */ }
             window.location.reload();
         }
         function toggleColorTheme() {
