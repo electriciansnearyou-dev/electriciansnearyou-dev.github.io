@@ -6,6 +6,10 @@
     <title>ENY Electrical - Business Manager</title>
     <meta name="theme-color" content="#0f172a">
     <link rel="icon" type="image/png" href="Logo.png">
+    <link rel="apple-touch-icon" href="Logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ENY Electrical">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         // Remaps the "amber" token (the app's primary accent throughout) to
@@ -90,6 +94,7 @@
         }
 
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        html, body { overscroll-behavior-y: contain; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -114,6 +119,8 @@
         .toast-out { animation: toastOut 0.18s ease-in forwards; }
 
         @keyframes tabFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spinOnce { to { transform: rotate(360deg); } }
+        .spin-once { animation: spinOnce 0.5s linear; }
         .tab-content.active { animation: tabFadeIn 0.4s ease-out; }
 
         button, .cursor-pointer { transition: transform 0.08s ease-out, background-color 0.15s, color 0.15s, border-color 0.15s; }
@@ -205,6 +212,9 @@
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <img src="Logo.png" alt="ENY Electrical" class="h-12 w-12 rounded-full shadow-lg shadow-amber-500/20">
+                    <button onclick="refreshApp(this)" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Refresh">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    </button>
                     <div>
                         <h1 class="font-bold text-xl tracking-tight bg-gradient-to-r from-[var(--eny-text-primary)] via-[var(--eny-text-300)] to-[var(--eny-text-muted)] bg-clip-text text-transparent">ENY ELECTRICAL</h1>
                         <p class="text-xs font-semibold text-amber-400 tracking-wider uppercase">Business Manager</p>
@@ -2225,6 +2235,14 @@
             if (btn) btn.innerHTML = theme === 'dark' ? '<i data-lucide="sun" class="w-4 h-4"></i>' : '<i data-lucide="moon" class="w-4 h-4"></i>';
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
+        // A plain reload — works the same in Chrome and Safari, and gives an
+        // intentional way to refresh now that accidental pull-to-refresh is
+        // disabled. The brief spin is just tactile feedback before the page
+        // unloads.
+        function refreshApp(btn) {
+            if (btn) btn.querySelector('i').classList.add('spin-once');
+            window.location.reload();
+        }
         function toggleColorTheme() {
             const current = document.documentElement.getAttribute('data-theme') || 'light';
             const next = current === 'dark' ? 'light' : 'dark';
@@ -3123,6 +3141,15 @@
         async function acceptJob(jobId) {
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
+            // Kick off geolocation IMMEDIATELY, before any await. Safari only
+            // shows the location permission prompt within a narrow window of
+            // the actual tap — the Firestore write below was enough of a gap
+            // for it to silently refuse to ever ask. Firing this first and
+            // handing the in-flight promise to sendOnMyWayMessage sidesteps
+            // that entirely.
+            const prefetchedLocation = (isOwnerLoggedIn() && navigator.geolocation)
+                ? new Promise((resolve) => navigator.geolocation.getCurrentPosition((pos) => resolve(pos), () => resolve(null), { timeout: 8000 }))
+                : null;
             // Always start from a clean slate on Accept — without this, any
             // leftover engineerState from before (an earlier visit, or just
             // prior testing on the same job) could show as already running
@@ -3135,7 +3162,7 @@
             // with its ETA immediately, same feature as the Jobs tab button.
             // Gracefully does nothing if there's no resolvable client (e.g. a
             // non-owner login, which never has client data loaded).
-            if (isOwnerLoggedIn()) sendOnMyWayMessage(jobId);
+            if (isOwnerLoggedIn()) sendOnMyWayMessage(jobId, prefetchedLocation);
         }
         async function startEngineerTimer(jobId, engineerName) {
             const job = currentJobs.find(j => j.id === jobId);
@@ -3848,7 +3875,7 @@
         const ASSUMED_AVERAGE_MPH = 20;       // local/stop-start driving, not open-road speed
         const ROAD_DISTANCE_FACTOR = 1.3;     // roads curve — straight-line distance underestimates real route distance by roughly this much
         const FIXED_TRIP_OVERHEAD_MINUTES = 5; // leaving, first junction, parking/walking to the door — a flat cost pure distance÷speed misses, especially on short trips
-        async function sendOnMyWayMessage(jobId) {
+        async function sendOnMyWayMessage(jobId, prefetchedLocation = null) {
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
             const client = findClientForJob(job);
@@ -3856,13 +3883,22 @@
 
             const property = job.propertyId ? currentProperties.find(p => p.id === job.propertyId) : null;
             let etaText = '';
-            if (property && property.lat != null && property.lng != null && navigator.geolocation) {
+            if (property && property.lat != null && property.lng != null) {
                 try {
-                    const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 }));
-                    const straightLineMiles = haversineDistanceMiles(position.coords.latitude, position.coords.longitude, property.lat, property.lng);
-                    const roadMiles = straightLineMiles * ROAD_DISTANCE_FACTOR;
-                    const estimatedMinutes = Math.max(2, Math.round((roadMiles / ASSUMED_AVERAGE_MPH) * 60) + FIXED_TRIP_OVERHEAD_MINUTES);
-                    etaText = ` I'm about ${estimatedMinutes} minutes away.`;
+                    // Prefer an already-in-flight request (started right on
+                    // tap, before any await, to keep Safari's location
+                    // prompt happy) — otherwise fall back to asking fresh,
+                    // which is fine when this itself is the direct click
+                    // handler (the Jobs list "on my way" button).
+                    const position = prefetchedLocation
+                        ? await prefetchedLocation
+                        : (navigator.geolocation ? await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 })) : null);
+                    if (position) {
+                        const straightLineMiles = haversineDistanceMiles(position.coords.latitude, position.coords.longitude, property.lat, property.lng);
+                        const roadMiles = straightLineMiles * ROAD_DISTANCE_FACTOR;
+                        const estimatedMinutes = Math.max(2, Math.round((roadMiles / ASSUMED_AVERAGE_MPH) * 60) + FIXED_TRIP_OVERHEAD_MINUTES);
+                        etaText = ` I'm about ${estimatedMinutes} minutes away.`;
+                    }
                 } catch (e) {
                     console.warn('Could not get location for ETA — sending without one:', e);
                 }
