@@ -251,6 +251,9 @@
                             </button>
                         </div>
                     </div>
+                    <button onclick="switchTab('smoketest-tab')" id="btn-smoketest-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
+                        <i data-lucide="flame" class="w-4 h-4"></i> Smoke Test
+                    </button>
                     <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
                         <i data-lucide="file-text" class="w-4 h-4"></i> Quote Builder
                     </button>
@@ -537,7 +540,95 @@
                 </div>
             </div>
 
+            <div id="smoketest-tab" class="tab-content space-y-6">
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="flame" class="text-amber-400 w-5 h-5"></i> Smoke / CO Detector Test</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Linked Job / Property *</label>
+                            <input type="text" id="smoketest-property-search-input" oninput="filterSmokeTestPropertyDropdown()" placeholder="Search by address..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-2">
+                            <select id="smoketest-property-select" onchange="loadSmokeTestPropertyContext()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                <option value="">-- Select property --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Job Number</label>
+                            <input type="text" id="smoketest-job-number" readonly class="w-full bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-muted)] cursor-not-allowed" placeholder="Auto-filled from linked job">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Test Date</label>
+                            <input type="date" id="smoketest-date" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Address</label>
+                            <textarea id="smoketest-address" readonly rows="2" class="w-full bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-muted)] cursor-not-allowed resize-none" placeholder="Auto-filled from linked property"></textarea>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Name of Inspector *</label>
+                            <select id="smoketest-inspector" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                <option value="">-- Select engineer --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-sm font-bold text-[var(--eny-text-primary)] mb-4">Test Procedure</h2>
+                    <div id="smoketest-questions-list" class="space-y-3"></div>
+                </div>
+
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)]">Devices Tested</h2>
+                        <button type="button" onclick="addSmokeTestDeviceRow()" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Add Device</button>
+                    </div>
+                    <div id="smoketest-devices-list" class="space-y-2"></div>
+                </div>
+
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
+                    <h2 class="text-sm font-bold text-[var(--eny-text-primary)]">Declaration</h2>
+                    <div id="smoketest-declaration-banner" class="rounded-xl p-4 text-center font-bold text-sm border">Answer the questions above to determine the result.</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Meets Grade D LD2 Requirements?</label>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="setSmokeTestLd2('Yes')" id="smoketest-ld2-yes-btn" class="flex-1 py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Yes</button>
+                                <button type="button" onclick="setSmokeTestLd2('No')" id="smoketest-ld2-no-btn" class="flex-1 py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">No</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">New Devices Installed In</label>
+                            <input type="text" id="smoketest-new-devices" placeholder="e.g. Entire system, or N/A" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Comments (also confirm battery-powered devices here)</label>
+                            <textarea id="smoketest-comments" rows="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 resize-none" placeholder="None"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Deviations From BS 5839-6</label>
+                            <input type="text" id="smoketest-deviations" placeholder="N/A" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Instructions Given To</label>
+                            <input type="text" id="smoketest-instructions-to" placeholder="e.g. Tenant / Landlord" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="saveSmokeTestRecord()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="save" class="w-4 h-4"></i> Save Record</button>
+                    <button onclick="generateSmokeTestPdf()" class="flex-1 bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-100)] font-bold py-3 rounded-xl text-sm border border-[var(--eny-border-standard)] transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="file-down" class="w-4 h-4"></i> Generate PDF</button>
+                    <button onclick="clearSmokeTestForm()" class="text-[var(--eny-text-muted)] hover:text-red-400 font-semibold py-3 px-4 rounded-xl text-sm transition-colors cursor-pointer">Clear / New</button>
+                </div>
+
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-sm font-bold text-[var(--eny-text-primary)] mb-4">Past Records</h2>
+                    <div id="smoketest-records-list" class="space-y-2"></div>
+                </div>
+            </div>
+
             <div id="quote-tab" class="tab-content owner-only-tab space-y-6">
+
                 <div class="flex flex-wrap gap-1.5 bg-[var(--eny-bg-page)]/80 p-1 rounded-xl border border-[var(--eny-border-subtle)] w-fit">
                     <button onclick="switchQuoteSubtab('quote-sub-build')" id="btn-quote-sub-build" class="quote-subtab-btn px-3 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 cursor-pointer">Build Quote</button>
                     <button onclick="switchQuoteSubtab('quote-sub-vault')" id="btn-quote-sub-vault" class="quote-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Vault (Quotes & Invoices)</button>
@@ -1766,6 +1857,7 @@
         // FIRESTORE LISTENERS
         // ============================================================
         let trashProperties = [], trashJobs = [], trashClients = [], trashQuotes = [], trashStock = [], trashTemplates = [];
+        let currentSmokeTests = [];
         const TRASH_RETENTION_DAYS = 30;
 
         // Cost-stripped mirror of stock (name/SKU/category only), shared with
@@ -1910,9 +2002,15 @@
                 renderCalendarGrid();
                 renderTrashTab();
                 renderTodayTab();
+                filterSmokeTestPropertyDropdown();
                 initialLoadFlags.properties = true;
                 checkInitialLoadComplete();
             }, (err) => console.error('Properties listener error:', err));
+
+            db.collection('smokeTests').onSnapshot((snapshot) => {
+                currentSmokeTests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(t => !t.deleted);
+                renderSmokeTestRecordsList();
+            }, (err) => console.error('Smoke tests listener error:', err));
 
             db.collection('jobs').onSnapshot((snapshot) => {
                 const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -2057,6 +2155,7 @@
             return ENGINEER_COLOR_CLASSES[color];
         }
         function rebuildEngineerDropdowns() {
+            populateSmokeTestInspectorDropdown();
             const names = getEngineerNames();
             const calFilter = document.getElementById('calendar-engineer-filter');
             const jobsFilter = document.getElementById('jobs-engineer-filter');
@@ -2419,6 +2518,419 @@
                 updateNavBadge('more-menu-badge', 0);
             }
             lucide.createIcons();
+        }
+
+        // ============================================================
+        // SMOKE / CO DETECTOR TEST
+        // ============================================================
+        // Each question's "goodAnswer" is the one that lets testing continue
+        // normally — note it isn't always Yes (e.g. B and I are meant to be
+        // "No" to pass). Any answer that doesn't match goodAnswer is a fault.
+        const SMOKE_TEST_QUESTIONS = [
+            { id: 'A', text: 'With the mains power on, is the green mains indicator LED on?', goodAnswer: 'Y', yesNote: 'Continue to next check.', noNote: 'Report as a fault.' },
+            { id: 'B', text: 'Does the detector flash amber and emit a single beep every 40 seconds?', goodAnswer: 'N', yesNote: 'Report as a fault (or clean if a multi-sensor).', noNote: 'Continue to next check.' },
+            { id: 'C', text: 'Does the red LED on the detector flash once every 40 seconds?', goodAnswer: 'Y', yesNote: 'Continue to next check.', noNote: 'Report as a fault.' },
+            { id: 'D', text: 'Press the test button on an alarm for 30 seconds. Does every alarm sound?', goodAnswer: 'Y', yesNote: 'Continue to next check.', noNote: 'Report as a fault.' },
+            { id: 'E', text: 'Does the red LED flash rapidly when the test button is pushed?', goodAnswer: 'Y', yesNote: 'Continue to cleaning.', noNote: 'Report as a fault.' },
+            { id: 'G', text: 'After cleaning (mains disconnected during cleaning), is the green mains indicator LED off?', goodAnswer: 'Y', yesNote: 'Continue to next check.', noNote: 'Check switches — do not proceed until the green LED is off.' },
+            { id: 'H', text: 'Repeat checks B–E above — does the alarm pass all of these again?', goodAnswer: 'Y', yesNote: 'Continue to next check.', noNote: 'Report as a fault.' },
+            { id: 'I', text: 'Leave the alarm for 10 minutes — does it beep during this time?', goodAnswer: 'N', yesNote: 'Press the test button for 5 seconds — if the problem persists, report as a fault.', noNote: 'Continue to next check.' },
+            { id: 'J', text: 'Reinstate the mains supply. Is the green LED on, and do the alarm(s) sound when the test button is pressed?', goodAnswer: 'Y', yesNote: 'Repeat all checks above on any additional detectors in the property.', noNote: 'Report as a fault.' },
+        ];
+        let smokeTestState = null;
+        function newSmokeTestState() {
+            return {
+                id: null, propertyId: null, jobId: null,
+                answers: {}, cleaningConfirmed: false,
+                devices: [{ model: '', location: '', expiry: '' }],
+                ld2: null, comments: '', newDevices: '', deviations: '', instructionsTo: '',
+            };
+        }
+        function ensureSmokeTestState() {
+            if (!smokeTestState) smokeTestState = newSmokeTestState();
+            return smokeTestState;
+        }
+        function setSmokeTestAnswer(questionId, answer) {
+            ensureSmokeTestState().answers[questionId] = answer;
+            renderSmokeTestQuestions();
+            updateSmokeTestDeclarationBanner();
+        }
+        function toggleSmokeTestCleaning() {
+            const state = ensureSmokeTestState();
+            state.cleaningConfirmed = !state.cleaningConfirmed;
+            renderSmokeTestQuestions();
+            updateSmokeTestDeclarationBanner();
+        }
+        function renderSmokeTestQuestions() {
+            const container = document.getElementById('smoketest-questions-list');
+            if (!container) return;
+            const state = ensureSmokeTestState();
+            const questionCards = SMOKE_TEST_QUESTIONS.map(q => {
+                const answer = state.answers[q.id];
+                const yesGood = q.goodAnswer === 'Y';
+                const yesClass = answer === 'Y' ? (yesGood ? 'bg-emerald-500 border-emerald-500 text-slate-950' : 'bg-red-500 border-red-500 text-white') : 'bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]';
+                const noClass = answer === 'N' ? (!yesGood ? 'bg-emerald-500 border-emerald-500 text-slate-950' : 'bg-red-500 border-red-500 text-white') : 'bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]';
+                const note = answer === 'Y' ? q.yesNote : (answer === 'N' ? q.noNote : '');
+                const noteColor = answer ? (answer === q.goodAnswer ? 'text-emerald-500' : 'text-red-500') : '';
+                return `<div class="border border-[var(--eny-border-standard)] rounded-xl p-3">
+                    <div class="flex items-start justify-between gap-3 mb-2">
+                        <div class="text-xs text-[var(--eny-text-200)]"><span class="font-bold text-amber-400">${q.id}.</span> ${q.text}</div>
+                        <div class="flex gap-1.5 shrink-0">
+                            <button type="button" onclick="setSmokeTestAnswer('${q.id}', 'Y')" class="w-12 py-1.5 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${yesClass}">Yes</button>
+                            <button type="button" onclick="setSmokeTestAnswer('${q.id}', 'N')" class="w-12 py-1.5 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${noClass}">No</button>
+                        </div>
+                    </div>
+                    ${note ? `<p class="text-[10px] font-semibold ${noteColor}">${note}</p>` : ''}
+                </div>`;
+            });
+            // Cleaning step (F) sits between E and G in the real procedure —
+            // spliced in after the 5th question (index 4).
+            const cleaningCard = `<div class="border border-amber-500/40 bg-amber-500/5 rounded-xl p-3">
+                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                    <input type="checkbox" ${state.cleaningConfirmed ? 'checked' : ''} onchange="toggleSmokeTestCleaning()" class="w-4 h-4 rounded bg-[var(--eny-bg-recessed)] border-[var(--eny-border-standard)] text-amber-500 cursor-pointer">
+                    <span class="text-xs text-[var(--eny-text-200)]"><span class="font-bold text-amber-400">F.</span> Cleaning — disconnect the mains supply, vacuum the sides/slots and wipe clean with a damp cloth. Confirm complete.</span>
+                </label>
+            </div>`;
+            questionCards.splice(5, 0, cleaningCard);
+            container.innerHTML = questionCards.join('');
+            lucide.createIcons();
+        }
+        // Satisfactory only if every question landed on its "good" answer AND
+        // cleaning was confirmed — matches the original form's declaration.
+        function computeSmokeTestResult() {
+            const state = ensureSmokeTestState();
+            const allAnswered = SMOKE_TEST_QUESTIONS.every(q => state.answers[q.id]);
+            if (!allAnswered || !state.cleaningConfirmed) return null;
+            const anyFault = SMOKE_TEST_QUESTIONS.some(q => state.answers[q.id] !== q.goodAnswer);
+            return anyFault ? 'Unsatisfactory' : 'Satisfactory';
+        }
+        function updateSmokeTestDeclarationBanner() {
+            const banner = document.getElementById('smoketest-declaration-banner');
+            if (!banner) return;
+            const result = computeSmokeTestResult();
+            if (!result) {
+                banner.className = 'rounded-xl p-4 text-center font-bold text-sm border bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]';
+                banner.innerText = 'Answer all questions above (and confirm cleaning) to determine the result.';
+            } else if (result === 'Satisfactory') {
+                banner.className = 'rounded-xl p-4 text-center font-bold text-sm border bg-emerald-500/10 border-emerald-500/40 text-emerald-600';
+                banner.innerText = 'SATISFACTORY';
+            } else {
+                banner.className = 'rounded-xl p-4 text-center font-bold text-sm border bg-red-500/10 border-red-500/40 text-red-600';
+                banner.innerText = 'UNSATISFACTORY — one or more checks reported a fault';
+            }
+        }
+        function setSmokeTestLd2(value) {
+            ensureSmokeTestState().ld2 = value;
+            const yesBtn = document.getElementById('smoketest-ld2-yes-btn');
+            const noBtn = document.getElementById('smoketest-ld2-no-btn');
+            const activeClass = 'bg-amber-500 border-amber-500 text-slate-950';
+            const inactiveClass = 'bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]';
+            if (yesBtn) yesBtn.className = `flex-1 py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${value === 'Yes' ? activeClass : inactiveClass}`;
+            if (noBtn) noBtn.className = `flex-1 py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${value === 'No' ? activeClass : inactiveClass}`;
+        }
+        function renderSmokeTestDevices() {
+            const container = document.getElementById('smoketest-devices-list');
+            if (!container) return;
+            const state = ensureSmokeTestState();
+            container.innerHTML = state.devices.map((d, idx) => `
+                <div class="grid grid-cols-1 sm:grid-cols-[1fr_1fr_120px_auto] gap-2 items-center">
+                    <input type="text" value="${d.model || ''}" oninput="updateSmokeTestDeviceField(${idx}, 'model', this.value)" placeholder="Model (e.g. Ei3024 multi)" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                    <input type="text" value="${d.location || ''}" oninput="updateSmokeTestDeviceField(${idx}, 'location', this.value)" placeholder="Location (e.g. Hallway)" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                    <input type="text" value="${d.expiry || ''}" oninput="updateSmokeTestDeviceField(${idx}, 'expiry', this.value)" placeholder="Expiry (e.g. Jun 33)" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                    <button type="button" onclick="removeSmokeTestDeviceRow(${idx})" class="text-[var(--eny-text-muted2)] hover:text-red-400 cursor-pointer p-2 justify-self-end"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                </div>`).join('');
+            lucide.createIcons();
+        }
+        function addSmokeTestDeviceRow() {
+            const state = ensureSmokeTestState();
+            if (state.devices.length >= 8) { showToast('Maximum 8 devices per test, matching the certificate layout.', 'warning'); return; }
+            state.devices.push({ model: '', location: '', expiry: '' });
+            renderSmokeTestDevices();
+        }
+        function removeSmokeTestDeviceRow(idx) {
+            const state = ensureSmokeTestState();
+            if (state.devices.length <= 1) { state.devices = [{ model: '', location: '', expiry: '' }]; renderSmokeTestDevices(); return; }
+            state.devices.splice(idx, 1);
+            renderSmokeTestDevices();
+        }
+        function updateSmokeTestDeviceField(idx, field, value) {
+            const state = ensureSmokeTestState();
+            if (state.devices[idx]) state.devices[idx][field] = value;
+        }
+        function filterSmokeTestPropertyDropdown() {
+            const searchInput = document.getElementById('smoketest-property-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const select = document.getElementById('smoketest-property-select');
+            if (!select) return;
+            const previousValue = select.value;
+            const filtered = currentProperties.filter(p => !filterText || (p.address || '').toLowerCase().includes(filterText));
+            select.innerHTML = '<option value="">-- Select property --</option>' + filtered.map(p => `<option value="${p.id}">${(p.address || '').split('\\n')[0]}</option>`).join('');
+            if (filtered.some(p => p.id === previousValue)) select.value = previousValue;
+        }
+        function loadSmokeTestPropertyContext() {
+            const propertyId = document.getElementById('smoketest-property-select').value;
+            const state = ensureSmokeTestState();
+            state.propertyId = propertyId || null;
+            state.jobId = null;
+            const addressEl = document.getElementById('smoketest-address');
+            const jobNumberEl = document.getElementById('smoketest-job-number');
+            if (!propertyId) { addressEl.value = ''; jobNumberEl.value = ''; return; }
+            const property = currentProperties.find(p => p.id === propertyId);
+            addressEl.value = property ? property.address : '';
+            // Pull the job number from the most recently scheduled job linked
+            // to this property, if there is one.
+            const linkedJobs = currentJobs.filter(j => j.propertyId === propertyId && j.jobNumber).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+            if (linkedJobs.length > 0) {
+                jobNumberEl.value = linkedJobs[0].jobNumber;
+                state.jobId = linkedJobs[0].id;
+            } else {
+                jobNumberEl.value = '';
+            }
+        }
+        function populateSmokeTestInspectorDropdown() {
+            const select = document.getElementById('smoketest-inspector');
+            if (!select) return;
+            const previousValue = select.value;
+            const names = getEngineerNames();
+            select.innerHTML = '<option value="">-- Select engineer --</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+            if (names.includes(previousValue)) select.value = previousValue;
+        }
+        async function saveSmokeTestRecord() {
+            const state = ensureSmokeTestState();
+            if (!state.propertyId) { showToast('Select a property first.', 'warning'); return; }
+            const inspector = document.getElementById('smoketest-inspector').value;
+            if (!inspector) { showToast('Select the inspecting engineer.', 'warning'); return; }
+            const testDate = document.getElementById('smoketest-date').value || todayISO();
+            const property = currentProperties.find(p => p.id === state.propertyId);
+            const payload = {
+                propertyId: state.propertyId,
+                jobId: state.jobId,
+                jobNumber: document.getElementById('smoketest-job-number').value || null,
+                address: property ? property.address : '',
+                testDate,
+                inspector,
+                answers: state.answers,
+                cleaningConfirmed: state.cleaningConfirmed,
+                devices: state.devices.filter(d => d.model || d.location || d.expiry),
+                ld2: state.ld2,
+                comments: document.getElementById('smoketest-comments').value.trim(),
+                newDevices: document.getElementById('smoketest-new-devices').value.trim(),
+                deviations: document.getElementById('smoketest-deviations').value.trim(),
+                instructionsTo: document.getElementById('smoketest-instructions-to').value.trim(),
+                result: computeSmokeTestResult(),
+                updatedAt: new Date().toISOString(),
+            };
+            if (state.id) {
+                await db.collection('smokeTests').doc(state.id).update(payload);
+            } else {
+                payload.createdAt = new Date().toISOString();
+                const ref = await db.collection('smokeTests').add(payload);
+                state.id = ref.id;
+            }
+            showToast('Smoke test record saved.', 'success');
+        }
+        function clearSmokeTestForm() {
+            smokeTestState = newSmokeTestState();
+            document.getElementById('smoketest-property-search-input').value = '';
+            document.getElementById('smoketest-property-select').value = '';
+            document.getElementById('smoketest-job-number').value = '';
+            document.getElementById('smoketest-address').value = '';
+            document.getElementById('smoketest-inspector').value = '';
+            document.getElementById('smoketest-date').value = todayISO();
+            document.getElementById('smoketest-comments').value = '';
+            document.getElementById('smoketest-new-devices').value = '';
+            document.getElementById('smoketest-deviations').value = '';
+            document.getElementById('smoketest-instructions-to').value = '';
+            filterSmokeTestPropertyDropdown();
+            setSmokeTestLd2(null);
+            renderSmokeTestQuestions();
+            renderSmokeTestDevices();
+            updateSmokeTestDeclarationBanner();
+        }
+        function loadSmokeTestRecordForEditing(id) {
+            const record = currentSmokeTests.find(t => t.id === id);
+            if (!record) return;
+            smokeTestState = {
+                id: record.id, propertyId: record.propertyId, jobId: record.jobId,
+                answers: { ...(record.answers || {}) }, cleaningConfirmed: !!record.cleaningConfirmed,
+                devices: record.devices && record.devices.length ? record.devices.map(d => ({ ...d })) : [{ model: '', location: '', expiry: '' }],
+                ld2: record.ld2 || null,
+            };
+            document.getElementById('smoketest-property-search-input').value = '';
+            filterSmokeTestPropertyDropdown();
+            document.getElementById('smoketest-property-select').value = record.propertyId || '';
+            document.getElementById('smoketest-job-number').value = record.jobNumber || '';
+            document.getElementById('smoketest-address').value = record.address || '';
+            document.getElementById('smoketest-inspector').value = record.inspector || '';
+            document.getElementById('smoketest-date').value = record.testDate || todayISO();
+            document.getElementById('smoketest-comments').value = record.comments || '';
+            document.getElementById('smoketest-new-devices').value = record.newDevices || '';
+            document.getElementById('smoketest-deviations').value = record.deviations || '';
+            document.getElementById('smoketest-instructions-to').value = record.instructionsTo || '';
+            setSmokeTestLd2(record.ld2 || null);
+            renderSmokeTestQuestions();
+            renderSmokeTestDevices();
+            updateSmokeTestDeclarationBanner();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        async function deleteSmokeTestRecord(id) {
+            if (!(await showConfirm('Delete this smoke test record? This cannot be undone.', { confirmText: 'Delete', danger: true }))) return;
+            await db.collection('smokeTests').doc(id).delete();
+            showToast('Record deleted.', 'success');
+        }
+        function renderSmokeTestRecordsList() {
+            const container = document.getElementById('smoketest-records-list');
+            if (!container) return;
+            const sorted = [...currentSmokeTests].sort((a, b) => (b.testDate || '').localeCompare(a.testDate || '') || (b.createdAt || '').localeCompare(a.createdAt || ''));
+            container.innerHTML = sorted.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">No smoke test records yet.</p>` :
+                sorted.map(t => {
+                    const resultBadge = t.result === 'Satisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 border-emerald-500/40 text-emerald-600">Satisfactory</span>`
+                        : t.result === 'Unsatisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-red-500/10 border-red-500/40 text-red-600">Unsatisfactory</span>`
+                        : `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]">Incomplete</span>`;
+                    return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${(t.address || '').split('\n')[0]}</div>
+                            <div class="text-[10px] text-[var(--eny-text-muted2)] flex items-center gap-1.5 flex-wrap">${formatUkDate(t.testDate)} • ${t.inspector || '—'} ${resultBadge}</div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button onclick="loadSmokeTestRecordForEditing('${t.id}')" title="Edit" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="generateSmokeTestPdf('${t.id}')" title="PDF" class="text-[var(--eny-text-muted)] hover:text-blue-400 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="file-down" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="deleteSmokeTestRecord('${t.id}')" title="Delete" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>`;
+                }).join('');
+            lucide.createIcons();
+        }
+        // Works two ways: pass a saved record's ID to regenerate its PDF from
+        // the Past Records list, or call with no argument to generate
+        // straight from whatever's currently on the form (doesn't require
+        // saving first).
+        function generateSmokeTestPdf(recordId) {
+            let data;
+            if (recordId) {
+                const record = currentSmokeTests.find(t => t.id === recordId);
+                if (!record) { showToast('Could not find that record.', 'error'); return; }
+                data = record;
+            } else {
+                const state = ensureSmokeTestState();
+                if (!state.propertyId) { showToast('Select a property first.', 'warning'); return; }
+                const inspector = document.getElementById('smoketest-inspector').value;
+                if (!inspector) { showToast('Select the inspecting engineer.', 'warning'); return; }
+                data = {
+                    address: document.getElementById('smoketest-address').value,
+                    jobNumber: document.getElementById('smoketest-job-number').value,
+                    testDate: document.getElementById('smoketest-date').value || todayISO(),
+                    inspector,
+                    answers: state.answers,
+                    cleaningConfirmed: state.cleaningConfirmed,
+                    devices: state.devices.filter(d => d.model || d.location || d.expiry),
+                    ld2: state.ld2,
+                    comments: document.getElementById('smoketest-comments').value.trim(),
+                    newDevices: document.getElementById('smoketest-new-devices').value.trim(),
+                    deviations: document.getElementById('smoketest-deviations').value.trim(),
+                    instructionsTo: document.getElementById('smoketest-instructions-to').value.trim(),
+                    result: computeSmokeTestResult(),
+                };
+            }
+
+            const questionRows = SMOKE_TEST_QUESTIONS.map(q => {
+                const answer = data.answers ? data.answers[q.id] : null;
+                const isGood = answer === q.goodAnswer;
+                const badgeColor = !answer ? '#94a3b8' : (isGood ? '#059669' : '#dc2626');
+                const badgeBg = !answer ? '#f1f5f9' : (isGood ? '#d1fae5' : '#fee2e2');
+                const note = answer === 'Y' ? q.yesNote : (answer === 'N' ? q.noNote : '');
+                return `<tr>
+                    <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10px;font-weight:700;color:#0A5FB9;vertical-align:top;width:18px;">${q.id}</td>
+                    <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;vertical-align:top;">${q.text}${note ? `<div style="font-size:9px;color:${badgeColor};margin-top:2px;">${note}</div>` : ''}</td>
+                    <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:center;vertical-align:top;width:36px;">
+                        <span style="display:inline-block;min-width:20px;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;color:${badgeColor};background:${badgeBg};">${answer || '—'}</span>
+                    </td>
+                </tr>`;
+            });
+            const cleaningRow = `<tr>
+                <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10px;font-weight:700;color:#0A5FB9;vertical-align:top;">F</td>
+                <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;vertical-align:top;">Cleaning — mains disconnected, sides/slots vacuumed, wiped clean with a damp cloth.</td>
+                <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:center;vertical-align:top;">
+                    <span style="display:inline-block;min-width:20px;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;color:${data.cleaningConfirmed ? '#059669' : '#94a3b8'};background:${data.cleaningConfirmed ? '#d1fae5' : '#f1f5f9'};">${data.cleaningConfirmed ? 'X' : '—'}</span>
+                </td>
+            </tr>`;
+            questionRows.splice(5, 0, cleaningRow);
+
+            const devices = (data.devices || []).filter(d => d.model || d.location || d.expiry);
+            const deviceRows = devices.length === 0 ? `<tr><td colspan="3" style="padding:10px;font-size:10.5px;color:#94a3b8;text-align:center;">No devices recorded</td></tr>` :
+                devices.map(d => `<tr>
+                    <td style="padding:6px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;">${d.model || ''}</td>
+                    <td style="padding:6px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;">${d.location || ''}</td>
+                    <td style="padding:6px 10px;border-bottom:1px solid #e2e8f0;font-size:10.5px;color:#334155;">${d.expiry || ''}</td>
+                </tr>`).join('');
+
+            const resultColor = data.result === 'Satisfactory' ? '#059669' : (data.result === 'Unsatisfactory' ? '#dc2626' : '#94a3b8');
+            const resultBg = data.result === 'Satisfactory' ? '#d1fae5' : (data.result === 'Unsatisfactory' ? '#fee2e2' : '#f1f5f9');
+
+            const pdfHtml = `
+                <div style="padding:40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#334155;background-color:#ffffff;min-height:842px;position:relative;">
+                    <div style="height:4px;background-color:#0A5FB9;margin:-40px -40px 25px -40px;"></div>
+                    <table style="width:100%;margin-bottom:20px;"><tr>
+                        <td style="vertical-align:middle;width:60px;"><img src="Logo.png" style="width:50px;height:50px;border-radius:50%;" /></td>
+                        <td style="vertical-align:middle;">
+                            <div style="font-size:13px;color:#475569;font-weight:500;">ENY Electrical</div>
+                            <h1 style="margin:0;font-size:22px;font-weight:700;color:#0A5FB9;">Smoke / CO Detector Test Certificate</h1>
+                        </td>
+                    </tr></table>
+                    <table style="width:100%;margin-bottom:16px;border-collapse:collapse;">
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;width:110px;">Job Number</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${data.jobNumber || '—'}</td>
+                            <td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;width:80px;">Test Date</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${formatUkDate(data.testDate)}</td></tr>
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Address</td><td colspan="3" style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${(data.address || '').replace(/\n/g, ', ')}</td></tr>
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Inspector</td><td colspan="3" style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${data.inspector || '—'}</td></tr>
+                    </table>
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+                        <thead><tr style="background:#f1f5f9;"><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">#</th><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">Check</th><th style="padding:6px 10px;text-align:center;font-size:9px;color:#64748b;text-transform:uppercase;">Result</th></tr></thead>
+                        <tbody>${questionRows.join('')}</tbody>
+                    </table>
+                    <div style="padding:12px;border-radius:6px;background:${resultBg};color:${resultColor};font-weight:700;font-size:13px;text-align:center;margin-bottom:16px;">
+                        DECLARATION: ${(data.result || 'INCOMPLETE').toUpperCase()}
+                    </div>
+                    <table style="width:100%;margin-bottom:16px;border-collapse:collapse;">
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;width:180px;">Meets Grade D LD2 Requirements?</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${data.ld2 || '—'}</td></tr>
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Comments</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;">${data.comments || 'None'}</td></tr>
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">New Devices Installed</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;">${data.newDevices || 'N/A'}</td></tr>
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Deviations From BS 5839-6</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;">${data.deviations || 'N/A'}</td></tr>
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Instructions Given To</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;">${data.instructionsTo || '—'}</td></tr>
+                    </table>
+                    <div style="font-size:10px;color:#64748b;font-weight:700;margin-bottom:6px;">Devices Tested</div>
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead><tr style="background:#f1f5f9;"><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">Model</th><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">Location</th><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">Expiry</th></tr></thead>
+                        <tbody>${deviceRows}</tbody>
+                    </table>
+                </div>`;
+
+            const addressSlug = (data.address || 'property').split('\n')[0].replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            const filename = `smoke_test_${addressSlug}_${data.testDate || todayISO()}.pdf`;
+            const renderOverlay = document.createElement('div');
+            renderOverlay.style.cssText = 'position:fixed; inset:0; background:#EFF5FB; z-index:99999; display:flex; align-items:center; justify-content:center; color:#0A5FB9; font-family:sans-serif; font-size:14px; font-weight:600;';
+            renderOverlay.innerText = 'Generating PDF...';
+            document.body.appendChild(renderOverlay);
+            const pdfContainer = document.createElement('div');
+            pdfContainer.style.cssText = 'position:absolute; top:0; left:0; width:210mm; background:#ffffff; z-index:1;';
+            pdfContainer.innerHTML = pdfHtml;
+            document.body.appendChild(pdfContainer);
+            const cleanUpPdfRender = () => { document.body.removeChild(pdfContainer); document.body.removeChild(renderOverlay); };
+
+            html2canvas(pdfContainer, { scale: 2, useCORS: true }).then((canvas) => {
+                if (!canvas.width || !canvas.height) throw new Error(`html2canvas produced an empty canvas (${canvas.width}x${canvas.height})`);
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = (canvas.height * pageWidth) / canvas.width;
+                pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+                pdf.save(filename);
+                cleanUpPdfRender();
+            }).catch((err) => {
+                console.error('Smoke test PDF generation failed:', err);
+                cleanUpPdfRender();
+                showToast('PDF generation failed with this error:\n\n' + (err && err.message ? err.message : String(err)), 'error');
+            });
         }
 
         // ============================================================
@@ -4069,6 +4581,16 @@
                 renderJobsList();
             }
             if (tabId === 'quote-tab') { rebuildJobTemplatesDropdown(); filterMaterialCatalog(); rebuildAllocatedMaterialsTable(); rebuildVaultDataTable(); filterQuotePropertyDropdown(); }
+            if (tabId === 'smoketest-tab') {
+                ensureSmokeTestState();
+                if (!document.getElementById('smoketest-date').value) document.getElementById('smoketest-date').value = todayISO();
+                filterSmokeTestPropertyDropdown();
+                populateSmokeTestInspectorDropdown();
+                renderSmokeTestQuestions();
+                renderSmokeTestDevices();
+                updateSmokeTestDeclarationBanner();
+                renderSmokeTestRecordsList();
+            }
             if (tabId === 'crm-tab') rebuildCrmProfilesInterface();
             if (tabId === 'settings-tab') { rebuildMasterStockDirectoryTable(); rebuildTemplateCatalogList(); rebuildTemplateMaterialSelector(); loadPricingSettingsIntoForm(); loadBankFormFields('HUGHES'); loadBankFormFields('MABBLEY'); }
             if (tabId === 'trash-tab') renderTrashTab();
