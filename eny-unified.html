@@ -497,6 +497,14 @@
                                 <input type="text" id="property-hazard-other" placeholder="Other hazard (optional)" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mt-2">
                             </div>
                             <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Landlord (optional — separate from the on-site contact)</label>
+                                <input type="text" id="property-landlord-search-input" oninput="filterPropertyLandlordDropdown()" placeholder="Search landlord clients..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-1.5">
+                                <select id="property-landlord-select" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                    <option value="">-- None (tenant/owner is the billing contact) --</option>
+                                </select>
+                                <span class="text-[10px] text-[var(--eny-text-muted2)] mt-1 block">If set, quotes/invoices for this property bill the landlord — the linked client stays the on-site contact for messages.</span>
+                            </div>
+                            <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Last Electrical Inspection (EICR)</label>
                                 <input type="date" id="property-last-electrical" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-2">
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">EICR Reminder Cycle</label>
@@ -589,6 +597,14 @@
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
                         <h2 class="text-sm font-bold text-[var(--eny-text-primary)]">Declaration</h2>
                         <div id="smoketest-declaration-banner" class="rounded-xl p-4 text-center font-bold text-sm border">Answer the questions above to determine the result.</div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Overall Recommendation</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button type="button" onclick="setSmokeTestOutcome('Satisfactory')" id="smoketest-outcome-satisfactory-btn" class="py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Satisfactory</button>
+                                <button type="button" onclick="setSmokeTestOutcome('Unsatisfactory')" id="smoketest-outcome-unsatisfactory-btn" class="py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Unsatisfactory</button>
+                                <button type="button" onclick="setSmokeTestOutcome('Alterations Recommended')" id="smoketest-outcome-alterations-btn" class="py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Alterations Recommended</button>
+                            </div>
+                        </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Meets Grade D LD2 Requirements?</label>
@@ -617,9 +633,19 @@
                     </div>
                 </div>
 
-                <div id="smoketest-generic-section" class="hidden bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                    <h2 id="smoketest-generic-title" class="text-sm font-bold text-[var(--eny-text-primary)] mb-4">Survey Checklist</h2>
-                    <div id="smoketest-generic-fields-list" class="space-y-4"></div>
+                <div id="smoketest-generic-section" class="hidden space-y-6">
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <h2 id="smoketest-generic-title" class="text-sm font-bold text-[var(--eny-text-primary)] mb-4">Survey Checklist</h2>
+                        <div id="smoketest-generic-fields-list" class="space-y-4"></div>
+                    </div>
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                        <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Overall Recommendation</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" onclick="setSmokeTestOutcome('Satisfactory')" id="smoketest-generic-outcome-satisfactory-btn" class="py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Satisfactory</button>
+                            <button type="button" onclick="setSmokeTestOutcome('Unsatisfactory')" id="smoketest-generic-outcome-unsatisfactory-btn" class="py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Unsatisfactory</button>
+                            <button type="button" onclick="setSmokeTestOutcome('Alterations Recommended')" id="smoketest-generic-outcome-alterations-btn" class="py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Alterations Recommended</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3">
@@ -912,6 +938,13 @@
                                 <div>
                                     <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Name *</label>
                                     <input type="text" id="crm-client-name" required class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Client Type</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button type="button" onclick="setCrmClientType('Privately Owned')" id="crm-client-type-private-btn" class="py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Privately Owned</button>
+                                        <button type="button" onclick="setCrmClientType('Landlord')" id="crm-client-type-landlord-btn" class="py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors">Landlord</button>
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Email</label>
@@ -2076,6 +2109,7 @@
                     rebuildCrmProfilesInterface();
                     rebuildQuoteClientDropdown();
                     rebuildCrmLinkPropertyDropdown();
+                    filterPropertyLandlordDropdown();
                     renderDashboard();
                     renderTrashTab();
                 }, (err) => console.error('Clients listener error:', err));
@@ -2632,6 +2666,7 @@
                 devices: [{ model: '', location: '', expiry: '' }],
                 ld2: null, comments: '', newDevices: '', deviations: '', instructionsTo: '',
                 genericFields: {}, // for the 5 non-smoke-test survey types
+                outcome: null, // Satisfactory / Unsatisfactory / Alterations Recommended — every service type
             };
         }
         function ensureSmokeTestState() {
@@ -2658,6 +2693,7 @@
                 state.devices = [{ model: '', location: '', expiry: '' }];
                 state.ld2 = null;
                 state.genericFields = {};
+                state.outcome = null;
             }
             const survey = SURVEY_TYPES[state.serviceType];
             const smokeOnly = document.getElementById('smoketest-smokeonly-section');
@@ -2671,6 +2707,7 @@
                 document.getElementById('smoketest-generic-title').innerText = `${survey.label} — Checklist`;
                 renderGenericSurveyFields();
             }
+            renderSmokeTestOutcomeButtons();
             lucide.createIcons();
         }
         // Button-type fields (yesno/select2/select3) re-render on change,
@@ -2835,6 +2872,34 @@
             if (yesBtn) yesBtn.className = `flex-1 py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${value === 'Yes' ? activeClass : inactiveClass}`;
             if (noBtn) noBtn.className = `flex-1 py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${value === 'No' ? activeClass : inactiveClass}`;
         }
+        // A separate, always-optional 3-way summary judgement — distinct from
+        // the smoke test's own computed pass/fail (which stays purely
+        // mechanical, driven by the actual test answers, and keeps driving
+        // the yearly reminder). This is what the property-level "failed
+        // report" flag checks against, across every service type.
+        function setSmokeTestOutcome(value) {
+            ensureSmokeTestState().outcome = value;
+            renderSmokeTestOutcomeButtons();
+        }
+        function renderSmokeTestOutcomeButtons() {
+            const state = ensureSmokeTestState();
+            const value = state.outcome;
+            const colorFor = (opt) => {
+                if (value !== opt) return 'bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]';
+                if (opt === 'Satisfactory') return 'bg-emerald-500 border-emerald-500 text-slate-950';
+                if (opt === 'Unsatisfactory') return 'bg-red-500 border-red-500 text-white';
+                return 'bg-amber-500 border-amber-500 text-slate-950'; // Alterations Recommended
+            };
+            const suffixes = ['', 'generic-'];
+            suffixes.forEach(prefix => {
+                const satBtn = document.getElementById(`smoketest-${prefix}outcome-satisfactory-btn`);
+                const unsatBtn = document.getElementById(`smoketest-${prefix}outcome-unsatisfactory-btn`);
+                const altBtn = document.getElementById(`smoketest-${prefix}outcome-alterations-btn`);
+                if (satBtn) satBtn.className = `py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${colorFor('Satisfactory')}`;
+                if (unsatBtn) unsatBtn.className = `py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${colorFor('Unsatisfactory')}`;
+                if (altBtn) altBtn.className = `py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${colorFor('Alterations Recommended')}`;
+            });
+        }
         function renderSmokeTestDevices() {
             const container = document.getElementById('smoketest-devices-list');
             if (!container) return;
@@ -2905,6 +2970,7 @@
                 address: property ? property.address : '',
                 testDate,
                 inspector,
+                outcome: state.outcome,
                 updatedAt: new Date().toISOString(),
             };
             if (isSmokeTest) {
@@ -2960,6 +3026,7 @@
             renderSmokeTestDevices();
             updateSmokeTestDeclarationBanner();
             renderGenericSurveyFields();
+            renderSmokeTestOutcomeButtons();
         }
         function loadSmokeTestRecordForEditing(id) {
             const record = currentSmokeTests.find(t => t.id === id);
@@ -2971,6 +3038,7 @@
                 devices: record.devices && record.devices.length ? record.devices.map(d => ({ ...d })) : [{ model: '', location: '', expiry: '' }],
                 ld2: record.ld2 || null,
                 genericFields: record.genericFields ? JSON.parse(JSON.stringify(record.genericFields)) : {},
+                outcome: record.outcome || null,
             };
             document.getElementById('smoketest-service-type').value = serviceType;
             switchSmokeTestServiceType(true);
@@ -3009,10 +3077,14 @@
                         t.result === 'Satisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 border-emerald-500/40 text-emerald-600">Satisfactory</span>`
                         : t.result === 'Unsatisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-red-500/10 border-red-500/40 text-red-600">Unsatisfactory</span>`
                         : `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]">Incomplete</span>`;
+                    const outcomeBadge = !t.outcome ? '' :
+                        t.outcome === 'Satisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 border-emerald-500/40 text-emerald-600">${t.outcome}</span>`
+                        : t.outcome === 'Unsatisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-red-500/10 border-red-500/40 text-red-600">${t.outcome}</span>`
+                        : `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-amber-500/10 border-amber-500/40 text-amber-600">${t.outcome}</span>`;
                     return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
                         <div class="min-w-0">
                             <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${(t.address || '').split('\n')[0]}</div>
-                            <div class="text-[10px] text-[var(--eny-text-muted2)] flex items-center gap-1.5 flex-wrap mt-1">${formatUkDate(t.testDate)} • ${t.inspector || '—'} ${typeBadge} ${resultBadge}</div>
+                            <div class="text-[10px] text-[var(--eny-text-muted2)] flex items-center gap-1.5 flex-wrap mt-1">${formatUkDate(t.testDate)} • ${t.inspector || '—'} ${typeBadge} ${resultBadge} ${outcomeBadge}</div>
                         </div>
                         <div class="flex items-center gap-1.5 shrink-0">
                             <button onclick="loadSmokeTestRecordForEditing('${t.id}')" title="Edit" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
@@ -3053,6 +3125,7 @@
                     instructionsTo: document.getElementById('smoketest-instructions-to').value.trim(),
                     result: computeSmokeTestResult(),
                     genericFields: state.genericFields,
+                    outcome: state.outcome,
                 };
             }
             const serviceType = data.serviceType || 'smoke-test';
@@ -3105,6 +3178,7 @@
                     </div>
                     <table style="width:100%;margin-bottom:16px;border-collapse:collapse;">
                         <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;width:180px;">Meets Grade D LD2 Requirements?</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${data.ld2 || '—'}</td></tr>
+                        <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Overall Recommendation</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;font-weight:600;">${data.outcome || '—'}</td></tr>
                         <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Comments</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;">${data.comments || 'None'}</td></tr>
                         <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">New Devices Installed</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;">${data.newDevices || 'N/A'}</td></tr>
                         <tr><td style="padding:5px 8px;font-size:10px;color:#94a3b8;text-transform:uppercase;font-weight:700;">Deviations From BS 5839-6</td><td style="padding:5px 8px;font-size:11px;color:#1e293b;">${data.deviations || 'N/A'}</td></tr>
@@ -3137,7 +3211,12 @@
                 }).join('');
                 const hasRecommendations = (survey.fields || []).some(f => f.id === 'recommendations');
                 const recommendationsValue = (genericFields.recommendations || {}).value || 'None';
+                const outcomeColor = data.outcome === 'Satisfactory' ? '#059669' : (data.outcome === 'Unsatisfactory' ? '#dc2626' : (data.outcome === 'Alterations Recommended' ? '#d97706' : '#94a3b8'));
+                const outcomeBg = data.outcome === 'Satisfactory' ? '#d1fae5' : (data.outcome === 'Unsatisfactory' ? '#fee2e2' : (data.outcome === 'Alterations Recommended' ? '#fef3c7' : '#f1f5f9'));
                 bodyHtml = `
+                    <div style="padding:12px;border-radius:6px;background:${outcomeBg};color:${outcomeColor};font-weight:700;font-size:13px;text-align:center;margin-bottom:16px;">
+                        OVERALL RECOMMENDATION: ${(data.outcome || 'NOT SET').toUpperCase()}
+                    </div>
                     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;">
                         <thead><tr style="background:#f1f5f9;"><th style="padding:6px 10px;text-align:left;font-size:9px;color:#64748b;text-transform:uppercase;">Check</th><th style="padding:6px 10px;text-align:right;font-size:9px;color:#64748b;text-transform:uppercase;">Answer</th></tr></thead>
                         <tbody>${fieldRows}</tbody>
@@ -3514,7 +3593,25 @@
             activeLinkedPropertyId = propertyId;
             if (!propertyId) return;
             const property = currentProperties.find(p => p.id === propertyId);
-            if (property) document.getElementById('client-address').value = property.address;
+            if (!property) return;
+            // A property with a linked landlord bills the landlord, not
+            // whoever's linked as the on-site contact — auto-fill the client
+            // fields from the landlord's own CRM record so the quote/invoice
+            // addresses the right party without extra manual steps.
+            if (property.landlordId) {
+                const landlord = currentClients.find(c => c.id === property.landlordId);
+                if (landlord) {
+                    activeLinkedClientId = landlord.id;
+                    document.getElementById('client-name').value = landlord.name || '';
+                    document.getElementById('client-email').value = landlord.email || '';
+                    document.getElementById('client-phone').value = landlord.phone || '';
+                    document.getElementById('client-address').value = landlord.address || property.address;
+                    const clientSelect = document.getElementById('quote-client-select');
+                    if (clientSelect) clientSelect.value = landlord.id;
+                    return;
+                }
+            }
+            document.getElementById('client-address').value = property.address;
         }
         function handleQuoteAddressManualEdit() {
             // If they've picked a property then typed over the address by hand,
@@ -4449,6 +4546,7 @@
                 notes: document.getElementById('property-notes').value.trim(),
                 hazardTags: getSelectedPropertyHazardsFromForm(),
                 hazardOther: document.getElementById('property-hazard-other').value.trim() || null,
+                landlordId: document.getElementById('property-landlord-select').value || null,
                 lastElectricalInspection: document.getElementById('property-last-electrical').value || null,
                 electricalCycleYears: parseInt(document.getElementById('property-electrical-cycle').value) || 5,
                 lastSmokeAlarmTest: document.getElementById('property-last-smoke').value || null,
@@ -4478,6 +4576,10 @@
             const hazardTags = p.hazardTags || [];
             document.querySelectorAll('.property-hazard-checkbox').forEach(chk => { chk.checked = hazardTags.includes(chk.value); });
             document.getElementById('property-hazard-other').value = p.hazardOther || '';
+            const landlordSearchInput = document.getElementById('property-landlord-search-input');
+            if (landlordSearchInput) landlordSearchInput.value = '';
+            filterPropertyLandlordDropdown();
+            document.getElementById('property-landlord-select').value = p.landlordId || '';
             document.getElementById('property-last-electrical').value = p.lastElectricalInspection || '';
             document.getElementById('property-electrical-cycle').value = String(p.electricalCycleYears || 5);
             document.getElementById('property-last-smoke').value = p.lastSmokeAlarmTest || '';
@@ -4495,6 +4597,9 @@
             document.getElementById('property-electrical-cycle').value = '5';
             rebuildPropertyHazardChecklist();
             document.getElementById('property-hazard-other').value = '';
+            const landlordSearchInput = document.getElementById('property-landlord-search-input');
+            if (landlordSearchInput) landlordSearchInput.value = '';
+            filterPropertyLandlordDropdown();
             capturedPropertyLat = null; capturedPropertyLng = null;
             document.getElementById('property-location-status').innerText = '';
             document.getElementById('property-form-title').innerText = 'Add Property';
@@ -4521,9 +4626,15 @@
             listEl.innerHTML = filtered.map(p => {
                 const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
                 const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
+                const hasOverdueCompliance = elec.status === 'overdue' || smoke.status === 'overdue';
+                const hasFailedReport = currentSmokeTests.some(t => t.propertyId === p.id && t.outcome === 'Unsatisfactory');
+                const flagsHtml = (hasOverdueCompliance || hasFailedReport) ? `<div class="flex items-center gap-1 shrink-0">
+                    ${hasOverdueCompliance ? `<span title="Electrical inspection or smoke alarm test overdue" class="text-red-500"><i data-lucide="alert-triangle" class="w-4 h-4"></i></span>` : ''}
+                    ${hasFailedReport ? `<span title="Unsatisfactory service report on file" class="text-red-600"><i data-lucide="flag" class="w-4 h-4"></i></span>` : ''}
+                </div>` : '';
                 return `<div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06] space-y-3">
                     <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0"><div class="text-sm font-bold text-[var(--eny-text-primary)] whitespace-pre-line">${p.address}</div>${buildHazardBadgesHtml(p)}</div>
+                        <div class="min-w-0 flex items-start gap-2"><div class="min-w-0"><div class="text-sm font-bold text-[var(--eny-text-primary)] whitespace-pre-line">${p.address}</div>${buildHazardBadgesHtml(p)}</div>${flagsHtml}</div>
                         <div class="flex items-center gap-1.5 shrink-0">
                             <button onclick="loadPropertyForModification('${p.id}')" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                             <button onclick="deleteProperty('${p.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
@@ -6111,6 +6222,16 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         // CRM (owner-only) — merged with client<->property linking
         // ============================================================
         let crmLinkedPropertyIdsDraft = [];
+        let crmClientTypeDraft = 'Privately Owned';
+        function setCrmClientType(type) {
+            crmClientTypeDraft = type;
+            const privateBtn = document.getElementById('crm-client-type-private-btn');
+            const landlordBtn = document.getElementById('crm-client-type-landlord-btn');
+            const activeClass = 'bg-amber-500 border-amber-500 text-slate-950';
+            const inactiveClass = 'bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]';
+            if (privateBtn) privateBtn.className = `py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${type === 'Privately Owned' ? activeClass : inactiveClass}`;
+            if (landlordBtn) landlordBtn.className = `py-2 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${type === 'Landlord' ? activeClass : inactiveClass}`;
+        }
 
         function rebuildCrmLinkPropertyDropdown() {
             filterCrmLinkPropertyDropdown();
@@ -6124,6 +6245,16 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const filtered = currentProperties.filter(p => (p.address || '').toLowerCase().includes(filterText));
             select.innerHTML = filtered.map(p => `<option value="${p.id}">${(p.address || '').split('\\n')[0]}</option>`).join('');
             if (filtered.some(p => p.id === previousValue)) select.value = previousValue;
+        }
+        function filterPropertyLandlordDropdown() {
+            const searchInput = document.getElementById('property-landlord-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const select = document.getElementById('property-landlord-select');
+            if (!select) return;
+            const previousValue = select.value;
+            const landlords = currentClients.filter(c => c.clientType === 'Landlord' && (c.name || '').toLowerCase().includes(filterText));
+            select.innerHTML = '<option value="">-- None (tenant/owner is the billing contact) --</option>' + landlords.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            if (landlords.some(c => c.id === previousValue)) select.value = previousValue;
         }
         function addPropertyLinkToClientForm() {
             const select = document.getElementById('crm-link-property-select');
@@ -6190,6 +6321,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 phone: document.getElementById('crm-client-phone').value.trim(),
                 address: document.getElementById('crm-client-address').value.trim(),
                 linkedPropertyIds: [...crmLinkedPropertyIdsDraft],
+                clientType: crmClientTypeDraft,
             };
             let clientId = editId;
             if (editId) {
@@ -6218,6 +6350,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (searchInput) searchInput.value = '';
             filterCrmLinkPropertyDropdown();
             renderCrmLinkedPropertyChips();
+            setCrmClientType(c.clientType || 'Privately Owned');
             document.getElementById('crm-form-title').innerText = 'Modify Client';
             document.getElementById('crm-client-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Profile`;
             document.getElementById('crm-client-cancel-btn').classList.remove('hidden');
@@ -6230,6 +6363,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             crmLinkedPropertyIdsDraft = [];
             renderCrmLinkedPropertyChips();
             filterCrmLinkPropertyDropdown();
+            setCrmClientType('Privately Owned');
             document.getElementById('crm-form-title').innerText = 'New Client';
             document.getElementById('crm-client-submit-btn').innerHTML = `<i data-lucide="user-plus" class="w-4 h-4"></i> Create Client`;
             document.getElementById('crm-client-cancel-btn').classList.add('hidden');
@@ -6286,7 +6420,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 const linkedProps = (client.linkedPropertyIds || []).map(id => currentProperties.find(p => p.id === id)).filter(Boolean);
                 return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl overflow-hidden">
                     <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div><h3 class="text-sm font-bold text-[var(--eny-text-primary)]">${client.name}</h3><p class="text-[11px] text-[var(--eny-text-muted2)]">ID: ${client.id} • Registered: ${client.createdDate}</p></div>
+                        <div><h3 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-1.5">${client.name}${client.clientType === 'Landlord' ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border bg-amber-500/10 border-amber-500/40 text-amber-600">LANDLORD</span>` : ''}</h3><p class="text-[11px] text-[var(--eny-text-muted2)]">ID: ${client.id} • Registered: ${client.createdDate}</p></div>
                         <div class="flex items-center gap-3">
                             <div class="text-right"><span class="text-[10px] uppercase font-semibold text-[var(--eny-text-muted2)] block">Total Value</span><span class="text-xs font-bold text-amber-400 font-mono">£${spend.toFixed(2)} (${jobs.length} Job${jobs.length===1?'':'s'})</span></div>
                             <div class="flex items-center gap-1.5">
