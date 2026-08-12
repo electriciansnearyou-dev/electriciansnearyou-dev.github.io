@@ -356,6 +356,11 @@
                         <div id="dashboard-needs-attention-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] lg:col-span-2">
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="calendar-clock" class="text-amber-400 w-5 h-5"></i> Bundle-Worthy Compliance — Same Landlord, Coming Due Together</h2>
+                        <p class="text-xs text-[var(--eny-text-muted)] mb-3">Properties under one landlord with electrical or smoke compliance due within the next 30 days — worth visiting in one trip.</p>
+                        <div id="dashboard-bundling-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                    </div>
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] lg:col-span-2">
                         <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="package-plus" class="text-amber-400 w-5 h-5"></i> Pending Job Additions</h2>
                         <p class="text-xs text-[var(--eny-text-muted)] mb-3">Materials/time flagged on-site by engineers — add these to the relevant quote yourself, then mark reviewed.</p>
                         <div id="dashboard-pending-additions-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
@@ -405,7 +410,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Property</label>
                                 <input type="text" id="job-property-search-input" oninput="filterJobPropertyDropdown()" placeholder="Search properties..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-1.5">
-                                <select id="job-property-select" onchange="renderJobPropertyHazardWarning()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                <select id="job-property-select" onchange="renderJobPropertyHazardWarning(); suggestEngineerForJobProperty();" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                                     <option value="">-- None / Not linked --</option>
                                 </select>
                                 <div id="job-property-hazard-warning" class="hidden mt-2 p-2.5 rounded-lg hazard-stripe border border-[#FFDF27]"></div>
@@ -421,6 +426,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Assigned Engineer(s) *</label>
                                 <div id="job-engineers-checklist" class="space-y-1.5 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3"></div>
+                                <p id="job-engineer-suggestion-note" class="hidden text-[10px] text-amber-500 font-semibold mt-1"></p>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -500,7 +506,8 @@
                             <input type="hidden" id="property-id-field">
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Property Address *</label>
-                                <textarea id="property-address" required rows="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500" placeholder="10 Example Street, Poole, BH17 7FS"></textarea>
+                                <textarea id="property-address" required rows="2" onblur="suggestLandlordForPropertyAddress()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500" placeholder="10 Example Street, Poole, BH17 7FS"></textarea>
+                                <p id="property-landlord-suggestion-note" class="hidden text-[10px] text-amber-500 font-semibold mt-1"></p>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Access Notes (keysafe / gate codes)</label>
@@ -775,6 +782,21 @@
                                 </div>
                             </div>
 
+                            <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06] flex items-center justify-between gap-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="receipt-text" class="w-4 h-4"></i></div>
+                                    <div>
+                                        <label for="flat-job-cost-toggle" class="text-xs font-bold text-[var(--eny-text-primary)] block cursor-pointer">Flat Job Cost</label>
+                                        <p class="text-[10px] text-[var(--eny-text-muted2)]">Skip materials/labour entirely — just a description and one price (e.g. an EICR at £235).</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                                    <input type="checkbox" id="flat-job-cost-toggle" onchange="handleFlatJobCostToggle()" class="sr-only peer">
+                                    <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-[var(--eny-bg-recessed)]"></div>
+                                </label>
+                            </div>
+
+                            <div id="quote-pricing-mechanism-wrapper" class="space-y-6">
                             <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[var(--eny-border-standard)]">
                                     <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="package-search" class="text-amber-400 w-5 h-5"></i> Add Materials</h2>
@@ -908,18 +930,35 @@
                                     </div>
                                 </div>
                             </div>
+                            </div>
+
+                            <div id="flat-job-cost-fields-wrapper" class="hidden bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
+                                <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="receipt-text" class="text-amber-400 w-5 h-5"></i> Flat Job Cost</h2>
+                                <div>
+                                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Works Description</label>
+                                    <textarea id="flat-job-cost-description" oninput="calculateComprehensiveMetrics()" rows="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500" placeholder="e.g. EICR — 3 bed house"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Total Cost (£)</label>
+                                    <input type="number" min="0" step="0.01" id="flat-job-cost-amount" oninput="calculateComprehensiveMetrics()" class="w-full sm:w-48 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500" placeholder="235.00">
+                                </div>
+                                <p class="text-[10px] text-[var(--eny-text-muted2)]">The quote/invoice will show only this description and total — no materials or labour breakdown.</p>
+                            </div>
                         </div>
 
                         <div class="space-y-6">
                             <div class="bg-[var(--eny-bg-card)] border border-amber-500/20 rounded-2xl p-6 shadow-xl ring-1 ring-white/[0.06] sticky top-24 space-y-4">
                                 <h3 class="text-sm font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider">Live Quotation Overview</h3>
                                 <div class="space-y-3 bg-[var(--eny-bg-page)]/50 p-4 rounded-xl border border-[var(--eny-border-subtle)]/80">
+                                    <div id="summary-itemized-rows-wrapper">
                                     <div class="flex justify-between text-sm"><span class="text-[var(--eny-text-muted)]">Net Materials (Ex VAT):</span><span id="summary-net-materials" class="font-medium">£0.00</span></div>
                                     <div class="flex justify-between text-sm border-b border-[var(--eny-border-subtle)]/60 pb-2"><span class="text-[var(--eny-text-muted)]">+20% VAT:</span><span id="summary-materials-vat" class="font-medium text-[var(--eny-text-300)]">£0.00</span></div>
                                     <div class="flex justify-between text-sm pt-1"><span class="text-[var(--eny-text-muted)]">Marked-Up Materials: <span id="summary-materials-adjusted-note" class="hidden text-[9px] text-amber-500 font-bold">(adjusted)</span></span><span id="summary-marked-materials" class="font-medium text-amber-400/90">£0.00</span></div>
                                     <div class="flex justify-between text-sm"><span class="text-[var(--eny-text-muted)]">Labor Gross:</span><span id="summary-labor-costs" class="font-medium">£0.00</span></div>
                                     <div class="flex justify-between text-sm"><span class="text-[var(--eny-text-muted)]">Testing & Certs:</span><span id="summary-testing-costs" class="font-medium">£0.00</span></div>
                                     <div id="summary-sundries-row" class="hidden flex justify-between text-sm"><span class="text-[var(--eny-text-muted)]">Sundries:</span><span id="summary-sundries" class="font-medium">£0.00</span></div>
+                                    </div>
+                                    <div id="summary-flat-cost-description-row" class="hidden text-xs text-[var(--eny-text-muted)] italic pb-2 border-b border-[var(--eny-border-subtle)]/60"></div>
                                     <div class="border-t border-[var(--eny-border-standard)] pt-3 mt-1 flex justify-between text-base font-bold text-[var(--eny-text-primary)]"><span>Gross Total:</span><span id="summary-gross-total">£0.00</span></div>
                                 </div>
                                 <div id="standard-save-actions-wrapper" class="space-y-2">
@@ -1071,6 +1110,7 @@
                     <button onclick="switchSettingsSubtab('settings-sub-engineers')" id="btn-settings-sub-engineers" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Engineers</button>
                     <button onclick="switchSettingsSubtab('settings-sub-calendar')" id="btn-settings-sub-calendar" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Google Calendar</button>
                     <button onclick="switchSettingsSubtab('settings-sub-import')" id="btn-settings-sub-import" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Import Local Data</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-export')" id="btn-settings-sub-export" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Data Export</button>
                 </div>
 
                 <!-- PRICING -->
@@ -1343,6 +1383,31 @@
                         <div id="import-summary" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-4 text-xs text-[var(--eny-text-300)] whitespace-pre-line"></div>
                     </div>
                 </div>
+
+                <div id="settings-sub-export" class="settings-subtab-content">
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl space-y-6">
+                        <div>
+                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="download" class="text-amber-400"></i> Full Backup</h2>
+                            <p class="text-xs text-[var(--eny-text-muted)] mt-0.5">Everything — properties, clients, jobs, quotes/invoices, servicing records, and stock — as one file. This is what you'd want on hand if you ever needed to restore or hand data over.</p>
+                        </div>
+                        <button onclick="exportFullBackup()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                            <i data-lucide="file-json" class="w-4 h-4"></i> Download Full Backup (JSON)
+                        </button>
+                        <div class="border-t border-[var(--eny-border-standard)] pt-6">
+                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="table" class="text-amber-400"></i> Spreadsheet Exports</h2>
+                            <p class="text-xs text-[var(--eny-text-muted)] mt-0.5 mb-4">Opens straight in Excel/Numbers/Sheets — handy for a quick look or handing to an accountant.</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                <button onclick="exportDataAsCsv('properties')" class="text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-text-200)] px-3 py-2.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Properties</button>
+                                <button onclick="exportDataAsCsv('clients')" class="text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-text-200)] px-3 py-2.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Clients</button>
+                                <button onclick="exportDataAsCsv('jobs')" class="text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-text-200)] px-3 py-2.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Jobs</button>
+                                <button onclick="exportDataAsCsv('quotes')" class="text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-text-200)] px-3 py-2.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Quotes & Invoices</button>
+                                <button onclick="exportDataAsCsv('servicing')" class="text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-text-200)] px-3 py-2.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Servicing</button>
+                                <button onclick="exportDataAsCsv('stock')" class="text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-text-200)] px-3 py-2.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Stock</button>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-[var(--eny-text-muted2)]">Both are generated on the spot from what's currently loaded — there's no scheduled/automatic backup, so it's worth running this every so often rather than only when something's gone wrong.</p>
+                    </div>
+                </div>
             </div>
 
             <div id="trash-tab" class="tab-content space-y-6">
@@ -1571,7 +1636,7 @@
         </div>
     </div>
 
-    <div id="day-detail-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="day-detail-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[57] hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
                 <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="calendar-days" class="text-amber-400"></i> <span id="day-detail-date-label"></span></h3>
@@ -1876,6 +1941,70 @@
             wrapper.classList.remove('hidden');
             const chevron = document.getElementById(chevronId);
             if (chevron) chevron.style.transform = 'rotate(180deg)';
+        }
+        // Shared fuzzy-matching utility — catches near-duplicates (typos,
+        // slightly different formatting) that an exact-match check would
+        // miss, without flagging genuinely different names/addresses.
+        function levenshteinDistance(a, b) {
+            const matrix = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
+            for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+            for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+            for (let i = 1; i <= a.length; i++) {
+                for (let j = 1; j <= b.length; j++) {
+                    if (a[i - 1] === b[j - 1]) matrix[i][j] = matrix[i - 1][j - 1];
+                    else matrix[i][j] = 1 + Math.min(matrix[i - 1][j], matrix[i][j - 1], matrix[i - 1][j - 1]);
+                }
+            }
+            return matrix[a.length][b.length];
+        }
+        function stringSimilarity(a, b) {
+            const s1 = (a || '').toLowerCase().trim().replace(/\s+/g, ' ');
+            const s2 = (b || '').toLowerCase().trim().replace(/\s+/g, ' ');
+            if (!s1 || !s2) return 0;
+            if (s1 === s2) return 1;
+            const maxLen = Math.max(s1.length, s2.length);
+            if (maxLen < 4) return 0; // too short to compare meaningfully
+            return 1 - (levenshteinDistance(s1, s2) / maxLen);
+        }
+        // Addresses need a stricter check than plain text similarity — "Flat
+        // 1, Test Estate" and "Flat 2, Test Estate" score very high on
+        // similarity alone (one character different) but are genuinely
+        // different properties. The house/flat number is the real
+        // identifier, so require it to match too before flagging a duplicate.
+        function isLikelyDuplicateAddress(a, b) {
+            if (stringSimilarity(a, b) < 0.85) return false;
+            const numbersOf = s => (s || '').match(/\d+/g) || [];
+            const numsA = numbersOf(a), numsB = numbersOf(b);
+            if (numsA.length !== numsB.length) return false;
+            return numsA.every((n, i) => n === numsB[i]);
+        }
+        // Strips a leading "Flat 2," / "Unit 5," style prefix so two
+        // different units at the same building compare as the same address —
+        // the opposite goal to isLikelyDuplicateAddress above, which
+        // deliberately treats different flat numbers as different properties.
+        function stripFlatPrefix(address) {
+            return (address || '').replace(/^\s*(flat|unit|apartment|apt)\s*\d+[a-z]?\s*,?\s*/i, '').trim();
+        }
+        // If another property at the same building already has a landlord
+        // linked, suggest the same one here rather than picking manually for
+        // every flat in a block — never overrides a landlord already chosen.
+        function suggestLandlordForPropertyAddress() {
+            const landlordSelect = document.getElementById('property-landlord-select');
+            const noteEl = document.getElementById('property-landlord-suggestion-note');
+            if (!landlordSelect || !noteEl) return;
+            if (landlordSelect.value) { noteEl.classList.add('hidden'); return; }
+            const newAddress = document.getElementById('property-address').value.trim();
+            const strippedNew = stripFlatPrefix(newAddress);
+            if (!strippedNew) { noteEl.classList.add('hidden'); return; }
+            const editId = document.getElementById('property-id-field').value;
+            const match = currentProperties.find(p => p.id !== editId && p.landlordId && stringSimilarity(stripFlatPrefix(p.address), strippedNew) >= 0.90);
+            if (!match) { noteEl.classList.add('hidden'); return; }
+            const landlord = currentClients.find(c => c.id === match.landlordId);
+            if (!landlord) { noteEl.classList.add('hidden'); return; }
+            filterPropertyLandlordDropdown(); // ensure the match is a selectable option, not filtered out by a stale search
+            landlordSelect.value = match.landlordId;
+            noteEl.classList.remove('hidden');
+            noteEl.innerText = `Auto-suggested "${landlord.name}" — other units at this address are linked to them. Change the dropdown above if that's wrong.`;
         }
         function switchTab(targetTabId) {
             // Owner-only tabs are simply unreachable for non-owners, even if
@@ -2335,6 +2464,30 @@
         function getSelectedJobEngineersFromForm() {
             return [...document.querySelectorAll('.job-engineer-checkbox:checked')].map(chk => chk.value);
         }
+        // If one engineer has clearly done most of the recent work at this
+        // property, pre-check them rather than picking manually every time —
+        // never overrides an engineer already selected.
+        function suggestEngineerForJobProperty() {
+            const noteEl = document.getElementById('job-engineer-suggestion-note');
+            if (!noteEl) return;
+            if (getSelectedJobEngineersFromForm().length > 0) { noteEl.classList.add('hidden'); return; }
+            const propertyId = document.getElementById('job-property-select').value;
+            if (!propertyId) { noteEl.classList.add('hidden'); return; }
+            const editingJobId = document.getElementById('job-id-field').value;
+            const pastJobs = currentJobs.filter(j => j.propertyId === propertyId && j.id !== editingJobId && j.status === 'Completed');
+            if (pastJobs.length < 2) { noteEl.classList.add('hidden'); return; } // not enough history to mean anything
+            const counts = {};
+            pastJobs.forEach(j => getJobEngineers(j).forEach(name => { counts[name] = (counts[name] || 0) + 1; }));
+            const names = Object.keys(counts);
+            if (names.length === 0) { noteEl.classList.add('hidden'); return; }
+            const topName = names.reduce((a, b) => (counts[b] > counts[a] ? b : a));
+            if (counts[topName] / pastJobs.length < 0.6) { noteEl.classList.add('hidden'); return; } // no clear pattern
+            const checkbox = [...document.querySelectorAll('.job-engineer-checkbox')].find(chk => chk.value === topName);
+            if (!checkbox) { noteEl.classList.add('hidden'); return; }
+            checkbox.checked = true;
+            noteEl.classList.remove('hidden');
+            noteEl.innerText = `Auto-suggested ${topName} — they've done ${counts[topName]} of the last ${pastJobs.length} jobs here. Untick if that's wrong.`;
+        }
         // Backward-compatible reader: older job records only have a single
         // assignedEngineer string; newer ones have an assignedEngineers array.
         function getJobEngineers(job) {
@@ -2343,12 +2496,22 @@
         }
         // Date-only double-booking check (deliberately ignores time) — flags an
         // engineer already assigned to a DIFFERENT Scheduled job on the same day.
-        function findDoubleBookedEngineers(assignedEngineers, date, excludeJobId) {
+        // Same-day jobs for one engineer aren't inherently a problem — a 9am
+        // and a 2pm job is normal scheduling. Only flag ones close enough in
+        // time that being in both places is genuinely implausible.
+        const DOUBLE_BOOKING_BUFFER_MINUTES = 90;
+        function timeToMinutes(timeStr) {
+            const [h, m] = (timeStr || '09:00').split(':').map(Number);
+            return h * 60 + m;
+        }
+        function findDoubleBookedEngineers(assignedEngineers, date, excludeJobId, time) {
             const conflicts = [];
+            const newMinutes = timeToMinutes(time);
             for (const name of assignedEngineers) {
-                const hasConflict = currentJobs.some(j =>
-                    j.id !== excludeJobId && j.date === date && j.status === 'Scheduled' && getJobEngineers(j).includes(name)
-                );
+                const hasConflict = currentJobs.some(j => {
+                    if (j.id === excludeJobId || j.date !== date || j.status !== 'Scheduled' || !getJobEngineers(j).includes(name)) return false;
+                    return Math.abs(timeToMinutes(j.time) - newMinutes) < DOUBLE_BOOKING_BUFFER_MINUTES;
+                });
                 if (hasConflict) conflicts.push(name);
             }
             return conflicts;
@@ -2660,7 +2823,22 @@
                         type: 'Invoiced, Not Paid', label: `${q.clientDetailsPayload.name} — ${q.jobName}`, sub: `£${q.financials.grossTotal.toFixed(2)}`,
                         action: `loadQuoteForActiveModification('${q.id}')`, actionLabel: 'View Invoice',
                     }));
-                    const allAttentionItems = [...jobQuoteMismatches, ...uninvoicedServices, ...unpaidInvoices];
+                    // Completed jobs where a review was never asked for — capped
+                    // to the last 30 days, since a review request on a job from
+                    // 8 months ago isn't a useful nudge anymore. Only counts
+                    // jobs where a request was actually possible (a linked
+                    // client with a phone on file).
+                    const reviewCutoff = new Date(); reviewCutoff.setDate(reviewCutoff.getDate() - 30);
+                    const reviewGaps = currentJobs.filter(j => {
+                        if (j.status !== 'Completed' || j.reviewRequestSentAt || !j.date) return false;
+                        if (new Date(j.date) < reviewCutoff) return false;
+                        const client = findClientForJob(j);
+                        return client && client.phone;
+                    }).map(j => ({
+                        type: 'No Review Requested', label: j.title, sub: `Completed ${formatUkDate(j.date)}`,
+                        action: `openSendReviewRequestModal('${j.id}')`, actionLabel: 'Ask for Review',
+                    }));
+                    const allAttentionItems = [...jobQuoteMismatches, ...uninvoicedServices, ...unpaidInvoices, ...reviewGaps];
                     needsAttentionListEl.innerHTML = allAttentionItems.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">Nothing outstanding — all caught up.</p>` :
                         allAttentionItems.map(item => `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
                             <div class="min-w-0">
@@ -2668,6 +2846,31 @@
                                 <div class="text-[10px] text-[var(--eny-text-muted2)] flex items-center gap-1.5 flex-wrap mt-0.5"><span class="font-bold text-amber-500">${item.type}</span> • ${item.sub}</div>
                             </div>
                             <button onclick="${item.action}" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">${item.actionLabel}</button>
+                        </div>`).join('');
+                }
+
+                // Properties under the same landlord that are all coming due
+                // (or already overdue) within the next 30 days are worth
+                // visiting together rather than as separate trips.
+                const bundlingListEl = document.getElementById('dashboard-bundling-list');
+                if (bundlingListEl) {
+                    const landlords = currentClients.filter(c => c.clientType === 'Landlord');
+                    const bundleGroups = landlords.map(landlord => {
+                        const dueSoonProperties = currentProperties.filter(p => {
+                            if (p.landlordId !== landlord.id) return false;
+                            const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
+                            const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
+                            return (elec.daysUntilDue !== null && elec.daysUntilDue <= 30) || (smoke.daysUntilDue !== null && smoke.daysUntilDue <= 30);
+                        });
+                        return { landlord, properties: dueSoonProperties };
+                    }).filter(g => g.properties.length >= 2);
+                    bundlingListEl.innerHTML = bundleGroups.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">No bundling opportunities right now.</p>` :
+                        bundleGroups.map(g => `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${g.landlord.name} — ${g.properties.length} properties due soon</div>
+                                <div class="text-[10px] text-[var(--eny-text-muted2)] truncate mt-0.5">${g.properties.map(p => (p.address || '').split('\n')[0]).join(' • ')}</div>
+                            </div>
+                            <button onclick="switchTab('crm-tab'); switchCrmSubtab('crm-sub-landlords'); expandedLandlordIds.add('${g.landlord.id}'); renderLandlordPortfolios();" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">View Portfolio</button>
                         </div>`).join('');
                 }
 
@@ -4018,7 +4221,7 @@
                 const allDoubleBooked = new Set();
                 jobDates.forEach(d => {
                     assignedEngineers.filter(name => isEngineerUnavailable(name, d)).forEach(n => allUnavailable.add(n));
-                    findDoubleBookedEngineers(assignedEngineers, d, editId || null).forEach(n => allDoubleBooked.add(n));
+                    findDoubleBookedEngineers(assignedEngineers, d, editId || null, basePayload.time).forEach(n => allDoubleBooked.add(n));
                 });
                 if (allUnavailable.size > 0) {
                     const names = [...allUnavailable].join(' and ');
@@ -4026,7 +4229,7 @@
                 }
                 if (allDoubleBooked.size > 0) {
                     const names = [...allDoubleBooked].join(' and ');
-                    if (!(await showConfirm(`${names} already ${allDoubleBooked.size === 1 ? 'has' : 'have'} another job on one or more of these day(s). Schedule this too?`))) return;
+                    if (!(await showConfirm(`${names} already ${allDoubleBooked.size === 1 ? 'has' : 'have'} a job around this time on one or more of these day(s). Schedule this too?`))) return;
                 }
             }
 
@@ -4768,7 +4971,9 @@
             const signatureBtn = j.status === 'Completed' ? `<button onclick="openSignatureModal('${j.id}')" title="${j.signature ? 'View/redo signature' : 'Get client signature'}" class="${j.signature ? 'text-emerald-400 hover:text-emerald-300' : 'text-[var(--eny-text-muted)] hover:text-amber-400'} p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="${j.signature ? 'file-check' : 'pen-tool'}" class="w-3.5 h-3.5"></i></button>` : '';
             const onMyWayClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
             const onMyWayBtn = (onMyWayClient && onMyWayClient.phone) ? `<button onclick="sendOnMyWayMessage('${j.id}')" title="Send 'on my way' to ${onMyWayClient.name}" class="text-[var(--eny-text-muted)] hover:text-blue-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="navigation" class="w-3.5 h-3.5"></i></button>` : '';
-            return `${quickActions}${onMyWayBtn}${reviewBtn}${signatureBtn}
+            const reminderClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
+            const reminderBtn = (reminderClient && reminderClient.phone) ? `<button onclick="openSendReminderModal('${j.id}')" title="Send reminder to ${reminderClient.name}" class="text-[var(--eny-text-muted)] hover:text-emerald-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>` : '';
+            return `${quickActions}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}
                 <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 <button onclick="deleteJob('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
         }
@@ -4896,6 +5101,15 @@
                 electricalCycleYears: parseInt(document.getElementById('property-electrical-cycle').value) || 5,
                 lastSmokeAlarmTest: document.getElementById('property-last-smoke').value || null,
             };
+            // Only checked for genuinely NEW properties — editing an existing
+            // one naturally makes it match itself, which isn't a duplicate.
+            if (!editId) {
+                const similarExisting = currentProperties.find(p => isLikelyDuplicateAddress(p.address, payload.address));
+                if (similarExisting) {
+                    const proceed = await showConfirm(`This looks very similar to an existing property:\n\n"${similarExisting.address}"\n\nAdd it as a new, separate property anyway?`, { confirmText: 'Add Anyway', cancelText: 'Cancel' });
+                    if (!proceed) return;
+                }
+            }
             // Only include lat/lng if freshly captured this session — otherwise
             // an edit-without-recapturing would wipe out coordinates already
             // saved from before.
@@ -5050,6 +5264,7 @@
         // from your own phone number via your own Messages app)
         // ============================================================
         let activeReminderPhone = '';
+        let activeReviewRequestJobId = null; // set only when the modal is opened FOR a review request specifically, not a plain reminder
 
         // A job only stores a propertyId, not a client — so this goes via the
         // same client<->property link the CRM already uses, finding whichever
@@ -5076,6 +5291,7 @@
             if (!job) return;
             const client = findClientForJob(job);
             if (!client || !client.phone) { showToast("No linked client with a phone number found for this job's property.", 'info'); return; }
+            activeReviewRequestJobId = null; // a plain reminder, not a review request
             openSendMessageModal(client.name, client.phone, buildReminderMessageText(job, client));
         }
         // Google's own short review-link format (g.page/r/.../review) is already
@@ -5091,6 +5307,7 @@
             if (!job) return;
             const client = findClientForJob(job);
             if (!client || !client.phone) { showToast("No linked client with a phone number found for this job's property.", 'info'); return; }
+            activeReviewRequestJobId = jobId;
             openSendMessageModal(client.name, client.phone, buildReviewRequestMessageText(client));
         }
 
@@ -5144,13 +5361,20 @@
         }
 
         function closeSendReminderModal() { document.getElementById('send-reminder-modal').classList.add('hidden'); }
+        function markReviewRequestSentIfApplicable() {
+            if (!activeReviewRequestJobId) return;
+            db.collection('jobs').doc(activeReviewRequestJobId).update({ reviewRequestSentAt: new Date().toISOString() });
+            activeReviewRequestJobId = null;
+        }
         function openReminderInMessagesApp() {
             const text = document.getElementById('reminder-message-text').value;
             const cleanPhone = activeReminderPhone.replace(/[^\d+]/g, '');
             window.location.href = `sms:${cleanPhone}?body=${encodeURIComponent(text)}`;
+            markReviewRequestSentIfApplicable();
         }
         function copyReminderMessage() {
             navigator.clipboard.writeText(document.getElementById('reminder-message-text').value).then(() => showToast("Message copied — paste it into Messages, WhatsApp, or wherever you'd like to send it.", 'success'));
+            markReviewRequestSentIfApplicable();
         }
 
         // ============================================================
@@ -5389,6 +5613,120 @@
         // ============================================================
         // IMPORT LOCAL DATA (owner-only, one-time-ish migration)
         // ============================================================
+        // Shared download trigger — builds a temporary link and clicks it,
+        // the standard way to push a client-generated file to the user
+        // without any server involved.
+        function downloadFile(filename, content, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        function exportFullBackup() {
+            const backup = {
+                exportedAt: new Date().toISOString(),
+                properties: currentProperties,
+                clients: currentClients,
+                jobs: currentJobs,
+                quotes: currentQuotes,
+                servicing: currentSmokeTests,
+                stock: currentStock,
+            };
+            downloadFile(`eny-electrical-backup-${todayISO()}.json`, JSON.stringify(backup, null, 2), 'application/json');
+            showToast('Full backup downloaded.', 'success');
+        }
+        function csvEscape(val) {
+            const s = val == null ? '' : String(val);
+            return (s.includes(',') || s.includes('"') || s.includes('\n')) ? '"' + s.replace(/"/g, '""') + '"' : s;
+        }
+        function arrayToCsv(rows, columns) {
+            const header = columns.map(c => c.label).join(',');
+            const lines = rows.map(row => columns.map(c => csvEscape(c.get(row))).join(','));
+            return [header, ...lines].join('\r\n');
+        }
+        const CSV_EXPORT_DEFINITIONS = {
+            properties: {
+                rows: () => currentProperties, filename: 'properties',
+                columns: [
+                    { label: 'Address', get: p => (p.address || '').replace(/\n/g, ', ') },
+                    { label: 'Landlord', get: p => { const l = currentClients.find(c => c.id === p.landlordId); return l ? l.name : ''; } },
+                    { label: 'Notes', get: p => p.notes || '' },
+                    { label: 'Hazard Tags', get: p => (p.hazardTags || []).join('; ') },
+                    { label: 'Last Electrical Inspection', get: p => p.lastElectricalInspection || '' },
+                    { label: 'Electrical Cycle (Years)', get: p => p.electricalCycleYears || '' },
+                    { label: 'Last Smoke Alarm Test', get: p => p.lastSmokeAlarmTest || '' },
+                ],
+            },
+            clients: {
+                rows: () => currentClients, filename: 'clients',
+                columns: [
+                    { label: 'Name', get: c => c.name || '' },
+                    { label: 'Type', get: c => c.clientType || 'Privately Owned' },
+                    { label: 'Email', get: c => c.email || '' },
+                    { label: 'Phone', get: c => c.phone || '' },
+                    { label: 'Address', get: c => (c.address || '').replace(/\n/g, ', ') },
+                    { label: 'Registered', get: c => c.createdDate || '' },
+                ],
+            },
+            jobs: {
+                rows: () => currentJobs, filename: 'jobs',
+                columns: [
+                    { label: 'Title', get: j => j.title || '' },
+                    { label: 'Property Address', get: j => (j.propertyAddress || '').replace(/\n/g, ', ') },
+                    { label: 'Date', get: j => j.date || '' },
+                    { label: 'Time', get: j => j.time || '' },
+                    { label: 'Status', get: j => j.status || '' },
+                    { label: 'Assigned Engineers', get: j => getJobEngineers(j).join('; ') },
+                    { label: 'Notes', get: j => j.notes || '' },
+                ],
+            },
+            quotes: {
+                rows: () => currentQuotes, filename: 'quotes-invoices',
+                columns: [
+                    { label: 'Job Name', get: q => q.jobName || '' },
+                    { label: 'Client', get: q => (q.clientDetailsPayload && q.clientDetailsPayload.name) || '' },
+                    { label: 'Status', get: q => q.status || '' },
+                    { label: 'Invoice Number', get: q => q.invoiceNumber || '' },
+                    { label: 'Gross Total', get: q => (q.financials && q.financials.grossTotal) || 0 },
+                    { label: 'Date', get: q => q.timestamp || '' },
+                ],
+            },
+            servicing: {
+                rows: () => currentSmokeTests, filename: 'servicing-records',
+                columns: [
+                    { label: 'Address', get: t => (t.address || '').replace(/\n/g, ', ') },
+                    { label: 'Service Type', get: t => { const s = SURVEY_TYPES[t.serviceType || 'smoke-test']; return s ? s.label : (t.serviceType || ''); } },
+                    { label: 'Test Date', get: t => t.testDate || '' },
+                    { label: 'Inspector', get: t => t.inspector || '' },
+                    { label: 'Outcome', get: t => t.outcome || '' },
+                    { label: 'Price', get: t => t.price || 0 },
+                    { label: 'Invoice Number', get: t => t.invoiceNumber || '' },
+                ],
+            },
+            stock: {
+                rows: () => currentStock, filename: 'stock',
+                columns: [
+                    { label: 'SKU', get: s => s.sku || '' },
+                    { label: 'Description', get: s => s.desc || '' },
+                    { label: 'Cost', get: s => s.cost || 0 },
+                    { label: 'Category', get: s => s.category || '' },
+                ],
+            },
+        };
+        function exportDataAsCsv(type) {
+            const def = CSV_EXPORT_DEFINITIONS[type];
+            if (!def) return;
+            const rows = def.rows();
+            if (!rows || rows.length === 0) { showToast('Nothing to export for this yet.', 'info'); return; }
+            const csv = arrayToCsv(rows, def.columns);
+            downloadFile(`${def.filename}-${todayISO()}.csv`, csv, 'text/csv');
+            showToast(`${rows.length} record(s) exported.`, 'success');
+        }
         async function runLocalDataImport() {
             if (!(await showConfirm("This imports this browser's old local data (stock, clients, quotes, templates, pricing, bank details) into the shared database. Safe to run more than once — matching items are skipped, not duplicated. Continue?", { confirmText: 'Import' }))) return;
 
@@ -5509,6 +5847,10 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const formPhone = document.getElementById('client-phone').value.trim();
             const formAddress = document.getElementById('client-address').value.trim();
             if (!formName) { showToast('Please provide a client name before saving.', 'warning'); return; }
+            if (document.getElementById('flat-job-cost-toggle').checked) {
+                if (!document.getElementById('flat-job-cost-description').value.trim()) { showToast('Please provide a works description for the flat job cost.', 'warning'); return; }
+                if (!(parseFloat(document.getElementById('flat-job-cost-amount').value) > 0)) { showToast('Please provide a total cost greater than £0.', 'warning'); return; }
+            }
             const metrics = calculateComprehensiveMetrics();
 
             let linkedClientId = activeLinkedClientId;
@@ -5532,6 +5874,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         sundriesEnabled: metrics.sundriesEnabled,
                         customCostEnabled: metrics.customCostEnabled,
                         customCostTarget: metrics.customCostTarget,
+                        // Flat Job Cost reuses the same simplified single-line
+                        // PDF layout already built for completed-service
+                        // invoices — description + one price, nothing else.
+                        isServiceInvoice: !!metrics.flatJobCostEnabled,
+                        flatJobCostEnabled: !!metrics.flatJobCostEnabled,
+                        serviceLabel: metrics.flatJobCostEnabled ? metrics.worksDescription : null,
                         materials: activeAllocatedMaterials.map(m => ({ ...m })),
                         laborBookingFormat: activeLaborBookingFormat,
                         timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
@@ -5580,6 +5928,10 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('include-sundries-toggle').checked = false;
             document.getElementById('include-custom-cost-toggle').checked = false;
             document.getElementById('custom-cost-target').value = '';
+            document.getElementById('flat-job-cost-toggle').checked = false;
+            document.getElementById('flat-job-cost-description').value = '';
+            document.getElementById('flat-job-cost-amount').value = '';
+            handleFlatJobCostToggle();
             document.getElementById('editing-mode-banner').classList.add('hidden');
             document.getElementById('standard-save-actions-wrapper').classList.remove('hidden');
             document.getElementById('editing-save-actions-wrapper').classList.add('hidden');
@@ -5608,6 +5960,10 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 document.getElementById('include-sundries-toggle').checked = !!target.sundriesEnabled;
                 document.getElementById('include-custom-cost-toggle').checked = !!target.customCostEnabled;
                 document.getElementById('custom-cost-target').value = target.customCostTarget || '';
+                document.getElementById('flat-job-cost-toggle').checked = !!target.flatJobCostEnabled;
+                document.getElementById('flat-job-cost-description').value = target.flatJobCostEnabled ? (target.serviceLabel || '') : '';
+                document.getElementById('flat-job-cost-amount').value = target.flatJobCostEnabled ? (target.financials.grossTotal || '') : '';
+                handleFlatJobCostToggle();
                 setLaborBookingFormat(target.laborBookingFormat || 'DAY');
                 rebuildAllocatedMaterialsTable();
                 document.getElementById('editing-record-id-display').innerText = quoteId;
@@ -5872,18 +6228,153 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             try {
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                let allRows = [];
                 let tokenSequence = [];
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
-                    let items = textContent.items;
-                    items.sort((a, b) => { const yDiff = b.transform[5] - a.transform[5]; if (Math.abs(yDiff) > 5) return yDiff; return a.transform[4] - b.transform[4]; });
-                    for (let item of items) { let text = item.str.trim(); if (text) tokenSequence.push(text); }
+                    // Drop rotated text (watermarks/trial stamps) — its transform
+                    // isn't a plain x/y position, and letting it into a
+                    // position-based row sort can scramble nearby table rows.
+                    let items = textContent.items
+                        .filter(item => Math.abs(item.transform[1]) < 0.01 && Math.abs(item.transform[2]) < 0.01)
+                        .map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] }))
+                        .filter(item => item.text);
+                    // Group into rows by Y-proximity BEFORE sorting, rather than
+                    // using a single sort comparator with a Y-tolerance — that
+                    // kind of comparator isn't transitive (item A can be "same
+                    // row" as B, and B "same row" as C, while A and C land in
+                    // different rows), which breaks the ordering guarantees
+                    // Array.sort() relies on and produces inconsistent results.
+                    // Clustering first sidesteps that entirely.
+                    items.sort((a, b) => b.y - a.y);
+                    const rows = [];
+                    for (const item of items) {
+                        const row = rows.find(r => Math.abs(r.y - item.y) <= 5);
+                        if (row) row.items.push(item);
+                        else rows.push({ y: item.y, items: [item] });
+                    }
+                    for (const row of rows) {
+                        row.items.sort((a, b) => a.x - b.x);
+                        for (const item of row.items) tokenSequence.push(item.text);
+                    }
+                    allRows.push(...rows);
                 }
                 document.getElementById('import-text-area').value = tokenSequence.join(' ');
-                processRawImport();
+                const parsedItems = extractStockItemsByColumnPosition(allRows);
+                if (parsedItems && parsedItems.length > 0) {
+                    commitParsedStockItems(parsedItems);
+                } else {
+                    // No reliably-aligned price column found across the table —
+                    // fall back to the older left-to-right heuristic parser
+                    // rather than importing nothing.
+                    processRawImport();
+                }
             } catch (error) { console.error(error); showToast('Could not process PDF. Ensure it is a text-based digital file.', 'error'); }
             finally { btn.innerText = originalText; event.target.value = ''; }
+        }
+        // Clusters x-positions that fall within a small tolerance of each
+        // other — this is how a column's real position is found without
+        // needing readable header text (which, for this supplier's layout,
+        // isn't extractable as text at all — it's baked into the table's
+        // background graphic).
+        function clusterXPositions(values, tolerance) {
+            const sorted = [...values].sort((a, b) => a - b);
+            const clusters = [];
+            for (const x of sorted) {
+                const last = clusters[clusters.length - 1];
+                if (last && Math.abs(last[last.length - 1] - x) <= tolerance) last.push(x);
+                else clusters.push([x]);
+            }
+            return clusters;
+        }
+        // Reads the price directly from whichever column is actually,
+        // visually aligned as the rightmost consistent decimal column across
+        // the table — rather than guessing "the Nth decimal number in
+        // reading order", which breaks the moment a supplier's layout has a
+        // different number of columns than expected.
+        function extractStockItemsByColumnPosition(allRows) {
+            const dataRows = allRows.filter(row => {
+                const t = row.items.map(i => i.text);
+                return t.length >= 2 && /^\d+$/.test(t[0]) && t[1].includes(':');
+            });
+            if (dataRows.length === 0) return null;
+
+            const allDecimalX = [];
+            for (const row of dataRows) {
+                for (const item of row.items) {
+                    if (/^[\d,]+\.\d+$/.test(item.text)) allDecimalX.push(item.x);
+                }
+            }
+            if (allDecimalX.length === 0) return null;
+            const clusters = clusterXPositions(allDecimalX, 12)
+                .filter(c => c.length >= dataRows.length * 0.6) // only columns present in most rows count as real
+                .sort((a, b) => (a.reduce((s, v) => s + v, 0) / a.length) - (b.reduce((s, v) => s + v, 0) / b.length));
+            if (clusters.length === 0) return null;
+            const avg = c => c.reduce((s, v) => s + v, 0) / c.length;
+            const nettX = avg(clusters[clusters.length - 1]);   // rightmost consistent decimal column
+            const firstPriceX = avg(clusters[0]);                // leftmost consistent decimal column
+
+            const results = [];
+            for (const row of dataRows) {
+                const sku = row.items[1].text.replace(':1', '');
+                // Qty is the bare integer positioned just before the first
+                // price column — anchoring by position (not "first integer
+                // seen") matters because a purely-numeric SKU (e.g.
+                // "10060581") repeats inside its own description text, and a
+                // naive left-to-right scan would grab that instead.
+                const qtyCandidates = row.items.slice(2).filter(i => /^\d+$/.test(i.text) && i.x < firstPriceX);
+                const qtyItem = qtyCandidates.length ? qtyCandidates.reduce((a, b) => (b.x > a.x ? b : a)) : null;
+                const qty = qtyItem ? parseInt(qtyItem.text) : 1;
+
+                const nettCandidates = row.items.filter(i => /^[\d,]+\.\d+$/.test(i.text));
+                if (nettCandidates.length === 0) continue;
+                const nettItem = nettCandidates.reduce((a, b) => (Math.abs(b.x - nettX) < Math.abs(a.x - nettX) ? b : a));
+                const nett = parseFloat(nettItem.text.replace(/,/g, ''));
+
+                const descItems = row.items.slice(2).filter(i => !qtyItem || i.x < qtyItem.x);
+                const desc = descItems.map(i => i.text).join(' ').trim();
+
+                if (sku && desc && nett > 0 && !desc.toLowerCase().includes('date:')) {
+                    const unitCost = qty > 0 ? nett / qty : nett;
+                    results.push({ sku, desc, cost: Math.ceil(unitCost) });
+                }
+            }
+            return results;
+        }
+        // A jump of more than 2.5x the existing cost is far more likely to be
+        // a parsing slip than a genuine price change — hold those out for a
+        // manual look rather than silently applying them. This directly
+        // guards against the exact kind of error that started this whole
+        // PDF-import investigation (a line item coming out ~5x too high).
+        const PRICE_ANOMALY_MULTIPLIER = 2.5;
+        function commitParsedStockItems(parsedItems) {
+            let addedCount = 0, updatedCount = 0;
+            const additions = [], updates = [], flaggedAnomalies = [];
+            for (const { sku, desc, cost } of parsedItems) {
+                const existing = currentStock.find(inv => inv.sku.toLowerCase() === sku.toLowerCase());
+                if (existing) {
+                    if (cost > existing.cost * PRICE_ANOMALY_MULTIPLIER) {
+                        flaggedAnomalies.push({ sku, oldCost: existing.cost, newCost: cost });
+                    } else if (cost > existing.cost) {
+                        updates.push({ id: existing.id, cost, desc }); updatedCount++;
+                    }
+                } else {
+                    additions.push({ sku, desc, cost, category: 'Imported' }); addedCount++;
+                }
+            }
+            const batch = db.batch();
+            additions.forEach(item => batch.set(db.collection('stock').doc(), item));
+            updates.forEach(u => batch.update(db.collection('stock').doc(u.id), { cost: u.cost, desc: u.desc }));
+            batch.commit().then(() => {
+                let msg = `Import Parsing Complete!\n\nAdded: ${addedCount} new items.\nUpdated: ${updatedCount} existing items with higher costs.`;
+                if (flaggedAnomalies.length > 0) {
+                    msg += `\n\n⚠️ Held back for review (jumped more than ${PRICE_ANOMALY_MULTIPLIER}x — check these manually):\n` +
+                        flaggedAnomalies.map(a => `${a.sku}: £${a.oldCost} → £${a.newCost}`).join('\n');
+                }
+                showToast(msg, flaggedAnomalies.length > 0 ? 'warning' : 'success');
+                document.getElementById('import-text-area').value = '';
+            });
         }
         function processRawImport() {
             const rawData = document.getElementById('import-text-area').value;
@@ -5903,8 +6394,15 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         }
                         let desc = descTokens.join(' ').trim();
                         let qty = (j < tokens.length && /^\d+$/.test(tokens[j])) ? parseInt(tokens[j]) : 1;
-                        let numberBlock = [], decimalsSeen = 0;
-                        while (j < tokens.length && !tokens[j].endsWith(':1') && decimalsSeen < 4) {
+                        // Capped at 6 tokens since the row started — the widest
+                        // layout seen (qty/price/per/disc/unit-price/nett)
+                        // needs exactly 6 to find its price, and a table's LAST
+                        // row — which has no next ":1" marker to stop it —
+                        // can't reach a 7th token and wander into the totals
+                        // section below, picking up "Total Goods" as if it
+                        // were this line's own price.
+                        let numberBlock = [], decimalsSeen = 0, numberBlockStart = j;
+                        while (j < tokens.length && !tokens[j].endsWith(':1') && decimalsSeen < 4 && (j - numberBlockStart) < 6) {
                             if (/^[\d.,]+$/.test(tokens[j])) { numberBlock.push(tokens[j]); if (tokens[j].includes('.')) decimalsSeen++; }
                             j++;
                         }
@@ -6025,15 +6523,36 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     btnText.innerText = 'Scanning PDF...';
                     const arrayBuffer = await file.arrayBuffer();
                     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    let allRows = [];
                     let tokenSequence = [];
                     for (let i = 1; i <= pdf.numPages; i++) {
                         const page = await pdf.getPage(i);
                         const textContent = await page.getTextContent();
-                        let items = textContent.items;
-                        items.sort((a, b) => { const yDiff = b.transform[5] - a.transform[5]; if (Math.abs(yDiff) > 5) return yDiff; return a.transform[4] - b.transform[4]; });
-                        for (let item of items) { let text = item.str.trim(); if (text) tokenSequence.push(text); }
+                        let items = textContent.items
+                            .filter(item => Math.abs(item.transform[1]) < 0.01 && Math.abs(item.transform[2]) < 0.01)
+                            .map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] }))
+                            .filter(item => item.text);
+                        items.sort((a, b) => b.y - a.y);
+                        const rows = [];
+                        for (const item of items) {
+                            const row = rows.find(r => Math.abs(r.y - item.y) <= 5);
+                            if (row) row.items.push(item);
+                            else rows.push({ y: item.y, items: [item] });
+                        }
+                        for (const row of rows) {
+                            row.items.sort((a, b) => a.x - b.x);
+                            for (const item of row.items) tokenSequence.push(item.text);
+                        }
+                        allRows.push(...rows);
                     }
                     document.getElementById('reprice-import-text-area').value = tokenSequence.join(' ');
+                    const parsedItems = extractStockItemsByColumnPosition(allRows);
+                    if (parsedItems && parsedItems.length > 0) {
+                        commitRepricedStockItems(parsedItems);
+                        return;
+                    }
+                    // Falls through to processRepriceImport() below on the
+                    // now-populated textarea if no reliable columns were found.
                 } else {
                     btnText.innerText = 'Reading File...';
                     document.getElementById('reprice-import-text-area').value = await file.text();
@@ -6041,6 +6560,39 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 processRepriceImport();
             } catch (error) { console.error(error); showToast('Could not read the uploaded file.', 'error'); }
             finally { btnText.innerText = originalText; event.target.value = ''; }
+        }
+        function commitRepricedStockItems(parsedItems) {
+            let increased = 0, decreased = 0, unchanged = 0;
+            let notFound = [], flaggedAnomalies = [];
+            const batch = db.batch();
+            let batchHasOps = false;
+            for (const { sku, cost } of parsedItems) {
+                const existingIndex = currentStock.findIndex(inv => inv.sku.toLowerCase() === sku.toLowerCase());
+                if (existingIndex === -1) { notFound.push(sku); continue; }
+                const oldCost = currentStock[existingIndex].cost;
+                if (cost === oldCost) { unchanged++; continue; }
+                // A swing of more than 2.5x in either direction is far more
+                // likely to be a parsing slip than a genuine reprice — hold
+                // those out rather than silently applying them.
+                if (oldCost > 0 && (cost > oldCost * PRICE_ANOMALY_MULTIPLIER || cost < oldCost / PRICE_ANOMALY_MULTIPLIER)) {
+                    flaggedAnomalies.push({ sku, oldCost, newCost: cost });
+                    continue;
+                }
+                batch.update(db.collection('stock').doc(currentStock[existingIndex].id), { cost });
+                batchHasOps = true;
+                if (cost > oldCost) increased++; else decreased++;
+            }
+            const finish = () => {
+                let msg = `Reprice Complete!\n\nIncreased: ${increased}\nDecreased: ${decreased}\nUnchanged: ${unchanged}`;
+                if (notFound.length > 0) msg += `\n\nNot found in stock (${notFound.length}): ${notFound.slice(0, 10).join(', ')}${notFound.length > 10 ? '...' : ''}`;
+                if (flaggedAnomalies.length > 0) {
+                    msg += `\n\n⚠️ Held back for review (swung more than ${PRICE_ANOMALY_MULTIPLIER}x — check these manually):\n` +
+                        flaggedAnomalies.map(a => `${a.sku}: £${a.oldCost} → £${a.newCost}`).join('\n');
+                }
+                showToast(msg, flaggedAnomalies.length > 0 ? 'warning' : 'success');
+                document.getElementById('reprice-import-text-area').value = '';
+            };
+            if (batchHasOps) batch.commit().then(finish); else finish();
         }
         function processRepriceImport() {
             const rawData = document.getElementById('reprice-import-text-area').value;
@@ -6062,8 +6614,10 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                             descTokens.push(tokens[j]); j++;
                         }
                         let qty = (j < tokens.length && /^\d+$/.test(tokens[j])) ? parseInt(tokens[j]) : 1;
-                        let numberBlock = [], decimalsSeen = 0;
-                        while (j < tokens.length && !tokens[j].endsWith(':1') && decimalsSeen < 4) {
+                        // Same last-row leak fix as the main import parser —
+                        // see the comment there for why 6 is the right cap.
+                        let numberBlock = [], decimalsSeen = 0, numberBlockStart = j;
+                        while (j < tokens.length && !tokens[j].endsWith(':1') && decimalsSeen < 4 && (j - numberBlockStart) < 6) {
                             if (/^[\d.,]+$/.test(tokens[j])) { numberBlock.push(tokens[j]); if (tokens[j].includes('.')) decimalsSeen++; }
                             j++;
                         }
@@ -6313,6 +6867,24 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         }
 
         function calculateComprehensiveMetrics() {
+            const isFlatJobCostEnabled = document.getElementById('flat-job-cost-toggle').checked;
+            if (isFlatJobCostEnabled) {
+                const flatCost = parseFloat(document.getElementById('flat-job-cost-amount').value) || 0;
+                const worksDescription = document.getElementById('flat-job-cost-description').value.trim();
+                document.getElementById('summary-itemized-rows-wrapper').classList.add('hidden');
+                const descRow = document.getElementById('summary-flat-cost-description-row');
+                descRow.classList.toggle('hidden', !worksDescription);
+                descRow.innerText = worksDescription;
+                document.getElementById('summary-gross-total').innerText = `£${flatCost.toFixed(2)}`;
+                return {
+                    netMaterialsExVat: 0, materialsVat: 0, netMaterials: 0, markedMaterials: flatCost, laborCosts: 0, computedTestingCharge: 0,
+                    sundriesEnabled: false, sundriesAmount: 0, customCostEnabled: false, customCostTarget: 0,
+                    grossTotal: flatCost, markup: 0, isTestingIncluded: false, testingCostFixed: 0,
+                    flatJobCostEnabled: true, worksDescription,
+                };
+            }
+            document.getElementById('summary-itemized-rows-wrapper').classList.remove('hidden');
+            document.getElementById('summary-flat-cost-description-row').classList.add('hidden');
             const netMaterialsExVat = activeAllocatedMaterials.reduce((acc, curr) => acc + ((parseFloat(curr.cost) || 0) * curr.qty), 0);
             const materialsVat = netMaterialsExVat * 0.20;
             const netMaterialsIncVat = netMaterialsExVat + materialsVat;
@@ -6414,6 +6986,20 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 document.getElementById('include-sundries-toggle').checked = false;
             } else {
                 customCostExceededWarningShown = false; // reset so it can warn fresh next time it's enabled
+            }
+            calculateComprehensiveMetrics();
+        }
+        // Flat Job Cost bypasses materials/labour entirely — just a
+        // description and one price. Mutually exclusive with the other
+        // pricing mechanisms, since they don't mean anything alongside it.
+        function handleFlatJobCostToggle() {
+            const isEnabled = document.getElementById('flat-job-cost-toggle').checked;
+            document.getElementById('quote-pricing-mechanism-wrapper').classList.toggle('hidden', isEnabled);
+            document.getElementById('flat-job-cost-fields-wrapper').classList.toggle('hidden', !isEnabled);
+            if (isEnabled) {
+                document.getElementById('include-sundries-toggle').checked = false;
+                document.getElementById('include-custom-cost-toggle').checked = false;
+                document.getElementById('include-testing-toggle').checked = false;
             }
             calculateComprehensiveMetrics();
         }
@@ -6737,8 +7323,13 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             });
             // Keep the local cache in sync immediately so a second call in the same
             // action (e.g. Quote Builder resolving a client right after) sees it
-            // without waiting for the Firestore listener round-trip.
-            currentProperties.push({ id: ref.id, address: trimmed, notes: '', lastElectricalInspection: null, lastSmokeAlarmTest: null, electricalCycleYears: 5 });
+            // without waiting for the Firestore listener round-trip. Guarded
+            // because the listener can itself fire from the local write cache
+            // before this await resolves — pushing unconditionally would then
+            // add a second, duplicate entry for the same document id.
+            if (!currentProperties.some(p => p.id === ref.id)) {
+                currentProperties.push({ id: ref.id, address: trimmed, notes: '', lastElectricalInspection: null, lastSmokeAlarmTest: null, electricalCycleYears: 5 });
+            }
             return ref.id;
         }
         async function linkPropertyToClientIfMissing(clientId, propertyId) {
@@ -6768,6 +7359,15 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 linkedPropertyIds: [...crmLinkedPropertyIdsDraft],
                 clientType: crmClientTypeDraft,
             };
+            // Only checked for genuinely NEW clients — editing an existing one
+            // naturally makes it match itself, which isn't a duplicate.
+            if (!editId) {
+                const similarExisting = currentClients.find(c => stringSimilarity(c.name, payload.name) >= 0.85);
+                if (similarExisting) {
+                    const proceed = await showConfirm(`This looks very similar to an existing client:\n\n"${similarExisting.name}"\n\nAdd it as a new, separate client anyway?`, { confirmText: 'Add Anyway', cancelText: 'Cancel' });
+                    if (!proceed) return;
+                }
+            }
             let clientId = editId;
             if (editId) {
                 await db.collection('clients').doc(editId).update(payload);
