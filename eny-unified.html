@@ -572,7 +572,7 @@
                         <div id="properties-empty-state" class="hidden text-center py-12 text-[var(--eny-text-muted2)] text-sm bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl">
                             <i data-lucide="home" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> No properties logged yet.
                         </div>
-                        <div id="properties-list" class="space-y-3"></div>
+                        <div id="properties-list" class="grid grid-cols-2 gap-3"></div>
                     </div>
                 </div>
             </div>
@@ -1652,11 +1652,13 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Electrical (EICR)</div>
-                        <div id="property-info-electrical-badge"></div>
+                        <div id="property-info-electrical-badge" class="mb-1.5"></div>
+                        <button onclick="markReminderTestedToday(activePropertyInfoModalId, 'lastElectricalInspection')" class="w-full text-[9.5px] font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Mark Done Today</button>
                     </div>
                     <div>
                         <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Smoke Alarm</div>
-                        <div id="property-info-smoke-badge"></div>
+                        <div id="property-info-smoke-badge" class="mb-1.5"></div>
+                        <button onclick="markReminderTestedToday(activePropertyInfoModalId, 'lastSmokeAlarmTest')" class="w-full text-[9.5px] font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Mark Done Today</button>
                     </div>
                 </div>
                 <div id="property-info-access-wrapper" class="hidden">
@@ -1665,7 +1667,8 @@
                 </div>
             </div>
             <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex gap-2">
-                <button onclick="editPropertyFromInfoModal()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="pencil" class="w-4 h-4"></i> Edit Full Record</button>
+                <button onclick="editPropertyFromInfoModal()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="pencil" class="w-4 h-4"></i> Edit</button>
+                <button onclick="deletePropertyFromInfoModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-red-500 hover:text-white border border-[var(--eny-border-standard)] text-[var(--eny-text-muted)] font-medium py-2.5 px-4 rounded-xl text-sm transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 <button onclick="closePropertyInfoModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-200)] font-medium py-2.5 px-4 rounded-xl text-sm transition-colors cursor-pointer">Close</button>
             </div>
         </div>
@@ -2641,6 +2644,34 @@
             else if (daysUntilDue <= dueSoonWindowDays) status = 'due-soon';
             else status = 'ok';
             return { dueDate, status, daysUntilDue };
+        }
+        // A property's overall visual state for the illustrated grid — worst
+        // of the two individual checks wins. "Never tested" is deliberately
+        // folded into the same bucket as "ok" rather than treated as its own
+        // separate (implicitly worse-looking) state.
+        function computeOverallPropertyState(p) {
+            const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
+            const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
+            if (elec.status === 'overdue' || smoke.status === 'overdue') return 'overdue';
+            if (elec.status === 'due-soon' || smoke.status === 'due-soon') return 'due-soon';
+            return 'ok';
+        }
+        // Colour/illustration treatment per state — the same look repeats for
+        // every property sharing that state, rather than needing unique art
+        // per property.
+        const PROPERTY_STATE_STYLES = {
+            'ok': { sceneBg: 'linear-gradient(180deg, #e8f0e2, #d9e8ce)', houseStroke: '#6b8f5f', sealGradient: 'radial-gradient(circle at 35% 30%, #86b878, #5a8a4d)', sealSymbol: '✓', sealLabel: 'OK' },
+            'due-soon': { sceneBg: 'linear-gradient(180deg, #f7ecd6, #f2dcac)', houseStroke: '#a97b3a', sealGradient: 'radial-gradient(circle at 35% 30%, #eab35c, #c98a2e)', sealSymbol: '!', sealLabel: 'SOON' },
+            'overdue': { sceneBg: 'linear-gradient(180deg, #f5ddd4, #eec3b6)', houseStroke: '#c26847', sealGradient: 'radial-gradient(circle at 35% 30%, #e0876a, #b5502f)', sealSymbol: '✕', sealLabel: 'LATE' },
+        };
+        function buildPropertyHouseIllustrationSvg(strokeColor) {
+            return `<svg width="118" height="86" viewBox="0 0 140 96" fill="none" stroke="${strokeColor}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);">
+                <path d="M25 90 L25 48 L60 24 L95 48 L95 90 Z"/>
+                <path d="M15 51 L60 20 L105 51"/>
+                <rect x="37" y="58" width="13" height="13"/>
+                <rect x="70" y="58" width="13" height="13"/>
+                <rect x="54" y="74" width="14" height="16"/>
+            </svg>`;
         }
         function formatUkDate(isoDate) {
             if (!isoDate) return '—';
@@ -5283,6 +5314,12 @@
             switchTab('lookup-tab');
             loadPropertyForModification(propertyId);
         }
+        async function deletePropertyFromInfoModal() {
+            if (!activePropertyInfoModalId) return;
+            const propertyId = activePropertyInfoModalId;
+            await deleteProperty(propertyId); // handles its own confirmation dialog
+            if (!currentProperties.some(p => p.id === propertyId)) closePropertyInfoModal();
+        }
         function loadPropertyForModification(propertyId) {
             const p = currentProperties.find(x => x.id === propertyId);
             if (!p) return;
@@ -5342,32 +5379,25 @@
             if (filtered.length === 0) { emptyEl.classList.remove('hidden'); listEl.innerHTML = ''; return; }
             emptyEl.classList.add('hidden');
             listEl.innerHTML = filtered.map(p => {
-                const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
-                const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
-                const hasOverdueCompliance = elec.status === 'overdue' || smoke.status === 'overdue';
+                const state = computeOverallPropertyState(p);
+                const style = PROPERTY_STATE_STYLES[state];
                 const hasFailedReport = currentSmokeTests.some(t => t.propertyId === p.id && t.outcome === 'Unsatisfactory');
-                const flagsHtml = (hasOverdueCompliance || hasFailedReport) ? `<div class="flex items-center gap-1 shrink-0">
-                    ${hasOverdueCompliance ? `<span title="Electrical inspection or smoke alarm test overdue" class="text-red-500"><i data-lucide="alert-triangle" class="w-4 h-4"></i></span>` : ''}
-                    ${hasFailedReport ? `<span title="Unsatisfactory service report on file" class="text-red-600"><i data-lucide="flag" class="w-4 h-4"></i></span>` : ''}
-                </div>` : '';
-                return `<div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06] space-y-3">
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0 flex items-start gap-2"><div class="min-w-0"><div class="text-sm font-bold text-[var(--eny-text-primary)] whitespace-pre-line">${p.address}</div>${buildHazardBadgesHtml(p)}</div>${flagsHtml}</div>
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <button onclick="loadPropertyForModification('${p.id}')" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-                            <button onclick="deleteProperty('${p.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                const addressLines = (p.address || '').split('\n');
+                const addressLine = addressLines[0] || '';
+                const subLine = addressLines.slice(1).join(', ');
+                return `<button onclick="openPropertyFromMap('${p.id}')" class="text-left bg-white rounded-[20px] overflow-hidden shadow-[0_5px_16px_rgba(120,90,60,0.12)] cursor-pointer transition-transform hover:-translate-y-0.5">
+                    <div class="h-[92px] relative overflow-hidden" style="background: ${style.sceneBg};">
+                        ${buildPropertyHouseIllustrationSvg(style.houseStroke)}
+                        <div class="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-md border-2 border-white/70 z-[2]" style="background: ${style.sealGradient};">
+                            <span class="text-white font-extrabold leading-[1.05] text-center" style="font-size:7px;">${style.sealSymbol}<br>${style.sealLabel}</span>
                         </div>
+                        ${hasFailedReport ? `<div class="absolute bottom-2 left-2 bg-white/95 rounded-full p-1 shadow z-[2]"><i data-lucide="flag" class="w-3 h-3 text-red-600"></i></div>` : ''}
                     </div>
-                    ${p.notes ? `<div class="text-xs text-[var(--eny-text-muted)] bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg p-2.5 whitespace-pre-line"><i data-lucide="key" class="w-3 h-3 inline mr-1 text-amber-400"></i>${p.notes}</div>` : ''}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <div class="flex items-center justify-between gap-2 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg p-2.5"><div class="text-[11px] text-[var(--eny-text-muted)]">Electrical Inspection</div>${reminderStatusBadge(elec.status, elec.daysUntilDue)}</div>
-                        <div class="flex items-center justify-between gap-2 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg p-2.5"><div class="text-[11px] text-[var(--eny-text-muted)]">Smoke Alarm Test</div>${reminderStatusBadge(smoke.status, smoke.daysUntilDue)}</div>
+                    <div class="p-3">
+                        <div class="text-[12.5px] font-extrabold text-[#4a3f35] leading-snug truncate">${addressLine}</div>
+                        <div class="text-[10px] text-[#b5a996] truncate mt-0.5">${subLine || '\u00A0'}</div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="markReminderTestedToday('${p.id}', 'lastElectricalInspection')" class="text-[10px] font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Mark Inspection Done Today</button>
-                        <button onclick="markReminderTestedToday('${p.id}', 'lastSmokeAlarmTest')" class="text-[10px] font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Mark Smoke Test Done Today</button>
-                    </div>
-                </div>`;
+                </button>`;
             }).join('');
             lucide.createIcons();
         }
