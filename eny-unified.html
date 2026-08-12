@@ -1638,6 +1638,39 @@
         </div>
     </div>
 
+    <div id="property-info-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-start gap-3 bg-[var(--eny-bg-page)]/50">
+                <div class="min-w-0">
+                    <h3 id="property-info-modal-address" class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2 whitespace-pre-line"><i data-lucide="map-pin" class="text-amber-400 w-5 h-5 shrink-0"></i></h3>
+                </div>
+                <button onclick="closePropertyInfoModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-4">
+                <div id="property-info-hazards" class="flex flex-wrap gap-1.5"></div>
+                <div id="property-info-landlord" class="hidden text-xs text-[var(--eny-text-muted)]"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Electrical (EICR)</div>
+                        <div id="property-info-electrical-badge"></div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Smoke Alarm</div>
+                        <div id="property-info-smoke-badge"></div>
+                    </div>
+                </div>
+                <div id="property-info-access-wrapper" class="hidden">
+                    <div class="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><i data-lucide="key-round" class="w-3.5 h-3.5"></i> Access Notes</div>
+                    <div id="property-info-access-notes" class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-sm text-[var(--eny-text-200)] whitespace-pre-line"></div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex gap-2">
+                <button onclick="editPropertyFromInfoModal()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="pencil" class="w-4 h-4"></i> Edit Full Record</button>
+                <button onclick="closePropertyInfoModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-200)] font-medium py-2.5 px-4 rounded-xl text-sm transition-colors cursor-pointer">Close</button>
+            </div>
+        </div>
+    </div>
+
     <div id="bundle-invoice-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
@@ -5213,7 +5246,40 @@
             // internal size calculation once it's actually visible.
             setTimeout(() => propertyLeafletMap.invalidateSize(), 100);
         }
+        let activePropertyInfoModalId = null;
         function openPropertyFromMap(propertyId) {
+            const p = currentProperties.find(x => x.id === propertyId);
+            if (!p) return;
+            activePropertyInfoModalId = propertyId;
+            document.getElementById('property-info-modal-address').innerHTML = `<i data-lucide="map-pin" class="text-amber-400 w-5 h-5 shrink-0"></i> ${escapeHtmlForPopup(p.address || '')}`;
+
+            const landlordEl = document.getElementById('property-info-landlord');
+            const landlord = p.landlordId ? currentClients.find(c => c.id === p.landlordId) : null;
+            if (landlord) { landlordEl.classList.remove('hidden'); landlordEl.innerText = `Landlord: ${landlord.name}`; }
+            else landlordEl.classList.add('hidden');
+
+            const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
+            const smoke = computeReminderStatus(p.lastSmokeAlarmTest, SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
+            document.getElementById('property-info-electrical-badge').innerHTML = reminderStatusBadge(elec.status, elec.daysUntilDue);
+            document.getElementById('property-info-smoke-badge').innerHTML = reminderStatusBadge(smoke.status, smoke.daysUntilDue);
+
+            document.getElementById('property-info-hazards').innerHTML = buildHazardBadgesHtml(p);
+
+            const accessWrapper = document.getElementById('property-info-access-wrapper');
+            if (p.notes) { accessWrapper.classList.remove('hidden'); document.getElementById('property-info-access-notes').innerText = p.notes; }
+            else accessWrapper.classList.add('hidden');
+
+            document.getElementById('property-info-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closePropertyInfoModal() {
+            document.getElementById('property-info-modal').classList.add('hidden');
+            activePropertyInfoModalId = null;
+        }
+        function editPropertyFromInfoModal() {
+            if (!activePropertyInfoModalId) return;
+            const propertyId = activePropertyInfoModalId;
+            closePropertyInfoModal();
             switchTab('lookup-tab');
             loadPropertyForModification(propertyId);
         }
