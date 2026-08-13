@@ -492,7 +492,7 @@
                         <div id="jobs-empty-state" class="hidden text-center py-12 text-[var(--eny-text-muted2)] text-sm bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl">
                             <i data-lucide="clipboard-list" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> No jobs match your filters.
                         </div>
-                        <div id="jobs-list" class="space-y-3"></div>
+                        <div id="jobs-list" class="grid grid-cols-2 gap-3"></div>
                     </div>
                 </div>
             </div>
@@ -714,7 +714,7 @@
                             <button onclick="toggleServicingNeedsFollowUpFilter()" id="servicing-followup-toggle-btn" class="text-[11px] font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer transition-colors bg-[var(--eny-bg-page)] border-[var(--eny-border-subtle)] text-[var(--eny-text-muted)]">Needs Follow-Up</button>
                         </div>
                     </div>
-                    <div id="smoketest-records-list" class="space-y-2"></div>
+                    <div id="smoketest-records-list" class="grid grid-cols-2 gap-3"></div>
                 </div>
             </div>
 
@@ -1015,21 +1015,7 @@
                         <div id="vault-empty-state" class="text-center py-16 text-[var(--eny-text-muted2)] text-sm">
                             <i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> Vault is empty.
                         </div>
-                        <div class="overflow-x-auto">
-                            <table id="vault-table" class="w-full text-left text-sm hidden">
-                                <thead>
-                                    <tr class="border-b border-[var(--eny-border-standard)] text-[var(--eny-text-muted)] text-xs uppercase tracking-wider">
-                                        <th class="py-3 px-3 w-10 text-center"><i data-lucide="check-square" class="w-4 h-4 text-[var(--eny-text-muted2)] mx-auto"></i></th>
-                                        <th class="py-3 px-3">Date & Status</th>
-                                        <th class="py-3 px-3">Client & Job</th>
-                                        <th class="py-3 px-3 text-right">Value</th>
-                                        <th class="py-3 px-3 text-center">Pipeline</th>
-                                        <th class="py-3 px-3 text-right">Options</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="vault-records-body" class="divide-y divide-[var(--eny-border-subtle)]"></tbody>
-                            </table>
-                        </div>
+                        <div id="vault-records-body" class="grid grid-cols-2 gap-3"></div>
                     </div>
                 </div>
             </div>
@@ -1106,7 +1092,7 @@
                             <div id="crm-empty-state" class="text-center py-12 text-[var(--eny-text-muted2)] text-sm">
                                 <i data-lucide="users-2" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> No records match your criteria.
                             </div>
-                            <div id="crm-ledger-accordion-wrapper" class="space-y-3"></div>
+                            <div id="crm-ledger-accordion-wrapper" class="grid grid-cols-2 gap-3"></div>
                         </div>
                     </div>
                 </div>
@@ -1287,19 +1273,8 @@
                         <div class="lg:col-span-2 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                             <h2 class="text-lg font-bold text-[var(--eny-text-primary)] mb-2">Stock Directory</h2>
                             <p class="text-xs text-[var(--eny-text-muted)] mb-4">Click a row to edit it. Grouped by category, alphabetical within each.</p>
-                            <div class="overflow-x-auto max-h-[500px] overflow-y-auto custom-scrollbar">
-                                <table class="w-full text-left text-sm">
-                                    <thead>
-                                        <tr class="border-b border-[var(--eny-border-standard)] text-[var(--eny-text-muted)] text-xs uppercase tracking-wider sticky top-0 bg-[var(--eny-bg-card)] z-10">
-                                            <th class="py-3 px-2">SKU</th>
-                                            <th class="py-3 px-2">Description</th>
-                                            <th class="py-3 px-2">Category</th>
-                                            <th class="py-3 px-2 text-right">Cost</th>
-                                            <th class="py-3 px-2 text-center w-12"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="master-stock-table-body" class="divide-y divide-[var(--eny-border-subtle)]"></tbody>
-                                </table>
+                            <div class="max-h-[600px] overflow-y-auto custom-scrollbar">
+                                <div id="master-stock-table-body" class="grid grid-cols-2 gap-3"></div>
                             </div>
                         </div>
                     </div>
@@ -1670,6 +1645,82 @@
                 <button onclick="editPropertyFromInfoModal()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="pencil" class="w-4 h-4"></i> Edit</button>
                 <button onclick="deletePropertyFromInfoModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-red-500 hover:text-white border border-[var(--eny-border-standard)] text-[var(--eny-text-muted)] font-medium py-2.5 px-4 rounded-xl text-sm transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 <button onclick="closePropertyInfoModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-200)] font-medium py-2.5 px-4 rounded-xl text-sm transition-colors cursor-pointer">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="client-info-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1100] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-start gap-3 bg-[var(--eny-bg-page)]/50">
+                <div class="min-w-0">
+                    <h3 id="client-info-modal-name" class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"></h3>
+                    <p id="client-info-modal-meta" class="text-[11px] text-[var(--eny-text-muted2)] mt-0.5"></p>
+                </div>
+                <button onclick="closeClientInfoModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-4">
+                <div>
+                    <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Contact</div>
+                    <div class="flex items-center gap-2">
+                        <div id="client-info-phone-btn" class="flex-1"></div>
+                        <div id="client-info-email-btn" class="flex-1"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider">Total Value</div>
+                        <div id="client-info-total-value" class="text-xs font-bold text-amber-500 font-mono"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Linked Properties</div>
+                    <div id="client-info-properties" class="space-y-1.5"></div>
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Job History</div>
+                    <div id="client-info-jobs" class="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar pr-1"></div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex gap-2">
+                <button onclick="editClientFromInfoModal()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="pencil" class="w-4 h-4"></i> Edit</button>
+                <button onclick="deleteClientFromInfoModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-red-500 hover:text-white border border-[var(--eny-border-standard)] text-[var(--eny-text-muted)] font-medium py-2.5 px-4 rounded-xl text-sm transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                <button onclick="closeClientInfoModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-200)] font-medium py-2.5 px-4 rounded-xl text-sm transition-colors cursor-pointer">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="quote-info-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1100] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-start gap-3 bg-[var(--eny-bg-page)]/50">
+                <div class="min-w-0">
+                    <h3 id="quote-info-modal-client" class="text-base font-bold text-[var(--eny-text-primary)] truncate"></h3>
+                    <p id="quote-info-modal-job" class="text-[11px] text-[var(--eny-text-muted2)] mt-0.5 truncate"></p>
+                </div>
+                <button onclick="closeQuoteInfoModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider">Value</div>
+                    <div id="quote-info-value" class="text-base font-bold text-amber-500 font-mono"></div>
+                </div>
+                <div id="quote-info-invoice-number-wrapper" class="hidden text-[11px] font-mono text-[var(--eny-text-muted)]"></div>
+                <div>
+                    <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Pipeline Status</div>
+                    <select id="quote-info-status-select" onchange="updateQuoteStatus(activeQuoteInfoModalId, this.value); closeQuoteInfoModal();" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-3 py-2.5 text-sm text-[var(--eny-text-100)]">
+                        <option value="Draft">Draft</option>
+                        <option value="Sent">Sent</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Invoiced">Invoiced</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Expired">Expired</option>
+                    </select>
+                </div>
+            </div>
+            <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 grid grid-cols-2 gap-2">
+                <button id="quote-info-primary-action-btn" class="col-span-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"></button>
+                <button onclick="generateDocumentPDF(activeQuoteInfoModalId)" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-200)] font-medium py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="file-down" class="w-3.5 h-3.5"></i> PDF</button>
+                <button onclick="editQuoteFromInfoModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-200)] font-medium py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="pencil" class="w-3.5 h-3.5"></i> Edit</button>
+                <button onclick="deleteQuoteFromInfoModal()" class="col-span-2 bg-[var(--eny-bg-secondary)] hover:bg-red-500 hover:text-white border border-[var(--eny-border-standard)] text-[var(--eny-text-muted)] font-medium py-2 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete</button>
             </div>
         </div>
     </div>
@@ -2672,6 +2723,58 @@
                 <rect x="70" y="58" width="13" height="13"/>
                 <rect x="54" y="74" width="14" height="16"/>
             </svg>`;
+        }
+        // Reuses the same colour language as the property grid — a service
+        // record IS a certificate, so leaning into the same "sealed
+        // document" visual makes sense. Unlike properties, "incomplete" gets
+        // its own distinct neutral state here rather than folding into
+        // satisfactory — an unfinished record genuinely isn't the same thing
+        // as a passed one.
+        const SERVICING_STATE_STYLES = {
+            satisfactory: { sceneBg: 'linear-gradient(180deg, #e8f0e2, #d9e8ce)', iconColor: '#6b8f5f', sealGradient: 'radial-gradient(circle at 35% 30%, #86b878, #5a8a4d)', sealSymbol: '✓', sealLabel: 'OK' },
+            alterations: { sceneBg: 'linear-gradient(180deg, #f7ecd6, #f2dcac)', iconColor: '#a97b3a', sealGradient: 'radial-gradient(circle at 35% 30%, #eab35c, #c98a2e)', sealSymbol: '!', sealLabel: 'ALTER' },
+            unsatisfactory: { sceneBg: 'linear-gradient(180deg, #f5ddd4, #eec3b6)', iconColor: '#c26847', sealGradient: 'radial-gradient(circle at 35% 30%, #e0876a, #b5502f)', sealSymbol: '✕', sealLabel: 'FAIL' },
+            incomplete: { sceneBg: 'linear-gradient(180deg, #ece7de, #ddd5c8)', iconColor: '#a8998a', sealGradient: 'radial-gradient(circle at 35% 30%, #b5aa9a, #8a7c6d)', sealSymbol: '…', sealLabel: 'OPEN' },
+        };
+        function computeServicingTileState(t) {
+            if (t.outcome === 'Satisfactory') return 'satisfactory';
+            if (t.outcome === 'Unsatisfactory') return 'unsatisfactory';
+            if (t.outcome === 'Alterations Recommended') return 'alterations';
+            // No manually-set outcome yet — fall back to the smoke test's own
+            // computed pass/fail result, since that's determined mechanically
+            // from the test answers and still means something.
+            if ((t.serviceType || 'smoke-test') === 'smoke-test' && t.result) {
+                return t.result === 'Satisfactory' ? 'satisfactory' : 'unsatisfactory';
+            }
+            return 'incomplete';
+        }
+        const JOB_STATE_STYLES = {
+            scheduled: { sceneBg: 'linear-gradient(180deg, #f7ecd6, #f2dcac)', iconColor: '#a97b3a', sealGradient: 'radial-gradient(circle at 35% 30%, #eab35c, #c98a2e)', sealSymbol: '◷', sealLabel: 'DUE' },
+            completed: { sceneBg: 'linear-gradient(180deg, #e8f0e2, #d9e8ce)', iconColor: '#6b8f5f', sealGradient: 'radial-gradient(circle at 35% 30%, #86b878, #5a8a4d)', sealSymbol: '✓', sealLabel: 'DONE' },
+            cancelled: { sceneBg: 'linear-gradient(180deg, #ece7de, #ddd5c8)', iconColor: '#a8998a', sealGradient: 'radial-gradient(circle at 35% 30%, #b5aa9a, #8a7c6d)', sealSymbol: '✕', sealLabel: 'OFF' },
+        };
+        function computeJobTileState(j) {
+            if (j.status === 'Completed') return 'completed';
+            if (j.status === 'Cancelled') return 'cancelled';
+            return 'scheduled';
+        }
+        // Not a pass/fail state like properties or servicing — just a type
+        // distinction, so this drives the illustration/colour without a seal.
+        const CLIENT_TYPE_STYLES = {
+            'Landlord': { sceneBg: 'linear-gradient(180deg, #f7ecd6, #f2dcac)', iconColor: '#a97b3a', icon: 'building-2', badgeLabel: 'LANDLORD' },
+            'Privately Owned': { sceneBg: 'linear-gradient(180deg, #e8f0e2, #d9e8ce)', iconColor: '#6b8f5f', icon: 'user', badgeLabel: 'PRIVATE' },
+        };
+        const QUOTE_STATE_STYLES = {
+            paid: { sceneBg: 'linear-gradient(180deg, #e8f0e2, #d9e8ce)', iconColor: '#6b8f5f', sealGradient: 'radial-gradient(circle at 35% 30%, #86b878, #5a8a4d)', sealSymbol: '✓', sealLabel: 'PAID' },
+            invoiced: { sceneBg: 'linear-gradient(180deg, #f7ecd6, #f2dcac)', iconColor: '#a97b3a', sealGradient: 'radial-gradient(circle at 35% 30%, #eab35c, #c98a2e)', sealSymbol: '£', sealLabel: 'DUE' },
+            expired: { sceneBg: 'linear-gradient(180deg, #f5ddd4, #eec3b6)', iconColor: '#c26847', sealGradient: 'radial-gradient(circle at 35% 30%, #e0876a, #b5502f)', sealSymbol: '✕', sealLabel: 'EXP' },
+            pipeline: { sceneBg: 'linear-gradient(180deg, #ece7de, #ddd5c8)', iconColor: '#a8998a', sealGradient: 'radial-gradient(circle at 35% 30%, #b5aa9a, #8a7c6d)', sealSymbol: '…', sealLabel: 'QUOTE' },
+        };
+        function computeQuoteTileState(q) {
+            if (q.status === 'Paid') return 'paid';
+            if (q.status === 'Invoiced') return 'invoiced';
+            if (q.status === 'Expired') return 'expired';
+            return 'pipeline'; // Draft, Sent, Approved
         }
         function formatUkDate(isoDate) {
             if (!isoDate) return '—';
@@ -3702,29 +3805,29 @@
                 servicingOutcomeSeverity(a.outcome) - servicingOutcomeSeverity(b.outcome) ||
                 (b.testDate || '').localeCompare(a.testDate || '') || (b.createdAt || '').localeCompare(a.createdAt || '')
             );
-            container.innerHTML = sorted.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">No records match.</p>` :
+            container.innerHTML = sorted.length === 0 ? `<p class="col-span-2 text-xs text-[var(--eny-text-muted2)] text-center py-6">No records match.</p>` :
                 sorted.map(t => {
                     const serviceType = t.serviceType || 'smoke-test';
                     const survey = SURVEY_TYPES[serviceType];
-                    const typeBadge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-[var(--eny-bg-secondary)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]">${survey ? survey.label : serviceType}</span>`;
-                    const resultBadge = serviceType !== 'smoke-test' ? '' :
-                        t.result === 'Satisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 border-emerald-500/40 text-emerald-600">Satisfactory</span>`
-                        : t.result === 'Unsatisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-red-500/10 border-red-500/40 text-red-600">Unsatisfactory</span>`
-                        : `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-text-muted)]">Incomplete</span>`;
-                    const outcomeBadge = !t.outcome ? '' :
-                        t.outcome === 'Satisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-emerald-500/10 border-emerald-500/40 text-emerald-600">${t.outcome}</span>`
-                        : t.outcome === 'Unsatisfactory' ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-red-500/10 border-red-500/40 text-red-600">${t.outcome}</span>`
-                        : `<span class="text-[10px] font-bold px-2 py-0.5 rounded border bg-amber-500/10 border-amber-500/40 text-amber-600">${t.outcome}</span>`;
-                    return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
-                        <div class="min-w-0">
-                            <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${(t.address || '').split('\n')[0]}</div>
-                            <div class="text-[10px] text-[var(--eny-text-muted2)] flex items-center gap-1.5 flex-wrap mt-1">${formatUkDate(t.testDate)} • ${t.inspector || '—'} ${typeBadge} ${resultBadge} ${outcomeBadge}</div>
+                    const state = computeServicingTileState(t);
+                    const style = SERVICING_STATE_STYLES[state];
+                    const addressLine = (t.address || '').split('\n')[0];
+                    return `<div class="bg-white rounded-[20px] overflow-hidden shadow-[0_5px_16px_rgba(120,90,60,0.12)]">
+                        <div class="h-[78px] relative flex items-center justify-center" style="background: ${style.sceneBg};">
+                            <i data-lucide="${survey ? survey.icon : 'clipboard-check'}" class="w-9 h-9" style="color: ${style.iconColor};"></i>
+                            <div class="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-md border-2 border-white/70 z-[2]" style="background: ${style.sealGradient};">
+                                <span class="text-white font-extrabold leading-[1.05] text-center" style="font-size:6.5px;">${style.sealSymbol}<br>${style.sealLabel}</span>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <button onclick="loadSmokeTestRecordForEditing('${t.id}')" title="Edit" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
-                            <button onclick="generateSmokeTestPdf('${t.id}')" title="PDF" class="text-[var(--eny-text-muted)] hover:text-blue-400 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="file-down" class="w-3.5 h-3.5"></i></button>
-                            <button onclick="createInvoiceFromServiceRecord('${t.id}')" title="Create Invoice" class="text-[var(--eny-text-muted)] hover:text-emerald-400 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="receipt" class="w-3.5 h-3.5"></i></button>
-                            <button onclick="deleteSmokeTestRecord('${t.id}')" title="Delete" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        <div class="p-3">
+                            <div class="text-[12px] font-extrabold text-[#4a3f35] leading-snug truncate">${addressLine}</div>
+                            <div class="text-[9.5px] text-[#b5a996] truncate mt-0.5">${survey ? survey.label : serviceType} · ${formatUkDate(t.testDate)}</div>
+                            <div class="flex items-center gap-1 mt-2.5">
+                                <button onclick="loadSmokeTestRecordForEditing('${t.id}')" title="Edit" class="flex-1 py-1.5 rounded-lg bg-[#f7f1e8] hover:bg-[#ece3d3] text-[#8a7c6d] cursor-pointer flex items-center justify-center"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                <button onclick="generateSmokeTestPdf('${t.id}')" title="PDF" class="flex-1 py-1.5 rounded-lg bg-[#f7f1e8] hover:bg-[#ece3d3] text-[#8a7c6d] cursor-pointer flex items-center justify-center"><i data-lucide="file-down" class="w-3 h-3"></i></button>
+                                <button onclick="createInvoiceFromServiceRecord('${t.id}')" title="Create Invoice" class="flex-1 py-1.5 rounded-lg bg-[#f7f1e8] hover:bg-[#ece3d3] text-[#8a7c6d] cursor-pointer flex items-center justify-center"><i data-lucide="receipt" class="w-3 h-3"></i></button>
+                                <button onclick="deleteSmokeTestRecord('${t.id}')" title="Delete" class="flex-1 py-1.5 rounded-lg bg-[#f7f1e8] hover:bg-red-100 hover:text-red-600 text-[#8a7c6d] cursor-pointer flex items-center justify-center"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                            </div>
                         </div>
                     </div>`;
                 }).join('');
@@ -5080,13 +5183,23 @@
             emptyEl.classList.add('hidden');
             listEl.innerHTML = filtered.map(j => {
                 const engineers = getJobEngineers(j);
-                const engineerBadges = engineers.map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-1 rounded border ${c.badge}">${name}</span>`; }).join(' ');
-                const colors = getJobStatusColorClasses(j.status);
-                return `<div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg ring-1 ring-white/[0.06]">
-                    <div class="min-w-0"><div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-[var(--eny-text-primary)]">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${colors.badge}">${j.status}</span></div>
-                    <div class="text-[11px] text-[var(--eny-text-muted)]">${formatUkDate(j.date)} at ${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div>${j.jobNumber ? `<div class="text-[10px] font-mono text-[var(--eny-text-muted2)] mt-0.5">${j.jobNumber}</div>` : ''}</div>
-                    <div class="flex items-center gap-2 shrink-0 flex-wrap justify-end">${engineerBadges}${buildJobActionButtons(j)}</div>
-                </div>`;
+                const engineerBadges = engineers.map(name => { const c = getEngineerColorClass(name); return `<span class="text-[8.5px] font-bold px-1.5 py-0.5 rounded border ${c.badge}">${name}</span>`; }).join(' ');
+                const style = JOB_STATE_STYLES[computeJobTileState(j)];
+                const addressLine = j.propertyAddress ? j.propertyAddress.split('\n')[0] : '';
+                return `<button onclick="openJobDetailPage('${j.id}', false)" class="text-left bg-white rounded-[20px] overflow-hidden shadow-[0_5px_16px_rgba(120,90,60,0.12)] cursor-pointer">
+                    <div class="h-[78px] relative flex items-center justify-center" style="background: ${style.sceneBg};">
+                        <i data-lucide="wrench" class="w-9 h-9" style="color: ${style.iconColor};"></i>
+                        <div class="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-md border-2 border-white/70 z-[2]" style="background: ${style.sealGradient};">
+                            <span class="text-white font-extrabold leading-[1.05] text-center" style="font-size:6.5px;">${style.sealSymbol}<br>${style.sealLabel}</span>
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <div class="text-[12px] font-extrabold text-[#4a3f35] leading-snug truncate">${j.title}</div>
+                        <div class="text-[9.5px] text-[#b5a996] truncate mt-0.5">${formatUkDate(j.date)} at ${j.time || '—'}</div>
+                        ${addressLine ? `<div class="text-[9px] text-[#c4b8a5] truncate mt-0.5">${addressLine}</div>` : ''}
+                        ${engineerBadges ? `<div class="flex flex-wrap gap-1 mt-2">${engineerBadges}</div>` : ''}
+                    </div>
+                </button>`;
             }).join('');
             lucide.createIcons();
         }
@@ -6171,6 +6284,46 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (!(await showConfirm('Move this record to Trash? You can restore it within 30 days.', { confirmText: 'Move to Trash', danger: true }))) return;
             db.collection('quotes').doc(id).update({ deleted: true, deletedAt: new Date().toISOString() });
         }
+        let activeQuoteInfoModalId = null;
+        function openQuoteInfoModal(id) {
+            const r = currentQuotes.find(q => q.id === id);
+            if (!r) return;
+            activeQuoteInfoModalId = id;
+            document.getElementById('quote-info-modal-client').innerText = r.clientDetailsPayload.name;
+            document.getElementById('quote-info-modal-job').innerText = r.jobName;
+            document.getElementById('quote-info-value').innerText = `£${r.financials.grossTotal.toFixed(2)}`;
+            const invNumWrapper = document.getElementById('quote-info-invoice-number-wrapper');
+            if (r.invoiceNumber) { invNumWrapper.classList.remove('hidden'); invNumWrapper.innerText = r.invoiceNumber; }
+            else invNumWrapper.classList.add('hidden');
+            document.getElementById('quote-info-status-select').value = r.status;
+            const isInvoiceOrPaid = r.status === 'Invoiced' || r.status === 'Paid';
+            const primaryBtn = document.getElementById('quote-info-primary-action-btn');
+            if (isInvoiceOrPaid) {
+                primaryBtn.innerHTML = `<i data-lucide="pie-chart" class="w-4 h-4"></i> View Profitability`;
+                primaryBtn.onclick = () => { closeQuoteInfoModal(); openProfitModal(id); };
+            } else {
+                primaryBtn.innerHTML = `<i data-lucide="file-check-2" class="w-4 h-4"></i> Convert to Invoice`;
+                primaryBtn.onclick = () => { closeQuoteInfoModal(); openInvoiceReconciliation(id); };
+            }
+            document.getElementById('quote-info-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeQuoteInfoModal() {
+            document.getElementById('quote-info-modal').classList.add('hidden');
+            activeQuoteInfoModalId = null;
+        }
+        function editQuoteFromInfoModal() {
+            if (!activeQuoteInfoModalId) return;
+            const id = activeQuoteInfoModalId;
+            closeQuoteInfoModal();
+            loadQuoteForActiveModification(id);
+        }
+        async function deleteQuoteFromInfoModal() {
+            if (!activeQuoteInfoModalId) return;
+            const id = activeQuoteInfoModalId;
+            await deleteVaultRecord(id); // handles its own confirmation dialog
+            if (!currentQuotes.some(q => q.id === id)) closeQuoteInfoModal();
+        }
         function toggleQuoteSelection(id, checked) {
             if (checked) selectedVaultQuotes.add(id); else selectedVaultQuotes.delete(id);
             updateShoppingListButton();
@@ -6201,16 +6354,15 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         }
 
         function rebuildVaultDataTable() {
-            const tbody = document.getElementById('vault-records-body');
+            const container = document.getElementById('vault-records-body');
             const emptyState = document.getElementById('vault-empty-state');
-            const table = document.getElementById('vault-table');
-            if (!tbody) return;
+            if (!container) return;
             const showArchivedToggle = document.getElementById('vault-show-archived-toggle');
             const showArchived = showArchivedToggle ? showArchivedToggle.checked : false;
             const visible = showArchived ? currentQuotes : currentQuotes.filter(q => !q.archived);
             const sorted = [...visible].sort((a, b) => parseUkTimestamp(b.timestamp) - parseUkTimestamp(a.timestamp));
             if (sorted.length === 0) {
-                emptyState.classList.remove('hidden'); table.classList.add('hidden');
+                emptyState.classList.remove('hidden'); container.innerHTML = '';
                 const archivedCount = currentQuotes.filter(q => q.archived).length;
                 emptyState.innerHTML = (!showArchived && archivedCount > 0)
                     ? `<i data-lucide="archive" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> Everything here is archived — tick "Show Archived" above to see it.`
@@ -6218,29 +6370,29 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 lucide.createIcons();
                 return;
             }
-            emptyState.classList.add('hidden'); table.classList.remove('hidden');
-            const statusColors = { Draft: 'bg-[var(--eny-bg-secondary)] text-[var(--eny-text-muted)] border-[var(--eny-border-standard)]', Sent: 'bg-blue-500/10 text-blue-400 border-blue-500/30', Approved: 'bg-purple-500/10 text-purple-400 border-purple-500/30', Invoiced: 'bg-amber-500/10 text-amber-400 border-amber-500/30', Paid: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30', Expired: 'bg-red-500/10 text-red-400 border-red-500/30' };
-            tbody.innerHTML = sorted.map(r => {
-                const isInvoiceOrPaid = r.status === 'Invoiced' || r.status === 'Paid';
-                return `<tr class="hover:bg-[var(--eny-bg-secondary)]/40 transition-colors ${r.archived ? 'opacity-60' : ''}">
-                    <td class="py-3 px-3 text-center"><input type="checkbox" onchange="toggleQuoteSelection('${r.id}', this.checked)" class="w-4 h-4 rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-amber-500 cursor-pointer"></td>
-                    <td class="py-3 px-3 text-xs"><div class="text-[var(--eny-text-300)]">${r.timestamp}</div><span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${statusColors[r.status] || statusColors.Draft}">${r.status}</span>${r.archived ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded border bg-[var(--eny-bg-secondary)] text-[var(--eny-text-muted2)] border-[var(--eny-border-standard)] ml-1">Archived</span>` : ''}</td>
-                    <td class="py-3 px-3 text-xs"><div class="font-semibold text-[var(--eny-text-primary)]">${r.clientDetailsPayload.name}</div><div class="text-[var(--eny-text-muted2)]">${r.jobName}</div>${r.invoiceNumber ? `<div class="text-[10px] font-mono text-amber-400 mt-0.5">${r.invoiceNumber}</div>` : ''}</td>
-                    <td class="py-3 px-3 text-right text-xs font-mono font-bold text-[var(--eny-text-primary)]">£${r.financials.grossTotal.toFixed(2)}</td>
-                    <td class="py-3 px-3 text-center">
-                        <select onchange="updateQuoteStatus('${r.id}', this.value)" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg text-[10px] px-2 py-1 text-[var(--eny-text-300)]">
-                            ${['Draft','Sent','Approved','Invoiced','Paid','Expired'].map(s => `<option value="${s}" ${r.status===s?'selected':''}>${s}</option>`).join('')}
-                        </select>
-                    </td>
-                    <td class="py-3 px-3 text-right">
-                        <div class="flex justify-end gap-1.5">
-                            ${isInvoiceOrPaid ? `<button onclick="openProfitModal('${r.id}')" title="Profitability" class="text-[var(--eny-text-muted)] hover:text-emerald-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="pie-chart" class="w-3.5 h-3.5"></i></button>` : `<button onclick="openInvoiceReconciliation('${r.id}')" title="Convert to Invoice" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="file-check-2" class="w-3.5 h-3.5"></i></button>`}
-                            <button onclick="generateDocumentPDF('${r.id}')" title="Download PDF" class="text-[var(--eny-text-muted)] hover:text-blue-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="file-down" class="w-3.5 h-3.5"></i></button>
-                            <button onclick="loadQuoteForActiveModification('${r.id}')" title="Edit" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-                            <button onclick="deleteVaultRecord('${r.id}')" title="Delete" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            emptyState.classList.add('hidden');
+            container.innerHTML = sorted.map(r => {
+                const style = QUOTE_STATE_STYLES[computeQuoteTileState(r)];
+                const isChecked = selectedVaultQuotes.has(r.id);
+                return `<div class="relative bg-white rounded-[20px] overflow-hidden shadow-[0_5px_16px_rgba(120,90,60,0.12)] ${r.archived ? 'opacity-60' : ''}">
+                    <label class="absolute top-2 left-2 z-[3] w-6 h-6 rounded-lg bg-white/85 flex items-center justify-center cursor-pointer" onclick="event.stopPropagation()">
+                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleQuoteSelection('${r.id}', this.checked)" class="w-3.5 h-3.5 rounded text-amber-500 cursor-pointer">
+                    </label>
+                    <button onclick="openQuoteInfoModal('${r.id}')" class="text-left w-full cursor-pointer">
+                        <div class="h-[78px] relative flex items-center justify-center" style="background: ${style.sceneBg};">
+                            <i data-lucide="file-text" class="w-9 h-9" style="color: ${style.iconColor};"></i>
+                            <div class="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-md border-2 border-white/70 z-[2]" style="background: ${style.sealGradient};">
+                                <span class="text-white font-extrabold leading-[1.05] text-center" style="font-size:6.5px;">${style.sealSymbol}<br>${style.sealLabel}</span>
+                            </div>
+                            ${r.archived ? `<div class="absolute bottom-2 left-2 bg-white/85 rounded-full px-2 py-0.5 text-[8px] font-bold text-[#8a7c6d] z-[2]">ARCHIVED</div>` : ''}
                         </div>
-                    </td>
-                </tr>`;
+                        <div class="p-3">
+                            <div class="text-[12px] font-extrabold text-[#4a3f35] leading-snug truncate">${r.clientDetailsPayload.name}</div>
+                            <div class="text-[9.5px] text-[#b5a996] truncate mt-0.5">${r.jobName}</div>
+                            <div class="text-[12px] font-bold text-amber-600 font-mono mt-1.5">£${r.financials.grossTotal.toFixed(2)}</div>
+                        </div>
+                    </button>
+                </div>`;
             }).join('');
             lucide.createIcons();
         }
@@ -6617,18 +6769,20 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             });
         }
         function rebuildMasterStockDirectoryTable() {
-            const tbody = document.getElementById('master-stock-table-body');
-            if (!tbody) return;
+            const container = document.getElementById('master-stock-table-body');
+            if (!container) return;
             const inventory = sortInventoryByCategoryThenName(currentStock);
-            if (inventory.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-xs text-[var(--eny-text-muted2)]">Stock directory empty.</td></tr>`; return; }
-            tbody.innerHTML = inventory.map(item => `
-                <tr class="text-xs text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/40 cursor-pointer transition-colors group" onclick="loadStockItemForModification('${item.id}')">
-                    <td class="py-3 px-2 font-mono font-semibold text-amber-500 group-hover:text-amber-400">${item.sku}</td>
-                    <td class="py-3 px-2 font-medium text-[var(--eny-text-100)] group-hover:underline">${item.desc}</td>
-                    <td class="py-3 px-2 text-[var(--eny-text-muted)]"><span class="px-2 py-0.5 rounded bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)]">${item.category}</span></td>
-                    <td class="py-3 px-2 text-right font-mono font-bold text-[var(--eny-text-primary)]">£${parseFloat(item.cost).toFixed(2)}</td>
-                    <td class="py-3 px-2 text-center"><button onclick="purgeInventoryItem('${item.id}', event)" class="text-[var(--eny-text-muted2)] hover:text-red-400 p-1 transition-colors cursor-pointer"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button></td>
-                </tr>`).join('');
+            if (inventory.length === 0) { container.innerHTML = `<p class="col-span-2 text-center py-8 text-xs text-[var(--eny-text-muted2)]">Stock directory empty.</p>`; return; }
+            container.innerHTML = inventory.map(item => `
+                <div onclick="loadStockItemForModification('${item.id}')" class="relative bg-white rounded-[16px] p-3 shadow-[0_4px_12px_rgba(120,90,60,0.10)] cursor-pointer">
+                    <button onclick="purgeInventoryItem('${item.id}', event)" class="absolute top-2 right-2 w-6 h-6 rounded-lg bg-[#f7f1e8] hover:bg-red-100 hover:text-red-600 text-[#8a7c6d] flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                    <div class="text-[11px] font-mono font-bold text-amber-600 pr-7">${item.sku}</div>
+                    <div class="text-[12.5px] font-bold text-[#4a3f35] leading-snug mt-0.5 line-clamp-2">${item.desc}</div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-[#f7f1e8] text-[#8a7c6d]">${item.category}</span>
+                        <span class="text-[12.5px] font-mono font-bold text-[#4a3f35]">£${parseFloat(item.cost).toFixed(2)}</span>
+                    </div>
+                </div>`).join('');
             lucide.createIcons();
         }
         function createCustomInventoryItem(event) {
@@ -7571,6 +7725,59 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             }
             clearCrmClientForm();
         }
+        let activeClientInfoModalId = null;
+        function openClientInfoModal(clientId) {
+            const client = currentClients.find(c => c.id === clientId);
+            if (!client) return;
+            activeClientInfoModalId = clientId;
+            const badge = client.clientType === 'Landlord' ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border bg-amber-500/10 border-amber-500/40 text-amber-600">LANDLORD</span>` : '';
+            document.getElementById('client-info-modal-name').innerHTML = `${escapeHtmlForPopup(client.name)} ${badge}`;
+            document.getElementById('client-info-modal-meta').innerText = `Registered: ${client.createdDate || '—'}`;
+
+            const phoneEl = document.getElementById('client-info-phone-btn');
+            phoneEl.innerHTML = client.phone
+                ? `<a href="tel:${client.phone}" class="flex items-center justify-center gap-1.5 text-emerald-600 bg-emerald-500/10 border border-emerald-500/30 rounded-lg py-2 text-xs font-semibold"><i data-lucide="phone-call" class="w-3.5 h-3.5"></i> ${client.phone}</a>`
+                : `<div class="flex items-center justify-center gap-1.5 text-[var(--eny-text-subtle)] bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] rounded-lg py-2 text-xs">No phone</div>`;
+            const emailEl = document.getElementById('client-info-email-btn');
+            emailEl.innerHTML = client.email
+                ? `<a href="mailto:${client.email}" class="flex items-center justify-center gap-1.5 text-blue-600 bg-blue-500/10 border border-blue-500/30 rounded-lg py-2 text-xs font-semibold truncate"><i data-lucide="mail" class="w-3.5 h-3.5 shrink-0"></i> <span class="truncate">${client.email}</span></a>`
+                : `<div class="flex items-center justify-center gap-1.5 text-[var(--eny-text-subtle)] bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] rounded-lg py-2 text-xs">No email</div>`;
+
+            const jobs = currentQuotes.filter(q => q.linkedClientId === client.id);
+            const spend = jobs.reduce((acc, curr) => acc + curr.financials.grossTotal, 0);
+            document.getElementById('client-info-total-value').innerText = `£${spend.toFixed(2)} (${jobs.length} job${jobs.length === 1 ? '' : 's'})`;
+
+            const linkedProps = (client.linkedPropertyIds || []).map(id => currentProperties.find(p => p.id === id)).filter(Boolean);
+            const propsEl = document.getElementById('client-info-properties');
+            propsEl.innerHTML = linkedProps.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] italic">None linked.</p>` :
+                linkedProps.map(p => {
+                    const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
+                    return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] p-2 rounded-lg flex items-center justify-between gap-2"><div class="text-[11px] text-[var(--eny-text-300)] truncate">${(p.address || '').split('\n')[0]}</div>${reminderStatusBadge(elec.status, elec.daysUntilDue)}</div>`;
+                }).join('');
+
+            const jobsEl = document.getElementById('client-info-jobs');
+            jobsEl.innerHTML = jobs.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] italic">No historical sheets.</p>` :
+                jobs.map(j => `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] p-2 rounded-lg"><div class="font-bold text-[var(--eny-text-200)] text-[11px] truncate">${j.jobName}</div><div class="flex items-center justify-between text-[10px] text-[var(--eny-text-muted)] font-mono mt-0.5"><span>${j.id}</span><span class="text-amber-500 font-bold">£${j.financials.grossTotal.toFixed(2)}</span></div></div>`).join('');
+
+            document.getElementById('client-info-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeClientInfoModal() {
+            document.getElementById('client-info-modal').classList.add('hidden');
+            activeClientInfoModalId = null;
+        }
+        function editClientFromInfoModal() {
+            if (!activeClientInfoModalId) return;
+            const clientId = activeClientInfoModalId;
+            closeClientInfoModal();
+            loadCrmClientProfileForModification(clientId);
+        }
+        async function deleteClientFromInfoModal() {
+            if (!activeClientInfoModalId) return;
+            const clientId = activeClientInfoModalId;
+            await deleteClientProfile(clientId); // handles its own confirmation dialog
+            if (!currentClients.some(c => c.id === clientId)) closeClientInfoModal();
+        }
         function loadCrmClientProfileForModification(clientId) {
             const c = currentClients.find(x => x.id === clientId);
             if (!c) return;
@@ -7652,40 +7859,17 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
 
             wrapper.innerHTML = clientsWithActivity.map(({ client, jobs }) => {
                 const spend = jobs.reduce((acc, curr) => acc + curr.financials.grossTotal, 0);
-                const linkedProps = (client.linkedPropertyIds || []).map(id => currentProperties.find(p => p.id === id)).filter(Boolean);
-                return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl overflow-hidden">
-                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div><h3 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-1.5">${client.name}${client.clientType === 'Landlord' ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border bg-amber-500/10 border-amber-500/40 text-amber-600">LANDLORD</span>` : ''}</h3><p class="text-[11px] text-[var(--eny-text-muted2)]">ID: ${client.id} • Registered: ${client.createdDate}</p></div>
-                        <div class="flex items-center gap-3">
-                            <div class="text-right"><span class="text-[10px] uppercase font-semibold text-[var(--eny-text-muted2)] block">Total Value</span><span class="text-xs font-bold text-amber-400 font-mono">£${spend.toFixed(2)} (${jobs.length} Job${jobs.length===1?'':'s'})</span></div>
-                            <div class="flex items-center gap-1.5">
-                                ${client.phone ? `<a href="tel:${client.phone}" class="text-emerald-400 hover:text-emerald-300 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer" title="Call ${client.phone}"><i data-lucide="phone-call" class="w-4 h-4"></i></a>` : `<span class="text-[var(--eny-text-subtle)] p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-subtle)] cursor-not-allowed"><i data-lucide="phone-call" class="w-4 h-4"></i></span>`}
-                                ${client.email ? `<a href="mailto:${client.email}" class="text-blue-400 hover:text-blue-300 p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] cursor-pointer" title="Email ${client.email}"><i data-lucide="mail" class="w-4 h-4"></i></a>` : `<span class="text-[var(--eny-text-subtle)] p-1.5 rounded-lg bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-subtle)] cursor-not-allowed"><i data-lucide="mail" class="w-4 h-4"></i></span>`}
-                            </div>
-                            <button onclick="deleteClientProfile('${client.id}')" class="text-[var(--eny-text-muted2)] hover:text-red-400 p-1.5 rounded-lg transition-all cursor-pointer"><i data-lucide="trash" class="w-4 h-4"></i></button>
-                        </div>
+                const style = CLIENT_TYPE_STYLES[client.clientType === 'Landlord' ? 'Landlord' : 'Privately Owned'];
+                return `<button onclick="openClientInfoModal('${client.id}')" class="text-left bg-white rounded-[20px] overflow-hidden shadow-[0_5px_16px_rgba(120,90,60,0.12)] cursor-pointer">
+                    <div class="h-[78px] relative flex items-center justify-center" style="background: ${style.sceneBg};">
+                        <i data-lucide="${style.icon}" class="w-9 h-9" style="color: ${style.iconColor};"></i>
+                        ${client.clientType === 'Landlord' ? `<div class="absolute top-2 right-2 text-[8px] font-extrabold px-2 py-1 rounded-full bg-white/85 z-[2]" style="color:${style.iconColor};">LANDLORD</div>` : ''}
                     </div>
-                    <div class="p-4 bg-[var(--eny-bg-recessed)]/40 border-t border-[var(--eny-border-subtle)]/60 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                        <div>
-                            <span class="text-[10px] uppercase text-[var(--eny-text-muted2)] font-bold block mb-1">Contact</span>
-                            <div class="text-[var(--eny-text-300)] truncate"><i data-lucide="mail" class="w-3 h-3 text-[var(--eny-text-muted2)] inline mr-1"></i>${client.email || 'None'}</div>
-                            <div class="text-[var(--eny-text-300)] mt-0.5"><i data-lucide="phone" class="w-3 h-3 text-[var(--eny-text-muted2)] inline mr-1"></i>${client.phone || 'None'}</div>
-                            <button onclick="loadCrmClientProfileForModification('${client.id}')" class="mt-3 text-[11px] bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-amber-400 font-medium px-2.5 py-1.5 border border-[var(--eny-border-standard)] rounded-lg flex items-center gap-1 cursor-pointer"><i data-lucide="edit-3" class="w-3 h-3"></i> Modify Profile</button>
-                        </div>
-                        <div>
-                            <span class="text-[10px] uppercase text-[var(--eny-text-muted2)] font-bold block mb-1">Linked Properties</span>
-                            ${linkedProps.length === 0 ? '<span class="text-[var(--eny-text-muted2)] italic">None linked.</span>' : linkedProps.map(p => {
-                                const elec = computeReminderStatus(p.lastElectricalInspection, p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
-                                return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] p-2 rounded-lg mb-1.5"><div class="text-[10px] text-[var(--eny-text-300)] truncate">${(p.address||'').split('\\n')[0]}</div>${reminderStatusBadge(elec.status, elec.daysUntilDue)}</div>`;
-                            }).join('')}
-                        </div>
-                        <div><span class="text-[10px] uppercase text-[var(--eny-text-muted2)] font-bold block mb-1">Job History</span>
-                            <div class="max-h-36 overflow-y-auto space-y-1.5 custom-scrollbar pr-1">
-                                ${jobs.length===0?'<span class="text-[var(--eny-text-muted2)] italic">No historical sheets.</span>':jobs.map(j=> `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] p-2 rounded-lg"><div class="font-bold text-[var(--eny-text-200)] text-[10px] truncate">${j.jobName}</div><div class="flex items-center justify-between text-[9px] text-[var(--eny-text-muted)] font-mono mt-0.5"><span>${j.id}</span><span class="text-amber-400 font-bold">£${j.financials.grossTotal.toFixed(2)}</span></div></div>`).join('')}
-                            </div>
-                        </div>
+                    <div class="p-3">
+                        <div class="text-[12.5px] font-extrabold text-[#4a3f35] leading-snug truncate">${client.name}</div>
+                        <div class="text-[9.5px] text-[#b5a996] truncate mt-0.5">${jobs.length} job${jobs.length===1?'':'s'} · £${spend.toFixed(0)}</div>
                     </div>
-                </div>`;
+                </button>`;
             }).join('');
             lucide.createIcons();
         }
