@@ -54,25 +54,33 @@
 
     <style>
         :root {
-            --eny-bg-page: #EFF5FB;
+            --eny-bg-page: #F7F1E8;
             --eny-bg-card: #FFFFFF;
-            --eny-bg-recessed: #DCEAF6;
-            --eny-bg-secondary: #E5EFF9;
-            --eny-bg-tertiary: #D2E3F3;
-            --eny-bg-highlight: #C5DCF0;
-            --eny-border-standard: #C3D9EE;
-            --eny-border-medium: #A9C6E3;
-            --eny-border-subtle: #D3E5F5;
-            --eny-ring: #B0CBE6;
-            --eny-text-primary: #0F2437;
-            --eny-text-100: #16283D;
-            --eny-text-200: #1E3A54;
-            --eny-text-300: #2C4A68;
-            --eny-text-muted: #5B7591;
-            --eny-text-muted2: #71889F;
-            --eny-text-faded: #8FA3B8;
-            --eny-text-subtle: #B8CDE3;
-            --eny-decorative: #8FA9C2;
+            --eny-bg-recessed: #EDE4D3;
+            --eny-bg-secondary: #F2EAD9;
+            --eny-bg-tertiary: #E8DCC5;
+            --eny-bg-highlight: #E0D0B0;
+            --eny-border-standard: #D9C7A9;
+            --eny-border-medium: #D4BFA0;
+            --eny-border-subtle: #EDE2CE;
+            --eny-ring: #D9BE8F;
+            --eny-text-primary: #3D3529;
+            --eny-text-100: #4A3F35;
+            --eny-text-200: #5C4F40;
+            --eny-text-300: #71614C;
+            --eny-text-muted: #8A7C6D;
+            --eny-text-muted2: #96876F;
+            --eny-text-faded: #BBAE9C;
+            --eny-text-subtle: #D4C7B4;
+            --eny-decorative: #B0A08C;
+            /* Amber text (not backgrounds — those still work fine) needs a
+               different accent against this warm cream palette: amber-on-cream
+               is too tonally similar to read as an accent (contrast-checked,
+               fails badly). A deep teal gives the same "this stands out"
+               quality the original bright amber had against the old cool
+               blue theme. Dark mode is untouched since amber already has
+               excellent contrast there. */
+            --eny-accent-text: #115E59;
         }
         [data-theme="dark"] {
             --eny-bg-page: #0f172a;
@@ -94,6 +102,7 @@
             --eny-text-faded: #475569;
             --eny-text-subtle: #334155;
             --eny-decorative: #64748b;
+            --eny-accent-text: #fbbf24;
         }
 
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
@@ -168,7 +177,7 @@
                 <img src="Logo.png" alt="ENY Electrical" class="h-16 w-16 rounded-full shadow-lg shadow-amber-500/20">
                 <div class="text-center">
                     <h1 class="font-bold text-lg tracking-tight text-[var(--eny-text-primary)]">ENY ELECTRICAL</h1>
-                    <p class="text-xs font-semibold text-amber-400 tracking-wider uppercase">Business Manager</p>
+                    <p class="text-xs font-semibold text-[var(--eny-accent-text)] tracking-wider uppercase">Business Manager</p>
                 </div>
             </div>
             <div id="login-error" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-lg p-3"></div>
@@ -202,7 +211,7 @@
     <div id="confirm-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[1200] hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-xs shadow-2xl ring-1 ring-white/[0.06] modal-pop-in overflow-hidden">
             <div class="p-6 text-center space-y-1">
-                <i id="confirm-modal-icon" data-lucide="help-circle" class="w-8 h-8 mx-auto mb-2 text-amber-500"></i>
+                <i id="confirm-modal-icon" data-lucide="help-circle" class="w-8 h-8 mx-auto mb-2 text-[var(--eny-accent-text)]"></i>
                 <p id="confirm-modal-message" class="text-sm text-[var(--eny-text-200)] whitespace-pre-line"></p>
             </div>
             <div class="p-4 border-t border-[var(--eny-border-subtle)] bg-[var(--eny-bg-page)]/60 flex gap-2">
@@ -217,17 +226,17 @@
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <img src="Logo.png" alt="ENY Electrical" class="h-12 w-12 rounded-full shadow-lg shadow-amber-500/20">
-                    <button onclick="refreshApp(this)" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Refresh">
+                    <button onclick="refreshApp(this)" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Refresh">
                         <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                     </button>
                     <div>
                         <h1 class="font-bold text-xl tracking-tight bg-gradient-to-r from-[var(--eny-text-primary)] via-[var(--eny-text-300)] to-[var(--eny-text-muted)] bg-clip-text text-transparent">ENY ELECTRICAL</h1>
-                        <p class="text-xs font-semibold text-amber-400 tracking-wider uppercase">Business Manager</p>
+                        <p class="text-xs font-semibold text-[var(--eny-accent-text)] tracking-wider uppercase">Business Manager</p>
                     </div>
-                    <button onclick="openUniversalSearch()" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer ml-1" title="Search everything">
+                    <button onclick="openUniversalSearch()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer ml-1" title="Search everything">
                         <i data-lucide="search" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
+                    <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
                         <i data-lucide="moon" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -322,9 +331,9 @@
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)]">Due Soon (all)</span>
-                            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-[var(--eny-accent-text)]"></i>
                         </div>
-                        <span id="stat-due-soon" class="text-3xl font-black font-mono text-amber-400 block">0</span>
+                        <span id="stat-due-soon" class="text-3xl font-black font-mono text-[var(--eny-accent-text)] block">0</span>
                     </div>
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
                         <div class="flex items-center justify-between mb-2">
@@ -337,37 +346,37 @@
 
                 <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                     <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="calendar" class="text-amber-400 w-5 h-5"></i> This Week At A Glance</h2>
-                        <button onclick="openFullCalendarModal()" class="text-xs font-semibold text-amber-500 hover:text-amber-600 flex items-center gap-1 cursor-pointer">View Full Calendar <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button>
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="calendar" class="text-[var(--eny-accent-text)] w-5 h-5"></i> This Week At A Glance</h2>
+                        <button onclick="openFullCalendarModal()" class="text-xs font-semibold text-[var(--eny-accent-text)] hover:text-amber-600 flex items-center gap-1 cursor-pointer">View Full Calendar <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></button>
                     </div>
                     <div id="dashboard-week-strip" class="grid grid-cols-7 gap-1.5 sm:gap-2"></div>
                 </div>
 
                 <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="shield-alert" class="text-amber-400 w-5 h-5"></i> Inspection & Testing Reminders</h2>
+                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="shield-alert" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Inspection & Testing Reminders</h2>
                     <div id="dashboard-reminders-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                 </div>
 
                 <div id="dashboard-owner-followup-section" class="owner-only-tab hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="clock-alert" class="text-amber-400 w-5 h-5"></i> Quotes Needing Follow-Up</h2>
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="clock-alert" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Quotes Needing Follow-Up</h2>
                         <div id="dashboard-stale-quotes-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="user-round-x" class="text-amber-400 w-5 h-5"></i> Gone Quiet (1yr+)</h2>
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="user-round-x" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Gone Quiet (1yr+)</h2>
                         <div id="dashboard-gone-quiet-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] lg:col-span-2">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="alarm-clock" class="text-amber-400 w-5 h-5"></i> Needs Attention — Work Done, Paperwork Hasn't Caught Up</h2>
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="alarm-clock" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Needs Attention — Work Done, Paperwork Hasn't Caught Up</h2>
                         <div id="dashboard-needs-attention-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] lg:col-span-2">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="calendar-clock" class="text-amber-400 w-5 h-5"></i> Bundle-Worthy Compliance — Same Landlord, Coming Due Together</h2>
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="calendar-clock" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Bundle-Worthy Compliance — Same Landlord, Coming Due Together</h2>
                         <p class="text-xs text-[var(--eny-text-muted)] mb-3">Properties under one landlord with electrical or smoke compliance due within the next 30 days — worth visiting in one trip.</p>
                         <div id="dashboard-bundling-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] lg:col-span-2">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="package-plus" class="text-amber-400 w-5 h-5"></i> Pending Job Additions</h2>
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="package-plus" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Pending Job Additions</h2>
                         <p class="text-xs text-[var(--eny-text-muted)] mb-3">Materials/time flagged on-site by engineers — add these to the relevant quote yourself, then mark reviewed.</p>
                         <div id="dashboard-pending-additions-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                     </div>
@@ -382,7 +391,7 @@
                                 <button onclick="navigateCalendarMonth(-1)" class="p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] hover:border-amber-500 transition-colors cursor-pointer"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
                                 <h2 id="calendar-month-label" class="text-lg font-bold text-[var(--eny-text-primary)] w-40 text-center"></h2>
                                 <button onclick="navigateCalendarMonth(1)" class="p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] hover:border-amber-500 transition-colors cursor-pointer"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
-                                <button onclick="goToCalendarToday()" class="text-xs font-semibold text-amber-400 hover:text-amber-300 px-3 py-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer">Today</button>
+                                <button onclick="goToCalendarToday()" class="text-xs font-semibold text-[var(--eny-accent-text)] hover:text-amber-300 px-3 py-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer">Today</button>
                             </div>
                             <div class="flex items-center gap-2">
                                 <select id="calendar-engineer-filter" onchange="saveFilterPreference('calendar-engineer', this.value); renderCalendarGrid();" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
@@ -432,7 +441,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Assigned Engineer(s) *</label>
                                 <div id="job-engineers-checklist" class="space-y-1.5 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3"></div>
-                                <p id="job-engineer-suggestion-note" class="hidden text-[10px] text-amber-500 font-semibold mt-1"></p>
+                                <p id="job-engineer-suggestion-note" class="hidden text-[10px] text-[var(--eny-accent-text)] font-semibold mt-1"></p>
                             </div>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -446,7 +455,7 @@
                             </div>
                             <div id="job-multi-day-row">
                                 <label class="flex items-center gap-2 cursor-pointer select-none">
-                                    <input type="checkbox" id="job-multi-day-toggle" onchange="toggleJobMultiDayField()" class="w-4 h-4 rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-amber-500 cursor-pointer">
+                                    <input type="checkbox" id="job-multi-day-toggle" onchange="toggleJobMultiDayField()" class="w-4 h-4 rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] cursor-pointer">
                                     <span class="text-xs text-[var(--eny-text-300)]">Spans multiple days</span>
                                 </label>
                                 <div id="job-end-date-wrapper" class="hidden mt-2">
@@ -513,7 +522,7 @@
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Property Address *</label>
                                 <textarea id="property-address" required rows="2" onblur="suggestLandlordForPropertyAddress()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500" placeholder="10 Example Street, Poole, BH17 7FS"></textarea>
-                                <p id="property-landlord-suggestion-note" class="hidden text-[10px] text-amber-500 font-semibold mt-1"></p>
+                                <p id="property-landlord-suggestion-note" class="hidden text-[10px] text-[var(--eny-accent-text)] font-semibold mt-1"></p>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Access Notes (keysafe / gate codes)</label>
@@ -580,13 +589,13 @@
             <div id="smoketest-tab" class="tab-content space-y-6">
                 <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06]">
                     <button type="button" onclick="toggleCollapsibleForm('servicing-form-wrapper', 'servicing-form-chevron')" class="w-full flex items-center justify-between p-6 cursor-pointer">
-                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="clipboard-check" class="text-amber-400 w-5 h-5"></i> Add / Edit Service Record</h2>
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="clipboard-check" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Add / Edit Service Record</h2>
                         <i data-lucide="chevron-down" id="servicing-form-chevron" class="w-5 h-5 text-[var(--eny-text-muted)] transition-transform shrink-0"></i>
                     </button>
                 </div>
                 <div id="servicing-form-wrapper" class="hidden space-y-6">
                 <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                    <h2 id="smoketest-header-title" class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="clipboard-check" class="text-amber-400 w-5 h-5"></i> Servicing</h2>
+                    <h2 id="smoketest-header-title" class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="clipboard-check" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Servicing</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="sm:col-span-2">
                             <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Service Type *</label>
@@ -630,7 +639,7 @@
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-sm font-bold text-[var(--eny-text-primary)]">Devices Tested</h2>
-                            <button type="button" onclick="addSmokeTestDeviceRow()" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Add Device</button>
+                            <button type="button" onclick="addSmokeTestDeviceRow()" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-accent-text)] px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Add Device</button>
                         </div>
                         <div id="smoketest-devices-list" class="space-y-2"></div>
                     </div>
@@ -720,7 +729,7 @@
 
             <div id="map-tab" class="tab-content space-y-4">
                 <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06] flex items-center justify-between gap-3 flex-wrap">
-                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="map" class="text-amber-400 w-5 h-5"></i> Property Map</h2>
+                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="map" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Property Map</h2>
                     <div class="flex items-center gap-3 text-[10px] font-semibold flex-wrap">
                         <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Compliant</span>
                         <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Due Soon</span>
@@ -748,7 +757,7 @@
                             <div class="p-2 bg-amber-500 rounded-lg text-slate-950"><i data-lucide="edit-3" class="w-4 h-4 stroke-[2.5]"></i></div>
                             <div>
                                 <h4 class="text-sm font-bold text-[var(--eny-text-primary)]">Editing Existing Record</h4>
-                                <p class="text-xs text-[var(--eny-text-muted)]">Modifying <span id="editing-record-id-display" class="font-mono text-amber-400 font-semibold"></span></p>
+                                <p class="text-xs text-[var(--eny-text-muted)]">Modifying <span id="editing-record-id-display" class="font-mono text-[var(--eny-accent-text)] font-semibold"></span></p>
                             </div>
                         </div>
                         <button onclick="cancelActiveEditingSessionMode()" class="text-xs bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-300)] px-3 py-1.5 rounded-lg border border-[var(--eny-border-standard)] transition-colors cursor-pointer">Discard Modifications</button>
@@ -757,7 +766,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="lg:col-span-2 space-y-6">
                             <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
-                                <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="user-check" class="text-amber-400 w-5 h-5"></i> Client & Job</h2>
+                                <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="user-check" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Client & Job</h2>
                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Select From Records</label>
@@ -768,7 +777,7 @@
                                     <div>
                                         <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Job Template</label>
                                         <input type="text" id="prefilled-job-search-input" oninput="rebuildJobTemplatesDropdown()" placeholder="Search templates..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-1.5">
-                                        <select id="prefilled-job-select" onchange="applyPrefilledJobTemplate()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-sm text-amber-400 font-medium focus:outline-none focus:border-amber-500">
+                                        <select id="prefilled-job-select" onchange="applyPrefilledJobTemplate()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-sm text-[var(--eny-accent-text)] font-medium focus:outline-none focus:border-amber-500">
                                             <option value="">-- Blank Workspace --</option>
                                         </select>
                                     </div>
@@ -806,7 +815,7 @@
 
                             <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06] flex items-center justify-between gap-4">
                                 <div class="flex items-start gap-3">
-                                    <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="receipt-text" class="w-4 h-4"></i></div>
+                                    <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-800"><i data-lucide="receipt-text" class="w-4 h-4"></i></div>
                                     <div>
                                         <label for="flat-job-cost-toggle" class="text-xs font-bold text-[var(--eny-text-primary)] block cursor-pointer">Flat Job Cost</label>
                                         <p class="text-[10px] text-[var(--eny-text-muted2)]">Skip materials/labour entirely — just a description and one price (e.g. an EICR at £235).</p>
@@ -821,7 +830,7 @@
                             <div id="quote-pricing-mechanism-wrapper" class="space-y-6">
                             <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[var(--eny-border-standard)]">
-                                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="package-search" class="text-amber-400 w-5 h-5"></i> Add Materials</h2>
+                                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="package-search" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Add Materials</h2>
                                     <div class="relative min-w-[240px]">
                                         <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--eny-text-muted2)]"></i>
                                         <input type="text" id="material-search-input" oninput="filterMaterialCatalog()" placeholder="Search directory..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl pl-10 pr-4 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
@@ -842,7 +851,7 @@
                             </div>
 
                             <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                                <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="shopping-cart" class="text-amber-400 w-5 h-5"></i> Allocated Materials</h2>
+                                <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="shopping-cart" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Allocated Materials</h2>
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left text-sm">
                                         <thead>
@@ -861,8 +870,8 @@
 
                             <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-6">
                                 <div class="flex justify-between items-center pb-2 border-b border-[var(--eny-border-standard)]">
-                                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="clock" class="text-amber-400 w-5 h-5"></i> Labor Allocation</h2>
-                                    <div class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)] bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] px-2 py-1 rounded-md">Markup: <span id="summary-markup-badge" class="text-amber-400">25%</span></div>
+                                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="clock" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Labor Allocation</h2>
+                                    <div class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)] bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] px-2 py-1 rounded-md">Markup: <span id="summary-markup-badge" class="text-[var(--eny-accent-text)]">25%</span></div>
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
@@ -887,12 +896,12 @@
                                         </div>
                                         <div class="pt-4 border-t border-[var(--eny-border-standard)]">
                                             <label class="flex items-center gap-2 text-xs font-semibold text-[var(--eny-text-300)] uppercase tracking-wider mb-3 cursor-pointer select-none">
-                                                <input type="checkbox" id="op2-enable-toggle" onchange="toggleOp2Controls()" class="rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-amber-500 focus:ring-0">
+                                                <input type="checkbox" id="op2-enable-toggle" onchange="toggleOp2Controls()" class="rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] focus:ring-0">
                                                 Add Second Operative
                                             </label>
                                             <div id="op2-controls-wrapper" class="hidden space-y-4 pl-6 border-l-2 border-[var(--eny-border-standard)] ml-2">
                                                 <label class="flex items-center gap-2 text-xs font-medium text-[var(--eny-text-muted)] cursor-pointer select-none">
-                                                    <input type="checkbox" id="op2-first-hour-toggle" onchange="calculateComprehensiveMetrics()" class="rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-amber-500 focus:ring-0">
+                                                    <input type="checkbox" id="op2-first-hour-toggle" onchange="calculateComprehensiveMetrics()" class="rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] focus:ring-0">
                                                     Apply 1st Hour Premium
                                                 </label>
                                                 <div>
@@ -908,7 +917,7 @@
                                 </div>
                                 <div class="bg-[var(--eny-bg-page)]/60 border border-[var(--eny-border-standard)] rounded-xl p-4 flex items-center justify-between gap-4">
                                     <div class="flex items-start gap-3">
-                                        <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
+                                        <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-800"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
                                         <div>
                                             <label for="include-testing-toggle" class="text-xs font-bold text-[var(--eny-text-primary)] block cursor-pointer">Include Testing & Certification</label>
                                         </div>
@@ -923,7 +932,7 @@
                                 </div>
                                 <div class="bg-[var(--eny-bg-page)]/60 border border-[var(--eny-border-standard)] rounded-xl p-4 flex items-center justify-between gap-4">
                                     <div class="flex items-start gap-3">
-                                        <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="circle-dollar-sign" class="w-4 h-4"></i></div>
+                                        <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-800"><i data-lucide="circle-dollar-sign" class="w-4 h-4"></i></div>
                                         <div>
                                             <label for="include-sundries-toggle" class="text-xs font-bold text-[var(--eny-text-primary)] block cursor-pointer">Sundries</label>
                                             <p class="text-[10px] text-[var(--eny-text-muted2)]">Not affected by VAT or markup — added straight onto the final total.</p>
@@ -936,7 +945,7 @@
                                 </div>
                                 <div class="bg-[var(--eny-bg-page)]/60 border border-[var(--eny-border-standard)] rounded-xl p-4 flex items-center justify-between gap-4">
                                     <div class="flex items-start gap-3">
-                                        <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="target" class="w-4 h-4"></i></div>
+                                        <div class="mt-0.5 p-1.5 rounded-lg bg-amber-500/10 text-amber-800"><i data-lucide="target" class="w-4 h-4"></i></div>
                                         <div>
                                             <label for="include-custom-cost-toggle" class="text-xs font-bold text-[var(--eny-text-primary)] block cursor-pointer">Custom Cost</label>
                                             <p class="text-[10px] text-[var(--eny-text-muted2)]">Set an exact total — the materials figure adjusts to reach it.</p>
@@ -955,7 +964,7 @@
                             </div>
 
                             <div id="flat-job-cost-fields-wrapper" class="hidden bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
-                                <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="receipt-text" class="text-amber-400 w-5 h-5"></i> Flat Job Cost</h2>
+                                <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="receipt-text" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Flat Job Cost</h2>
                                 <div>
                                     <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Works Description</label>
                                     <textarea id="flat-job-cost-description" oninput="calculateComprehensiveMetrics()" rows="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500" placeholder="e.g. EICR — 3 bed house"></textarea>
@@ -975,7 +984,7 @@
                                     <div id="summary-itemized-rows-wrapper">
                                     <div class="flex justify-between text-sm"><span class="text-[var(--eny-text-muted)]">Net Materials (Ex VAT):</span><span id="summary-net-materials" class="font-medium">£0.00</span></div>
                                     <div class="flex justify-between text-sm border-b border-[var(--eny-border-subtle)]/60 pb-2"><span class="text-[var(--eny-text-muted)]">+20% VAT:</span><span id="summary-materials-vat" class="font-medium text-[var(--eny-text-300)]">£0.00</span></div>
-                                    <div class="flex justify-between text-sm pt-1"><span class="text-[var(--eny-text-muted)]">Marked-Up Materials: <span id="summary-materials-adjusted-note" class="hidden text-[9px] text-amber-500 font-bold">(adjusted)</span></span><span id="summary-marked-materials" class="font-medium text-amber-400/90">£0.00</span></div>
+                                    <div class="flex justify-between text-sm pt-1"><span class="text-[var(--eny-text-muted)]">Marked-Up Materials: <span id="summary-materials-adjusted-note" class="hidden text-[9px] text-[var(--eny-accent-text)] font-bold">(adjusted)</span></span><span id="summary-marked-materials" class="font-medium text-[var(--eny-accent-text)]/90">£0.00</span></div>
                                     <div class="flex justify-between text-sm"><span class="text-[var(--eny-text-muted)]">Labor Gross:</span><span id="summary-labor-costs" class="font-medium">£0.00</span></div>
                                     <div class="flex justify-between text-sm"><span class="text-[var(--eny-text-muted)]">Testing & Certs:</span><span id="summary-testing-costs" class="font-medium">£0.00</span></div>
                                     <div id="summary-sundries-row" class="hidden flex justify-between text-sm"><span class="text-[var(--eny-text-muted)]">Sundries:</span><span id="summary-sundries" class="font-medium">£0.00</span></div>
@@ -1004,7 +1013,7 @@
                             <h2 class="text-lg font-bold text-[var(--eny-text-primary)]">Quotes & Invoices</h2>
                             <div class="flex items-center gap-3">
                                 <label class="flex items-center gap-1.5 text-xs text-[var(--eny-text-muted)] cursor-pointer select-none">
-                                    <input type="checkbox" id="vault-show-archived-toggle" onchange="rebuildVaultDataTable()" class="w-3.5 h-3.5 rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-amber-500 cursor-pointer">
+                                    <input type="checkbox" id="vault-show-archived-toggle" onchange="rebuildVaultDataTable()" class="w-3.5 h-3.5 rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] cursor-pointer">
                                     Show Archived
                                 </label>
                                 <button id="btn-generate-shopping-list" onclick="openShoppingListModal()" class="bg-[var(--eny-bg-secondary)] text-[var(--eny-text-muted)] opacity-50 cursor-not-allowed px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2">
@@ -1064,7 +1073,7 @@
                                     <input type="text" id="crm-link-property-search-input" oninput="filterCrmLinkPropertyDropdown()" placeholder="Search properties..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-1.5">
                                     <div class="flex gap-2 mb-2">
                                         <select id="crm-link-property-select" class="flex-1 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500"></select>
-                                        <button type="button" onclick="addPropertyLinkToClientForm()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-amber-400 px-3 py-2 rounded-lg text-xs font-bold cursor-pointer">Add</button>
+                                        <button type="button" onclick="addPropertyLinkToClientForm()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] px-3 py-2 rounded-lg text-xs font-bold cursor-pointer">Add</button>
                                     </div>
                                     <div id="crm-linked-properties-chips" class="flex flex-wrap gap-1.5"></div>
                                 </div>
@@ -1085,10 +1094,10 @@
                                 <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--eny-text-muted2)]"></i>
                                 <input type="text" id="crm-search-input" oninput="rebuildCrmProfilesInterface()" placeholder="Search clients by name..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl pl-10 pr-4 py-2.5 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                             </div>
-                            <span id="crm-count-badge" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] px-3 py-2 rounded-xl text-xs font-semibold text-amber-400 shrink-0 text-center">0 Accounts</span>
+                            <span id="crm-count-badge" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] px-3 py-2 rounded-xl text-xs font-semibold text-[var(--eny-accent-text)] shrink-0 text-center">0 Accounts</span>
                         </div>
                         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="book-user" class="text-amber-400"></i> Client Ledger</h2>
+                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="book-user" class="text-[var(--eny-accent-text)]"></i> Client Ledger</h2>
                             <div id="crm-empty-state" class="text-center py-12 text-[var(--eny-text-muted2)] text-sm">
                                 <i data-lucide="users-2" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> No records match your criteria.
                             </div>
@@ -1100,7 +1109,7 @@
 
                 <div id="crm-sub-landlords" class="crm-subtab-content">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="building-2" class="text-amber-400"></i> Landlord Portfolios</h2>
+                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="building-2" class="text-[var(--eny-accent-text)]"></i> Landlord Portfolios</h2>
                         <div id="landlord-portfolio-empty-state" class="hidden text-center py-12 text-[var(--eny-text-muted2)] text-sm">
                             <i data-lucide="building-2" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> No landlords on file yet — mark a client as "Landlord" in All Clients to see them here.
                         </div>
@@ -1125,7 +1134,7 @@
                 <div id="settings-sub-pricing" class="settings-subtab-content active">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl space-y-6">
                         <div>
-                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="settings" class="text-amber-400"></i> Global Labor Model</h2>
+                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="settings" class="text-[var(--eny-accent-text)]"></i> Global Labor Model</h2>
                             <p class="text-xs text-[var(--eny-text-muted)] mt-0.5">Changing these updates future quote calculations instantly.</p>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1139,7 +1148,7 @@
                             </div>
                         </div>
                         <div class="border-t border-[var(--eny-border-standard)] pt-4 space-y-4">
-                            <h3 class="text-xs font-bold uppercase tracking-widest text-amber-400">Hourly Increments</h3>
+                            <h3 class="text-xs font-bold uppercase tracking-widest text-[var(--eny-accent-text)]">Hourly Increments</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">First Hour (£)</label>
@@ -1202,7 +1211,7 @@
                 <!-- STOCK DIRECTORY -->
                 <div id="settings-sub-stock" class="settings-subtab-content space-y-6">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-2"><i data-lucide="file-input" class="text-amber-400"></i> Smart Supplier Import Tool</h2>
+                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-2"><i data-lucide="file-input" class="text-[var(--eny-accent-text)]"></i> Smart Supplier Import Tool</h2>
                         <p class="text-xs text-[var(--eny-text-muted)] mb-4">Upload a PDF quote directly (like STB Electrical) or paste raw text. Existing items only overwrite if the new cost is higher.</p>
                         <div class="flex flex-col sm:flex-row gap-4 mb-4">
                             <label class="w-full sm:w-1/2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer text-center">
@@ -1221,7 +1230,7 @@
                     </div>
 
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-1"><i data-lucide="refresh-cw" class="text-amber-400"></i> Wholesaler Bulk Price Review</h2>
+                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-1"><i data-lucide="refresh-cw" class="text-[var(--eny-accent-text)]"></i> Wholesaler Bulk Price Review</h2>
                         <p class="text-xs text-[var(--eny-text-muted)] mb-4">Export your stock list, get it back with updated prices (CSV or a fresh PDF quote), and every matched SKU is overwritten — up or down.</p>
                         <div class="flex flex-col sm:flex-row gap-4 mb-4">
                             <button type="button" onclick="exportStockListForRepricing()" class="w-full sm:w-1/2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-bold py-3 px-4 rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer">
@@ -1272,7 +1281,11 @@
                         </div>
                         <div class="lg:col-span-2 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                             <h2 class="text-lg font-bold text-[var(--eny-text-primary)] mb-2">Stock Directory</h2>
-                            <p class="text-xs text-[var(--eny-text-muted)] mb-4">Click a row to edit it. Grouped by category, alphabetical within each.</p>
+                            <p class="text-xs text-[var(--eny-text-muted)] mb-3">Click a card to edit it. Grouped by category, alphabetical within each.</p>
+                            <div class="relative mb-4">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--eny-text-muted2)]"></i>
+                                <input type="text" id="stock-search-input" oninput="rebuildMasterStockDirectoryTable()" placeholder="Search by SKU or description..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl pl-10 pr-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                            </div>
                             <div class="max-h-[600px] overflow-y-auto custom-scrollbar">
                                 <div id="master-stock-table-body" class="grid grid-cols-2 gap-3"></div>
                             </div>
@@ -1326,7 +1339,7 @@
                 <!-- ENGINEERS -->
                 <div id="settings-sub-engineers" class="settings-subtab-content">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl space-y-4">
-                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="users" class="text-amber-400"></i> Engineers</h2>
+                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="users" class="text-[var(--eny-accent-text)]"></i> Engineers</h2>
                         <p class="text-xs text-[var(--eny-text-muted)]">These names appear throughout Jobs and the Calendar.</p>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
@@ -1348,7 +1361,7 @@
                 <!-- GOOGLE CALENDAR -->
                 <div id="settings-sub-calendar" class="settings-subtab-content">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl space-y-4">
-                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="calendar-sync" class="text-amber-400"></i> Google Calendar</h2>
+                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="calendar-sync" class="text-[var(--eny-accent-text)]"></i> Google Calendar</h2>
                         <p class="text-xs text-[var(--eny-text-muted)]">Connect to push jobs and inspection/testing reminders as real calendar events with notifications.</p>
                         <div id="calendar-connection-status" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-4 flex items-center justify-between gap-3">
                             <div class="flex items-center gap-2">
@@ -1362,7 +1375,7 @@
                                 <button id="calendar-disconnect-btn" onclick="disconnectGoogleCalendar()" class="hidden bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-300)] font-semibold px-4 py-2 rounded-lg text-xs transition-colors cursor-pointer">Disconnect</button>
                             </div>
                         </div>
-                        <button onclick="resyncAllToCalendar()" class="w-full bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] border border-[var(--eny-border-standard)] text-amber-400 font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2">
+                        <button onclick="resyncAllToCalendar()" class="w-full bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] border border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-2">
                             <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Resync Now
                         </button>
                         <p class="text-[11px] text-[var(--eny-text-muted2)]">Reconnect roughly every 7 days (internal/unverified connection).</p>
@@ -1372,7 +1385,7 @@
                 <!-- IMPORT LOCAL DATA -->
                 <div id="settings-sub-import" class="settings-subtab-content">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl space-y-4">
-                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="database" class="text-amber-400"></i> Import This Browser's Local Data</h2>
+                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="database" class="text-[var(--eny-accent-text)]"></i> Import This Browser's Local Data</h2>
                         <p class="text-xs text-[var(--eny-text-muted)]">One-time move of stock, clients, quotes/invoices, templates, and pricing/bank settings from this browser's old local storage into the shared database. Safe to run more than once — existing items are matched and skipped rather than duplicated.</p>
                         <button onclick="runLocalDataImport()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                             <i data-lucide="upload-cloud" class="w-4 h-4"></i> Import Local Data Now
@@ -1384,14 +1397,14 @@
                 <div id="settings-sub-export" class="settings-subtab-content">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl space-y-6">
                         <div>
-                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="download" class="text-amber-400"></i> Full Backup</h2>
+                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="download" class="text-[var(--eny-accent-text)]"></i> Full Backup</h2>
                             <p class="text-xs text-[var(--eny-text-muted)] mt-0.5">Everything — properties, clients, jobs, quotes/invoices, servicing records, and stock — as one file. This is what you'd want on hand if you ever needed to restore or hand data over.</p>
                         </div>
                         <button onclick="exportFullBackup()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                             <i data-lucide="file-json" class="w-4 h-4"></i> Download Full Backup (JSON)
                         </button>
                         <div class="border-t border-[var(--eny-border-standard)] pt-6">
-                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="table" class="text-amber-400"></i> Spreadsheet Exports</h2>
+                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="table" class="text-[var(--eny-accent-text)]"></i> Spreadsheet Exports</h2>
                             <p class="text-xs text-[var(--eny-text-muted)] mt-0.5 mb-4">Opens straight in Excel/Numbers/Sheets — handy for a quick look or handing to an accountant.</p>
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                 <button onclick="exportDataAsCsv('properties')" class="text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-text-200)] px-3 py-2.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Properties</button>
@@ -1408,35 +1421,35 @@
             </div>
 
             <div id="trash-tab" class="tab-content space-y-6">
-                <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-400 flex items-center justify-between gap-3 flex-wrap">
+                <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-800 flex items-center justify-between gap-3 flex-wrap">
                     <span>Deleted items sit here for 30 days before being permanently removed, in case something was removed by mistake.</span>
                     <button onclick="emptyTrash()" class="text-[10px] font-bold bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 px-3 py-1.5 rounded-lg border border-red-500/30 cursor-pointer shrink-0 flex items-center gap-1.5">
                         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Empty Trash
                     </button>
                 </div>
                 <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                    <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="map-pin" class="text-amber-400 w-4 h-4"></i> Deleted Properties</h2>
+                    <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="map-pin" class="text-[var(--eny-accent-text)] w-4 h-4"></i> Deleted Properties</h2>
                     <div id="trash-properties-list" class="space-y-2"></div>
                 </div>
                 <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                    <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="clipboard-list" class="text-amber-400 w-4 h-4"></i> Deleted Jobs</h2>
+                    <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="clipboard-list" class="text-[var(--eny-accent-text)] w-4 h-4"></i> Deleted Jobs</h2>
                     <div id="trash-jobs-list" class="space-y-2"></div>
                 </div>
                 <div id="trash-owner-section" class="hidden space-y-6">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="users" class="text-amber-400 w-4 h-4"></i> Deleted Clients</h2>
+                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="users" class="text-[var(--eny-accent-text)] w-4 h-4"></i> Deleted Clients</h2>
                         <div id="trash-clients-list" class="space-y-2"></div>
                     </div>
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="file-text" class="text-amber-400 w-4 h-4"></i> Deleted Quotes/Invoices</h2>
+                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="file-text" class="text-[var(--eny-accent-text)] w-4 h-4"></i> Deleted Quotes/Invoices</h2>
                         <div id="trash-quotes-list" class="space-y-2"></div>
                     </div>
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="package" class="text-amber-400 w-4 h-4"></i> Deleted Stock Items</h2>
+                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="package" class="text-[var(--eny-accent-text)] w-4 h-4"></i> Deleted Stock Items</h2>
                         <div id="trash-stock-list" class="space-y-2"></div>
                     </div>
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
-                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="layout-template" class="text-amber-400 w-4 h-4"></i> Deleted Templates</h2>
+                        <h2 class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-4"><i data-lucide="layout-template" class="text-[var(--eny-accent-text)] w-4 h-4"></i> Deleted Templates</h2>
                         <div id="trash-templates-list" class="space-y-2"></div>
                     </div>
                 </div>
@@ -1450,14 +1463,14 @@
         <div class="job-detail-inner-wrap min-h-screen p-4 flex items-start justify-center py-8">
             <div class="job-detail-card bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06] modal-pop-in">
                 <div id="job-detail-header" class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50 rounded-t-2xl">
-                    <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 min-w-0"><i data-lucide="clipboard-list" class="text-amber-400 shrink-0"></i> <span id="job-detail-title" class="truncate"></span></h3>
+                    <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 min-w-0"><i data-lucide="clipboard-list" class="text-[var(--eny-accent-text)] shrink-0"></i> <span id="job-detail-title" class="truncate"></span></h3>
                     <button onclick="closeJobDetailPage()" id="job-detail-close-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
                 <div class="p-6 space-y-4">
                     <div id="job-detail-status-badge"></div>
                     <div id="job-detail-hazard-warning"></div>
                     <div id="job-detail-notes-wrapper" class="hidden bg-amber-500/5 border border-amber-500/20 rounded-xl p-3">
-                        <div class="text-[10px] uppercase font-bold text-amber-400 mb-1 flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Job Details / Notes</div>
+                        <div class="text-[10px] uppercase font-bold text-[var(--eny-accent-text)] mb-1 flex items-center gap-1"><i data-lucide="info" class="w-3 h-3"></i> Job Details / Notes</div>
                         <div id="job-detail-notes" class="text-sm text-[var(--eny-text-200)] whitespace-pre-line"></div>
                     </div>
                     <div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3">
@@ -1475,7 +1488,7 @@
 
                     <div id="job-detail-action-area" class="space-y-2"></div>
 
-                    <button type="button" onclick="openJobMaterialsModal()" class="w-full bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] border border-[var(--eny-border-standard)] text-amber-400 font-semibold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
+                    <button type="button" onclick="openJobMaterialsModal()" class="w-full bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] border border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] font-semibold py-3 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                         <i data-lucide="package-plus" class="w-4 h-4"></i> Materials & Hours
                     </button>
 
@@ -1515,7 +1528,7 @@
         <div class="min-h-screen p-4 flex items-start justify-center py-8">
             <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg shadow-2xl ring-1 ring-white/[0.06] modal-pop-in">
                 <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50 rounded-t-2xl">
-                    <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="package-plus" class="text-amber-400"></i> Materials & Hours</h3>
+                    <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="package-plus" class="text-[var(--eny-accent-text)]"></i> Materials & Hours</h3>
                     <button onclick="closeJobMaterialsModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
                 <div class="p-6 space-y-4">
@@ -1549,7 +1562,7 @@
                                 <input type="number" step="0.5" min="0" id="job-addition-hours" placeholder="Hours" class="w-24 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                                 <input type="text" id="job-addition-hours-reason" placeholder="Reason (e.g. extra circuit requested)" class="flex-1 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                             </div>
-                            <button type="button" onclick="submitJobHoursAddition()" class="w-full bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-amber-400 font-semibold py-2 rounded-lg text-xs cursor-pointer">Add Hours</button>
+                            <button type="button" onclick="submitJobHoursAddition()" class="w-full bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] font-semibold py-2 rounded-lg text-xs cursor-pointer">Add Hours</button>
                             <div id="job-hours-added-list" class="space-y-1.5 pt-2 border-t border-[var(--eny-border-subtle)]"></div>
                         </div>
                         <p id="job-additions-owner-note" class="hidden text-[10px] text-[var(--eny-text-muted2)] mt-2">Added directly to the linked quote's total.</p>
@@ -1563,7 +1576,7 @@
     <div id="signature-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[60] hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06] modal-pop-in">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
-                <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="pen-tool" class="text-amber-400"></i> Client Sign-Off</h3>
+                <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="pen-tool" class="text-[var(--eny-accent-text)]"></i> Client Sign-Off</h3>
                 <button onclick="closeSignatureModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6 space-y-4">
@@ -1603,7 +1616,7 @@
     <div id="universal-search-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[60] hidden flex items-start justify-center p-4 pt-20">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[70vh] modal-pop-in">
             <div class="p-4 border-b border-[var(--eny-border-standard)] flex items-center gap-3 bg-[var(--eny-bg-page)]/50">
-                <i data-lucide="search" class="text-amber-400 w-4 h-4 shrink-0"></i>
+                <i data-lucide="search" class="text-[var(--eny-accent-text)] w-4 h-4 shrink-0"></i>
                 <input type="text" id="universal-search-input" oninput="performUniversalSearch()" placeholder="Search clients, properties, jobs, quotes..." class="w-full bg-transparent text-sm text-[var(--eny-text-100)] focus:outline-none" autocomplete="off">
                 <button onclick="closeUniversalSearch()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
@@ -1617,7 +1630,7 @@
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-start gap-3 bg-[var(--eny-bg-page)]/50">
                 <div class="min-w-0">
-                    <h3 id="property-info-modal-address" class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2 whitespace-pre-line"><i data-lucide="map-pin" class="text-amber-400 w-5 h-5 shrink-0"></i></h3>
+                    <h3 id="property-info-modal-address" class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2 whitespace-pre-line"><i data-lucide="map-pin" class="text-[var(--eny-accent-text)] w-5 h-5 shrink-0"></i></h3>
                 </div>
                 <button onclick="closePropertyInfoModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
@@ -1637,7 +1650,7 @@
                     </div>
                 </div>
                 <div id="property-info-access-wrapper" class="hidden">
-                    <div class="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><i data-lucide="key-round" class="w-3.5 h-3.5"></i> Access Notes</div>
+                    <div class="text-[10px] font-bold text-[var(--eny-accent-text)] uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><i data-lucide="key-round" class="w-3.5 h-3.5"></i> Access Notes</div>
                     <div id="property-info-access-notes" class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-sm text-[var(--eny-text-200)] whitespace-pre-line"></div>
                 </div>
             </div>
@@ -1669,7 +1682,7 @@
                 <div>
                     <div class="flex items-center justify-between mb-1.5">
                         <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider">Total Value</div>
-                        <div id="client-info-total-value" class="text-xs font-bold text-amber-500 font-mono"></div>
+                        <div id="client-info-total-value" class="text-xs font-bold text-[var(--eny-accent-text)] font-mono"></div>
                     </div>
                 </div>
                 <div>
@@ -1701,7 +1714,7 @@
             <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider">Value</div>
-                    <div id="quote-info-value" class="text-base font-bold text-amber-500 font-mono"></div>
+                    <div id="quote-info-value" class="text-base font-bold text-[var(--eny-accent-text)] font-mono"></div>
                 </div>
                 <div id="quote-info-invoice-number-wrapper" class="hidden text-[11px] font-mono text-[var(--eny-text-muted)]"></div>
                 <div>
@@ -1728,7 +1741,7 @@
     <div id="bundle-invoice-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
-                <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="receipt" class="text-amber-400"></i> Bundle Invoice — <span id="bundle-invoice-landlord-name"></span></h3>
+                <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="receipt" class="text-[var(--eny-accent-text)]"></i> Bundle Invoice — <span id="bundle-invoice-landlord-name"></span></h3>
                 <button onclick="closeBundleInvoiceModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-2">
@@ -1738,7 +1751,7 @@
             <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 space-y-3">
                 <div class="flex items-center justify-between text-sm">
                     <span class="text-[var(--eny-text-muted)] font-semibold">Total (<span id="bundle-invoice-count">0</span> selected)</span>
-                    <span id="bundle-invoice-total" class="font-bold text-amber-400 font-mono">£0.00</span>
+                    <span id="bundle-invoice-total" class="font-bold text-[var(--eny-accent-text)] font-mono">£0.00</span>
                 </div>
                 <button onclick="generateBundledInvoice()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="receipt" class="w-4 h-4"></i> Generate Bundled Invoice</button>
             </div>
@@ -1748,7 +1761,7 @@
     <div id="day-detail-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[57] hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
-                <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="calendar-days" class="text-amber-400"></i> <span id="day-detail-date-label"></span></h3>
+                <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="calendar-days" class="text-[var(--eny-accent-text)]"></i> <span id="day-detail-date-label"></span></h3>
                 <button onclick="closeDayDetailModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-5">
@@ -1761,7 +1774,7 @@
                     <div id="day-detail-unavailable-list" class="space-y-2 mb-3"></div>
                     <div class="flex gap-2 mb-2">
                         <select id="day-detail-unavailable-engineer-select" class="flex-1 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500"></select>
-                        <button onclick="markSelectedEngineerUnavailable()" class="bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] border border-[var(--eny-border-standard)] text-amber-400 font-semibold px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"><i data-lucide="user-x" class="w-3.5 h-3.5"></i> Mark Unavailable</button>
+                        <button onclick="markSelectedEngineerUnavailable()" class="bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] border border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] font-semibold px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"><i data-lucide="user-x" class="w-3.5 h-3.5"></i> Mark Unavailable</button>
                     </div>
                     <div class="flex items-center gap-2">
                         <label class="text-[10px] text-[var(--eny-text-muted2)] shrink-0">Through (optional, for a run of days off):</label>
@@ -1782,7 +1795,7 @@
     <div id="shopping-list-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
-                <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="list-checks" class="text-amber-400"></i> Wholesaler Shopping List</h3>
+                <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="list-checks" class="text-[var(--eny-accent-text)]"></i> Wholesaler Shopping List</h3>
                 <button onclick="closeShoppingListModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6 overflow-y-auto custom-scrollbar flex-1"><ul id="shopping-list-content" class="space-y-2 text-sm text-[var(--eny-text-300)]"></ul></div>
@@ -1832,7 +1845,7 @@
     <div id="profit-view-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-amber-500/30 rounded-2xl w-full max-w-sm overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)] ring-1 ring-white/[0.06]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
-                <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2"><i data-lucide="pie-chart" class="text-amber-400"></i> Profitability Ledger</h3>
+                <h3 class="text-lg font-bold text-[var(--eny-accent-text)] flex items-center gap-2"><i data-lucide="pie-chart" class="text-[var(--eny-accent-text)]"></i> Profitability Ledger</h3>
                 <button onclick="closeProfitModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6 space-y-4">
@@ -1843,7 +1856,7 @@
                     <div class="flex justify-between items-center text-sm"><span class="text-[var(--eny-text-muted)]">Testing/Add-ons:</span><span class="font-mono text-red-400">-£<span id="profit-testing">0.00</span></span></div>
                 </div>
                 <div class="pt-2 flex justify-between items-center"><span class="text-base font-bold text-[var(--eny-text-primary)] uppercase tracking-wide">Net Profit</span><span class="text-2xl font-black font-mono text-emerald-400" id="profit-net">£0.00</span></div>
-                <div class="flex justify-between items-center bg-[var(--eny-bg-page)] p-3 rounded-lg border border-[var(--eny-border-standard)]"><span class="text-xs font-semibold text-[var(--eny-text-muted)] uppercase">Gross Margin %</span><span class="text-lg font-bold font-mono text-amber-400" id="profit-margin">0%</span></div>
+                <div class="flex justify-between items-center bg-[var(--eny-bg-page)] p-3 rounded-lg border border-[var(--eny-border-standard)]"><span class="text-xs font-semibold text-[var(--eny-text-muted)] uppercase">Gross Margin %</span><span class="text-lg font-bold font-mono text-[var(--eny-accent-text)]" id="profit-margin">0%</span></div>
             </div>
             <div class="p-4 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex justify-center">
                 <button onclick="closeProfitModal()" class="w-full bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-primary)] px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer">Close Ledger</button>
@@ -1854,7 +1867,7 @@
     <div id="template-apply-review-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
-                <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 min-w-0"><i data-lucide="layout-template" class="text-amber-400 shrink-0"></i> <span class="truncate">Apply: <span id="template-apply-review-name" class="text-amber-400"></span></span></h3>
+                <h3 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2 min-w-0"><i data-lucide="layout-template" class="text-[var(--eny-accent-text)] shrink-0"></i> <span class="truncate">Apply: <span id="template-apply-review-name" class="text-[var(--eny-accent-text)]"></span></span></h3>
                 <button onclick="cancelTemplateApply()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div id="template-apply-mode-toggle-wrapper" class="p-4 border-b border-[var(--eny-border-standard)] hidden">
@@ -2019,7 +2032,7 @@
                     ? 'flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer'
                     : 'flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer';
                 icon.setAttribute('data-lucide', danger ? 'alert-triangle' : 'help-circle');
-                icon.className = `w-8 h-8 mx-auto mb-2 ${danger ? 'text-red-500' : 'text-amber-500'}`;
+                icon.className = `w-8 h-8 mx-auto mb-2 ${danger ? 'text-red-500' : 'text-[var(--eny-accent-text)]'}`;
                 modal.classList.remove('hidden');
                 lucide.createIcons();
                 const cleanup = (result) => {
@@ -2565,7 +2578,7 @@
                 const previouslyChecked = getSelectedJobEngineersFromForm();
                 checklist.innerHTML = names.map(n => `
                     <label class="flex items-center gap-2 text-sm text-[var(--eny-text-200)] cursor-pointer select-none">
-                        <input type="checkbox" class="job-engineer-checkbox w-4 h-4 rounded bg-[var(--eny-bg-recessed)] border-[var(--eny-border-standard)] text-amber-500 cursor-pointer" value="${n}">
+                        <input type="checkbox" class="job-engineer-checkbox w-4 h-4 rounded bg-[var(--eny-bg-recessed)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] cursor-pointer" value="${n}">
                         ${n}
                     </label>`).join('');
                 document.querySelectorAll('.job-engineer-checkbox').forEach(chk => { if (previouslyChecked.includes(chk.value)) chk.checked = true; });
@@ -2799,7 +2812,7 @@
         function reminderStatusBadge(status, daysUntilDue) {
             if (status === 'unknown') return `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-[var(--eny-bg-secondary)] text-[var(--eny-text-muted)] border border-[var(--eny-border-standard)]">Never Tested</span>`;
             if (status === 'overdue') return `<span class="hazard-stripe text-[10px] font-bold uppercase px-2 py-1 rounded text-red-700 border border-[#e6c800]">Overdue ${Math.abs(daysUntilDue)}d</span>`;
-            if (status === 'due-soon') return `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">Due in ${daysUntilDue}d</span>`;
+            if (status === 'due-soon') return `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-amber-500/10 text-amber-800 border border-amber-500/30">Due in ${daysUntilDue}d</span>`;
             return `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">OK (${daysUntilDue}d)</span>`;
         }
 
@@ -2959,7 +2972,7 @@
                             const daysWaiting = Math.floor((now - parseUkTimestamp(q.timestamp)) / 86400000);
                             return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
                                 <div class="min-w-0"><div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${q.clientDetailsPayload.name} — ${q.jobName}</div><div class="text-[10px] text-[var(--eny-text-muted2)]">Sent ${daysWaiting} days ago • £${q.financials.grossTotal.toFixed(2)}</div></div>
-                                <button onclick="loadQuoteForActiveModification('${q.id}')" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">Review</button>
+                                <button onclick="loadQuoteForActiveModification('${q.id}')" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-accent-text)] px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">Review</button>
                             </div>`;
                         }).join('');
                 }
@@ -3034,9 +3047,9 @@
                         allAttentionItems.map(item => `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
                             <div class="min-w-0">
                                 <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${item.label}</div>
-                                <div class="text-[10px] text-[var(--eny-text-muted2)] flex items-center gap-1.5 flex-wrap mt-0.5"><span class="font-bold text-amber-500">${item.type}</span> • ${item.sub}</div>
+                                <div class="text-[10px] text-[var(--eny-text-muted2)] flex items-center gap-1.5 flex-wrap mt-0.5"><span class="font-bold text-[var(--eny-accent-text)]">${item.type}</span> • ${item.sub}</div>
                             </div>
-                            <button onclick="${item.action}" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">${item.actionLabel}</button>
+                            <button onclick="${item.action}" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-accent-text)] px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">${item.actionLabel}</button>
                         </div>`).join('');
                 }
 
@@ -3061,7 +3074,7 @@
                                 <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${g.landlord.name} — ${g.properties.length} properties due soon</div>
                                 <div class="text-[10px] text-[var(--eny-text-muted2)] truncate mt-0.5">${g.properties.map(p => (p.address || '').split('\n')[0]).join(' • ')}</div>
                             </div>
-                            <button onclick="switchTab('crm-tab'); switchCrmSubtab('crm-sub-landlords'); expandedLandlordIds.add('${g.landlord.id}'); renderLandlordPortfolios();" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">View Portfolio</button>
+                            <button onclick="switchTab('crm-tab'); switchCrmSubtab('crm-sub-landlords'); expandedLandlordIds.add('${g.landlord.id}'); renderLandlordPortfolios();" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-accent-text)] px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">View Portfolio</button>
                         </div>`).join('');
                 }
 
@@ -3075,13 +3088,13 @@
                             const unpriced = (q.materials || []).map((m, idx) => ({ ...m, _idx: idx })).filter(m => m.addedOnSite && m.cost == null);
                             const pendingHours = q.pendingHoursAdditions || [];
                             const itemRows = [
-                                ...unpriced.map(m => `<div class="flex items-center justify-between gap-2"><span class="text-[10px] text-amber-400 truncate">${m.desc} x${m.qty} (unpriced)</span><button onclick="removeOnSiteMaterial('${q.id}', ${m._idx})" title="Remove" class="text-[var(--eny-text-muted2)] hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div>`),
-                                ...pendingHours.map((h, hIdx) => `<div class="flex items-center justify-between gap-2"><span class="text-[10px] text-amber-400 truncate">+${h.hours}h — ${h.reason}</span><button onclick="removePendingHoursAddition('${q.id}', ${hIdx})" title="Remove" class="text-[var(--eny-text-muted2)] hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div>`),
+                                ...unpriced.map(m => `<div class="flex items-center justify-between gap-2"><span class="text-[10px] text-[var(--eny-accent-text)] truncate">${m.desc} x${m.qty} (unpriced)</span><button onclick="removeOnSiteMaterial('${q.id}', ${m._idx})" title="Remove" class="text-[var(--eny-text-muted2)] hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div>`),
+                                ...pendingHours.map((h, hIdx) => `<div class="flex items-center justify-between gap-2"><span class="text-[10px] text-[var(--eny-accent-text)] truncate">+${h.hours}h — ${h.reason}</span><button onclick="removePendingHoursAddition('${q.id}', ${hIdx})" title="Remove" class="text-[var(--eny-text-muted2)] hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div>`),
                             ];
                             return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 space-y-1.5">
                                 <div class="flex items-center justify-between gap-3">
                                     <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${q.jobName} — ${q.clientDetailsPayload.name}</div>
-                                    <button onclick="loadQuoteForActiveModification('${q.id}')" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">Price It In</button>
+                                    <button onclick="loadQuoteForActiveModification('${q.id}')" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-accent-text)] px-2 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">Price It In</button>
                                 </div>
                                 ${itemRows.join('')}
                             </div>`;
@@ -3240,7 +3253,7 @@
             const isSmokeTest = state.serviceType === 'smoke-test';
             smokeOnly.classList.toggle('hidden', !isSmokeTest);
             generic.classList.toggle('hidden', isSmokeTest);
-            headerTitle.innerHTML = `<i data-lucide="${survey.icon}" class="text-amber-400 w-5 h-5"></i> ${survey.label}`;
+            headerTitle.innerHTML = `<i data-lucide="${survey.icon}" class="text-[var(--eny-accent-text)] w-5 h-5"></i> ${survey.label}`;
             if (!isSmokeTest) {
                 document.getElementById('smoketest-generic-title').innerText = `${survey.label} — Checklist`;
                 renderGenericSurveyFields();
@@ -3355,7 +3368,7 @@
                 const noteColor = answer ? (answer === q.goodAnswer ? 'text-emerald-500' : 'text-red-500') : '';
                 return `<div class="border border-[var(--eny-border-standard)] rounded-xl p-3">
                     <div class="flex items-start justify-between gap-3 mb-1.5">
-                        <div class="text-xs text-[var(--eny-text-200)]"><span class="font-bold text-amber-400">${q.id}.</span> ${q.text}</div>
+                        <div class="text-xs text-[var(--eny-text-200)]"><span class="font-bold text-[var(--eny-accent-text)]">${q.id}.</span> ${q.text}</div>
                         <div class="flex gap-1.5 shrink-0">
                             <button type="button" onclick="setSmokeTestAnswer('${q.id}', 'Y')" class="w-12 py-1.5 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${yesClass}">Yes</button>
                             <button type="button" onclick="setSmokeTestAnswer('${q.id}', 'N')" class="w-12 py-1.5 rounded-lg text-xs font-bold border cursor-pointer transition-colors ${noClass}">No</button>
@@ -3369,8 +3382,8 @@
             // spliced in after the 5th question (index 4).
             const cleaningCard = `<div class="border border-amber-500/40 bg-amber-500/5 rounded-xl p-3">
                 <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                    <input type="checkbox" ${state.cleaningConfirmed ? 'checked' : ''} onchange="toggleSmokeTestCleaning()" class="w-4 h-4 rounded bg-[var(--eny-bg-recessed)] border-[var(--eny-border-standard)] text-amber-500 cursor-pointer">
-                    <span class="text-xs text-[var(--eny-text-200)]"><span class="font-bold text-amber-400">F.</span> Cleaning — disconnect the mains supply, vacuum the sides/slots and wipe clean with a damp cloth. Confirm complete.</span>
+                    <input type="checkbox" ${state.cleaningConfirmed ? 'checked' : ''} onchange="toggleSmokeTestCleaning()" class="w-4 h-4 rounded bg-[var(--eny-bg-recessed)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] cursor-pointer">
+                    <span class="text-xs text-[var(--eny-text-200)]"><span class="font-bold text-[var(--eny-accent-text)]">F.</span> Cleaning — disconnect the mains supply, vacuum the sides/slots and wipe clean with a damp cloth. Confirm complete.</span>
                 </label>
             </div>`;
             questionCards.splice(5, 0, cleaningCard);
@@ -3706,13 +3719,13 @@
                     const addressLine = ((property && property.address) || t.address || '').split('\n')[0];
                     return `<label class="flex items-center justify-between gap-3 p-2.5 bg-[var(--eny-bg-page)] border ${isSelected ? 'border-amber-500' : 'border-[var(--eny-border-standard)]'} rounded-lg cursor-pointer">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleBundleRecordSelection('${t.id}')" class="w-4 h-4 rounded bg-[var(--eny-bg-recessed)] border-[var(--eny-border-standard)] text-amber-500 cursor-pointer shrink-0">
+                            <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleBundleRecordSelection('${t.id}')" class="w-4 h-4 rounded bg-[var(--eny-bg-recessed)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] cursor-pointer shrink-0">
                             <div class="min-w-0">
                                 <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${addressLine}</div>
                                 <div class="text-[10px] text-[var(--eny-text-muted2)]">${survey ? survey.label : t.serviceType} • ${formatUkDate(t.testDate)}</div>
                             </div>
                         </div>
-                        <span class="text-xs font-bold text-amber-400 font-mono shrink-0">£${(t.price || 0).toFixed(2)}</span>
+                        <span class="text-xs font-bold text-[var(--eny-accent-text)] font-mono shrink-0">£${(t.price || 0).toFixed(2)}</span>
                     </label>`;
                 }).join('');
             const selectedRecords = records.filter(t => bundleSelectedRecordIds.has(t.id));
@@ -4691,7 +4704,7 @@
                 let html = '';
                 if (iAmAssigned && myState.status === 'Started' && myState.timerStartedAt) {
                     html += `<div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-center">
-                        <div class="text-[10px] uppercase font-bold text-amber-400 mb-1">Time On Job</div>
+                        <div class="text-[10px] uppercase font-bold text-[var(--eny-accent-text)] mb-1">Time On Job</div>
                         <div class="text-3xl font-black font-mono text-[var(--eny-text-primary)]" id="my-job-timer-display">00:00:00</div>
                     </div>
                     <p class="text-[10px] text-[var(--eny-text-muted2)] text-center mb-2">Stops automatically when the job is completed, rebooked, or add-timed.</p>`;
@@ -4971,7 +4984,7 @@
                     <div class="min-w-0 text-[11px] text-[var(--eny-text-300)] truncate">${item.desc} ${isOwnerLoggedIn() ? `<span class="text-[var(--eny-text-muted2)] font-mono">£${parseFloat(item.cost).toFixed(2)}</span>` : ''}</div>
                     <div class="flex items-center gap-1 shrink-0">
                         <input type="number" min="1" value="1" id="job-mat-qty-${item.id}" class="w-12 bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded text-center text-[11px] text-[var(--eny-text-primary)] p-1">
-                        <button onclick="addMaterialToJob('${item.id}')" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-amber-400 px-2 py-1 rounded cursor-pointer">Add</button>
+                        <button onclick="addMaterialToJob('${item.id}')" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-accent-text)] px-2 py-1 rounded cursor-pointer">Add</button>
                     </div>
                 </div>`).join('');
             renderJobAddedMaterialsList(job);
@@ -5033,7 +5046,7 @@
                     <div class="bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-subtle)] rounded-lg p-2 flex items-center justify-between gap-2">
                         <div class="text-[11px] text-[var(--eny-text-300)]">${m.desc} x${m.qty}</div>
                         <div class="flex items-center gap-2 shrink-0">
-                            <span class="text-[10px] font-mono ${m.cost == null ? 'text-amber-400' : 'text-[var(--eny-text-muted)]'}">${m.cost == null ? 'Unpriced' : '£' + (parseFloat(m.cost) * m.qty).toFixed(2)}</span>
+                            <span class="text-[10px] font-mono ${m.cost == null ? 'text-[var(--eny-accent-text)]' : 'text-[var(--eny-text-muted)]'}">${m.cost == null ? 'Unpriced' : '£' + (parseFloat(m.cost) * m.qty).toFixed(2)}</span>
                             <button onclick="removeOnSiteMaterial('${quote.id}', ${m._idx})" title="Remove" class="text-[var(--eny-text-muted2)] hover:text-red-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                         </div>
                     </div>`).join('');
@@ -5118,7 +5131,7 @@
                 const pending = quote ? (quote.pendingHoursAdditions || []) : [];
                 listEl.innerHTML = pending.length === 0 ? '' : `<div class="text-[10px] text-[var(--eny-text-muted2)] mb-1">Flagged by non-owner, not yet priced in:</div>` + pending.map((h, idx) => `
                     <div class="bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-subtle)] rounded-lg p-2 flex items-center justify-between gap-2">
-                        <span class="text-[11px] text-amber-400">+${h.hours}h — ${h.reason}</span>
+                        <span class="text-[11px] text-[var(--eny-accent-text)]">+${h.hours}h — ${h.reason}</span>
                         <button onclick="removePendingHoursAddition('${quote.id}', ${idx})" title="Remove" class="text-[var(--eny-text-muted2)] hover:text-red-400 cursor-pointer shrink-0"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                     </div>`).join('');
             } else {
@@ -5158,14 +5171,14 @@
                 <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-[var(--eny-text-muted)] hover:text-emerald-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
                 <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>` : '';
             const reviewClient = (j.status === 'Completed' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
-            const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
-            const signatureBtn = j.status === 'Completed' ? `<button onclick="openSignatureModal('${j.id}')" title="${j.signature ? 'View/redo signature' : 'Get client signature'}" class="${j.signature ? 'text-emerald-400 hover:text-emerald-300' : 'text-[var(--eny-text-muted)] hover:text-amber-400'} p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="${j.signature ? 'file-check' : 'pen-tool'}" class="w-3.5 h-3.5"></i></button>` : '';
+            const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
+            const signatureBtn = j.status === 'Completed' ? `<button onclick="openSignatureModal('${j.id}')" title="${j.signature ? 'View/redo signature' : 'Get client signature'}" class="${j.signature ? 'text-emerald-400 hover:text-emerald-300' : 'text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)]'} p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="${j.signature ? 'file-check' : 'pen-tool'}" class="w-3.5 h-3.5"></i></button>` : '';
             const onMyWayClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
             const onMyWayBtn = (onMyWayClient && onMyWayClient.phone) ? `<button onclick="sendOnMyWayMessage('${j.id}')" title="Send 'on my way' to ${onMyWayClient.name}" class="text-[var(--eny-text-muted)] hover:text-blue-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="navigation" class="w-3.5 h-3.5"></i></button>` : '';
             const reminderClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
             const reminderBtn = (reminderClient && reminderClient.phone) ? `<button onclick="openSendReminderModal('${j.id}')" title="Send reminder to ${reminderClient.name}" class="text-[var(--eny-text-muted)] hover:text-emerald-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>` : '';
             return `${quickActions}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}
-                <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-amber-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 <button onclick="deleteJob('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
         }
         function renderJobsList() {
@@ -5395,7 +5408,7 @@
             const p = currentProperties.find(x => x.id === propertyId);
             if (!p) return;
             activePropertyInfoModalId = propertyId;
-            document.getElementById('property-info-modal-address').innerHTML = `<i data-lucide="map-pin" class="text-amber-400 w-5 h-5 shrink-0"></i> ${escapeHtmlForPopup(p.address || '')}`;
+            document.getElementById('property-info-modal-address').innerHTML = `<i data-lucide="map-pin" class="text-[var(--eny-accent-text)] w-5 h-5 shrink-0"></i> ${escapeHtmlForPopup(p.address || '')}`;
 
             const landlordEl = document.getElementById('property-info-landlord');
             const landlord = p.landlordId ? currentClients.find(c => c.id === p.landlordId) : null;
@@ -6344,7 +6357,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             });
             const list = Object.values(combined);
             document.getElementById('shopping-list-content').innerHTML = list.length === 0 ? '<li class="text-[var(--eny-text-muted2)]">No materials in selected quotes.</li>' :
-                list.map(i => `<li class="flex justify-between border-b border-[var(--eny-border-subtle)] pb-1.5"><span>${i.desc} <span class="text-[var(--eny-text-muted2)] font-mono text-[10px]">(${i.sku})</span></span><span class="font-mono font-bold text-amber-400">x${i.qty}</span></li>`).join('');
+                list.map(i => `<li class="flex justify-between border-b border-[var(--eny-border-subtle)] pb-1.5"><span>${i.desc} <span class="text-[var(--eny-text-muted2)] font-mono text-[10px]">(${i.sku})</span></span><span class="font-mono font-bold text-[var(--eny-accent-text)]">x${i.qty}</span></li>`).join('');
             document.getElementById('shopping-list-modal').classList.remove('hidden');
         }
         function closeShoppingListModal() { document.getElementById('shopping-list-modal').classList.add('hidden'); }
@@ -6376,7 +6389,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 const isChecked = selectedVaultQuotes.has(r.id);
                 return `<div class="relative bg-white rounded-[20px] overflow-hidden shadow-[0_5px_16px_rgba(120,90,60,0.12)] ${r.archived ? 'opacity-60' : ''}">
                     <label class="absolute top-2 left-2 z-[3] w-6 h-6 rounded-lg bg-white/85 flex items-center justify-center cursor-pointer" onclick="event.stopPropagation()">
-                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleQuoteSelection('${r.id}', this.checked)" class="w-3.5 h-3.5 rounded text-amber-500 cursor-pointer">
+                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleQuoteSelection('${r.id}', this.checked)" class="w-3.5 h-3.5 rounded text-[var(--eny-accent-text)] cursor-pointer">
                     </label>
                     <button onclick="openQuoteInfoModal('${r.id}')" class="text-left w-full cursor-pointer">
                         <div class="h-[78px] relative flex items-center justify-center" style="background: ${style.sceneBg};">
@@ -6389,7 +6402,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         <div class="p-3">
                             <div class="text-[12px] font-extrabold text-[#4a3f35] leading-snug truncate">${r.clientDetailsPayload.name}</div>
                             <div class="text-[9.5px] text-[#b5a996] truncate mt-0.5">${r.jobName}</div>
-                            <div class="text-[12px] font-bold text-amber-600 font-mono mt-1.5">£${r.financials.grossTotal.toFixed(2)}</div>
+                            <div class="text-[12px] font-bold text-amber-800 font-mono mt-1.5">£${r.financials.grossTotal.toFixed(2)}</div>
                         </div>
                     </button>
                 </div>`;
@@ -6771,12 +6784,20 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         function rebuildMasterStockDirectoryTable() {
             const container = document.getElementById('master-stock-table-body');
             if (!container) return;
-            const inventory = sortInventoryByCategoryThenName(currentStock);
-            if (inventory.length === 0) { container.innerHTML = `<p class="col-span-2 text-center py-8 text-xs text-[var(--eny-text-muted2)]">Stock directory empty.</p>`; return; }
+            const searchInput = document.getElementById('stock-search-input');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const filteredStock = filterText
+                ? currentStock.filter(i => i.sku.toLowerCase().includes(filterText) || i.desc.toLowerCase().includes(filterText))
+                : currentStock;
+            const inventory = sortInventoryByCategoryThenName(filteredStock);
+            if (inventory.length === 0) {
+                container.innerHTML = `<p class="col-span-2 text-center py-8 text-xs text-[var(--eny-text-muted2)]">${filterText ? 'No items match that search.' : 'Stock directory empty.'}</p>`;
+                return;
+            }
             container.innerHTML = inventory.map(item => `
                 <div onclick="loadStockItemForModification('${item.id}')" class="relative bg-white rounded-[16px] p-3 shadow-[0_4px_12px_rgba(120,90,60,0.10)] cursor-pointer">
                     <button onclick="purgeInventoryItem('${item.id}', event)" class="absolute top-2 right-2 w-6 h-6 rounded-lg bg-[#f7f1e8] hover:bg-red-100 hover:text-red-600 text-[#8a7c6d] flex items-center justify-center cursor-pointer"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
-                    <div class="text-[11px] font-mono font-bold text-amber-600 pr-7">${item.sku}</div>
+                    <div class="text-[11px] font-mono font-bold text-amber-800 pr-7">${item.sku}</div>
                     <div class="text-[12.5px] font-bold text-[#4a3f35] leading-snug mt-0.5 line-clamp-2">${item.desc}</div>
                     <div class="flex items-center justify-between mt-2">
                         <span class="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-[#f7f1e8] text-[#8a7c6d]">${item.category}</span>
@@ -7137,7 +7158,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (targetedSubset.length === 0) { resultsGrid.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-[var(--eny-text-muted2)]">No matching stock items found.</div>`; return; }
             resultsGrid.innerHTML = targetedSubset.map(item => `
                 <div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex flex-col justify-between hover:border-[var(--eny-border-medium)] transition-colors">
-                    <div><div class="flex items-center justify-between gap-2"><span class="text-[10px] font-mono tracking-wider font-semibold text-amber-500">${item.sku}</span><span class="text-[9px] text-[var(--eny-text-muted2)] px-1.5 py-0.5 rounded bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-subtle)]">${item.category}</span></div>
+                    <div><div class="flex items-center justify-between gap-2"><span class="text-[10px] font-mono tracking-wider font-semibold text-[var(--eny-accent-text)]">${item.sku}</span><span class="text-[9px] text-[var(--eny-text-muted2)] px-1.5 py-0.5 rounded bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-subtle)]">${item.category}</span></div>
                     <h4 class="text-xs font-medium text-[var(--eny-text-200)] mt-1 line-clamp-2">${item.desc}</h4></div>
                     <div class="flex items-center justify-between mt-3 pt-2 border-t border-[var(--eny-border-standard)]"><span class="text-sm font-bold text-[var(--eny-text-primary)]">£${parseFloat(item.cost).toFixed(2)}</span>
                     <button type="button" onclick="allocateItemToQuote('${item.id}')" class="bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 p-1.5 rounded-lg transition-all text-[var(--eny-text-300)] cursor-pointer"><i data-lucide="plus" class="w-3.5 h-3.5"></i></button></div>
@@ -7178,12 +7199,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             tbody.innerHTML = activeAllocatedMaterials.map(item => {
                 const isUnpriced = item.cost == null;
                 const costCell = isUnpriced
-                    ? `<input type="number" step="0.01" min="0" placeholder="Set price" onchange="setUnpricedItemCost('${item.id}', this.value)" class="w-20 bg-amber-500/10 border border-amber-500/50 text-right rounded p-1 font-mono text-amber-400 text-xs">`
+                    ? `<input type="number" step="0.01" min="0" placeholder="Set price" onchange="setUnpricedItemCost('${item.id}', this.value)" class="w-20 bg-amber-500/10 border border-amber-500/50 text-right rounded p-1 font-mono text-amber-800 text-xs">`
                     : `£${parseFloat(item.cost).toFixed(2)}`;
-                const subtotalCell = isUnpriced ? `<span class="text-amber-400">Needs price</span>` : `£${(parseFloat(item.cost) * item.qty).toFixed(2)}`;
+                const subtotalCell = isUnpriced ? `<span class="text-[var(--eny-accent-text)]">Needs price</span>` : `£${(parseFloat(item.cost) * item.qty).toFixed(2)}`;
                 return `
                 <tr class="border-b border-[var(--eny-border-subtle)] text-xs text-[var(--eny-text-200)] ${isUnpriced ? 'bg-amber-500/5' : ''}">
-                    <td class="py-3 px-2"><div>${item.desc} ${isUnpriced ? '<span class="text-[9px] font-bold text-amber-400 uppercase ml-1">Added on-site</span>' : ''}</div><div class="text-[10px] font-mono text-[var(--eny-text-muted2)] mt-0.5">${item.sku}</div></td>
+                    <td class="py-3 px-2"><div>${item.desc} ${isUnpriced ? '<span class="text-[9px] font-bold text-[var(--eny-accent-text)] uppercase ml-1">Added on-site</span>' : ''}</div><div class="text-[10px] font-mono text-[var(--eny-text-muted2)] mt-0.5">${item.sku}</div></td>
                     <td class="py-3 px-2 text-center"><input type="number" value="${item.qty}" min="1" onchange="updateAllocationQty('${item.id}', this.value)" class="w-12 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] text-center rounded p-1 font-mono text-[var(--eny-text-primary)]"></td>
                     <td class="py-3 px-2 text-right font-mono">${costCell}</td>
                     <td class="py-3 px-2 text-right font-mono font-bold text-[var(--eny-text-primary)]">${subtotalCell}</td>
@@ -7463,7 +7484,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 const stockItem = currentStock.find(i => i.id === ti.id);
                 if (!stockItem) return '';
                 return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg p-2.5 flex items-center gap-3" data-item-id="${stockItem.id}">
-                    <input type="checkbox" checked class="tmpl-review-include w-4 h-4 rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-amber-500 cursor-pointer shrink-0">
+                    <input type="checkbox" checked class="tmpl-review-include w-4 h-4 rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] cursor-pointer shrink-0">
                     <div class="flex-1 min-w-0"><div class="text-xs font-medium text-[var(--eny-text-200)] truncate">${stockItem.desc}</div><div class="text-[10px] text-[var(--eny-text-muted2)] font-mono">${stockItem.sku} • £${parseFloat(stockItem.cost).toFixed(2)} each</div></div>
                     <input type="number" min="1" value="${ti.qty}" class="tmpl-review-qty w-16 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] text-center rounded p-1.5 font-mono text-[var(--eny-text-primary)] text-xs shrink-0">
                 </div>`;
@@ -7500,7 +7521,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             selectorBox.innerHTML = currentStock.map(item => `
                 <div class="tmpl-mat-row flex items-center justify-between py-1.5 px-1 text-xs" data-searchable="${(item.desc + ' ' + item.sku).toLowerCase().replace(/"/g, '&quot;')}">
                     <label class="flex items-center gap-2 text-[var(--eny-text-300)] truncate cursor-pointer select-none w-full">
-                        <input type="checkbox" id="chk-tmpl-mat-${item.id}" data-id="${item.id}" onchange="toggleTemplateMatQtyField('${item.id}')" class="tmpl-mat-checkbox w-4 h-4 rounded bg-[var(--eny-bg-recessed)] border-[var(--eny-border-standard)] text-amber-500 cursor-pointer">
+                        <input type="checkbox" id="chk-tmpl-mat-${item.id}" data-id="${item.id}" onchange="toggleTemplateMatQtyField('${item.id}')" class="tmpl-mat-checkbox w-4 h-4 rounded bg-[var(--eny-bg-recessed)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] cursor-pointer">
                         <span class="truncate max-w-[180px] sm:max-w-xs">${item.desc}</span>
                     </label>
                     <input type="number" id="input-tmpl-qty-${item.id}" disabled value="1" min="1" class="w-12 bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] text-center rounded text-[11px] font-mono text-[var(--eny-text-primary)] p-0.5 hidden">
@@ -7529,7 +7550,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div class="space-y-1 min-w-0"><h3 class="text-sm font-bold text-[var(--eny-text-primary)]">${t.name}</h3><div class="text-[10px] text-[var(--eny-text-muted2)] font-mono pt-1 leading-relaxed">${partsText || 'No custom materials mapped.'}</div></div>
                     <div class="flex items-center gap-2 self-end md:self-auto shrink-0">
-                        <button onclick="loadTemplateForModification('${t.id}')" class="text-[11px] bg-[var(--eny-bg-recessed)] hover:bg-[var(--eny-bg-secondary)] text-amber-400 font-medium px-2.5 py-1.5 border border-[var(--eny-border-standard)] rounded-lg flex items-center gap-1 cursor-pointer"><i data-lucide="edit-3" class="w-3 h-3"></i> Edit</button>
+                        <button onclick="loadTemplateForModification('${t.id}')" class="text-[11px] bg-[var(--eny-bg-recessed)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-accent-text)] font-medium px-2.5 py-1.5 border border-[var(--eny-border-standard)] rounded-lg flex items-center gap-1 cursor-pointer"><i data-lucide="edit-3" class="w-3 h-3"></i> Edit</button>
                         <button onclick="duplicateJobTemplatePreset('${t.id}')" class="text-[11px] bg-[var(--eny-bg-recessed)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] font-medium px-2.5 py-1.5 border border-[var(--eny-border-standard)] rounded-lg flex items-center gap-1 cursor-pointer"><i data-lucide="copy-plus" class="w-3 h-3"></i> Duplicate</button>
                         <button onclick="deleteJobTemplatePreset('${t.id}')" class="text-[var(--eny-text-muted2)] hover:text-red-400 p-2 rounded-lg transition-colors cursor-pointer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </div>
@@ -7757,7 +7778,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
 
             const jobsEl = document.getElementById('client-info-jobs');
             jobsEl.innerHTML = jobs.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] italic">No historical sheets.</p>` :
-                jobs.map(j => `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] p-2 rounded-lg"><div class="font-bold text-[var(--eny-text-200)] text-[11px] truncate">${j.jobName}</div><div class="flex items-center justify-between text-[10px] text-[var(--eny-text-muted)] font-mono mt-0.5"><span>${j.id}</span><span class="text-amber-500 font-bold">£${j.financials.grossTotal.toFixed(2)}</span></div></div>`).join('');
+                jobs.map(j => `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] p-2 rounded-lg"><div class="font-bold text-[var(--eny-text-200)] text-[11px] truncate">${j.jobName}</div><div class="flex items-center justify-between text-[10px] text-[var(--eny-text-muted)] font-mono mt-0.5"><span>${j.id}</span><span class="text-[var(--eny-accent-text)] font-bold">£${j.financials.grossTotal.toFixed(2)}</span></div></div>`).join('');
 
             document.getElementById('client-info-modal').classList.remove('hidden');
             lucide.createIcons();
