@@ -106,6 +106,10 @@
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--eny-border-medium); border-radius: 10px; }
+        /* Nav bar icons enlarged ~15% alongside the button padding/text above —
+           scoped override since editing each icon tag individually across 7+
+           nav buttons would be more error-prone than one targeted rule. */
+        .nav-btn > svg:first-child { width: 18px !important; height: 18px !important; }
         .hazard-stripe {
             background-color: #FFDF27;
         }
@@ -215,34 +219,34 @@
     </div>
 
     <div id="app-root" class="hidden">
-        <header class="border-b border-[var(--eny-border-subtle)] bg-[var(--eny-bg-recessed)]/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
+        <header class="border-b border-[var(--eny-border-subtle)] bg-[var(--eny-bg-recessed)]/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-[18px]">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <img src="Logo.png" alt="ENY Electrical" class="h-12 w-12 rounded-full shadow-lg shadow-amber-500/20">
-                    <button onclick="refreshApp(this)" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Refresh">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    <img src="Logo.png" alt="ENY Electrical" class="h-[55px] w-[55px] rounded-full shadow-lg shadow-amber-500/20">
+                    <button onclick="refreshApp(this)" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Refresh">
+                        <i data-lucide="refresh-cw" class="w-[18px] h-[18px]"></i>
                     </button>
                     <div>
-                        <h1 class="font-bold text-xl tracking-tight bg-gradient-to-r from-[var(--eny-text-primary)] via-[var(--eny-text-300)] to-[var(--eny-text-muted)] bg-clip-text text-transparent">ENY ELECTRICAL</h1>
-                        <p class="text-xs font-semibold text-[var(--eny-accent-text)] tracking-wider uppercase">Business Manager</p>
+                        <h1 class="font-bold text-[23px] tracking-tight bg-gradient-to-r from-[var(--eny-text-primary)] via-[var(--eny-text-300)] to-[var(--eny-text-muted)] bg-clip-text text-transparent">ENY ELECTRICAL</h1>
+                        <p class="text-[14px] font-semibold text-[var(--eny-accent-text)] tracking-wider uppercase">Business Manager</p>
                     </div>
-                    <button onclick="openUniversalSearch()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer ml-1" title="Search everything">
-                        <i data-lucide="search" class="w-4 h-4"></i>
+                    <button onclick="openUniversalSearch()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer ml-1" title="Search everything">
+                        <i data-lucide="search" class="w-[18px] h-[18px]"></i>
                     </button>
-                    <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
-                        <i data-lucide="moon" class="w-4 h-4"></i>
+                    <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
+                        <i data-lucide="moon" class="w-[18px] h-[18px]"></i>
                     </button>
                 </div>
 
-                <nav class="flex flex-wrap items-center justify-center gap-1 bg-[var(--eny-bg-page)]/80 p-1 rounded-xl border border-[var(--eny-border-subtle)]">
-                    <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10 cursor-pointer">
+                <nav class="flex flex-wrap items-center justify-center gap-1 bg-[var(--eny-bg-page)]/80 p-[5px] rounded-xl border border-[var(--eny-border-subtle)]">
+                    <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10 cursor-pointer">
                         <i data-lucide="sun" class="w-4 h-4"></i> Today
                     </button>
-                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
+                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
                     </button>
                     <div class="relative">
-                        <button onclick="toggleClientDataMenu()" id="btn-client-data-menu" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer relative">
+                        <button onclick="toggleClientDataMenu()" id="btn-client-data-menu" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer relative">
                             <i data-lucide="folder-open" class="w-4 h-4"></i> Client Data <i data-lucide="chevron-down" class="w-3 h-3"></i>
                             <span id="client-data-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center leading-none">0</span>
                         </button>
@@ -258,17 +262,17 @@
                             </button>
                         </div>
                     </div>
-                    <button onclick="switchTab('smoketest-tab')" id="btn-smoketest-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
+                    <button onclick="switchTab('smoketest-tab')" id="btn-smoketest-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
                         <i data-lucide="clipboard-check" class="w-4 h-4"></i> Servicing
                     </button>
-                    <button onclick="switchTab('map-tab')" id="btn-map-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
+                    <button onclick="switchTab('map-tab')" id="btn-map-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
                         <i data-lucide="map" class="w-4 h-4"></i> Map
                     </button>
-                    <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
+                    <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="owner-only-nav nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
                         <i data-lucide="file-text" class="w-4 h-4"></i> Quote Builder
                     </button>
                     <div class="relative">
-                        <button onclick="toggleMoreMenu()" id="btn-more-menu" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer relative">
+                        <button onclick="toggleMoreMenu()" id="btn-more-menu" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer relative">
                             <i data-lucide="more-horizontal" class="w-4 h-4"></i> More
                             <span id="more-menu-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center leading-none">0</span>
                         </button>
@@ -2968,7 +2972,7 @@
                             <span class="text-3xl font-black font-mono text-[var(--eny-text-primary)] block">${pendingQuotes.length}</span>
                         </div>
                         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
-                            <div class="flex items-center justify-between mb-2"><span class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)]">Invoices Pending</span><i data-lucide="pound-sterling" class="w-4 h-4 text-purple-400"></i></div>
+                            <div class="flex items-center justify-between mb-2"><span class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)]">Invoices Pending</span><i data-lucide="pound-sterling" class="w-4 h-4 text-emerald-500"></i></div>
                             <span class="text-3xl font-black font-mono text-emerald-400 block">£${outstandingValue.toFixed(2)}</span>
                         </div>
                     `;
