@@ -106,6 +106,10 @@
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--eny-border-medium); border-radius: 10px; }
+        /* Nav bar icons enlarged ~15% alongside the button padding/text above —
+           scoped override since editing each icon tag individually across 7+
+           nav buttons would be more error-prone than one targeted rule. */
+        .nav-btn > svg:first-child { width: 18px !important; height: 18px !important; }
         .hazard-stripe {
             background-color: #FFDF27;
         }
@@ -215,34 +219,34 @@
     </div>
 
     <div id="app-root" class="hidden">
-        <header class="border-b border-[var(--eny-border-subtle)] bg-[var(--eny-bg-recessed)]/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
+        <header class="border-b border-[var(--eny-border-subtle)] bg-[var(--eny-bg-recessed)]/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-[18px]">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <img src="Logo.png" alt="ENY Electrical" class="h-12 w-12 rounded-full shadow-lg shadow-amber-500/20">
-                    <button onclick="refreshApp(this)" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Refresh">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    <img src="Logo.png" alt="ENY Electrical" class="h-[55px] w-[55px] rounded-full shadow-lg shadow-amber-500/20">
+                    <button onclick="refreshApp(this)" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Refresh">
+                        <i data-lucide="refresh-cw" class="w-[18px] h-[18px]"></i>
                     </button>
                     <div>
-                        <h1 class="font-bold text-xl tracking-tight bg-gradient-to-r from-[var(--eny-text-primary)] via-[var(--eny-text-300)] to-[var(--eny-text-muted)] bg-clip-text text-transparent">ENY ELECTRICAL</h1>
-                        <p class="text-xs font-semibold text-[var(--eny-accent-text)] tracking-wider uppercase">Business Manager</p>
+                        <h1 class="font-bold text-[23px] tracking-tight bg-gradient-to-r from-[var(--eny-text-primary)] via-[var(--eny-text-300)] to-[var(--eny-text-muted)] bg-clip-text text-transparent">ENY ELECTRICAL</h1>
+                        <p class="text-[14px] font-semibold text-[var(--eny-accent-text)] tracking-wider uppercase">Business Manager</p>
                     </div>
-                    <button onclick="openUniversalSearch()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer ml-1" title="Search everything">
-                        <i data-lucide="search" class="w-4 h-4"></i>
+                    <button onclick="openUniversalSearch()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer ml-1" title="Search everything">
+                        <i data-lucide="search" class="w-[18px] h-[18px]"></i>
                     </button>
-                    <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-2 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
-                        <i data-lucide="moon" class="w-4 h-4"></i>
+                    <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
+                        <i data-lucide="moon" class="w-[18px] h-[18px]"></i>
                     </button>
                 </div>
 
-                <nav class="flex flex-wrap items-center justify-center gap-1 bg-[var(--eny-bg-page)]/80 p-1 rounded-xl border border-[var(--eny-border-subtle)]">
-                    <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10 cursor-pointer">
+                <nav class="flex flex-wrap items-center justify-center gap-1 bg-[var(--eny-bg-page)]/80 p-[5px] rounded-xl border border-[var(--eny-border-subtle)]">
+                    <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10 cursor-pointer">
                         <i data-lucide="sun" class="w-4 h-4"></i> Today
                     </button>
-                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
+                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
                     </button>
                     <div class="relative">
-                        <button onclick="toggleClientDataMenu()" id="btn-client-data-menu" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer relative">
+                        <button onclick="toggleClientDataMenu()" id="btn-client-data-menu" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer relative">
                             <i data-lucide="folder-open" class="w-4 h-4"></i> Client Data <i data-lucide="chevron-down" class="w-3 h-3"></i>
                             <span id="client-data-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center leading-none">0</span>
                         </button>
@@ -258,23 +262,26 @@
                             </button>
                         </div>
                     </div>
-                    <button onclick="switchTab('smoketest-tab')" id="btn-smoketest-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
+                    <button onclick="switchTab('smoketest-tab')" id="btn-smoketest-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
                         <i data-lucide="clipboard-check" class="w-4 h-4"></i> Servicing
                     </button>
-                    <button onclick="switchTab('map-tab')" id="btn-map-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
+                    <button onclick="switchTab('map-tab')" id="btn-map-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
                         <i data-lucide="map" class="w-4 h-4"></i> Map
                     </button>
-                    <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="owner-only-nav nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
+                    <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="owner-only-nav nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
                         <i data-lucide="file-text" class="w-4 h-4"></i> Quote Builder
                     </button>
                     <div class="relative">
-                        <button onclick="toggleMoreMenu()" id="btn-more-menu" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer relative">
+                        <button onclick="toggleMoreMenu()" id="btn-more-menu" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer relative">
                             <i data-lucide="more-horizontal" class="w-4 h-4"></i> More
                             <span id="more-menu-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center leading-none">0</span>
                         </button>
                         <div id="more-menu-dropdown" class="hidden absolute top-full right-0 mt-2 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-xl shadow-2xl ring-1 ring-white/[0.06] py-1.5 min-w-[160px] z-50 modal-pop-in">
                             <button onclick="switchTab('settings-tab'); closeMoreMenu();" id="btn-settings-tab" class="owner-only-nav w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
                                 <i data-lucide="sliders" class="w-4 h-4"></i> Settings
+                            </button>
+                            <button onclick="switchTab('engineer-stats-tab'); closeMoreMenu();" id="btn-engineer-stats-tab" class="primary-owner-only hidden w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
+                                <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Engineer Stats
                             </button>
                             <button onclick="switchTab('trash-tab'); closeMoreMenu();" id="btn-trash-tab" class="w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i> Trash
@@ -723,11 +730,23 @@
             <div id="map-tab" class="tab-content space-y-4">
                 <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06] flex items-center justify-between gap-3 flex-wrap">
                     <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="map" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Property Map</h2>
-                    <div class="flex items-center gap-3 text-[10px] font-semibold flex-wrap">
-                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Compliant</span>
-                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Due Soon</span>
-                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span> Overdue</span>
-                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span> No Test Recorded</span>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <div class="owner-only-nav hidden flex items-center gap-1 bg-[var(--eny-bg-page)] p-1 rounded-lg border border-[var(--eny-border-subtle)]">
+                            <button onclick="setPropertyMapMode('compliance')" id="map-mode-compliance-btn" class="text-[11px] font-bold px-2.5 py-1.5 rounded-md cursor-pointer transition-colors bg-amber-500 text-slate-950">Compliance</button>
+                            <button onclick="setPropertyMapMode('revenue')" id="map-mode-revenue-btn" class="text-[11px] font-bold px-2.5 py-1.5 rounded-md cursor-pointer transition-colors text-[var(--eny-text-muted)]">Revenue</button>
+                        </div>
+                        <div id="map-legend-compliance" class="flex items-center gap-3 text-[10px] font-semibold flex-wrap">
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Compliant</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Due Soon</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span> Overdue</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span> No Test Recorded</span>
+                        </div>
+                        <div id="map-legend-revenue" class="hidden items-center gap-3 text-[10px] font-semibold flex-wrap">
+                            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-300 inline-block"></span> Low</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Medium</span>
+                            <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-amber-700 inline-block"></span> High</span>
+                            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span> No Revenue</span>
+                        </div>
                     </div>
                 </div>
                 <div id="property-map-empty-state" class="hidden bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-12 text-center text-[var(--eny-text-muted2)] text-sm">
@@ -1413,6 +1432,17 @@
                 </div>
             </div>
 
+            <div id="engineer-stats-tab" class="tab-content primary-owner-only-tab space-y-4">
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="bar-chart-3" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Engineer Stats</h2>
+                    <p class="text-xs text-[var(--eny-text-muted)] mt-1">Only visible on this account — not shown to engineers or the other owner login.</p>
+                </div>
+                <div id="engineer-stats-empty" class="hidden text-center py-16 text-[var(--eny-text-muted2)] text-sm bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl">
+                    <i data-lucide="users" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> No engineer activity recorded yet.
+                </div>
+                <div id="engineer-stats-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
             <div id="trash-tab" class="tab-content space-y-6">
                 <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-800 flex items-center justify-between gap-3 flex-wrap">
                     <span>Deleted items sit here for 30 days before being permanently removed, in case something was removed by mistake.</span>
@@ -1939,6 +1969,13 @@
             const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
             return OWNER_EMAILS.some(e => e.toLowerCase() === email);
         }
+        // More restrictive than isOwnerLoggedIn — only this one specific
+        // account, not any owner-tier login. Used for things that shouldn't
+        // be visible even to a second owner account, like engineer stats.
+        function isPrimaryOwnerLoggedIn() {
+            const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
+            return email === 'electriciansnearyou@gmail.com';
+        }
         function getCurrentUserEngineerName() {
             const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
             const matchedEmail = Object.keys(EMAIL_TO_ENGINEER_NAME).find(e => e.toLowerCase() === email);
@@ -1973,6 +2010,10 @@
             document.querySelectorAll('.owner-only-nav').forEach(el => {
                 el.classList.toggle('hidden', !owner);
             });
+            const primaryOwner = isPrimaryOwnerLoggedIn();
+            document.querySelectorAll('.primary-owner-only').forEach(el => {
+                el.classList.toggle('hidden', !primaryOwner);
+            });
             // Defensive: if a non-owner is somehow on an owner-only tab (e.g. was
             // signed in as owner, switched account without reloading), bounce
             // them back to the Dashboard. The real protection is still the
@@ -1980,6 +2021,12 @@
             if (!owner) {
                 const active = document.querySelector('.tab-content.active');
                 if (active && active.classList.contains('owner-only-tab')) {
+                    switchTab('dashboard-tab');
+                }
+            }
+            if (!primaryOwner) {
+                const active = document.querySelector('.tab-content.active');
+                if (active && active.classList.contains('primary-owner-only-tab')) {
                     switchTab('dashboard-tab');
                 }
             }
@@ -2150,6 +2197,10 @@
             if (!isOwnerLoggedIn()) {
                 const targetEl = document.getElementById(targetTabId);
                 if (targetEl && targetEl.classList.contains('owner-only-tab')) return;
+            }
+            if (!isPrimaryOwnerLoggedIn()) {
+                const targetEl = document.getElementById(targetTabId);
+                if (targetEl && targetEl.classList.contains('primary-owner-only-tab')) return;
             }
 
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -2968,7 +3019,7 @@
                             <span class="text-3xl font-black font-mono text-[var(--eny-text-primary)] block">${pendingQuotes.length}</span>
                         </div>
                         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
-                            <div class="flex items-center justify-between mb-2"><span class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)]">Invoices Pending</span><i data-lucide="pound-sterling" class="w-4 h-4 text-purple-400"></i></div>
+                            <div class="flex items-center justify-between mb-2"><span class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)]">Invoices Pending</span><i data-lucide="pound-sterling" class="w-4 h-4 text-emerald-500"></i></div>
                             <span class="text-3xl font-black font-mono text-emerald-400 block">£${outstandingValue.toFixed(2)}</span>
                         </div>
                     `;
@@ -5406,6 +5457,49 @@
             if (elec.status === 'unknown' && smoke.status === 'unknown') return '#94a3b8';
             return '#10b981';
         }
+        // Quotes don't carry a direct property reference (only jobs and
+        // servicing records do) — matched here by address instead, the same
+        // way ensurePropertyExistsForAddress and the duplicate-detection
+        // logic already do elsewhere in the app. Servicing records use their
+        // real propertyId directly, which is more reliable where available.
+        function computePropertyRevenue(property) {
+            const servicingTotal = currentSmokeTests
+                .filter(t => t.propertyId === property.id)
+                .reduce((sum, t) => sum + (t.price || 0), 0);
+            const quoteTotal = currentQuotes
+                .filter(q => (q.status === 'Invoiced' || q.status === 'Paid') && q.clientDetailsPayload && isLikelyDuplicateAddress(q.clientDetailsPayload.address, property.address))
+                .reduce((sum, q) => sum + (q.financials.grossTotal || 0), 0);
+            return servicingTotal + quoteTotal;
+        }
+        // Percentile-based tiers rather than fixed £ thresholds, so this
+        // adapts to the actual scale of the business instead of assuming a
+        // specific number that might suit one electrician's turnover but not
+        // another's.
+        function computeRevenueTier(revenue, allRevenues) {
+            if (revenue <= 0) return 'none';
+            const positive = allRevenues.filter(r => r > 0).sort((a, b) => a - b);
+            const idx = positive.indexOf(revenue);
+            const percentile = idx / Math.max(1, positive.length - 1);
+            if (percentile >= 0.66) return 'high';
+            if (percentile >= 0.33) return 'medium';
+            return 'low';
+        }
+        const REVENUE_TIER_STYLES = {
+            none: { color: '#cbd5e1', radius: 7 },
+            low: { color: '#fcd34d', radius: 8 },
+            medium: { color: '#f59e0b', radius: 11 },
+            high: { color: '#b45309', radius: 15 },
+        };
+        let propertyMapMode = 'compliance';
+        function setPropertyMapMode(mode) {
+            propertyMapMode = mode;
+            document.getElementById('map-mode-compliance-btn').className = `text-[11px] font-bold px-2.5 py-1.5 rounded-md cursor-pointer transition-colors ${mode === 'compliance' ? 'bg-amber-500 text-slate-950' : 'text-[var(--eny-text-muted)]'}`;
+            document.getElementById('map-mode-revenue-btn').className = `text-[11px] font-bold px-2.5 py-1.5 rounded-md cursor-pointer transition-colors ${mode === 'revenue' ? 'bg-amber-500 text-slate-950' : 'text-[var(--eny-text-muted)]'}`;
+            document.getElementById('map-legend-compliance').classList.toggle('hidden', mode !== 'compliance');
+            document.getElementById('map-legend-revenue').classList.toggle('hidden', mode !== 'revenue');
+            document.getElementById('map-legend-revenue').classList.toggle('flex', mode === 'revenue');
+            renderPropertiesMap();
+        }
         function escapeHtmlForPopup(str) {
             const div = document.createElement('div');
             div.innerText = str || '';
@@ -5435,14 +5529,32 @@
             propertyMapMarkers.forEach(m => propertyLeafletMap.removeLayer(m));
             propertyMapMarkers = [];
 
+            // Compute once per render, not per marker, since it needs the
+            // full set of revenue values to work out percentile tiers.
+            const revenueByPropertyId = {};
+            if (propertyMapMode === 'revenue') {
+                geotagged.forEach(p => { revenueByPropertyId[p.id] = computePropertyRevenue(p); });
+            }
+            const allRevenues = Object.values(revenueByPropertyId);
+
             geotagged.forEach(p => {
-                const color = getPropertyComplianceColor(p);
                 const landlord = p.landlordId ? currentClients.find(c => c.id === p.landlordId) : null;
-                const marker = L.circleMarker([p.lat, p.lng], { radius: 9, fillColor: color, color: '#0f172a', weight: 2, fillOpacity: 0.9 }).addTo(propertyLeafletMap);
                 const addressLine = escapeHtmlForPopup((p.address || '').split('\n')[0]);
+                let marker, revenueLine = '';
+                if (propertyMapMode === 'revenue') {
+                    const revenue = revenueByPropertyId[p.id];
+                    const tier = computeRevenueTier(revenue, allRevenues);
+                    const style = REVENUE_TIER_STYLES[tier];
+                    marker = L.circleMarker([p.lat, p.lng], { radius: style.radius, fillColor: style.color, color: '#0f172a', weight: 2, fillOpacity: 0.9 }).addTo(propertyLeafletMap);
+                    revenueLine = `<div style="font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 6px;">Total revenue: £${revenue.toFixed(2)}</div>`;
+                } else {
+                    const color = getPropertyComplianceColor(p);
+                    marker = L.circleMarker([p.lat, p.lng], { radius: 9, fillColor: color, color: '#0f172a', weight: 2, fillOpacity: 0.9 }).addTo(propertyLeafletMap);
+                }
                 const popupHtml = `<div style="font-family: sans-serif; min-width: 200px;">
                     <div style="font-weight: 700; font-size: 13px; margin-bottom: 4px; color: #0f172a;">${addressLine}</div>
                     ${landlord ? `<div style="font-size: 11px; color: #64748b; margin-bottom: 6px;">Landlord: ${escapeHtmlForPopup(landlord.name)}</div>` : ''}
+                    ${revenueLine}
                     ${p.notes ? `<div style="font-size: 11px; background: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px; padding: 6px; margin-bottom: 6px; color: #78350f;"><strong>Access:</strong> ${escapeHtmlForPopup(p.notes)}</div>` : ''}
                     <button onclick="openPropertyFromMap('${p.id}')" style="width: 100%; background: #f59e0b; color: #0f172a; font-weight: 700; font-size: 11px; padding: 6px; border-radius: 6px; border: none; cursor: pointer;">Open Property</button>
                 </div>`;
@@ -5603,6 +5715,62 @@
                 </div>
             </div>`;
         }
+        // Only ever called from the primary-owner-only tab, but the
+        // computation itself doesn't need to re-check that — the tab is
+        // already unreachable for anyone else.
+        function renderEngineerStatsTab() {
+            const listEl = document.getElementById('engineer-stats-list');
+            const emptyEl = document.getElementById('engineer-stats-empty');
+            if (!listEl) return;
+            const engineers = getEngineerNames();
+            if (engineers.length === 0) { emptyEl.classList.remove('hidden'); listEl.innerHTML = ''; return; }
+
+            const stats = engineers.map(name => {
+                const completedJobs = currentJobs.filter(j => j.status === 'Completed' && getJobEngineers(j).includes(name));
+                const jobValues = completedJobs
+                    .map(j => j.linkedQuoteId ? currentQuotes.find(q => q.id === j.linkedQuoteId) : null)
+                    .filter(Boolean)
+                    .map(q => q.financials.grossTotal);
+                const avgJobValue = jobValues.length > 0 ? jobValues.reduce((a, b) => a + b, 0) / jobValues.length : null;
+
+                const servicingRecords = currentSmokeTests.filter(t => t.inspector === name);
+                const sortedByDate = [...servicingRecords].sort((a, b) => (b.testDate || '').localeCompare(a.testDate || ''));
+                let cleanStreak = 0;
+                for (const rec of sortedByDate) {
+                    if (rec.outcome === 'Unsatisfactory') break;
+                    cleanStreak++;
+                }
+
+                return { name, jobsCompleted: completedJobs.length, servicingCompleted: servicingRecords.length, avgJobValue, cleanStreak };
+            });
+
+            listEl.innerHTML = stats.map(s => {
+                const c = getEngineerColorClass(s.name);
+                return `<div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
+                    <h3 class="text-sm font-bold px-2.5 py-1 rounded-lg border w-fit ${c.badge}">${s.name}</h3>
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <div class="bg-[var(--eny-bg-page)] rounded-xl p-3">
+                            <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider">Jobs Completed</div>
+                            <div class="text-xl font-bold text-[var(--eny-text-primary)] mt-1">${s.jobsCompleted}</div>
+                        </div>
+                        <div class="bg-[var(--eny-bg-page)] rounded-xl p-3">
+                            <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider">Servicing Done</div>
+                            <div class="text-xl font-bold text-[var(--eny-text-primary)] mt-1">${s.servicingCompleted}</div>
+                        </div>
+                        <div class="bg-[var(--eny-bg-page)] rounded-xl p-3">
+                            <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider">Avg Job Value</div>
+                            <div class="text-xl font-bold text-[var(--eny-text-primary)] mt-1">${s.avgJobValue !== null ? '£' + s.avgJobValue.toFixed(0) : '—'}</div>
+                        </div>
+                        <div class="bg-[var(--eny-bg-page)] rounded-xl p-3">
+                            <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider">Clean Streak</div>
+                            <div class="text-xl font-bold ${s.cleanStreak > 0 ? 'text-emerald-600' : 'text-[var(--eny-text-primary)]'} mt-1">${s.cleanStreak}</div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+            emptyEl.classList.add('hidden');
+            lucide.createIcons();
+        }
         function renderTrashTab() {
             const propEl = document.getElementById('trash-properties-list');
             if (!propEl) return; // Trash tab HTML not present yet on first load tick
@@ -5718,9 +5886,17 @@
                         const roadMiles = straightLineMiles * ROAD_DISTANCE_FACTOR;
                         const estimatedMinutes = Math.max(2, Math.round((roadMiles / ASSUMED_AVERAGE_MPH) * 60) + FIXED_TRIP_OVERHEAD_MINUTES);
                         etaText = ` I'm about ${estimatedMinutes} minutes away.`;
+                    } else {
+                        // The prefetched-location path resolves null on
+                        // failure rather than throwing (see where it's
+                        // built), so this is the actual path Accept hits —
+                        // the catch block below only covers the separate
+                        // ask-fresh fallback, which rejects instead.
+                        showToast("Couldn't get your location for an ETA (permission denied or unavailable) — sending the message without one.", 'info');
                     }
                 } catch (e) {
                     console.warn('Could not get location for ETA — sending without one:', e);
+                    showToast("Couldn't get your location for an ETA (permission denied or unavailable) — sending the message without one.", 'info');
                 }
             }
             const firstName = (client.name || '').split(' ')[0];
@@ -5906,6 +6082,7 @@
                 renderSmokeTestRecordsList();
             }
             if (tabId === 'map-tab') renderPropertiesMap();
+            if (tabId === 'engineer-stats-tab') renderEngineerStatsTab();
             if (tabId === 'crm-tab') rebuildCrmProfilesInterface();
             if (tabId === 'settings-tab') { rebuildMasterStockDirectoryTable(); rebuildTemplateCatalogList(); rebuildTemplateMaterialSelector(); loadPricingSettingsIntoForm(); loadBankFormFields('HUGHES'); loadBankFormFields('MABBLEY'); }
             if (tabId === 'trash-tab') renderTrashTab();
