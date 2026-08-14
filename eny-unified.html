@@ -1731,6 +1731,29 @@
         </div>
     </div>
 
+    <div id="job-info-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1100] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-start gap-3 bg-[var(--eny-bg-page)]/50">
+                <div class="min-w-0">
+                    <h3 id="job-info-modal-title" class="text-base font-bold text-[var(--eny-text-primary)] truncate"></h3>
+                    <p id="job-info-modal-meta" class="text-[11px] text-[var(--eny-text-muted2)] mt-0.5"></p>
+                </div>
+                <button onclick="closeJobInfoModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-4">
+                <div id="job-info-address" class="text-xs text-[var(--eny-text-300)]"></div>
+                <div id="job-info-engineers" class="flex flex-wrap gap-1.5"></div>
+                <div>
+                    <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Actions</div>
+                    <div id="job-info-actions" class="flex flex-wrap items-center gap-1.5"></div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
+                <button onclick="openFullWorkflowFromInfoModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="list-checks" class="w-4 h-4"></i> Open Full Job Workflow</button>
+            </div>
+        </div>
+    </div>
+
     <div id="bundle-invoice-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
@@ -5174,6 +5197,44 @@
                 <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 <button onclick="deleteJob('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
         }
+        let activeJobInfoModalId = null;
+        function openJobInfoModal(jobId) {
+            const j = currentJobs.find(x => x.id === jobId);
+            if (!j) return;
+            activeJobInfoModalId = jobId;
+            document.getElementById('job-info-modal-title').innerText = j.title;
+            document.getElementById('job-info-modal-meta').innerText = `${formatUkDate(j.date)} at ${j.time || '—'} · ${j.status}`;
+            const addressEl = document.getElementById('job-info-address');
+            if (j.propertyAddress) { addressEl.classList.remove('hidden'); addressEl.innerText = j.propertyAddress; }
+            else addressEl.classList.add('hidden');
+            const engineers = getJobEngineers(j);
+            document.getElementById('job-info-engineers').innerHTML = engineers.map(name => { const c = getEngineerColorClass(name); return `<span class="text-[10px] font-bold px-2 py-0.5 rounded border ${c.badge}">${name}</span>`; }).join(' ');
+            // Reuses the same action-button logic the old Jobs list row used —
+            // status quick-actions, on-my-way, reminder, review request,
+            // signature, edit, delete — all context-aware based on the job's
+            // current status, exactly as before.
+            document.getElementById('job-info-actions').innerHTML = buildJobActionButtons(j);
+            document.getElementById('job-info-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeJobInfoModal() {
+            document.getElementById('job-info-modal').classList.add('hidden');
+            activeJobInfoModalId = null;
+        }
+        // Any action button clicked inside the actions area closes the modal
+        // afterward (the click bubbles up here after the button's own handler
+        // already ran) — simpler and avoids showing stale action buttons if
+        // the job's status just changed (e.g. after Mark Completed, the
+        // Scheduled-only buttons shouldn't still be sitting there). The
+        // container itself is static — only its innerHTML is replaced each
+        // time the modal opens — so this only needs attaching once.
+        document.getElementById('job-info-actions').addEventListener('click', () => closeJobInfoModal());
+        function openFullWorkflowFromInfoModal() {
+            if (!activeJobInfoModalId) return;
+            const jobId = activeJobInfoModalId;
+            closeJobInfoModal();
+            openJobDetailPage(jobId, false);
+        }
         function renderJobsList() {
             const engineerFilterEl = document.getElementById('jobs-engineer-filter');
             const statusFilterEl = document.getElementById('jobs-status-filter');
@@ -5192,7 +5253,7 @@
                 const engineerBadges = engineers.map(name => { const c = getEngineerColorClass(name); return `<span class="text-[8.5px] font-bold px-1.5 py-0.5 rounded border ${c.badge}">${name}</span>`; }).join(' ');
                 const style = JOB_STATE_STYLES[computeJobTileState(j)];
                 const addressLine = j.propertyAddress ? j.propertyAddress.split('\n')[0] : '';
-                return `<button onclick="openJobDetailPage('${j.id}', false)" class="text-left bg-white rounded-[20px] overflow-hidden shadow-[0_5px_16px_rgba(120,90,60,0.12)] cursor-pointer">
+                return `<button onclick="openJobInfoModal('${j.id}')" class="text-left bg-white rounded-[20px] overflow-hidden shadow-[0_5px_16px_rgba(120,90,60,0.12)] cursor-pointer">
                     <div class="h-[78px] relative flex items-center justify-center" style="background: ${style.sceneBg};">
                         <i data-lucide="wrench" class="w-9 h-9" style="color: ${style.iconColor};"></i>
                         <div class="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center shadow-md border-2 border-white/70 z-[2]" style="background: ${style.sealGradient};">
