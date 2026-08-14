@@ -746,6 +746,7 @@
                             <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Medium</span>
                             <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-amber-700 inline-block"></span> High</span>
                             <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span> No Revenue</span>
+                            <span class="text-[var(--eny-text-muted2)] font-normal italic">Glow radiates outward — nearby properties overlap into hot zones</span>
                         </div>
                     </div>
                 </div>
@@ -5485,10 +5486,10 @@
             return 'low';
         }
         const REVENUE_TIER_STYLES = {
-            none: { color: '#cbd5e1', radius: 7 },
-            low: { color: '#fcd34d', radius: 8 },
-            medium: { color: '#f59e0b', radius: 11 },
-            high: { color: '#b45309', radius: 15 },
+            none: { color: '#cbd5e1', dotRadius: 6, glowRadiusMeters: 0 },
+            low: { color: '#fcd34d', dotRadius: 6, glowRadiusMeters: 150 },
+            medium: { color: '#f59e0b', dotRadius: 7, glowRadiusMeters: 300 },
+            high: { color: '#b45309', dotRadius: 8, glowRadiusMeters: 500 },
         };
         let propertyMapMode = 'compliance';
         function setPropertyMapMode(mode) {
@@ -5537,6 +5538,25 @@
             }
             const allRevenues = Object.values(revenueByPropertyId);
 
+            // Two passes so every glow sits beneath every dot, regardless of
+            // property order — glows are added first as a full layer, then
+            // dots on top. Where two properties are close together, their
+            // translucent glows naturally overlap and darken where they
+            // overlap (ordinary alpha blending) — the same "hot zone" effect
+            // a proper heatmap gives, without needing an extra plugin/library
+            // that can't be verified in this offline environment.
+            if (propertyMapMode === 'revenue') {
+                geotagged.forEach(p => {
+                    const revenue = revenueByPropertyId[p.id];
+                    const tier = computeRevenueTier(revenue, allRevenues);
+                    const style = REVENUE_TIER_STYLES[tier];
+                    if (style.glowRadiusMeters > 0) {
+                        const glow = L.circle([p.lat, p.lng], { radius: style.glowRadiusMeters, fillColor: style.color, fillOpacity: 0.22, stroke: false, interactive: false }).addTo(propertyLeafletMap);
+                        propertyMapMarkers.push(glow);
+                    }
+                });
+            }
+
             geotagged.forEach(p => {
                 const landlord = p.landlordId ? currentClients.find(c => c.id === p.landlordId) : null;
                 const addressLine = escapeHtmlForPopup((p.address || '').split('\n')[0]);
@@ -5545,7 +5565,7 @@
                     const revenue = revenueByPropertyId[p.id];
                     const tier = computeRevenueTier(revenue, allRevenues);
                     const style = REVENUE_TIER_STYLES[tier];
-                    marker = L.circleMarker([p.lat, p.lng], { radius: style.radius, fillColor: style.color, color: '#0f172a', weight: 2, fillOpacity: 0.9 }).addTo(propertyLeafletMap);
+                    marker = L.circleMarker([p.lat, p.lng], { radius: style.dotRadius, fillColor: style.color, color: '#0f172a', weight: 2, fillOpacity: 0.95 }).addTo(propertyLeafletMap);
                     revenueLine = `<div style="font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 6px;">Total revenue: £${revenue.toFixed(2)}</div>`;
                 } else {
                     const color = getPropertyComplianceColor(p);
