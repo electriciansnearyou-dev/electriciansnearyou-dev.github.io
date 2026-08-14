@@ -54,33 +54,26 @@
 
     <style>
         :root {
-            --eny-bg-page: #F7F1E8;
+            --eny-bg-page: #EFF5FB;
             --eny-bg-card: #FFFFFF;
-            --eny-bg-recessed: #EDE4D3;
-            --eny-bg-secondary: #F2EAD9;
-            --eny-bg-tertiary: #E8DCC5;
-            --eny-bg-highlight: #E0D0B0;
-            --eny-border-standard: #D9C7A9;
-            --eny-border-medium: #D4BFA0;
-            --eny-border-subtle: #EDE2CE;
-            --eny-ring: #D9BE8F;
-            --eny-text-primary: #3D3529;
-            --eny-text-100: #4A3F35;
-            --eny-text-200: #5C4F40;
-            --eny-text-300: #71614C;
-            --eny-text-muted: #8A7C6D;
-            --eny-text-muted2: #96876F;
-            --eny-text-faded: #BBAE9C;
-            --eny-text-subtle: #D4C7B4;
-            --eny-decorative: #B0A08C;
-            /* Amber text (not backgrounds — those still work fine) needs a
-               different accent against this warm cream palette: amber-on-cream
-               is too tonally similar to read as an accent (contrast-checked,
-               fails badly). A deep teal gives the same "this stands out"
-               quality the original bright amber had against the old cool
-               blue theme. Dark mode is untouched since amber already has
-               excellent contrast there. */
-            --eny-accent-text: #115E59;
+            --eny-bg-recessed: #DCEAF6;
+            --eny-bg-secondary: #E5EFF9;
+            --eny-bg-tertiary: #D2E3F3;
+            --eny-bg-highlight: #C5DCF0;
+            --eny-border-standard: #C3D9EE;
+            --eny-border-medium: #A9C6E3;
+            --eny-border-subtle: #D3E5F5;
+            --eny-ring: #B0CBE6;
+            --eny-text-primary: #0F2437;
+            --eny-text-100: #16283D;
+            --eny-text-200: #1E3A54;
+            --eny-text-300: #2C4A68;
+            --eny-text-muted: #5B7591;
+            --eny-text-muted2: #71889F;
+            --eny-text-faded: #8FA3B8;
+            --eny-text-subtle: #B8CDE3;
+            --eny-decorative: #8FA9C2;
+            --eny-accent-text: #fbbf24;
         }
         [data-theme="dark"] {
             --eny-bg-page: #0f172a;
@@ -222,7 +215,7 @@
     </div>
 
     <div id="app-root" class="hidden">
-        <header class="border-b border-[var(--eny-border-subtle)] bg-[var(--eny-bg-card)]/95 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
+        <header class="border-b border-[var(--eny-border-subtle)] bg-[var(--eny-bg-recessed)]/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-4">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <img src="Logo.png" alt="ENY Electrical" class="h-12 w-12 rounded-full shadow-lg shadow-amber-500/20">
@@ -241,7 +234,7 @@
                     </button>
                 </div>
 
-                <nav class="flex flex-wrap items-center justify-center gap-1 bg-[var(--eny-bg-card)] p-1 rounded-xl border border-[var(--eny-border-subtle)] shadow-sm">
+                <nav class="flex flex-wrap items-center justify-center gap-1 bg-[var(--eny-bg-page)]/80 p-1 rounded-xl border border-[var(--eny-border-subtle)]">
                     <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-3 py-2 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10 cursor-pointer">
                         <i data-lucide="sun" class="w-4 h-4"></i> Today
                     </button>
