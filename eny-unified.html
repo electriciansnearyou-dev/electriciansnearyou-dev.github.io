@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive">
     <title>ENY Electrical - Business Manager</title>
     <meta name="theme-color" content="#0f172a">
     <link rel="icon" type="image/png" href="Logo.png">
@@ -233,6 +234,9 @@
                     <button onclick="openUniversalSearch()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer ml-1" title="Search everything">
                         <i data-lucide="search" class="w-[18px] h-[18px]"></i>
                     </button>
+                    <button onclick="openQuickReachModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Quick reach — call or text the team">
+                        <i data-lucide="users-round" class="w-[18px] h-[18px]"></i>
+                    </button>
                     <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
                         <i data-lucide="moon" class="w-[18px] h-[18px]"></i>
                     </button>
@@ -357,6 +361,11 @@
                     <div id="dashboard-reminders-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                 </div>
 
+                <div id="dashboard-compliance-panel" class="hidden bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="shield-check" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Business Compliance — Equipment &amp; Qualifications</h2>
+                    <div id="dashboard-compliance-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                </div>
+
                 <div id="dashboard-owner-followup-section" class="owner-only-tab hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                         <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="clock-alert" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Quotes Needing Follow-Up</h2>
@@ -450,8 +459,18 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Time</label>
-                                    <input type="time" id="job-time" value="09:00" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                    <input type="time" id="job-time" value="09:00" onchange="updateEmergencyRatePreview()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                                 </div>
+                            </div>
+                            <div class="bg-red-500/5 border border-red-500/20 rounded-xl p-3 flex items-center justify-between gap-3">
+                                <div>
+                                    <label for="job-emergency-toggle" class="text-xs font-bold text-red-700 flex items-center gap-1.5 cursor-pointer"><i data-lucide="siren" class="w-3.5 h-3.5"></i> Emergency Call-Out</label>
+                                    <p id="job-emergency-rate-preview" class="text-[10px] text-[var(--eny-text-muted)] mt-0.5"></p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                                    <input type="checkbox" id="job-emergency-toggle" onchange="updateEmergencyRatePreview()" class="sr-only peer">
+                                    <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500 peer-checked:after:bg-white"></div>
+                                </label>
                             </div>
                             <div id="job-multi-day-row">
                                 <label class="flex items-center gap-2 cursor-pointer select-none">
@@ -798,6 +817,10 @@
                                         <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Job Name</label>
                                         <input type="text" id="job-name" placeholder="e.g., Board Upgrade & Rewire" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                                     </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Warranty (Months)</label>
+                                        <input type="number" id="job-warranty-months" min="0" value="12" placeholder="e.g., 12 (leave blank for none)" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                    </div>
                                 </div>
                                 <div class="pt-4 border-t border-[var(--eny-border-standard)]">
                                     <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Link Existing Property</label>
@@ -1138,6 +1161,7 @@
                     <button onclick="switchSettingsSubtab('settings-sub-stock')" id="btn-settings-sub-stock" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Stock Directory</button>
                     <button onclick="switchSettingsSubtab('settings-sub-templates')" id="btn-settings-sub-templates" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Templates</button>
                     <button onclick="switchSettingsSubtab('settings-sub-engineers')" id="btn-settings-sub-engineers" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Engineers</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-compliance')" id="btn-settings-sub-compliance" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Business Compliance</button>
                     <button onclick="switchSettingsSubtab('settings-sub-calendar')" id="btn-settings-sub-calendar" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Google Calendar</button>
                     <button onclick="switchSettingsSubtab('settings-sub-import')" id="btn-settings-sub-import" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Import Local Data</button>
                     <button onclick="switchSettingsSubtab('settings-sub-export')" id="btn-settings-sub-export" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Data Export</button>
@@ -1371,7 +1395,61 @@
                     </div>
                 </div>
 
-                <!-- GOOGLE CALENDAR -->
+                <div id="settings-sub-compliance" class="settings-subtab-content">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
+                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="shield-check" class="text-[var(--eny-accent-text)]"></i> Business Compliance</h2>
+                            <p class="text-xs text-[var(--eny-text-muted)]">Test equipment calibration and engineer qualifications/registrations — the compliance the business itself depends on, not client properties.</p>
+                            <input type="hidden" id="compliance-item-id-field">
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Type</label>
+                                <select id="compliance-type-select" onchange="setComplianceItemType(this.value)" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                    <option value="equipment">Test Equipment Calibration</option>
+                                    <option value="qualification">Engineer Qualification</option>
+                                    <option value="vehicle">Vehicle Compliance (MOT/Insurance/Tax)</option>
+                                    <option value="insurance">Business Insurance</option>
+                                    <option value="pat">PAT Testing (Power Tools)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1" id="compliance-name-label">Name</label>
+                                <input type="text" id="compliance-item-name" placeholder="e.g. Megger MFT1835" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div id="compliance-engineer-field-wrapper" class="hidden">
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Engineer</label>
+                                <select id="compliance-engineer-select" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500"></select>
+                            </div>
+                            <div id="compliance-serial-field-wrapper">
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1" id="compliance-serial-label">Serial Number (optional)</label>
+                                <input type="text" id="compliance-serial-number" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1" id="compliance-date-label">Last Calibrated</label>
+                                    <input type="date" id="compliance-last-date" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Renewal Cycle (Months)</label>
+                                    <input type="number" id="compliance-cycle-months" value="12" min="1" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Notes</label>
+                                <textarea id="compliance-notes" rows="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500"></textarea>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="saveComplianceItem()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Save</button>
+                                <button onclick="clearComplianceItemForm()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-300)] font-medium px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Clear</button>
+                            </div>
+                        </div>
+                        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                            <h3 class="text-sm font-bold text-[var(--eny-text-primary)] mb-3">Tracked Items</h3>
+                            <div id="compliance-items-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+
                 <div id="settings-sub-calendar" class="settings-subtab-content">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl space-y-4">
                         <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="calendar-sync" class="text-[var(--eny-accent-text)]"></i> Google Calendar</h2>
@@ -1558,7 +1636,7 @@
                 <div class="p-6 space-y-4">
                     <div id="job-no-quote-notice" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 text-[11px] text-[var(--eny-text-muted2)]">No quote linked to this job yet — ask the owner to link one so materials/hours added here apply automatically.</div>
                     <div id="job-linked-quote-section" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3">
-                        <div class="text-[10px] uppercase font-bold text-[var(--eny-text-muted2)] mb-1.5">Linked Quote</div>
+                        <div class="text-[10px] uppercase font-bold text-[var(--eny-text-muted2)] mb-1.5">Linked Quote (primary — gets on-site materials/hours)</div>
                         <div id="job-linked-quote-display" class="hidden flex items-center justify-between gap-2">
                             <span id="job-linked-quote-name" class="text-sm text-[var(--eny-text-200)]"></span>
                             <button onclick="unlinkJobQuote()" class="text-[10px] font-bold text-red-400 hover:text-red-300 cursor-pointer">Unlink</button>
@@ -1567,6 +1645,13 @@
                             <input type="text" id="job-link-quote-search" oninput="renderJobQuoteLinkOptions()" placeholder="Search quotes by client or job name..." class="w-full bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                             <div id="job-link-quote-options" class="max-h-40 overflow-y-auto space-y-1 custom-scrollbar"></div>
                         </div>
+                    </div>
+
+                    <div id="job-additional-quotes-section" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 mt-3">
+                        <div class="text-[10px] uppercase font-bold text-[var(--eny-text-muted2)] mb-1.5">Additional Quotes (view-only links — the primary quote above still handles on-site materials/hours)</div>
+                        <div id="job-additional-quotes-list" class="space-y-1.5 mb-2"></div>
+                        <input type="text" id="job-additional-quote-search" oninput="renderAdditionalQuoteLinkOptions()" placeholder="Search to attach another quote..." class="w-full bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                        <div id="job-additional-quote-options" class="max-h-32 overflow-y-auto space-y-1 custom-scrollbar mt-1.5"></div>
                     </div>
 
                     <div id="job-materials-hours-section">
@@ -1741,6 +1826,7 @@
                     <div id="quote-info-value" class="text-base font-bold text-[var(--eny-accent-text)] font-mono"></div>
                 </div>
                 <div id="quote-info-invoice-number-wrapper" class="hidden text-[11px] font-mono text-[var(--eny-text-muted)]"></div>
+                <div id="quote-info-warranty-wrapper" class="hidden"></div>
                 <div>
                     <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Pipeline Status</div>
                     <select id="quote-info-status-select" onchange="updateQuoteStatus(activeQuoteInfoModalId, this.value); closeQuoteInfoModal();" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-3 py-2.5 text-sm text-[var(--eny-text-100)]">
@@ -1773,7 +1859,14 @@
             </div>
             <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-4">
                 <div id="job-info-address" class="text-xs text-[var(--eny-text-300)]"></div>
-                <div id="job-info-engineers" class="flex flex-wrap gap-1.5"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider">Assigned To</div>
+                        <button onclick="toggleReassignPicker()" class="text-[10px] font-bold text-[var(--eny-accent-text)] hover:underline cursor-pointer flex items-center gap-1"><i data-lucide="repeat" class="w-3 h-3"></i> Reassign</button>
+                    </div>
+                    <div id="job-info-engineers" class="flex flex-wrap gap-1.5"></div>
+                    <div id="job-info-reassign-picker" class="hidden mt-2 flex flex-wrap gap-1.5 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-2.5"></div>
+                </div>
                 <div>
                     <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Actions</div>
                     <div id="job-info-actions" class="flex flex-wrap items-center gap-1.5"></div>
@@ -1782,6 +1875,16 @@
             <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
                 <button onclick="openFullWorkflowFromInfoModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="list-checks" class="w-4 h-4"></i> Open Full Job Workflow</button>
             </div>
+        </div>
+    </div>
+
+    <div id="quick-reach-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1100] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
+                <h3 class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="users-round" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Quick Reach</h3>
+                <button onclick="closeQuickReachModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="quick-reach-list" class="p-4 space-y-2 overflow-y-auto custom-scrollbar"></div>
         </div>
     </div>
 
@@ -1960,6 +2063,14 @@
             'electriciansnearyou@gmail.com': 'Hughes',
             'jmabbley@yahoo.com': 'Mabbley',
             'willbutler1404@gmail.com': 'Butler',
+        };
+        // Fill in real numbers here for the Quick Reach panel — same
+        // hand-edited-config pattern as the mapping above, since this is a
+        // 3-person team, not something that needs a settings form.
+        const ENGINEER_PHONE_NUMBERS = {
+            'Hughes': '',
+            'Mabbley': '',
+            'Butler': '',
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -2556,6 +2667,12 @@
                     syncStockPublicMirror(currentStock);
                 }, (err) => console.error('Stock listener error:', err));
 
+                db.collection('businessCompliance').onSnapshot((snapshot) => {
+                    currentComplianceItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderComplianceItemsList();
+                    renderDashboard();
+                }, (err) => console.error('Business compliance listener error:', err));
+
                 db.collection('quotes').onSnapshot((snapshot) => {
                     const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     repairLegacyImportedQuotes(allDocs);
@@ -2604,6 +2721,97 @@
                     loadBankFormFields('MABBLEY');
                 }, (err) => console.error('Bank (Mabbley) listener error:', err));
             }
+        }
+
+        let currentComplianceItems = [];
+        const COMPLIANCE_TYPE_CONFIG = {
+            equipment: { nameLabel: 'Equipment Name', dateLabel: 'Last Calibrated', placeholder: 'e.g. Megger MFT1835', showEngineer: false, showSerial: true, serialLabel: 'Serial Number (optional)' },
+            qualification: { nameLabel: 'Qualification / Registration', dateLabel: 'Last Renewed', placeholder: 'e.g. NICEIC Registration, 18th Edition', showEngineer: true, showSerial: false },
+            vehicle: { nameLabel: 'Vehicle & Item', dateLabel: 'Last Renewed', placeholder: 'e.g. Van 1 - MOT', showEngineer: false, showSerial: true, serialLabel: 'Registration Plate (optional)' },
+            insurance: { nameLabel: 'Insurance Policy', dateLabel: 'Last Renewed', placeholder: 'e.g. Public Liability Insurance', showEngineer: false, showSerial: true, serialLabel: 'Policy Number (optional)' },
+            pat: { nameLabel: 'Tool Name', dateLabel: 'Last PAT Tested', placeholder: 'e.g. SDS Drill', showEngineer: false, showSerial: true, serialLabel: 'Asset/Serial Number (optional)' },
+        };
+        function setComplianceItemType(type) {
+            const config = COMPLIANCE_TYPE_CONFIG[type] || COMPLIANCE_TYPE_CONFIG.equipment;
+            document.getElementById('compliance-type-select').value = type;
+            document.getElementById('compliance-engineer-field-wrapper').classList.toggle('hidden', !config.showEngineer);
+            document.getElementById('compliance-serial-field-wrapper').classList.toggle('hidden', !config.showSerial);
+            document.getElementById('compliance-name-label').innerText = config.nameLabel;
+            document.getElementById('compliance-date-label').innerText = config.dateLabel;
+            document.getElementById('compliance-item-name').placeholder = config.placeholder;
+            if (config.showSerial) {
+                const serialLabelEl = document.getElementById('compliance-serial-label');
+                if (serialLabelEl) serialLabelEl.innerText = config.serialLabel;
+            }
+            if (config.showEngineer) {
+                const select = document.getElementById('compliance-engineer-select');
+                select.innerHTML = getEngineerNames().map(n => `<option value="${n}">${n}</option>`).join('');
+            }
+        }
+        function saveComplianceItem() {
+            const id = document.getElementById('compliance-item-id-field').value;
+            const type = document.getElementById('compliance-type-select').value;
+            const config = COMPLIANCE_TYPE_CONFIG[type] || COMPLIANCE_TYPE_CONFIG.equipment;
+            const name = document.getElementById('compliance-item-name').value.trim();
+            const lastDate = document.getElementById('compliance-last-date').value;
+            const cycleMonths = parseInt(document.getElementById('compliance-cycle-months').value) || 12;
+            if (!name) { showToast('Please give this item a name.', 'warning'); return; }
+            const payload = {
+                type, name, lastDate, cycleMonths,
+                notes: document.getElementById('compliance-notes').value.trim(),
+                serialNumber: config.showSerial ? document.getElementById('compliance-serial-number').value.trim() : null,
+                engineerName: config.showEngineer ? document.getElementById('compliance-engineer-select').value : null,
+            };
+            if (id) db.collection('businessCompliance').doc(id).update(payload);
+            else db.collection('businessCompliance').add(payload);
+            clearComplianceItemForm();
+            showToast('Saved.', 'success');
+        }
+        function clearComplianceItemForm() {
+            document.getElementById('compliance-item-id-field').value = '';
+            document.getElementById('compliance-item-name').value = '';
+            document.getElementById('compliance-serial-number').value = '';
+            document.getElementById('compliance-last-date').value = '';
+            document.getElementById('compliance-cycle-months').value = '12';
+            document.getElementById('compliance-notes').value = '';
+            setComplianceItemType('equipment');
+        }
+        function loadComplianceItemForModification(id) {
+            const item = currentComplianceItems.find(i => i.id === id);
+            if (!item) return;
+            setComplianceItemType(item.type);
+            document.getElementById('compliance-item-id-field').value = item.id;
+            document.getElementById('compliance-item-name').value = item.name;
+            document.getElementById('compliance-serial-number').value = item.serialNumber || '';
+            document.getElementById('compliance-last-date').value = item.lastDate || '';
+            document.getElementById('compliance-cycle-months').value = item.cycleMonths || 12;
+            document.getElementById('compliance-notes').value = item.notes || '';
+            if ((COMPLIANCE_TYPE_CONFIG[item.type] || {}).showEngineer && item.engineerName) document.getElementById('compliance-engineer-select').value = item.engineerName;
+        }
+        async function deleteComplianceItem(id) {
+            if (!(await showConfirm('Delete this compliance item? This cannot be undone.', { confirmText: 'Delete', danger: true }))) return;
+            db.collection('businessCompliance').doc(id).delete();
+        }
+        function renderComplianceItemsList() {
+            const listEl = document.getElementById('compliance-items-list');
+            if (!listEl) return;
+            if (currentComplianceItems.length === 0) { listEl.innerHTML = `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">Nothing tracked yet.</p>`; return; }
+            const sorted = [...currentComplianceItems].sort((a, b) => (a.type).localeCompare(b.type) || a.name.localeCompare(b.name));
+            listEl.innerHTML = sorted.map(item => {
+                const status = computeReminderStatusMonths(item.lastDate, item.cycleMonths, 30);
+                const config = COMPLIANCE_TYPE_CONFIG[item.type] || COMPLIANCE_TYPE_CONFIG.equipment;
+                const sub = config.showEngineer ? (item.engineerName || config.nameLabel) : (item.serialNumber || config.nameLabel);
+                return `<div onclick="loadComplianceItemForModification('${item.id}')" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 cursor-pointer">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="min-w-0"><div class="text-xs font-bold text-[var(--eny-text-200)] truncate">${item.name}</div><div class="text-[10px] text-[var(--eny-text-muted2)]">${sub}</div></div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            ${reminderStatusBadge(status.status, status.daysUntilDue)}
+                            <button onclick="event.stopPropagation(); deleteComplianceItem('${item.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+            lucide.createIcons();
         }
 
         function saveEngineerSettings() {
@@ -2776,6 +2984,39 @@
             else if (daysUntilDue <= dueSoonWindowDays) status = 'due-soon';
             else status = 'ok';
             return { dueDate, status, daysUntilDue };
+        }
+        function addMonths(dateStr, months) {
+            const d = new Date(dateStr);
+            d.setMonth(d.getMonth() + months);
+            return d.toISOString().split('T')[0];
+        }
+        // Same shape and logic as computeReminderStatus, but for cycles
+        // measured in months — equipment calibration, insurance renewals,
+        // and qualifications are usually 6- or 12-month cycles, and passing
+        // a fractional year (0.5) to addYears' setFullYear wouldn't work.
+        function computeReminderStatusMonths(lastDateStr, cycleMonths, dueSoonWindowDays) {
+            const today = todayISO();
+            if (!lastDateStr) return { dueDate: null, status: 'unknown', daysUntilDue: null };
+            const dueDate = addMonths(lastDateStr, cycleMonths);
+            const daysUntilDue = daysBetween(today, dueDate);
+            let status;
+            if (daysUntilDue < 0) status = 'overdue';
+            else if (daysUntilDue <= dueSoonWindowDays) status = 'due-soon';
+            else status = 'ok';
+            return { dueDate, status, daysUntilDue };
+        }
+        // Anchors to the linked job's completion date where one exists (the
+        // work was actually finished then), falling back to the quote's own
+        // timestamp otherwise — quotes don't store a reverse link to their
+        // job, only jobs link forward to their quote, so this searches for it.
+        function computeWarrantyStatus(quote) {
+            if (!quote.warrantyMonths) return { tracked: false };
+            const linkedJob = currentJobs.find(j => j.linkedQuoteId === quote.id && j.status === 'Completed');
+            const anchorDateStr = linkedJob ? linkedJob.date : (quote.timestamp ? quote.timestamp.split(' ')[0].split('/').reverse().join('-') : null);
+            if (!anchorDateStr) return { tracked: false };
+            const expiryDate = addMonths(anchorDateStr, quote.warrantyMonths);
+            const isValid = daysBetween(todayISO(), expiryDate) >= 0;
+            return { tracked: true, anchorDateStr, expiryDate, isValid };
         }
         // A property's overall visual state for the illustrated grid — worst
         // of the two individual checks wins. "Never tested" is deliberately
@@ -2999,6 +3240,33 @@
                             <div class="shrink-0">${reminderStatusBadge(r.status, r.daysUntilDue)}</div>
                         </div>
                     `).join('');
+            }
+
+            // Own compliance (equipment calibration, engineer quals) — a
+            // separate panel since these aren't property-shaped, and only
+            // shown at all once something's actually being tracked, so a
+            // fresh setup doesn't show a permanently-empty panel with
+            // nothing yet to configure.
+            const compliancePanel = document.getElementById('dashboard-compliance-panel');
+            if (compliancePanel) {
+                compliancePanel.classList.toggle('hidden', currentComplianceItems.length === 0);
+                if (currentComplianceItems.length > 0) {
+                    const complianceRows = currentComplianceItems.map(item => ({ item, ...computeReminderStatusMonths(item.lastDate, item.cycleMonths, 30) }))
+                        .filter(r => r.status === 'overdue' || r.status === 'due-soon')
+                        .sort((a, b) => (a.daysUntilDue ?? 0) - (b.daysUntilDue ?? 0));
+                    const complianceListEl = document.getElementById('dashboard-compliance-list');
+                    complianceListEl.innerHTML = complianceRows.length === 0
+                        ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">Nothing overdue or due soon.</p>`
+                        : complianceRows.map(r => `
+                            <div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${r.item.name}</div>
+                                    <div class="text-[10px] text-[var(--eny-text-muted2)]">${r.item.type === 'equipment' || r.item.type === 'pat' ? 'Calibration/Test' : 'Renewal'} — due ${formatUkDate(r.dueDate)}</div>
+                                </div>
+                                <div class="shrink-0">${reminderStatusBadge(r.status, r.daysUntilDue)}</div>
+                            </div>
+                        `).join('');
+                }
             }
 
             const today = todayISO();
@@ -4458,6 +4726,7 @@
                 time: document.getElementById('job-time').value || '09:00',
                 status: document.getElementById('job-status-select').value,
                 notes: document.getElementById('job-notes').value.trim(),
+                isEmergency: document.getElementById('job-emergency-toggle').checked,
             };
             // Only the owner can see/set this field — if a non-owner saves the
             // same job, leave whatever link already exists completely
@@ -4531,6 +4800,46 @@
             const checked = document.getElementById('job-multi-day-toggle').checked;
             document.getElementById('job-end-date-wrapper').classList.toggle('hidden', !checked);
         }
+        // EMERGENCY CALL-OUT RATES — the brief described "before 00:00" and
+        // "after 00:01am" as two conditions, which describe almost the same
+        // moment if read literally (both are about midnight). Read instead
+        // as: a call-out starting in the evening/daytime is the lower tier;
+        // one starting in the small hours after midnight — genuinely
+        // unsociable — is the higher tier. Overnight is defined here as
+        // midnight up to 6am; adjust EMERGENCY_OVERNIGHT_END_HOUR directly
+        // if that boundary should sit somewhere else. £45/hr after the
+        // first hour is only stated for the lower tier in the brief — kept
+        // the same for the overnight tier too since no separate figure was
+        // given; change EMERGENCY_RATE_OVERNIGHT_SUBSEQUENT_HOUR if that's
+        // wrong.
+        const EMERGENCY_RATE_EVENING_FIRST_HOUR = 100;
+        const EMERGENCY_RATE_EVENING_SUBSEQUENT_HOUR = 45;
+        const EMERGENCY_RATE_OVERNIGHT_FIRST_HOUR = 150;
+        const EMERGENCY_RATE_OVERNIGHT_SUBSEQUENT_HOUR = 45;
+        const EMERGENCY_OVERNIGHT_END_HOUR = 6; // midnight up to (not including) this hour counts as overnight
+        function getEmergencyRateTier(timeStr) {
+            const hours = parseInt((timeStr || '09:00').split(':')[0]);
+            const isOvernight = hours >= 0 && hours < EMERGENCY_OVERNIGHT_END_HOUR;
+            return isOvernight
+                ? { firstHour: EMERGENCY_RATE_OVERNIGHT_FIRST_HOUR, subsequentHour: EMERGENCY_RATE_OVERNIGHT_SUBSEQUENT_HOUR, label: `Overnight (midnight–${EMERGENCY_OVERNIGHT_END_HOUR}am)` }
+                : { firstHour: EMERGENCY_RATE_EVENING_FIRST_HOUR, subsequentHour: EMERGENCY_RATE_EVENING_SUBSEQUENT_HOUR, label: 'Standard emergency rate' };
+        }
+        function computeEmergencyInvoiceTotal(totalMinutes, tier) {
+            if (totalMinutes <= 0) return 0;
+            const firstHourMinutes = Math.min(totalMinutes, 60);
+            const extraMinutes = Math.max(0, totalMinutes - 60);
+            // Any part of a subsequent hour is billed as a full hour —
+            // standard, fair call-out billing convention.
+            const extraHoursBilled = Math.ceil(extraMinutes / 60);
+            return tier.firstHour + (extraHoursBilled * tier.subsequentHour);
+        }
+        function updateEmergencyRatePreview() {
+            const previewEl = document.getElementById('job-emergency-rate-preview');
+            if (!previewEl) return;
+            if (!document.getElementById('job-emergency-toggle').checked) { previewEl.innerText = ''; return; }
+            const tier = getEmergencyRateTier(document.getElementById('job-time').value);
+            previewEl.innerText = `${tier.label}: £${tier.firstHour} first hour, £${tier.subsequentHour}/hr after`;
+        }
         function loadJobForModification(jobId) {
             const j = currentJobs.find(x => x.id === jobId);
             if (!j) return;
@@ -4548,6 +4857,8 @@
             document.getElementById('job-time').value = j.time || '09:00';
             document.getElementById('job-status-select').value = j.status || 'Scheduled';
             document.getElementById('job-notes').value = j.notes || '';
+            document.getElementById('job-emergency-toggle').checked = !!j.isEmergency;
+            updateEmergencyRatePreview();
             document.getElementById('job-multi-day-row').classList.add('hidden');
             const quoteSearchInput = document.getElementById('job-form-quote-search-input');
             if (quoteSearchInput) quoteSearchInput.value = '';
@@ -4577,6 +4888,7 @@
             document.getElementById('job-form-title').innerText = 'Add Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job`;
             document.getElementById('job-cancel-btn').classList.add('hidden');
+            updateEmergencyRatePreview();
             lucide.createIcons();
         }
         async function deleteJob(jobId) {
@@ -4891,6 +5203,37 @@
             document.getElementById('job-detail-comments-section').classList.remove('hidden');
             document.getElementById('job-detail-action-area').innerHTML = '';
         }
+        // Auto-generates an invoice for an emergency call-out the moment its
+        // timer is finalized — using the same simplified single-line PDF
+        // layout already built for completed-service invoices, so it needs
+        // no new rendering logic, just the right payload shape.
+        async function generateEmergencyInvoice(job, settledEngineerState) {
+            const totalMinutes = Object.values(settledEngineerState).reduce((sum, s) => sum + (s.totalMinutes || 0), 0);
+            const tier = getEmergencyRateTier(job.time);
+            const total = computeEmergencyInvoiceTotal(totalMinutes, tier);
+            if (total <= 0) return; // timer was never actually used — nothing to bill
+            const client = findClientForJob(job);
+            const hours = Math.floor(totalMinutes / 60), mins = totalMinutes % 60;
+            const payload = {
+                jobName: job.title,
+                linkedClientId: client ? client.id : null,
+                clientDetailsPayload: {
+                    name: client ? client.name : 'Unknown Client',
+                    email: client ? client.email : '',
+                    phone: client ? client.phone : '',
+                    address: job.propertyAddress || '',
+                },
+                financials: { netMaterialsExVat: 0, materialsVat: 0, markedMaterials: total, laborCosts: 0, testingCosts: 0, sundriesAmount: 0, grossTotal: total, markupApplied: 0 },
+                isServiceInvoice: true,
+                serviceLabel: `Emergency Call-Out — ${job.title} (${tier.label}, ${hours}h ${mins}m on site)`,
+                status: 'Invoiced',
+                materials: [],
+                timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+            };
+            const ref = await db.collection('quotes').add(payload);
+            await db.collection('jobs').doc(job.id).update({ linkedQuoteId: ref.id });
+            showToast(`Emergency call-out invoice auto-generated: £${total.toFixed(2)} (${tier.label}).`, 'success');
+        }
         async function resolveJobOutcome(outcome) {
             const jobId = activeJobDetailId;
             const job = currentJobs.find(j => j.id === jobId);
@@ -4900,6 +5243,7 @@
 
             if (outcome === 'Completed') {
                 await db.collection('jobs').doc(jobId).update({ operativeComments: comments, completionOutcome: 'Completed' });
+                if (job.isEmergency) await generateEmergencyInvoice(job, settledEngineerState);
                 // Signature capture already stops here with its own Save flow —
                 // the job is marked Completed once that's actually saved, not
                 // before, so a job never shows "done" without being signed off
@@ -5007,6 +5351,52 @@
                 pickerEl.classList.remove('hidden');
                 renderJobQuoteLinkOptions();
             }
+            renderAdditionalQuotesSection(job);
+        }
+        // Deliberately separate from the primary linked quote above — these
+        // are just extra quotes associated with the same job for visibility
+        // (e.g. phased work quoted separately), not wired into the on-site
+        // materials/hours auto-add behaviour, which stays tied to the one
+        // primary quote only.
+        function renderAdditionalQuotesSection(job) {
+            const section = document.getElementById('job-additional-quotes-section');
+            if (!section) return;
+            if (!isOwnerLoggedIn()) { section.classList.add('hidden'); return; }
+            section.classList.remove('hidden');
+            const ids = job.additionalQuoteIds || [];
+            const listEl = document.getElementById('job-additional-quotes-list');
+            listEl.innerHTML = ids.length === 0 ? `<p class="text-[11px] text-[var(--eny-text-muted2)] italic">None attached.</p>` :
+                ids.map(id => {
+                    const quote = currentQuotes.find(q => q.id === id);
+                    const label = quote ? `${quote.jobName} — ${quote.clientDetailsPayload.name} (£${quote.financials.grossTotal.toFixed(2)})` : 'Quote not found (may have been deleted)';
+                    return `<div class="flex items-center justify-between gap-2 bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded-lg p-2">
+                        <span class="text-xs text-[var(--eny-text-200)] truncate">${label}</span>
+                        <button onclick="removeAdditionalQuoteFromJob('${job.id}', '${id}')" class="text-[10px] font-bold text-red-400 hover:text-red-300 cursor-pointer shrink-0">Remove</button>
+                    </div>`;
+                }).join('');
+            renderAdditionalQuoteLinkOptions();
+        }
+        function renderAdditionalQuoteLinkOptions() {
+            const job = currentJobs.find(j => j.id === activeJobDetailId);
+            const optionsEl = document.getElementById('job-additional-quote-options');
+            if (!job || !optionsEl) return;
+            const searchInput = document.getElementById('job-additional-quote-search');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            if (!filterText) { optionsEl.innerHTML = ''; return; }
+            const alreadyAttached = new Set([job.linkedQuoteId, ...(job.additionalQuoteIds || [])].filter(Boolean));
+            const filtered = currentQuotes.filter(q => !alreadyAttached.has(q.id) && (q.jobName.toLowerCase().includes(filterText) || q.clientDetailsPayload.name.toLowerCase().includes(filterText))).slice(0, 10);
+            optionsEl.innerHTML = filtered.length === 0 ? `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-2">No matching quotes.</p>` : filtered.map(q => `
+                <button onclick="addAdditionalQuoteToJob('${job.id}', '${q.id}')" class="w-full text-left bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] hover:border-amber-500 rounded-lg p-2 text-[11px] text-[var(--eny-text-300)] cursor-pointer">
+                    ${q.jobName} — ${q.clientDetailsPayload.name} <span class="text-[var(--eny-text-muted2)]">(${q.status})</span>
+                </button>`).join('');
+        }
+        async function addAdditionalQuoteToJob(jobId, quoteId) {
+            await db.collection('jobs').doc(jobId).update({ additionalQuoteIds: firebase.firestore.FieldValue.arrayUnion(quoteId) });
+            const searchInput = document.getElementById('job-additional-quote-search');
+            if (searchInput) searchInput.value = '';
+        }
+        async function removeAdditionalQuoteFromJob(jobId, quoteId) {
+            await db.collection('jobs').doc(jobId).update({ additionalQuoteIds: firebase.firestore.FieldValue.arrayRemove(quoteId) });
         }
         function renderJobQuoteLinkOptions() {
             const searchInput = document.getElementById('job-link-quote-search');
@@ -5272,6 +5662,61 @@
         function closeJobInfoModal() {
             document.getElementById('job-info-modal').classList.add('hidden');
             activeJobInfoModalId = null;
+        }
+        function toggleReassignPicker() {
+            const picker = document.getElementById('job-info-reassign-picker');
+            const isOpening = picker.classList.contains('hidden');
+            if (!isOpening) { picker.classList.add('hidden'); return; }
+            const job = currentJobs.find(j => j.id === activeJobInfoModalId);
+            if (!job) return;
+            const currentlyAssigned = getJobEngineers(job);
+            const others = getEngineerNames().filter(name => !currentlyAssigned.includes(name));
+            picker.innerHTML = others.length === 0
+                ? `<p class="text-[11px] text-[var(--eny-text-muted2)] italic">No other engineers to hand off to.</p>`
+                : others.map(name => { const c = getEngineerColorClass(name); return `<button onclick="reassignJobTo('${job.id}', '${name}')" class="text-xs font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer ${c.badge} hover:opacity-80">${name}</button>`; }).join('');
+            picker.classList.remove('hidden');
+        }
+        async function reassignJobTo(jobId, newEngineerName) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            // Same conflict check as the full save form — quick handoff
+            // shouldn't skip the one safety net that actually matters, just
+            // the rest of the friction.
+            if (job.status === 'Scheduled') {
+                const conflicts = findDoubleBookedEngineers([newEngineerName], job.date, jobId, job.time);
+                if (conflicts.length > 0) {
+                    if (!(await showConfirm(`${newEngineerName} already has a job around this time on ${formatUkDate(job.date)}. Hand this one off anyway?`))) return;
+                }
+            }
+            await db.collection('jobs').doc(jobId).update({ assignedEngineers: [newEngineerName] });
+            showToast(`Handed off to ${newEngineerName}.`, 'success');
+            closeJobInfoModal();
+        }
+        function openQuickReachModal() {
+            const listEl = document.getElementById('quick-reach-list');
+            const self = getCurrentUserEngineerName();
+            // No point showing yourself in a "reach the team" list.
+            const others = getEngineerNames().filter(name => name !== self);
+            listEl.innerHTML = others.length === 0
+                ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">No other team members set up yet.</p>`
+                : others.map(name => {
+                    const phone = ENGINEER_PHONE_NUMBERS[name];
+                    const c = getEngineerColorClass(name);
+                    return `<div class="flex items-center justify-between gap-3 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3">
+                        <span class="text-sm font-bold px-2.5 py-1 rounded-lg border ${c.badge}">${name}</span>
+                        ${phone
+                            ? `<div class="flex items-center gap-1.5">
+                                <a href="tel:${phone}" class="text-emerald-600 hover:text-emerald-700 p-2 rounded-lg bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] cursor-pointer" title="Call ${name}"><i data-lucide="phone-call" class="w-4 h-4"></i></a>
+                                <a href="sms:${phone}" class="text-blue-600 hover:text-blue-700 p-2 rounded-lg bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] cursor-pointer" title="Text ${name}"><i data-lucide="message-square" class="w-4 h-4"></i></a>
+                            </div>`
+                            : `<span class="text-[10px] text-[var(--eny-text-muted2)] italic">No number set</span>`}
+                    </div>`;
+                }).join('');
+            document.getElementById('quick-reach-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeQuickReachModal() {
+            document.getElementById('quick-reach-modal').classList.add('hidden');
         }
         // Any action button clicked inside the actions area closes the modal
         // afterward (the click bubbles up here after the button's own handler
@@ -6448,6 +6893,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         serviceLabel: metrics.flatJobCostEnabled ? metrics.worksDescription : null,
                         materials: activeAllocatedMaterials.map(m => ({ ...m })),
                         laborBookingFormat: activeLaborBookingFormat,
+                        warrantyMonths: parseInt(document.getElementById('job-warranty-months').value) || null,
                         timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
                     };
                     if (currentlyEditingQuoteId && overwrite) {
@@ -6486,6 +6932,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         function cancelActiveEditingSessionMode() {
             currentlyEditingQuoteId = null; activeLinkedClientId = ''; activeLinkedPropertyId = ''; activeAllocatedMaterials = [];
             document.getElementById('job-name').value = ''; document.getElementById('client-name').value = '';
+            document.getElementById('job-warranty-months').value = '12';
             document.getElementById('client-email').value = ''; document.getElementById('client-phone').value = '';
             document.getElementById('client-address').value = ''; document.getElementById('quote-client-select').value = '';
             const qps = document.getElementById('quote-property-select'); if (qps) qps.value = '';
@@ -6512,6 +6959,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 activeLinkedClientId = target.linkedClientId || '';
                 document.getElementById('quote-client-select').value = activeLinkedClientId;
                 document.getElementById('job-name').value = target.jobName || '';
+                document.getElementById('job-warranty-months').value = target.warrantyMonths || '';
                 document.getElementById('client-name').value = (target.clientDetailsPayload && target.clientDetailsPayload.name) || '';
                 document.getElementById('client-email').value = (target.clientDetailsPayload && target.clientDetailsPayload.email) || '';
                 const linkedClient = currentClients.find(c => c.id === activeLinkedClientId);
@@ -6559,6 +7007,16 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const invNumWrapper = document.getElementById('quote-info-invoice-number-wrapper');
             if (r.invoiceNumber) { invNumWrapper.classList.remove('hidden'); invNumWrapper.innerText = r.invoiceNumber; }
             else invNumWrapper.classList.add('hidden');
+            const warrantyWrapper = document.getElementById('quote-info-warranty-wrapper');
+            const warrantyStatus = computeWarrantyStatus(r);
+            if (warrantyStatus.tracked) {
+                warrantyWrapper.classList.remove('hidden');
+                warrantyWrapper.innerHTML = warrantyStatus.isValid
+                    ? `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/30">Within Warranty — until ${formatUkDate(warrantyStatus.expiryDate)}</span>`
+                    : `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-red-500/10 text-red-600 border border-red-500/30">Warranty Expired — ${formatUkDate(warrantyStatus.expiryDate)}</span>`;
+            } else {
+                warrantyWrapper.classList.add('hidden');
+            }
             document.getElementById('quote-info-status-select').value = r.status;
             const isInvoiceOrPaid = r.status === 'Invoiced' || r.status === 'Paid';
             const primaryBtn = document.getElementById('quote-info-primary-action-btn');
@@ -8029,7 +8487,15 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
 
             const jobsEl = document.getElementById('client-info-jobs');
             jobsEl.innerHTML = jobs.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] italic">No historical sheets.</p>` :
-                jobs.map(j => `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] p-2 rounded-lg"><div class="font-bold text-[var(--eny-text-200)] text-[11px] truncate">${j.jobName}</div><div class="flex items-center justify-between text-[10px] text-[var(--eny-text-muted)] font-mono mt-0.5"><span>${j.id}</span><span class="text-[var(--eny-accent-text)] font-bold">£${j.financials.grossTotal.toFixed(2)}</span></div></div>`).join('');
+                jobs.map(j => {
+                    const warrantyStatus = computeWarrantyStatus(j);
+                    const warrantyBadge = warrantyStatus.tracked
+                        ? (warrantyStatus.isValid
+                            ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/30">In Warranty</span>`
+                            : `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-500/10 text-red-600 border border-red-500/30">Expired</span>`)
+                        : '';
+                    return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] p-2 rounded-lg"><div class="flex items-center justify-between gap-2"><div class="font-bold text-[var(--eny-text-200)] text-[11px] truncate">${j.jobName}</div>${warrantyBadge}</div><div class="flex items-center justify-between text-[10px] text-[var(--eny-text-muted)] font-mono mt-0.5"><span>${j.id}</span><span class="text-[var(--eny-accent-text)] font-bold">£${j.financials.grossTotal.toFixed(2)}</span></div></div>`;
+                }).join('');
 
             document.getElementById('client-info-modal').classList.remove('hidden');
             lucide.createIcons();
