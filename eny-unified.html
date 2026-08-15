@@ -237,6 +237,9 @@
                     <button onclick="openQuickReachModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Quick reach — call or text the team">
                         <i data-lucide="users-round" class="w-[18px] h-[18px]"></i>
                     </button>
+                    <button onclick="toggleDrsView()" id="drs-toggle-btn" class="primary-owner-only hidden text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch to DRS (Dynamic Resource Manager)">
+                        <i data-lucide="calendar-cog" class="w-[18px] h-[18px]"></i>
+                    </button>
                     <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
                         <i data-lucide="moon" class="w-[18px] h-[18px]"></i>
                     </button>
@@ -1525,6 +1528,41 @@
                 <div id="engineer-stats-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
 
+            <div id="drs-tab" class="tab-content primary-owner-only-tab">
+                <div class="flex gap-3 h-[calc(100vh-180px)]">
+                    <div id="drs-sidebar" class="w-64 shrink-0 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] flex flex-col overflow-hidden transition-all duration-200">
+                        <div class="p-3 border-b border-[var(--eny-border-standard)] flex items-center justify-between">
+                            <span id="drs-sidebar-title" class="text-sm font-bold text-[var(--eny-text-primary)]">DRS</span>
+                            <button onclick="toggleDrsSidebar()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] cursor-pointer p-1"><i data-lucide="panel-left-close" id="drs-sidebar-toggle-icon" class="w-4 h-4"></i></button>
+                        </div>
+                        <div id="drs-sidebar-nav" class="flex flex-col p-2 gap-1 border-b border-[var(--eny-border-standard)]">
+                            <button onclick="showDrsSidebarPanel('booked')" id="drs-nav-booked" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="calendar-check-2" class="w-3.5 h-3.5"></i> <span class="drs-sidebar-label">Booked Jobs</span></button>
+                            <button onclick="showDrsSidebarPanel('floating')" id="drs-nav-floating" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> <span class="drs-sidebar-label">Floating Jobs</span></button>
+                            <button onclick="showDrsSidebarPanel('property')" id="drs-nav-property" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="search" class="w-3.5 h-3.5"></i> <span class="drs-sidebar-label">Property Search</span></button>
+                        </div>
+                        <div id="drs-sidebar-content" class="flex-1 overflow-y-auto custom-scrollbar p-2"></div>
+                    </div>
+
+                    <div class="flex-1 flex flex-col min-w-0 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] overflow-hidden">
+                        <div class="flex items-center gap-2 p-3 border-b border-[var(--eny-border-standard)] flex-wrap">
+                            <input type="date" id="drs-date-picker" onchange="drsGoToDate(this.value)" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-2 py-1.5 text-xs text-[var(--eny-text-primary)]">
+                            <button onclick="drsRefresh()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh</button>
+                            <button onclick="drsNavigateDay(-1)" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i> Backward</button>
+                            <button onclick="drsGoToToday()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Today</button>
+                            <button onclick="drsNavigateDay(1)" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1">Forward <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="drsToggleWeekView()" id="drs-week-toggle-btn" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="calendar-range" class="w-3.5 h-3.5"></i> Week View</button>
+                            <span id="drs-date-heading" class="ml-auto text-sm font-bold text-[var(--eny-text-primary)]"></span>
+                        </div>
+                        <div id="drs-day-view" class="flex-1 overflow-auto relative touch-pinch-zoom">
+                            <div id="drs-grid-container"></div>
+                        </div>
+                        <div id="drs-week-view" class="hidden flex-1 overflow-auto">
+                            <div id="drs-week-grid-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="trash-tab" class="tab-content space-y-6">
                 <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-800 flex items-center justify-between gap-3 flex-wrap">
                     <span>Deleted items sit here for 30 days before being permanently removed, in case something was removed by mistake.</span>
@@ -1891,6 +1929,39 @@
         </div>
     </div>
 
+    <div id="drs-place-job-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1100] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
+                <h3 id="drs-place-job-title" class="text-base font-bold text-[var(--eny-text-primary)]">Book a Job</h3>
+                <button onclick="closeDrsPlaceJobModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1">
+                <div id="drs-place-job-step1">
+                    <p class="text-xs text-[var(--eny-text-muted)] mb-3">Choose a floating (unbooked) job to place into this slot:</p>
+                    <div id="drs-place-job-picker-list" class="space-y-1.5"></div>
+                </div>
+                <div id="drs-place-job-step2" class="hidden space-y-4">
+                    <div id="drs-place-job-selected-summary" class="text-sm font-bold text-[var(--eny-text-primary)] text-center"></div>
+                    <div class="flex items-center justify-center gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider text-center mb-1">Hour</label>
+                            <select id="drs-place-job-hour" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-lg font-bold text-[var(--eny-text-primary)] text-center focus:outline-none focus:border-amber-500"></select>
+                        </div>
+                        <span class="text-xl font-bold text-[var(--eny-text-muted)] mt-4">:</span>
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider text-center mb-1">Minute</label>
+                            <select id="drs-place-job-minute" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-lg font-bold text-[var(--eny-text-primary)] text-center focus:outline-none focus:border-amber-500"></select>
+                        </div>
+                    </div>
+                    <button onclick="backToDrsJobPicker()" class="text-xs text-[var(--eny-accent-text)] hover:underline cursor-pointer w-full text-center">← Choose a different job</button>
+                </div>
+            </div>
+            <div id="drs-place-job-footer" class="hidden p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
+                <button onclick="confirmDrsJobPlacement()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
     <div id="bundle-invoice-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
@@ -2067,6 +2138,19 @@
             'jmabbley@yahoo.com': 'Mabbley',
             'willbutler1404@gmail.com': 'Butler',
         };
+        // Keyed by email (stable) rather than the display name shown in the
+        // app, since engineer names are editable in Settings and could drift
+        // from these hardcoded values — falls back to the plain name if no
+        // match is found rather than producing a blank signature.
+        const EMAIL_TO_SMS_NICKNAME = {
+            'electriciansnearyou@gmail.com': 'Jordan.H',
+            'jmabbley@yahoo.com': 'Jordan.M',
+            'willbutler1404@gmail.com': 'William.B',
+        };
+        function getEngineerSmsNickname(displayName) {
+            const email = Object.keys(EMAIL_TO_ENGINEER_NAME).find(e => EMAIL_TO_ENGINEER_NAME[e] === displayName);
+            return (email && EMAIL_TO_SMS_NICKNAME[email]) || displayName;
+        }
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -2189,7 +2273,7 @@
         // Replaces confirm() throughout the app — styled to match the rest of
         // the theme. Unlike confirm(), this is non-blocking, so every caller
         // uses `await showConfirm(...)` instead of a plain if-check.
-        function showConfirm(message, { confirmText = 'Confirm', cancelText = 'Cancel', danger = false } = {}) {
+        function showConfirm(message, { confirmText = 'Confirm', cancelText = 'Cancel', danger = false, hideCancel = false } = {}) {
             return new Promise((resolve) => {
                 const modal = document.getElementById('confirm-modal');
                 document.getElementById('confirm-modal-message').innerText = message;
@@ -2198,6 +2282,7 @@
                 const icon = document.getElementById('confirm-modal-icon');
                 confirmBtn.innerText = confirmText;
                 cancelBtn.innerText = cancelText;
+                cancelBtn.classList.toggle('hidden', hideCancel);
                 confirmBtn.className = danger
                     ? 'flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer'
                     : 'flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer';
@@ -2207,6 +2292,7 @@
                 lucide.createIcons();
                 const cleanup = (result) => {
                     modal.classList.add('hidden');
+                    cancelBtn.classList.remove('hidden'); // restore for the next caller
                     confirmBtn.onclick = null;
                     cancelBtn.onclick = null;
                     resolve(result);
@@ -5697,6 +5783,316 @@
             showToast(`Handed off to ${newEngineerName}.`, 'success');
             closeJobInfoModal();
         }
+        // ===== DRS (Dynamic Resource Manager) =====
+        let drsCurrentDate = todayISO();
+        let drsWeekViewActive = false;
+        const DRS_START_HOUR = 7;
+        const DRS_END_HOUR = 18;
+        const DRS_PIXELS_PER_MINUTE = 1.4;
+        function toggleDrsView() {
+            switchTab('drs-tab');
+            drsCurrentDate = todayISO();
+            renderDrsGrid();
+            showDrsSidebarPanel('booked');
+        }
+        function drsGoToDate(dateStr) {
+            if (!dateStr) return;
+            drsCurrentDate = dateStr;
+            renderDrsGrid();
+        }
+        function drsNavigateDay(delta) {
+            const d = new Date(drsCurrentDate + 'T00:00:00');
+            d.setDate(d.getDate() + delta);
+            drsCurrentDate = d.toISOString().split('T')[0];
+            renderDrsGrid();
+        }
+        function drsGoToToday() {
+            drsCurrentDate = todayISO();
+            renderDrsGrid();
+        }
+        function drsRefresh() {
+            renderDrsGrid();
+        }
+        function drsToggleWeekView() {
+            drsWeekViewActive = !drsWeekViewActive;
+            document.getElementById('drs-day-view').classList.toggle('hidden', drsWeekViewActive);
+            document.getElementById('drs-week-view').classList.toggle('hidden', !drsWeekViewActive);
+            document.getElementById('drs-week-toggle-btn').classList.toggle('bg-amber-500', drsWeekViewActive);
+            renderDrsGrid();
+        }
+        function toggleDrsSidebar() {
+            const sidebar = document.getElementById('drs-sidebar');
+            const collapsed = sidebar.classList.toggle('drs-sidebar-collapsed');
+            sidebar.style.width = collapsed ? '52px' : '';
+            document.querySelectorAll('.drs-sidebar-label').forEach(el => el.classList.toggle('hidden', collapsed));
+            document.getElementById('drs-sidebar-title').classList.toggle('hidden', collapsed);
+            document.getElementById('drs-sidebar-toggle-icon').setAttribute('data-lucide', collapsed ? 'panel-left-open' : 'panel-left-close');
+            if (collapsed) document.getElementById('drs-sidebar-content').innerHTML = '';
+            lucide.createIcons();
+        }
+        // Mon-Thu 8:00-16:30, Fri 8:00-15:30, no BCP on weekends. Deliberately
+        // never touches Google Calendar sync — this is a fixed, known
+        // commitment, not a real "booking" that needs syncing anywhere.
+        function getBcpBlockForDate(dateStr) {
+            const dayOfWeek = new Date(dateStr + 'T00:00:00').getDay(); // 0=Sun ... 6=Sat
+            if (dayOfWeek === 0 || dayOfWeek === 6) return null;
+            return dayOfWeek === 5 ? { start: '08:00', end: '15:30' } : { start: '08:00', end: '16:30' };
+        }
+        function drsTimeToMinutesFromStart(timeStr) {
+            const [h, m] = (timeStr || '09:00').split(':').map(Number);
+            return (h - DRS_START_HOUR) * 60 + m;
+        }
+        function drsBlockPosition(startTime, durationMinutes) {
+            const top = Math.max(0, drsTimeToMinutesFromStart(startTime)) * DRS_PIXELS_PER_MINUTE;
+            const height = Math.max(20, durationMinutes * DRS_PIXELS_PER_MINUTE);
+            return { top, height };
+        }
+        const DRS_JOB_STATUS_COLORS = {
+            Scheduled: { bg: '#3b82f6', text: '#ffffff' },   // blue — booked, not yet started
+            Completed: { bg: '#10b981', text: '#ffffff' },   // green — done
+            Cancelled: { bg: '#94a3b8', text: '#1f2937' },   // grey
+        };
+        function renderDrsGrid() {
+            if (drsWeekViewActive) { renderDrsWeekGrid(); return; }
+            const engineers = getEngineerNames();
+            const dateObj = new Date(drsCurrentDate + 'T00:00:00');
+            document.getElementById('drs-date-picker').value = drsCurrentDate;
+            document.getElementById('drs-date-heading').innerText = dateObj.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+            const totalMinutes = (DRS_END_HOUR - DRS_START_HOUR) * 60;
+            const gridHeight = totalMinutes * DRS_PIXELS_PER_MINUTE;
+            const bcp = getBcpBlockForDate(drsCurrentDate);
+            const dayJobs = currentJobs.filter(j => j.date === drsCurrentDate && j.status !== 'Cancelled');
+            const dayUnavailable = currentUnavailability.filter(u => u.date === drsCurrentDate);
+
+            let hourLabelsHtml = '';
+            for (let h = DRS_START_HOUR; h <= DRS_END_HOUR; h++) {
+                const top = (h - DRS_START_HOUR) * 60 * DRS_PIXELS_PER_MINUTE;
+                hourLabelsHtml += `<div class="absolute left-0 right-0 text-[10px] font-bold text-[var(--eny-text-muted2)] border-t border-[var(--eny-border-subtle)]" style="top:${top}px;">${String(h).padStart(2,'0')}:00</div>`;
+            }
+
+            const columnsHtml = engineers.map(name => {
+                const isUnavailable = dayUnavailable.some(u => u.engineerName === name);
+                let blocksHtml = '';
+                if (bcp) {
+                    const startMin = drsTimeToMinutesFromStart(bcp.start);
+                    const endMin = drsTimeToMinutesFromStart(bcp.end);
+                    const pos = drsBlockPosition(bcp.start, endMin - startMin);
+                    blocksHtml += `<div class="absolute left-0.5 right-0.5 rounded-md bg-slate-600 text-white text-[10px] font-bold flex items-center justify-center pointer-events-none" style="top:${pos.top}px; height:${pos.height}px;">BCP</div>`;
+                }
+                const engineerJobs = dayJobs.filter(j => getJobEngineers(j).includes(name));
+                engineerJobs.forEach(j => {
+                    const durationMinutes = (j.engineerState && j.engineerState[name] && j.engineerState[name].totalMinutes) || 60;
+                    const pos = drsBlockPosition(j.time, durationMinutes);
+                    const colors = DRS_JOB_STATUS_COLORS[j.status] || DRS_JOB_STATUS_COLORS.Scheduled;
+                    const addressLine = (j.propertyAddress || '').split('\n')[0];
+                    blocksHtml += `<div onclick="openJobInfoModal('${j.id}')" class="absolute left-0.5 right-0.5 rounded-md text-[10px] p-1 cursor-pointer overflow-hidden shadow" style="top:${pos.top}px; height:${pos.height}px; background:${colors.bg}; color:${colors.text};">
+                        <div class="font-bold truncate">${j.time} ${j.title}</div>
+                        ${addressLine ? `<div class="truncate opacity-90">${addressLine}</div>` : ''}
+                    </div>`;
+                });
+                return `<div class="drs-engineer-col flex-1 relative border-l border-[var(--eny-border-subtle)] ${isUnavailable ? 'bg-slate-400/10' : ''}" style="height:${gridHeight}px; min-width:160px;" data-engineer="${escapeHtmlForPopup(name)}" onclick="drsHandleColumnClick(event, '${escapeHtmlForPopup(name)}')">
+                    ${isUnavailable ? `<div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[var(--eny-text-muted2)] pointer-events-none">Unavailable</div>` : ''}
+                    ${blocksHtml}
+                </div>`;
+            }).join('');
+
+            const headerHtml = `<div class="flex sticky top-0 z-10 bg-[var(--eny-bg-card)] border-b border-[var(--eny-border-standard)]">
+                <div class="w-14 shrink-0"></div>
+                ${engineers.map(name => `<div class="flex-1 text-center text-xs font-bold text-[var(--eny-text-primary)] py-2 border-l border-[var(--eny-border-subtle)]" style="min-width:160px;">${name}</div>`).join('')}
+            </div>`;
+
+            document.getElementById('drs-grid-container').innerHTML = `
+                ${headerHtml}
+                <div class="flex relative">
+                    <div class="w-14 shrink-0 relative" style="height:${gridHeight}px;">${hourLabelsHtml}</div>
+                    ${columnsHtml}
+                    <div id="drs-current-time-line" class="absolute left-14 right-0 border-t-2 border-dashed border-red-500 pointer-events-none z-[5]"></div>
+                </div>
+            `;
+            updateDrsCurrentTimeLine();
+            lucide.createIcons();
+        }
+        function updateDrsCurrentTimeLine() {
+            const line = document.getElementById('drs-current-time-line');
+            if (!line) return;
+            if (drsCurrentDate !== todayISO()) { line.classList.add('hidden'); return; }
+            line.classList.remove('hidden');
+            const now = new Date();
+            const minutesFromStart = (now.getHours() - DRS_START_HOUR) * 60 + now.getMinutes();
+            if (minutesFromStart < 0 || minutesFromStart > (DRS_END_HOUR - DRS_START_HOUR) * 60) { line.classList.add('hidden'); return; }
+            line.style.top = (minutesFromStart * DRS_PIXELS_PER_MINUTE) + 'px';
+        }
+        setInterval(() => { if (document.getElementById('drs-tab') && document.getElementById('drs-tab').classList.contains('active')) updateDrsCurrentTimeLine(); }, 60000);
+        let drsPlacementContext = null; // { engineerName, date, quoteId, defaultTime }
+        function drsHandleColumnClick(event, engineerName) {
+            if (event.target.closest('[onclick*="openJobInfoModal"]')) return; // a job block was clicked, not empty space
+            const columnEl = event.currentTarget;
+            const rect = columnEl.getBoundingClientRect();
+            const clickY = event.clientY - rect.top + columnEl.scrollTop;
+            const minutesFromStart = Math.max(0, clickY / DRS_PIXELS_PER_MINUTE);
+            const totalMinutesOfDay = DRS_START_HOUR * 60 + minutesFromStart;
+            // Snap to the nearest 10 minutes, matching the scroller's own
+            // 10-minute increments, so the pre-selected time in step 2 lines
+            // up with roughly where the user actually clicked.
+            const snappedMinutes = Math.round(totalMinutesOfDay / 10) * 10;
+            const hour = Math.min(DRS_END_HOUR, Math.floor(snappedMinutes / 60));
+            const minute = snappedMinutes % 60;
+            openDrsPlaceJobModal(engineerName, `${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}`);
+        }
+        function openDrsPlaceJobModal(engineerName, approxTime) {
+            drsPlacementContext = { engineerName, date: drsCurrentDate, quoteId: null, defaultTime: approxTime };
+            document.getElementById('drs-place-job-title').innerText = `Book — ${engineerName}, ${formatUkDate(drsCurrentDate)}`;
+            document.getElementById('drs-place-job-step1').classList.remove('hidden');
+            document.getElementById('drs-place-job-step2').classList.add('hidden');
+            document.getElementById('drs-place-job-footer').classList.add('hidden');
+            const scheduledQuoteIds = new Set(currentJobs.map(j => j.linkedQuoteId).filter(Boolean));
+            const floating = currentQuotes.filter(q => (q.status === 'Sent' || q.status === 'Approved') && !scheduledQuoteIds.has(q.id));
+            const listEl = document.getElementById('drs-place-job-picker-list');
+            listEl.innerHTML = floating.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">Nothing floating to book in.</p>` :
+                floating.map(q => `<button onclick="selectDrsFloatingJobForPlacement('${q.id}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2.5 cursor-pointer">
+                    <div class="text-xs font-bold text-[var(--eny-text-200)] truncate">${q.jobName}</div>
+                    <div class="text-[10px] text-[var(--eny-text-muted2)] truncate">${q.clientDetailsPayload.name} — ${(q.clientDetailsPayload.address || '').split('\n')[0]}</div>
+                </button>`).join('');
+            document.getElementById('drs-place-job-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeDrsPlaceJobModal() {
+            document.getElementById('drs-place-job-modal').classList.add('hidden');
+            drsPlacementContext = null;
+        }
+        function selectDrsFloatingJobForPlacement(quoteId) {
+            const q = currentQuotes.find(x => x.id === quoteId);
+            if (!q || !drsPlacementContext) return;
+            drsPlacementContext.quoteId = quoteId;
+            document.getElementById('drs-place-job-step1').classList.add('hidden');
+            document.getElementById('drs-place-job-step2').classList.remove('hidden');
+            document.getElementById('drs-place-job-footer').classList.remove('hidden');
+            document.getElementById('drs-place-job-selected-summary').innerText = `${q.jobName} — ${q.clientDetailsPayload.name}`;
+            const [defaultHour, defaultMinute] = drsPlacementContext.defaultTime.split(':').map(Number);
+            const hourSelect = document.getElementById('drs-place-job-hour');
+            hourSelect.innerHTML = '';
+            for (let h = 6; h <= 20; h++) hourSelect.innerHTML += `<option value="${h}" ${h === defaultHour ? 'selected' : ''}>${String(h).padStart(2,'0')}</option>`;
+            const minuteSelect = document.getElementById('drs-place-job-minute');
+            minuteSelect.innerHTML = '';
+            const nearestTenMinute = Math.round(defaultMinute / 10) * 10 % 60;
+            for (let m = 0; m < 60; m += 10) minuteSelect.innerHTML += `<option value="${m}" ${m === nearestTenMinute ? 'selected' : ''}>${String(m).padStart(2,'0')}</option>`;
+        }
+        function backToDrsJobPicker() {
+            document.getElementById('drs-place-job-step1').classList.remove('hidden');
+            document.getElementById('drs-place-job-step2').classList.add('hidden');
+            document.getElementById('drs-place-job-footer').classList.add('hidden');
+            if (drsPlacementContext) drsPlacementContext.quoteId = null;
+        }
+        async function confirmDrsJobPlacement() {
+            if (!drsPlacementContext || !drsPlacementContext.quoteId) return;
+            const { engineerName, date, quoteId } = drsPlacementContext;
+            const q = currentQuotes.find(x => x.id === quoteId);
+            if (!q) { showToast('That quote could not be found — it may have been removed.', 'warning'); closeDrsPlaceJobModal(); return; }
+            const hour = document.getElementById('drs-place-job-hour').value.padStart(2, '0');
+            const minute = document.getElementById('drs-place-job-minute').value.padStart(2, '0');
+            const time = `${hour}:${minute}`;
+            const address = q.clientDetailsPayload.address || '';
+            const propertyId = await ensurePropertyExistsForAddress(address);
+            const jobRef = await db.collection('jobs').add({
+                title: q.jobName, propertyId, propertyAddress: address,
+                assignedEngineers: [engineerName], date, time, status: 'Scheduled',
+                notes: '', isEmergency: false, linkedQuoteId: quoteId,
+            });
+            closeDrsPlaceJobModal();
+            renderDrsGrid();
+            showDrsSidebarPanel(drsActiveSidebarPanel);
+            sendDrsBookingConfirmation(q, engineerName, date, time);
+        }
+        // "Automatically sends" here means pre-filled and opened in the
+        // send-message modal, same as reminders/on-my-way messages elsewhere
+        // in the app — a web app can't silently push an SMS through the
+        // phone's own Messages app without that final tap, so this gets it
+        // one tap away rather than claiming a fully silent send.
+        function sendDrsBookingConfirmation(quote, engineerName, date, time) {
+            const client = quote.clientDetailsPayload;
+            if (!client.phone) { showToast('Job booked — no phone number on file to send a confirmation to.', 'info'); return; }
+            const nickname = getEngineerSmsNickname(engineerName);
+            const firstName = (client.name || '').split(' ')[0];
+            const message = `Hi ${firstName}, your job has been booked in for ${formatUkDate(date)} at ${time} with ${nickname}. Thanks, ENY Electrical.`;
+            openSendMessageModal(client.name, client.phone, message);
+        }
+        // TODO (Phase 4): week view — engineers across the top, days down the
+        // side, a tick mark on days with a booking. Stubbed for now.
+        function renderDrsWeekGrid() {
+            document.getElementById('drs-week-grid-container').innerHTML = `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-12">Week view is coming in a later phase of DRS.</p>`;
+        }
+
+        let drsActiveSidebarPanel = 'booked';
+        function showDrsSidebarPanel(panel) {
+            drsActiveSidebarPanel = panel;
+            ['booked', 'floating', 'property'].forEach(p => {
+                const btn = document.getElementById(`drs-nav-${p}`);
+                if (btn) btn.classList.toggle('bg-amber-500', p === panel);
+                if (btn) btn.classList.toggle('text-slate-950', p === panel);
+            });
+            const contentEl = document.getElementById('drs-sidebar-content');
+            if (panel === 'booked') {
+                const booked = currentJobs.filter(j => j.date && j.status !== 'Cancelled').sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+                contentEl.innerHTML = booked.length === 0 ? `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-6">No booked jobs.</p>` :
+                    booked.map(j => `<button onclick="drsGoToDate('${j.date}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2 mb-1.5 cursor-pointer">
+                        <div class="text-[11px] font-bold text-[var(--eny-text-200)] truncate">${j.title}</div>
+                        <div class="text-[10px] text-[var(--eny-text-muted2)]">${formatUkDate(j.date)} at ${j.time || '—'}</div>
+                    </button>`).join('');
+            } else if (panel === 'floating') {
+                // A "floating" job is quoted/approved work with no scheduled
+                // job record against it yet — nothing to place it into a
+                // slot yet (that's Phase 2), so for now this is a
+                // look-and-see list with the address/description popup the
+                // spec asked for.
+                const scheduledQuoteIds = new Set(currentJobs.map(j => j.linkedQuoteId).filter(Boolean));
+                const floating = currentQuotes.filter(q => (q.status === 'Sent' || q.status === 'Approved') && !scheduledQuoteIds.has(q.id));
+                contentEl.innerHTML = floating.length === 0 ? `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-6">Nothing floating.</p>` :
+                    floating.map(q => `<button onclick="showDrsFloatingJobPopup('${q.id}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2 mb-1.5 cursor-pointer">
+                        <div class="text-[11px] font-bold text-[var(--eny-text-200)] truncate">${q.jobName}</div>
+                        <div class="text-[10px] text-[var(--eny-text-muted2)] truncate">${q.clientDetailsPayload.name}</div>
+                    </button>`).join('');
+            } else if (panel === 'property') {
+                contentEl.innerHTML = `
+                    <input type="text" id="drs-property-search-input" oninput="renderDrsPropertySearchResults()" placeholder="Search address..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-primary)] mb-2">
+                    <div id="drs-property-search-results"></div>
+                `;
+            }
+        }
+        function showDrsFloatingJobPopup(quoteId) {
+            const q = currentQuotes.find(x => x.id === quoteId);
+            if (!q) return;
+            showConfirm(`${q.clientDetailsPayload.address || 'No address on file'}\n\n${q.jobName}`, { confirmText: 'OK', hideCancel: true });
+        }
+        function renderDrsPropertySearchResults() {
+            const filterText = document.getElementById('drs-property-search-input').value.toLowerCase().trim();
+            const resultsEl = document.getElementById('drs-property-search-results');
+            if (!filterText) { resultsEl.innerHTML = ''; return; }
+            const matches = currentProperties.filter(p => (p.address || '').toLowerCase().includes(filterText)).slice(0, 8);
+            resultsEl.innerHTML = matches.map(p => {
+                const propertyJobs = currentJobs.filter(j => j.propertyId === p.id && j.status === 'Completed').sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+                return `<div class="mb-2">
+                    <div class="text-[11px] font-bold text-[var(--eny-text-200)] px-1 mb-1 truncate">${(p.address || '').split('\n')[0]}</div>
+                    ${propertyJobs.length === 0 ? `<p class="text-[10px] text-[var(--eny-text-muted2)] px-1">No completed jobs yet.</p>` :
+                        propertyJobs.map(j => `<button onclick="showDrsPastJobOutcome('${j.id}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2 mb-1 cursor-pointer">
+                            <div class="text-[10px] font-bold text-[var(--eny-text-300)] truncate">${j.title}</div>
+                            <div class="text-[9px] text-[var(--eny-text-muted2)]">${formatUkDate(j.date)}</div>
+                        </button>`).join('')}
+                </div>`;
+            }).join('') || `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-4">No matching properties.</p>`;
+        }
+        function showDrsPastJobOutcome(jobId) {
+            const j = currentJobs.find(x => x.id === jobId);
+            if (!j) return;
+            const outcome = j.completionOutcome || 'No outcome recorded';
+            const comments = j.operativeComments || 'No comments left';
+            const durations = getJobEngineers(j).map(name => {
+                const mins = (j.engineerState && j.engineerState[name] && j.engineerState[name].totalMinutes) || 0;
+                return `${name}: ${Math.floor(mins/60)}h ${mins%60}m`;
+            }).join(', ') || 'No timer data recorded';
+            showConfirm(`${j.title} — ${formatUkDate(j.date)}\n\nOutcome: ${outcome}\n\nComments: ${comments}\n\nTime on site: ${durations}`, { confirmText: 'OK', hideCancel: true });
+        }
+
         function openQuickReachModal() {
             const listEl = document.getElementById('quick-reach-list');
             const self = getCurrentUserEngineerName();
