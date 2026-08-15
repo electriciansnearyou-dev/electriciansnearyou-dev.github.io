@@ -1160,6 +1160,7 @@
             <div id="settings-tab" class="tab-content owner-only-tab space-y-6">
                 <div class="flex flex-wrap gap-1.5 bg-[var(--eny-bg-page)]/80 p-1 rounded-xl border border-[var(--eny-border-subtle)] w-fit">
                     <button onclick="switchSettingsSubtab('settings-sub-pricing')" id="btn-settings-sub-pricing" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 cursor-pointer">Pricing</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-jobnumbers')" id="btn-settings-sub-jobnumbers" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Job Numbers</button>
                     <button onclick="switchSettingsSubtab('settings-sub-banking')" id="btn-settings-sub-banking" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Bank Details</button>
                     <button onclick="switchSettingsSubtab('settings-sub-stock')" id="btn-settings-sub-stock" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Stock Directory</button>
                     <button onclick="switchSettingsSubtab('settings-sub-templates')" id="btn-settings-sub-templates" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Templates</button>
@@ -1203,6 +1204,18 @@
                         <div class="border-t border-[var(--eny-border-standard)] pt-4">
                             <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Global Materials Markup (%)</label>
                             <input type="number" id="global-markup" value="25" oninput="savePricingSettings()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="settings-sub-jobnumbers" class="settings-subtab-content">
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-lg space-y-4">
+                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="hash" class="text-[var(--eny-accent-text)]"></i> Job Numbers</h2>
+                        <p class="text-xs text-[var(--eny-text-muted)]">Every new job gets a number like J100001/1. A follow-on or rebook against that same job keeps the base number and increments the suffix (/2, /3...) rather than starting a new one.</p>
+                        <div>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Next Job Number</label>
+                            <input type="number" id="setting-next-job-number" min="1" oninput="saveJobNumberSettings()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            <p class="text-[10px] text-[var(--eny-text-muted2)] mt-1.5">Set this once to continue from an existing numbering scheme — it goes up automatically after that.</p>
                         </div>
                     </div>
                 </div>
@@ -1529,21 +1542,21 @@
             </div>
 
             <div id="drs-tab" class="tab-content primary-owner-only-tab">
-                <div class="flex gap-3 h-[calc(100vh-180px)]">
-                    <div id="drs-sidebar" class="w-64 shrink-0 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] flex flex-col overflow-hidden transition-all duration-200">
+                <div class="flex gap-3 h-[calc(100vh-180px)] min-h-0">
+                    <div id="drs-sidebar" class="drs-sidebar-collapsed w-64 shrink-0 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] flex flex-col overflow-hidden transition-all duration-200" style="width:52px;">
                         <div class="p-3 border-b border-[var(--eny-border-standard)] flex items-center justify-between">
-                            <span id="drs-sidebar-title" class="text-sm font-bold text-[var(--eny-text-primary)]">DRS</span>
-                            <button onclick="toggleDrsSidebar()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] cursor-pointer p-1"><i data-lucide="panel-left-close" id="drs-sidebar-toggle-icon" class="w-4 h-4"></i></button>
+                            <span id="drs-sidebar-title" class="text-sm font-bold text-[var(--eny-text-primary)] hidden">DRS</span>
+                            <button onclick="toggleDrsSidebar()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] cursor-pointer p-1"><i data-lucide="panel-left-open" id="drs-sidebar-toggle-icon" class="w-4 h-4"></i></button>
                         </div>
                         <div id="drs-sidebar-nav" class="flex flex-col p-2 gap-1 border-b border-[var(--eny-border-standard)]">
-                            <button onclick="showDrsSidebarPanel('booked')" id="drs-nav-booked" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="calendar-check-2" class="w-3.5 h-3.5"></i> <span class="drs-sidebar-label">Booked Jobs</span></button>
-                            <button onclick="showDrsSidebarPanel('floating')" id="drs-nav-floating" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="circle-dashed" class="w-3.5 h-3.5"></i> <span class="drs-sidebar-label">Floating Jobs</span></button>
-                            <button onclick="showDrsSidebarPanel('property')" id="drs-nav-property" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="search" class="w-3.5 h-3.5"></i> <span class="drs-sidebar-label">Property Search</span></button>
+                            <button onclick="showDrsSidebarPanel('booked')" id="drs-nav-booked" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="calendar-check-2" class="w-3.5 h-3.5 shrink-0"></i> <span class="drs-sidebar-label hidden">Booked Jobs</span></button>
+                            <button onclick="showDrsSidebarPanel('floating')" id="drs-nav-floating" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="circle-dashed" class="w-3.5 h-3.5 shrink-0"></i> <span class="drs-sidebar-label hidden">Floating Jobs</span></button>
+                            <button onclick="showDrsSidebarPanel('property')" id="drs-nav-property" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="search" class="w-3.5 h-3.5 shrink-0"></i> <span class="drs-sidebar-label hidden">Property Search</span></button>
                         </div>
-                        <div id="drs-sidebar-content" class="flex-1 overflow-y-auto custom-scrollbar p-2"></div>
+                        <div id="drs-sidebar-content" class="flex-1 overflow-y-auto custom-scrollbar p-2 min-h-0"></div>
                     </div>
 
-                    <div class="flex-1 flex flex-col min-w-0 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] overflow-hidden">
+                    <div class="flex-1 flex flex-col min-w-0 min-h-0 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] overflow-hidden">
                         <div class="flex items-center gap-2 p-3 border-b border-[var(--eny-border-standard)] flex-wrap">
                             <input type="date" id="drs-date-picker" onchange="drsGoToDate(this.value)" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-2 py-1.5 text-xs text-[var(--eny-text-primary)]">
                             <button onclick="drsRefresh()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh</button>
@@ -1551,12 +1564,13 @@
                             <button onclick="drsGoToToday()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Today</button>
                             <button onclick="drsNavigateDay(1)" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1">Forward <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
                             <button onclick="drsToggleWeekView()" id="drs-week-toggle-btn" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="calendar-range" class="w-3.5 h-3.5"></i> Week View</button>
+                            <button onclick="openDrsNotificationsModal()" class="relative text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="bell" class="w-3.5 h-3.5"></i> <span id="drs-notification-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">0</span></button>
                             <span id="drs-date-heading" class="ml-auto text-sm font-bold text-[var(--eny-text-primary)]"></span>
                         </div>
-                        <div id="drs-day-view" class="flex-1 overflow-auto relative touch-pinch-zoom">
+                        <div id="drs-day-view" class="flex-1 overflow-auto relative min-h-0">
                             <div id="drs-grid-container"></div>
                         </div>
-                        <div id="drs-week-view" class="hidden flex-1 overflow-auto">
+                        <div id="drs-week-view" class="hidden flex-1 overflow-auto min-h-0">
                             <div id="drs-week-grid-container"></div>
                         </div>
                     </div>
@@ -1959,6 +1973,36 @@
             <div id="drs-place-job-footer" class="hidden p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
                 <button onclick="confirmDrsJobPlacement()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Confirm Booking</button>
             </div>
+        </div>
+    </div>
+
+    <div id="drs-handoff-request-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
+                <h3 id="drs-handoff-modal-title" class="text-base font-bold text-[var(--eny-text-primary)]">Rebook Job</h3>
+                <p id="drs-handoff-modal-subtitle" class="text-xs text-[var(--eny-text-muted)] mt-1"></p>
+            </div>
+            <div class="p-5 space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Requested Date</label>
+                    <input type="date" id="drs-handoff-requested-date" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                </div>
+                <p class="text-[10px] text-[var(--eny-text-muted2)]">This sends a request to DRS to confirm the date's actually available before anything is booked in.</p>
+            </div>
+            <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex gap-2">
+                <button onclick="submitJobHandoffRequest()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Send Request</button>
+                <button onclick="closeDrsHandoffRequestModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-300)] font-medium px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="drs-notifications-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
+                <h3 class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="bell" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Requests</h3>
+                <button onclick="closeDrsNotificationsModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="drs-notifications-list" class="p-4 space-y-2 overflow-y-auto custom-scrollbar"></div>
         </div>
     </div>
 
@@ -2712,6 +2756,23 @@
                 renderCalendarGrid();
             }, (err) => console.error('Engineers listener error:', err));
 
+            db.collection('settings').doc('jobNumbering').onSnapshot((doc) => {
+                if (doc.exists) {
+                    currentJobNumberSettings = doc.data();
+                } else if (isOwnerLoggedIn()) {
+                    db.collection('settings').doc('jobNumbering').set(currentJobNumberSettings);
+                }
+                const field = document.getElementById('setting-next-job-number');
+                if (field) field.value = currentJobNumberSettings.nextNumber || 100001;
+            }, (err) => console.error('Job numbering listener error:', err));
+
+            db.collection('drsHandoffRequests').onSnapshot((snapshot) => {
+                currentDrsHandoffRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(r => r.status === 'pending');
+                renderDrsNotificationBadge();
+                const notifModal = document.getElementById('drs-notifications-modal');
+                if (notifModal && !notifModal.classList.contains('hidden')) renderDrsNotificationsList();
+            }, (err) => console.error('DRS handoff requests listener error:', err));
+
             db.collection('stockPublic').onSnapshot((snapshot) => {
                 currentStockPublic = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 if (activeJobDetailId) renderJobMaterialsPicker();
@@ -2896,6 +2957,40 @@
                 </div>`;
             }).join('');
             lucide.createIcons();
+        }
+
+        let currentJobNumberSettings = { nextNumber: 100001 };
+        function saveJobNumberSettings() {
+            const val = parseInt(document.getElementById('setting-next-job-number').value) || 100001;
+            currentJobNumberSettings = { nextNumber: val };
+            db.collection('settings').doc('jobNumbering').set(currentJobNumberSettings);
+        }
+        // A transaction, not a plain read-then-write — two jobs created at
+        // the same moment (DRS + Quote Builder, or two people using the app
+        // at once) must never end up with the same number. Firestore retries
+        // the transaction automatically if the counter changed underneath it.
+        async function getNextJobNumber() {
+            const ref = db.collection('settings').doc('jobNumbering');
+            const issuedNumber = await db.runTransaction(async (t) => {
+                const doc = await t.get(ref);
+                const current = (doc.exists && doc.data().nextNumber) || 100001;
+                t.set(ref, { nextNumber: current + 1 }, { merge: true });
+                return current;
+            });
+            return `J${issuedNumber}`;
+        }
+        // Looks at every job sharing the same base number and takes the
+        // highest suffix seen, rather than just incrementing whichever job
+        // was clicked — safe even if a follow-on is raised from an earlier
+        // instance (e.g. /1) after later ones (/2, /3) already exist.
+        function getNextFollowOnSuffix(baseJobNumber) {
+            const related = currentJobs.filter(j => j.jobNumber === baseJobNumber);
+            const maxSuffix = related.reduce((max, j) => Math.max(max, j.jobNumberSuffix || 1), 0);
+            return maxSuffix + 1;
+        }
+        function formatJobNumber(job) {
+            if (!job.jobNumber) return null;
+            return `${job.jobNumber}/${job.jobNumberSuffix || 1}`;
         }
 
         function saveEngineerSettings() {
@@ -5726,7 +5821,10 @@
             const onMyWayBtn = (onMyWayClient && onMyWayClient.phone) ? `<button onclick="sendOnMyWayMessage('${j.id}')" title="Send 'on my way' to ${onMyWayClient.name}" class="text-[var(--eny-text-muted)] hover:text-blue-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="navigation" class="w-3.5 h-3.5"></i></button>` : '';
             const reminderClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
             const reminderBtn = (reminderClient && reminderClient.phone) ? `<button onclick="openSendReminderModal('${j.id}')" title="Send reminder to ${reminderClient.name}" class="text-[var(--eny-text-muted)] hover:text-emerald-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>` : '';
-            return `${quickActions}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}
+            const handoffBtns = (j.status === 'Completed' && isPrimaryOwnerLoggedIn()) ? `
+                <button onclick="requestJobHandoff('${j.id}', 'rebook')" title="Rebook — customer wasn't in / job didn't happen" class="text-[var(--eny-text-muted)] hover:text-amber-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i></button>
+                <button onclick="requestJobHandoff('${j.id}', 'followon')" title="Raise a follow-on job" class="text-[var(--eny-text-muted)] hover:text-blue-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="git-branch" class="w-3.5 h-3.5"></i></button>` : '';
+            return `${quickActions}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}
                 <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 <button onclick="deleteJob('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
         }
@@ -5753,6 +5851,86 @@
         function closeJobInfoModal() {
             document.getElementById('job-info-modal').classList.add('hidden');
             activeJobInfoModalId = null;
+        }
+        let drsHandoffRequestContext = null; // { jobId, type }
+        function requestJobHandoff(jobId, type) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            drsHandoffRequestContext = { jobId, type };
+            document.getElementById('drs-handoff-modal-title').innerText = type === 'rebook' ? 'Rebook Job' : 'Raise Follow-On';
+            document.getElementById('drs-handoff-modal-subtitle').innerText = `${job.title} — ${(job.propertyAddress || '').split('\n')[0]}`;
+            document.getElementById('drs-handoff-requested-date').value = '';
+            document.getElementById('drs-handoff-request-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeDrsHandoffRequestModal() {
+            document.getElementById('drs-handoff-request-modal').classList.add('hidden');
+            drsHandoffRequestContext = null;
+        }
+        async function submitJobHandoffRequest() {
+            if (!drsHandoffRequestContext) return;
+            const requestedDate = document.getElementById('drs-handoff-requested-date').value;
+            if (!requestedDate) { showToast('Please choose a requested date.', 'warning'); return; }
+            await db.collection('drsHandoffRequests').add({
+                originalJobId: drsHandoffRequestContext.jobId,
+                type: drsHandoffRequestContext.type,
+                requestedDate, status: 'pending', createdAt: new Date().toISOString(),
+            });
+            const type = drsHandoffRequestContext.type;
+            closeDrsHandoffRequestModal();
+            closeJobInfoModal();
+            showToast(`${type === 'rebook' ? 'Rebook' : 'Follow-on'} request sent to DRS for approval.`, 'success');
+        }
+        let currentDrsHandoffRequests = [];
+        function renderDrsNotificationBadge() {
+            const badge = document.getElementById('drs-notification-badge');
+            if (!badge) return;
+            badge.classList.toggle('hidden', currentDrsHandoffRequests.length === 0);
+            badge.innerText = currentDrsHandoffRequests.length;
+        }
+        function openDrsNotificationsModal() {
+            renderDrsNotificationsList();
+            document.getElementById('drs-notifications-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeDrsNotificationsModal() {
+            document.getElementById('drs-notifications-modal').classList.add('hidden');
+        }
+        function renderDrsNotificationsList() {
+            const listEl = document.getElementById('drs-notifications-list');
+            if (currentDrsHandoffRequests.length === 0) {
+                listEl.innerHTML = `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">No pending requests.</p>`;
+                return;
+            }
+            listEl.innerHTML = currentDrsHandoffRequests.map(r => {
+                const job = currentJobs.find(j => j.id === r.originalJobId);
+                const jobLabel = job ? job.title : 'Original job not found';
+                const dayJobsCount = currentJobs.filter(j => j.date === r.requestedDate && j.status !== 'Cancelled').length;
+                return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3">
+                    <div class="text-xs font-bold text-[var(--eny-text-200)] flex items-center gap-1.5"><i data-lucide="${r.type === 'rebook' ? 'calendar-clock' : 'git-branch'}" class="w-3.5 h-3.5 ${r.type === 'rebook' ? 'text-amber-500' : 'text-blue-500'}"></i> ${r.type === 'rebook' ? 'Rebook' : 'Follow-On'}: ${jobLabel}</div>
+                    <div class="text-[10px] text-[var(--eny-text-muted2)] mt-1">Requested: ${formatUkDate(r.requestedDate)} — ${dayJobsCount} other job${dayJobsCount===1?'':'s'} already booked that day</div>
+                    <div class="flex gap-2 mt-2">
+                        <button onclick="approveDrsHandoffRequest('${r.id}')" ${!job ? 'disabled' : ''} class="flex-1 text-[10px] font-bold bg-emerald-500 hover:bg-emerald-600 text-white py-1.5 rounded-lg cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">Approve</button>
+                        <button onclick="rejectDrsHandoffRequest('${r.id}')" class="flex-1 text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-red-500 hover:text-white text-[var(--eny-text-muted)] py-1.5 rounded-lg cursor-pointer border border-[var(--eny-border-standard)]">Reject</button>
+                    </div>
+                </div>`;
+            }).join('');
+            lucide.createIcons();
+        }
+        function approveDrsHandoffRequest(requestId) {
+            const request = currentDrsHandoffRequests.find(r => r.id === requestId);
+            if (!request) return;
+            const originalJob = currentJobs.find(j => j.id === request.originalJobId);
+            if (!originalJob) { showToast('The original job could not be found — try rejecting this request instead.', 'warning'); return; }
+            drsPendingHandoffApproval = { requestId, type: request.type, originalJob };
+            drsCurrentDate = request.requestedDate;
+            closeDrsNotificationsModal();
+            if (drsWeekViewActive) drsToggleWeekView();
+            else renderDrsGrid();
+            showToast(`Tap an engineer's column at the time you want, to confirm this ${request.type === 'rebook' ? 'rebook' : 'follow-on'}.`, 'info');
+        }
+        function rejectDrsHandoffRequest(requestId) {
+            db.collection('drsHandoffRequests').doc(requestId).update({ status: 'rejected' });
         }
         function toggleReassignPicker() {
             const picker = document.getElementById('job-info-reassign-picker');
@@ -5788,12 +5966,52 @@
         let drsWeekViewActive = false;
         const DRS_START_HOUR = 7;
         const DRS_END_HOUR = 18;
-        const DRS_PIXELS_PER_MINUTE = 1.4;
+        let DRS_PIXELS_PER_MINUTE = 1.4;
+        const DRS_MIN_PIXELS_PER_MINUTE = 0.6;
+        const DRS_MAX_PIXELS_PER_MINUTE = 3.2;
         function toggleDrsView() {
             switchTab('drs-tab');
             drsCurrentDate = todayISO();
             renderDrsGrid();
             showDrsSidebarPanel('booked');
+            initDrsPinchZoom();
+        }
+        // Two-finger pinch adjusts the grid's time density (pixels per
+        // minute) rather than the browser's native page zoom — touch-action
+        // on the container stops the browser fighting this for the pinch
+        // gesture specifically, while still allowing normal vertical scroll.
+        let drsPinchStartDistance = null;
+        let drsPinchStartScale = null;
+        function drsGetTouchDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        function initDrsPinchZoom() {
+            const container = document.getElementById('drs-day-view');
+            if (!container || container.dataset.pinchInit) return;
+            container.dataset.pinchInit = 'true';
+            container.style.touchAction = 'pan-y';
+            container.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    drsPinchStartDistance = drsGetTouchDistance(e.touches);
+                    drsPinchStartScale = DRS_PIXELS_PER_MINUTE;
+                }
+            }, { passive: true });
+            container.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2 && drsPinchStartDistance) {
+                    e.preventDefault();
+                    const ratio = drsGetTouchDistance(e.touches) / drsPinchStartDistance;
+                    const newScale = Math.min(DRS_MAX_PIXELS_PER_MINUTE, Math.max(DRS_MIN_PIXELS_PER_MINUTE, drsPinchStartScale * ratio));
+                    if (Math.abs(newScale - DRS_PIXELS_PER_MINUTE) > 0.02) {
+                        DRS_PIXELS_PER_MINUTE = newScale;
+                        requestAnimationFrame(() => { if (!drsWeekViewActive) renderDrsGrid(); });
+                    }
+                }
+            }, { passive: false });
+            container.addEventListener('touchend', (e) => {
+                if (e.touches.length < 2) { drsPinchStartDistance = null; drsPinchStartScale = null; }
+            }, { passive: true });
         }
         function drsGoToDate(dateStr) {
             if (!dateStr) return;
@@ -5803,7 +6021,7 @@
         function drsNavigateDay(delta) {
             const d = new Date(drsCurrentDate + 'T00:00:00');
             d.setDate(d.getDate() + delta);
-            drsCurrentDate = d.toISOString().split('T')[0];
+            drsCurrentDate = toLocalISODate(d);
             renderDrsGrid();
         }
         function drsGoToToday() {
@@ -5891,7 +6109,7 @@
                         ${addressLine ? `<div class="truncate opacity-90">${addressLine}</div>` : ''}
                     </div>`;
                 });
-                return `<div class="drs-engineer-col flex-1 relative border-l border-[var(--eny-border-subtle)] ${isUnavailable ? 'bg-slate-400/10' : ''}" style="height:${gridHeight}px; min-width:160px;" data-engineer="${escapeHtmlForPopup(name)}" onclick="drsHandleColumnClick(event, '${escapeHtmlForPopup(name)}')">
+                return `<div class="drs-engineer-col flex-1 relative border-l border-[var(--eny-border-subtle)] ${isUnavailable ? 'bg-slate-400/10' : ''}" style="height:${gridHeight}px; min-width:0;" data-engineer="${escapeHtmlForPopup(name)}" onclick="drsHandleColumnClick(event, '${escapeHtmlForPopup(name)}')">
                     ${isUnavailable ? `<div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[var(--eny-text-muted2)] pointer-events-none">Unavailable</div>` : ''}
                     ${blocksHtml}
                 </div>`;
@@ -5899,7 +6117,7 @@
 
             const headerHtml = `<div class="flex sticky top-0 z-10 bg-[var(--eny-bg-card)] border-b border-[var(--eny-border-standard)]">
                 <div class="w-14 shrink-0"></div>
-                ${engineers.map(name => `<div class="flex-1 text-center text-xs font-bold text-[var(--eny-text-primary)] py-2 border-l border-[var(--eny-border-subtle)]" style="min-width:160px;">${name}</div>`).join('')}
+                ${engineers.map(name => `<div class="flex-1 text-center text-xs font-bold text-[var(--eny-text-primary)] py-2 border-l border-[var(--eny-border-subtle)] truncate px-1" style="min-width:0;">${name}</div>`).join('')}
             </div>`;
 
             document.getElementById('drs-grid-container').innerHTML = `
@@ -5925,6 +6143,7 @@
         }
         setInterval(() => { if (document.getElementById('drs-tab') && document.getElementById('drs-tab').classList.contains('active')) updateDrsCurrentTimeLine(); }, 60000);
         let drsPlacementContext = null; // { engineerName, date, quoteId, defaultTime }
+        let drsPendingHandoffApproval = null; // { requestId, type, originalJob }
         function drsHandleColumnClick(event, engineerName) {
             if (event.target.closest('[onclick*="openJobInfoModal"]')) return; // a job block was clicked, not empty space
             const columnEl = event.currentTarget;
@@ -5938,7 +6157,19 @@
             const snappedMinutes = Math.round(totalMinutesOfDay / 10) * 10;
             const hour = Math.min(DRS_END_HOUR, Math.floor(snappedMinutes / 60));
             const minute = snappedMinutes % 60;
-            openDrsPlaceJobModal(engineerName, `${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}`);
+            const approxTime = `${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}`;
+            if (drsPendingHandoffApproval) openDrsPlaceJobModalForHandoff(engineerName, approxTime);
+            else openDrsPlaceJobModal(engineerName, approxTime);
+        }
+        function drsPopulateTimeSelects(defaultTime) {
+            const [defaultHour, defaultMinute] = defaultTime.split(':').map(Number);
+            const hourSelect = document.getElementById('drs-place-job-hour');
+            hourSelect.innerHTML = '';
+            for (let h = 6; h <= 20; h++) hourSelect.innerHTML += `<option value="${h}" ${h === defaultHour ? 'selected' : ''}>${String(h).padStart(2,'0')}</option>`;
+            const minuteSelect = document.getElementById('drs-place-job-minute');
+            minuteSelect.innerHTML = '';
+            const nearestTenMinute = Math.round(defaultMinute / 10) * 10 % 60;
+            for (let m = 0; m < 60; m += 10) minuteSelect.innerHTML += `<option value="${m}" ${m === nearestTenMinute ? 'selected' : ''}>${String(m).padStart(2,'0')}</option>`;
         }
         function openDrsPlaceJobModal(engineerName, approxTime) {
             drsPlacementContext = { engineerName, date: drsCurrentDate, quoteId: null, defaultTime: approxTime };
@@ -5957,9 +6188,22 @@
             document.getElementById('drs-place-job-modal').classList.remove('hidden');
             lucide.createIcons();
         }
+        // No picker step here — the "job" is already determined by the
+        // approved request. Straight to confirming engineer + time.
+        function openDrsPlaceJobModalForHandoff(engineerName, approxTime) {
+            const { type, originalJob } = drsPendingHandoffApproval;
+            drsPlacementContext = { engineerName, date: drsCurrentDate, quoteId: null, isHandoff: true, defaultTime: approxTime };
+            document.getElementById('drs-place-job-title').innerText = `${type === 'rebook' ? 'Rebook' : 'Follow-On'} — ${engineerName}, ${formatUkDate(drsCurrentDate)}`;
+            document.getElementById('drs-place-job-step1').classList.add('hidden');
+            document.getElementById('drs-place-job-step2').classList.remove('hidden');
+            document.getElementById('drs-place-job-footer').classList.remove('hidden');
+            document.getElementById('drs-place-job-selected-summary').innerText = originalJob.title;
+            drsPopulateTimeSelects(approxTime);
+        }
         function closeDrsPlaceJobModal() {
             document.getElementById('drs-place-job-modal').classList.add('hidden');
             drsPlacementContext = null;
+            drsPendingHandoffApproval = null;
         }
         function selectDrsFloatingJobForPlacement(quoteId) {
             const q = currentQuotes.find(x => x.id === quoteId);
@@ -5969,14 +6213,7 @@
             document.getElementById('drs-place-job-step2').classList.remove('hidden');
             document.getElementById('drs-place-job-footer').classList.remove('hidden');
             document.getElementById('drs-place-job-selected-summary').innerText = `${q.jobName} — ${q.clientDetailsPayload.name}`;
-            const [defaultHour, defaultMinute] = drsPlacementContext.defaultTime.split(':').map(Number);
-            const hourSelect = document.getElementById('drs-place-job-hour');
-            hourSelect.innerHTML = '';
-            for (let h = 6; h <= 20; h++) hourSelect.innerHTML += `<option value="${h}" ${h === defaultHour ? 'selected' : ''}>${String(h).padStart(2,'0')}</option>`;
-            const minuteSelect = document.getElementById('drs-place-job-minute');
-            minuteSelect.innerHTML = '';
-            const nearestTenMinute = Math.round(defaultMinute / 10) * 10 % 60;
-            for (let m = 0; m < 60; m += 10) minuteSelect.innerHTML += `<option value="${m}" ${m === nearestTenMinute ? 'selected' : ''}>${String(m).padStart(2,'0')}</option>`;
+            drsPopulateTimeSelects(drsPlacementContext.defaultTime);
         }
         function backToDrsJobPicker() {
             document.getElementById('drs-place-job-step1').classList.remove('hidden');
@@ -5985,19 +6222,63 @@
             if (drsPlacementContext) drsPlacementContext.quoteId = null;
         }
         async function confirmDrsJobPlacement() {
-            if (!drsPlacementContext || !drsPlacementContext.quoteId) return;
-            const { engineerName, date, quoteId } = drsPlacementContext;
-            const q = currentQuotes.find(x => x.id === quoteId);
-            if (!q) { showToast('That quote could not be found — it may have been removed.', 'warning'); closeDrsPlaceJobModal(); return; }
+            if (!drsPlacementContext) return;
+            const { engineerName, date, quoteId, isHandoff } = drsPlacementContext;
             const hour = document.getElementById('drs-place-job-hour').value.padStart(2, '0');
             const minute = document.getElementById('drs-place-job-minute').value.padStart(2, '0');
             const time = `${hour}:${minute}`;
+
+            if (isHandoff) {
+                const { requestId, type, originalJob } = drsPendingHandoffApproval;
+                // Retroactively number the original job if it predates job
+                // numbering entirely, so the new one always has a base to
+                // increment from rather than starting numberless itself.
+                let baseNumber = originalJob.jobNumber;
+                let newSuffix;
+                if (!baseNumber) {
+                    baseNumber = await getNextJobNumber();
+                    await db.collection('jobs').doc(originalJob.id).update({ jobNumber: baseNumber, jobNumberSuffix: 1 });
+                    newSuffix = 2;
+                } else {
+                    newSuffix = getNextFollowOnSuffix(baseNumber);
+                }
+                const oldJobUpdate = type === 'rebook'
+                    ? { status: 'Completed', completionOutcome: 'Not Attended' }
+                    : { status: 'Completed' }; // follow-on: original genuinely was completed, just closed off
+                await db.collection('jobs').doc(originalJob.id).update(oldJobUpdate);
+                const newJobRef = await db.collection('jobs').add({
+                    title: originalJob.title, propertyId: originalJob.propertyId, propertyAddress: originalJob.propertyAddress,
+                    assignedEngineers: [engineerName], date, time, status: 'Scheduled',
+                    notes: '', isEmergency: false, linkedQuoteId: originalJob.linkedQuoteId || null,
+                    jobNumber: baseNumber, jobNumberSuffix: newSuffix,
+                });
+                await db.collection('drsHandoffRequests').doc(requestId).update({ status: 'approved' });
+                closeDrsPlaceJobModal();
+                renderDrsGrid();
+                showDrsSidebarPanel(drsActiveSidebarPanel);
+                const client = findClientForJob(originalJob);
+                if (client && client.phone) {
+                    const nickname = getEngineerSmsNickname(engineerName);
+                    const firstName = (client.name || '').split(' ')[0];
+                    const message = `Hi ${firstName}, your job has been re-booked in for ${formatUkDate(date)} at ${time} with ${nickname}. Thanks, ENY Electrical.`;
+                    openSendMessageModal(client.name, client.phone, message);
+                } else {
+                    showToast(`${type === 'rebook' ? 'Rebook' : 'Follow-on'} booked as ${baseNumber}/${newSuffix} — no phone number on file to send a confirmation to.`, 'info');
+                }
+                return;
+            }
+
+            if (!quoteId) return;
+            const q = currentQuotes.find(x => x.id === quoteId);
+            if (!q) { showToast('That quote could not be found — it may have been removed.', 'warning'); closeDrsPlaceJobModal(); return; }
             const address = q.clientDetailsPayload.address || '';
             const propertyId = await ensurePropertyExistsForAddress(address);
+            const jobNumber = await getNextJobNumber();
             const jobRef = await db.collection('jobs').add({
                 title: q.jobName, propertyId, propertyAddress: address,
                 assignedEngineers: [engineerName], date, time, status: 'Scheduled',
                 notes: '', isEmergency: false, linkedQuoteId: quoteId,
+                jobNumber, jobNumberSuffix: 1,
             });
             closeDrsPlaceJobModal();
             renderDrsGrid();
@@ -6017,10 +6298,52 @@
             const message = `Hi ${firstName}, your job has been booked in for ${formatUkDate(date)} at ${time} with ${nickname}. Thanks, ENY Electrical.`;
             openSendMessageModal(client.name, client.phone, message);
         }
-        // TODO (Phase 4): week view — engineers across the top, days down the
-        // side, a tick mark on days with a booking. Stubbed for now.
+        // Monday is treated as the start of the week — standard UK convention.
+        function drsGetWeekStart(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            const dayOfWeek = d.getDay(); // 0=Sun...6=Sat
+            const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            d.setDate(d.getDate() + diffToMonday);
+            return toLocalISODate(d);
+        }
         function renderDrsWeekGrid() {
-            document.getElementById('drs-week-grid-container').innerHTML = `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-12">Week view is coming in a later phase of DRS.</p>`;
+            const engineers = getEngineerNames();
+            const weekStart = drsGetWeekStart(drsCurrentDate);
+            const today = todayISO();
+            const days = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(weekStart + 'T00:00:00');
+                d.setDate(d.getDate() + i);
+                days.push(toLocalISODate(d));
+            }
+            const headerHtml = `<div class="flex sticky top-0 z-10 bg-[var(--eny-bg-card)] border-b border-[var(--eny-border-standard)]">
+                <div class="w-24 shrink-0 text-xs font-bold text-[var(--eny-text-muted)] py-2 px-2">Week of ${formatUkDate(weekStart)}</div>
+                ${engineers.map(name => `<div class="flex-1 text-center text-xs font-bold text-[var(--eny-text-primary)] py-2 border-l border-[var(--eny-border-subtle)] truncate px-1" style="min-width:0;">${name}</div>`).join('')}
+            </div>`;
+            const rowsHtml = days.map(dateStr => {
+                const dateObj = new Date(dateStr + 'T00:00:00');
+                const isToday = dateStr === today;
+                const dayLabel = dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+                const dayJobs = currentJobs.filter(j => j.date === dateStr && j.status !== 'Cancelled');
+                const cellsHtml = engineers.map(name => {
+                    const hasJob = dayJobs.some(j => getJobEngineers(j).includes(name));
+                    const jobCount = dayJobs.filter(j => getJobEngineers(j).includes(name)).length;
+                    return `<div class="flex-1 flex items-center justify-center py-3 border-l border-[var(--eny-border-subtle)]" style="min-width:0;">
+                        ${hasJob ? `<span class="inline-flex items-center gap-1 text-emerald-600 font-bold text-xs"><i data-lucide="check-circle-2" class="w-4 h-4"></i>${jobCount > 1 ? jobCount : ''}</span>` : `<span class="text-[var(--eny-text-subtle)]">—</span>`}
+                    </div>`;
+                }).join('');
+                return `<button onclick="drsGoToDateFromWeekView('${dateStr}')" class="w-full flex items-stretch border-b border-[var(--eny-border-subtle)] cursor-pointer text-left ${isToday ? 'bg-amber-500/10' : 'hover:bg-[var(--eny-bg-page)]'}">
+                    <div class="w-24 shrink-0 text-xs font-semibold ${isToday ? 'text-amber-700' : 'text-[var(--eny-text-300)]'} py-3 px-2 flex items-center gap-1">${isToday ? '<i data-lucide="dot" class="w-4 h-4"></i>' : ''}${dayLabel}</div>
+                    ${cellsHtml}
+                </button>`;
+            }).join('');
+            document.getElementById('drs-week-grid-container').innerHTML = headerHtml + rowsHtml;
+            lucide.createIcons();
+        }
+        function drsGoToDateFromWeekView(dateStr) {
+            drsCurrentDate = dateStr;
+            if (drsWeekViewActive) drsToggleWeekView(); // switches back to day view and re-renders
+            else renderDrsGrid();
         }
 
         let drsActiveSidebarPanel = 'booked';
