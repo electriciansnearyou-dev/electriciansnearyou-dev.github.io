@@ -4962,9 +4962,20 @@
             if (newStatus === 'Cancelled' && j.calendarEventId && isGoogleCalendarConnected()) {
                 await deleteCalendarEvent(j.calendarEventId);
                 await db.collection('jobs').doc(jobId).update({ status: newStatus, calendarEventId: null });
-            } else {
-                await db.collection('jobs').doc(jobId).update({ status: newStatus });
+                return;
             }
+            if (newStatus === 'Completed' && j.isEmergency) {
+                // This "quick action" path skips the full Today-tab workflow
+                // entirely (no signature, no stopping a timer along the way) —
+                // finalize whatever timer data exists here so the auto-invoice
+                // still generates correctly, exactly as it would going through
+                // the full workflow.
+                const settledEngineerState = await stopAllRunningEngineerTimersForJob(j);
+                await db.collection('jobs').doc(jobId).update({ status: newStatus });
+                await generateEmergencyInvoice(j, settledEngineerState);
+                return;
+            }
+            await db.collection('jobs').doc(jobId).update({ status: newStatus });
         }
         // ============================================================
         // TODAY TAB + JOB WORKFLOW (Accept -> Start -> Complete)
