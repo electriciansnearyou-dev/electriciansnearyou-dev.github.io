@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive">
     <title>ENY Electrical - Business Manager</title>
     <meta name="theme-color" content="#0f172a">
     <link rel="icon" type="image/png" href="Logo.png">
@@ -233,12 +234,18 @@
                     <button onclick="openUniversalSearch()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer ml-1" title="Search everything">
                         <i data-lucide="search" class="w-[18px] h-[18px]"></i>
                     </button>
+                    <button onclick="openQuickReachModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Quick reach — call or text the team">
+                        <i data-lucide="users-round" class="w-[18px] h-[18px]"></i>
+                    </button>
+                    <button onclick="toggleDrsView()" id="drs-toggle-btn" class="drs-authorized-only hidden text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch to DRS (Dynamic Resource Manager)">
+                        <i data-lucide="calendar-cog" class="w-[18px] h-[18px]"></i>
+                    </button>
                     <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
                         <i data-lucide="moon" class="w-[18px] h-[18px]"></i>
                     </button>
                 </div>
 
-                <nav class="flex flex-wrap items-center justify-center gap-1 bg-[var(--eny-bg-page)]/80 p-[5px] rounded-xl border border-[var(--eny-border-subtle)]">
+                <nav id="main-nav-bar" class="flex flex-wrap items-center justify-center gap-1 bg-[var(--eny-bg-page)]/80 p-[5px] rounded-xl border border-[var(--eny-border-subtle)]">
                     <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10 cursor-pointer">
                         <i data-lucide="sun" class="w-4 h-4"></i> Today
                     </button>
@@ -312,6 +319,17 @@
             </div>
 
             <div id="dashboard-tab" class="tab-content space-y-6">
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] overflow-hidden">
+                    <button onclick="toggleFloatingJobsCard()" class="w-full flex items-center justify-between p-5 cursor-pointer">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="calendar-clock" class="w-5 h-5 text-[var(--eny-accent-text)]"></i>
+                            <span class="text-base font-bold text-[var(--eny-text-primary)]">Jobs To Be Booked</span>
+                            <span id="floating-jobs-count-badge" class="bg-amber-500 text-slate-950 text-xs font-black rounded-full w-7 h-7 flex items-center justify-center">0</span>
+                        </div>
+                        <i data-lucide="chevron-down" id="floating-jobs-chevron" class="w-5 h-5 text-[var(--eny-text-muted)] transition-transform"></i>
+                    </button>
+                    <div id="floating-jobs-list-wrapper" class="hidden border-t border-[var(--eny-border-standard)] p-4 space-y-2"></div>
+                </div>
                 <div id="dashboard-owner-stats" class="owner-only-tab grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
@@ -355,6 +373,11 @@
                 <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
                     <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="shield-alert" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Inspection & Testing Reminders</h2>
                     <div id="dashboard-reminders-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
+                </div>
+
+                <div id="dashboard-compliance-panel" class="hidden bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)] mb-4"><i data-lucide="shield-check" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Business Compliance — Equipment &amp; Qualifications</h2>
+                    <div id="dashboard-compliance-list" class="space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
                 </div>
 
                 <div id="dashboard-owner-followup-section" class="owner-only-tab hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -425,52 +448,14 @@
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Property</label>
                                 <input type="text" id="job-property-search-input" oninput="filterJobPropertyDropdown()" placeholder="Search properties..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-1.5">
-                                <select id="job-property-select" onchange="renderJobPropertyHazardWarning(); suggestEngineerForJobProperty();" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                <select id="job-property-select" onchange="renderJobPropertyHazardWarning()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                                     <option value="">-- None / Not linked --</option>
                                 </select>
                                 <div id="job-property-hazard-warning" class="hidden mt-2 p-2.5 rounded-lg hazard-stripe border border-[#FFDF27]"></div>
                             </div>
-                            <div id="job-form-quote-link-wrapper" class="hidden">
-                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Link to Quote (optional)</label>
-                                <input type="text" id="job-form-quote-search-input" oninput="filterJobFormQuoteDropdown()" placeholder="Search quotes by client or job name..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-1.5">
-                                <select id="job-form-quote-select" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
-                                    <option value="">-- None / Not linked --</option>
-                                </select>
-                                <p class="text-[10px] text-[var(--eny-text-muted2)] mt-1">Materials/hours added on the job page will apply straight to this quote.</p>
-                            </div>
                             <div>
-                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Assigned Engineer(s) *</label>
-                                <div id="job-engineers-checklist" class="space-y-1.5 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3"></div>
-                                <p id="job-engineer-suggestion-note" class="hidden text-[10px] text-[var(--eny-accent-text)] font-semibold mt-1"></p>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Date *</label>
-                                    <input type="date" id="job-date" required class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Time</label>
-                                    <input type="time" id="job-time" value="09:00" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
-                                </div>
-                            </div>
-                            <div id="job-multi-day-row">
-                                <label class="flex items-center gap-2 cursor-pointer select-none">
-                                    <input type="checkbox" id="job-multi-day-toggle" onchange="toggleJobMultiDayField()" class="w-4 h-4 rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] cursor-pointer">
-                                    <span class="text-xs text-[var(--eny-text-300)]">Spans multiple days</span>
-                                </label>
-                                <div id="job-end-date-wrapper" class="hidden mt-2">
-                                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Through (inclusive)</label>
-                                    <input type="date" id="job-end-date" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
-                                    <p class="text-[10px] text-[var(--eny-text-muted2)] mt-1">Creates a separate job entry for each day, so each day can be completed or cancelled independently.</p>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Status</label>
-                                <select id="job-status-select" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
-                                    <option value="Scheduled">Scheduled</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Cancelled">Cancelled</option>
-                                </select>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Engineers Needed *</label>
+                                <select id="job-engineers-needed" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500"></select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Notes</label>
@@ -478,7 +463,7 @@
                             </div>
                             <div class="flex gap-2">
                                 <button type="submit" id="job-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
-                                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job
+                                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Raise Job
                                 </button>
                                 <button type="button" id="job-cancel-btn" onclick="clearJobForm()" class="hidden bg-[var(--eny-bg-recessed)] hover:bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] text-[var(--eny-text-muted)] py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer">Cancel</button>
                             </div>
@@ -493,6 +478,7 @@
                             </select>
                             <select id="jobs-status-filter" onchange="saveFilterPreference('jobs-status', this.value); renderJobsList();" class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-xl px-4 py-2.5 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                                 <option value="ALL">All Statuses</option>
+                                <option value="Floating">Floating (Not Booked)</option>
                                 <option value="Scheduled">Scheduled</option>
                                 <option value="Completed">Completed</option>
                                 <option value="Cancelled">Cancelled</option>
@@ -746,6 +732,7 @@
                             <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> Medium</span>
                             <span class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full bg-amber-700 inline-block"></span> High</span>
                             <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span> No Revenue</span>
+                            <span class="text-[var(--eny-text-muted2)] font-normal italic">Glow radiates outward — nearby properties overlap into hot zones</span>
                         </div>
                     </div>
                 </div>
@@ -796,6 +783,10 @@
                                     <div>
                                         <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Job Name</label>
                                         <input type="text" id="job-name" placeholder="e.g., Board Upgrade & Rewire" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Warranty (Months)</label>
+                                        <input type="number" id="job-warranty-months" min="0" value="12" placeholder="e.g., 12 (leave blank for none)" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                                     </div>
                                 </div>
                                 <div class="pt-4 border-t border-[var(--eny-border-standard)]">
@@ -1133,10 +1124,12 @@
             <div id="settings-tab" class="tab-content owner-only-tab space-y-6">
                 <div class="flex flex-wrap gap-1.5 bg-[var(--eny-bg-page)]/80 p-1 rounded-xl border border-[var(--eny-border-subtle)] w-fit">
                     <button onclick="switchSettingsSubtab('settings-sub-pricing')" id="btn-settings-sub-pricing" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 cursor-pointer">Pricing</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-jobnumbers')" id="btn-settings-sub-jobnumbers" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Job Numbers</button>
                     <button onclick="switchSettingsSubtab('settings-sub-banking')" id="btn-settings-sub-banking" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Bank Details</button>
                     <button onclick="switchSettingsSubtab('settings-sub-stock')" id="btn-settings-sub-stock" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Stock Directory</button>
                     <button onclick="switchSettingsSubtab('settings-sub-templates')" id="btn-settings-sub-templates" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Templates</button>
                     <button onclick="switchSettingsSubtab('settings-sub-engineers')" id="btn-settings-sub-engineers" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Engineers</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-compliance')" id="btn-settings-sub-compliance" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Business Compliance</button>
                     <button onclick="switchSettingsSubtab('settings-sub-calendar')" id="btn-settings-sub-calendar" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Google Calendar</button>
                     <button onclick="switchSettingsSubtab('settings-sub-import')" id="btn-settings-sub-import" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Import Local Data</button>
                     <button onclick="switchSettingsSubtab('settings-sub-export')" id="btn-settings-sub-export" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Data Export</button>
@@ -1175,6 +1168,18 @@
                         <div class="border-t border-[var(--eny-border-standard)] pt-4">
                             <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Global Materials Markup (%)</label>
                             <input type="number" id="global-markup" value="25" oninput="savePricingSettings()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="settings-sub-jobnumbers" class="settings-subtab-content">
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-lg space-y-4">
+                        <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="hash" class="text-[var(--eny-accent-text)]"></i> Job Numbers</h2>
+                        <p class="text-xs text-[var(--eny-text-muted)]">Every new job gets a number like J100001/1. A follow-on or rebook against that same job keeps the base number and increments the suffix (/2, /3...) rather than starting a new one.</p>
+                        <div>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Next Job Number</label>
+                            <input type="number" id="setting-next-job-number" min="1" oninput="saveJobNumberSettings()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            <p class="text-[10px] text-[var(--eny-text-muted2)] mt-1.5">Set this once to continue from an existing numbering scheme — it goes up automatically after that.</p>
                         </div>
                     </div>
                 </div>
@@ -1352,25 +1357,82 @@
                 <div id="settings-sub-engineers" class="settings-subtab-content">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl space-y-4">
                         <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="users" class="text-[var(--eny-accent-text)]"></i> Engineers</h2>
-                        <p class="text-xs text-[var(--eny-text-muted)]">These names appear throughout Jobs and the Calendar.</p>
+                        <p class="text-xs text-[var(--eny-text-muted)]">Names appear throughout Jobs and the Calendar. Phone numbers power the Quick Reach panel in the header.</p>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Engineer 1</label>
-                                <input type="text" id="setting-engineer-1" oninput="saveEngineerSettings()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                <input type="text" id="setting-engineer-1" oninput="saveEngineerSettings()" placeholder="Name" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500 mb-2">
+                                <input type="tel" id="setting-engineer-1-phone" oninput="saveEngineerSettings()" placeholder="Phone number" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Engineer 2</label>
-                                <input type="text" id="setting-engineer-2" oninput="saveEngineerSettings()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                <input type="text" id="setting-engineer-2" oninput="saveEngineerSettings()" placeholder="Name" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500 mb-2">
+                                <input type="tel" id="setting-engineer-2-phone" oninput="saveEngineerSettings()" placeholder="Phone number" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Engineer 3</label>
-                                <input type="text" id="setting-engineer-3" oninput="saveEngineerSettings()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                <input type="text" id="setting-engineer-3" oninput="saveEngineerSettings()" placeholder="Name" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500 mb-2">
+                                <input type="tel" id="setting-engineer-3-phone" oninput="saveEngineerSettings()" placeholder="Phone number" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- GOOGLE CALENDAR -->
+                <div id="settings-sub-compliance" class="settings-subtab-content">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] space-y-4">
+                            <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="shield-check" class="text-[var(--eny-accent-text)]"></i> Business Compliance</h2>
+                            <p class="text-xs text-[var(--eny-text-muted)]">Test equipment calibration and engineer qualifications/registrations — the compliance the business itself depends on, not client properties.</p>
+                            <input type="hidden" id="compliance-item-id-field">
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Type</label>
+                                <select id="compliance-type-select" onchange="setComplianceItemType(this.value)" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                    <option value="equipment">Test Equipment Calibration</option>
+                                    <option value="qualification">Engineer Qualification</option>
+                                    <option value="vehicle">Vehicle Compliance (MOT/Insurance/Tax)</option>
+                                    <option value="insurance">Business Insurance</option>
+                                    <option value="pat">PAT Testing (Power Tools)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1" id="compliance-name-label">Name</label>
+                                <input type="text" id="compliance-item-name" placeholder="e.g. Megger MFT1835" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div id="compliance-engineer-field-wrapper" class="hidden">
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Engineer</label>
+                                <select id="compliance-engineer-select" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500"></select>
+                            </div>
+                            <div id="compliance-serial-field-wrapper">
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1" id="compliance-serial-label">Serial Number (optional)</label>
+                                <input type="text" id="compliance-serial-number" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1" id="compliance-date-label">Last Calibrated</label>
+                                    <input type="date" id="compliance-last-date" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Renewal Cycle (Months)</label>
+                                    <input type="number" id="compliance-cycle-months" value="12" min="1" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Notes</label>
+                                <textarea id="compliance-notes" rows="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500"></textarea>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="saveComplianceItem()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Save</button>
+                                <button onclick="clearComplianceItemForm()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-300)] font-medium px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Clear</button>
+                            </div>
+                        </div>
+                        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06]">
+                            <h3 class="text-sm font-bold text-[var(--eny-text-primary)] mb-3">Tracked Items</h3>
+                            <div id="compliance-items-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+
                 <div id="settings-sub-calendar" class="settings-subtab-content">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-2xl space-y-4">
                         <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="calendar-sync" class="text-[var(--eny-accent-text)]"></i> Google Calendar</h2>
@@ -1441,6 +1503,42 @@
                     <i data-lucide="users" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> No engineer activity recorded yet.
                 </div>
                 <div id="engineer-stats-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div id="drs-tab" class="tab-content drs-authorized-only-tab">
+                <div class="flex gap-3 h-[calc(100vh-180px)] min-h-0">
+                    <div id="drs-sidebar" class="drs-sidebar-collapsed w-64 shrink-0 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] flex flex-col overflow-hidden transition-all duration-200" style="width:52px;">
+                        <div class="p-3 border-b border-[var(--eny-border-standard)] flex items-center justify-between">
+                            <span id="drs-sidebar-title" class="text-sm font-bold text-[var(--eny-text-primary)] hidden">DRS</span>
+                            <button onclick="toggleDrsSidebar()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] cursor-pointer p-1"><i data-lucide="panel-left-open" id="drs-sidebar-toggle-icon" class="w-4 h-4"></i></button>
+                        </div>
+                        <div id="drs-sidebar-nav" class="hidden flex-col p-2 gap-1 border-b border-[var(--eny-border-standard)]">
+                            <button onclick="showDrsSidebarPanel('booked')" id="drs-nav-booked" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="calendar-check-2" class="w-3.5 h-3.5 shrink-0"></i> <span class="drs-sidebar-label">Booked Jobs</span></button>
+                            <button onclick="showDrsSidebarPanel('floating')" id="drs-nav-floating" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="circle-dashed" class="w-3.5 h-3.5 shrink-0"></i> <span class="drs-sidebar-label">Floating Jobs</span></button>
+                            <button onclick="showDrsSidebarPanel('property')" id="drs-nav-property" class="text-left text-xs font-semibold px-3 py-2 rounded-lg cursor-pointer flex items-center gap-2 text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-page)]"><i data-lucide="search" class="w-3.5 h-3.5 shrink-0"></i> <span class="drs-sidebar-label">Property Search</span></button>
+                        </div>
+                        <div id="drs-sidebar-content" class="flex-1 overflow-y-auto custom-scrollbar p-2 min-h-0"></div>
+                    </div>
+
+                    <div class="flex-1 flex flex-col min-w-0 min-h-0 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] overflow-hidden">
+                        <div class="flex items-center gap-2 p-3 border-b border-[var(--eny-border-standard)] flex-wrap">
+                            <input type="date" id="drs-date-picker" onchange="drsGoToDate(this.value)" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-2 py-1.5 text-xs text-[var(--eny-text-primary)]">
+                            <button onclick="drsRefresh()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh</button>
+                            <button onclick="drsNavigateDay(-1)" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="chevron-left" class="w-3.5 h-3.5"></i> Backward</button>
+                            <button onclick="drsGoToToday()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Today</button>
+                            <button onclick="drsNavigateDay(1)" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1">Forward <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="drsToggleWeekView()" id="drs-week-toggle-btn" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="calendar-range" class="w-3.5 h-3.5"></i> Week View</button>
+                            <button onclick="openFullCalendarModal()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="calendar-days" class="w-3.5 h-3.5"></i> Calendar</button>
+                            <span id="drs-date-heading" class="ml-auto text-sm font-bold text-[var(--eny-text-primary)]"></span>
+                        </div>
+                        <div id="drs-day-view" class="flex-1 overflow-auto relative min-h-0">
+                            <div id="drs-grid-container"></div>
+                        </div>
+                        <div id="drs-week-view" class="hidden flex-1 overflow-auto min-h-0">
+                            <div id="drs-week-grid-container"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="trash-tab" class="tab-content space-y-6">
@@ -1557,7 +1655,7 @@
                 <div class="p-6 space-y-4">
                     <div id="job-no-quote-notice" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 text-[11px] text-[var(--eny-text-muted2)]">No quote linked to this job yet — ask the owner to link one so materials/hours added here apply automatically.</div>
                     <div id="job-linked-quote-section" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3">
-                        <div class="text-[10px] uppercase font-bold text-[var(--eny-text-muted2)] mb-1.5">Linked Quote</div>
+                        <div class="text-[10px] uppercase font-bold text-[var(--eny-text-muted2)] mb-1.5">Linked Quote (primary — gets on-site materials/hours)</div>
                         <div id="job-linked-quote-display" class="hidden flex items-center justify-between gap-2">
                             <span id="job-linked-quote-name" class="text-sm text-[var(--eny-text-200)]"></span>
                             <button onclick="unlinkJobQuote()" class="text-[10px] font-bold text-red-400 hover:text-red-300 cursor-pointer">Unlink</button>
@@ -1566,6 +1664,13 @@
                             <input type="text" id="job-link-quote-search" oninput="renderJobQuoteLinkOptions()" placeholder="Search quotes by client or job name..." class="w-full bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                             <div id="job-link-quote-options" class="max-h-40 overflow-y-auto space-y-1 custom-scrollbar"></div>
                         </div>
+                    </div>
+
+                    <div id="job-additional-quotes-section" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 mt-3">
+                        <div class="text-[10px] uppercase font-bold text-[var(--eny-text-muted2)] mb-1.5">Additional Quotes (view-only links — the primary quote above still handles on-site materials/hours)</div>
+                        <div id="job-additional-quotes-list" class="space-y-1.5 mb-2"></div>
+                        <input type="text" id="job-additional-quote-search" oninput="renderAdditionalQuoteLinkOptions()" placeholder="Search to attach another quote..." class="w-full bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                        <div id="job-additional-quote-options" class="max-h-32 overflow-y-auto space-y-1 custom-scrollbar mt-1.5"></div>
                     </div>
 
                     <div id="job-materials-hours-section">
@@ -1740,6 +1845,7 @@
                     <div id="quote-info-value" class="text-base font-bold text-[var(--eny-accent-text)] font-mono"></div>
                 </div>
                 <div id="quote-info-invoice-number-wrapper" class="hidden text-[11px] font-mono text-[var(--eny-text-muted)]"></div>
+                <div id="quote-info-warranty-wrapper" class="hidden"></div>
                 <div>
                     <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Pipeline Status</div>
                     <select id="quote-info-status-select" onchange="updateQuoteStatus(activeQuoteInfoModalId, this.value); closeQuoteInfoModal();" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-3 py-2.5 text-sm text-[var(--eny-text-100)]">
@@ -1765,14 +1871,24 @@
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-start gap-3 bg-[var(--eny-bg-page)]/50">
                 <div class="min-w-0">
-                    <h3 id="job-info-modal-title" class="text-base font-bold text-[var(--eny-text-primary)] truncate"></h3>
+                    <div class="flex items-center gap-2">
+                        <h3 id="job-info-modal-title" class="text-base font-bold text-[var(--eny-text-primary)] truncate"></h3>
+                        <span id="job-info-emergency-badge" class="hidden shrink-0 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-red-500/10 text-red-600 border border-red-500/30 flex items-center gap-1"><i data-lucide="siren" class="w-2.5 h-2.5"></i> Emergency</span>
+                    </div>
                     <p id="job-info-modal-meta" class="text-[11px] text-[var(--eny-text-muted2)] mt-0.5"></p>
                 </div>
                 <button onclick="closeJobInfoModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-4">
                 <div id="job-info-address" class="text-xs text-[var(--eny-text-300)]"></div>
-                <div id="job-info-engineers" class="flex flex-wrap gap-1.5"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider">Assigned To</div>
+                        <button onclick="toggleReassignPicker()" class="text-[10px] font-bold text-[var(--eny-accent-text)] hover:underline cursor-pointer flex items-center gap-1"><i data-lucide="repeat" class="w-3 h-3"></i> Reassign</button>
+                    </div>
+                    <div id="job-info-engineers" class="flex flex-wrap gap-1.5"></div>
+                    <div id="job-info-reassign-picker" class="hidden mt-2 flex flex-wrap gap-1.5 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-2.5"></div>
+                </div>
                 <div>
                     <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Actions</div>
                     <div id="job-info-actions" class="flex flex-wrap items-center gap-1.5"></div>
@@ -1781,6 +1897,111 @@
             <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
                 <button onclick="openFullWorkflowFromInfoModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"><i data-lucide="list-checks" class="w-4 h-4"></i> Open Full Job Workflow</button>
             </div>
+        </div>
+    </div>
+
+    <div id="quick-reach-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1100] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
+                <h3 class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="users-round" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Quick Reach</h3>
+                <button onclick="closeQuickReachModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div id="quick-reach-list" class="p-4 space-y-2 overflow-y-auto custom-scrollbar"></div>
+        </div>
+    </div>
+
+    <div id="drs-place-job-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1100] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col max-h-[85vh]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] flex justify-between items-center bg-[var(--eny-bg-page)]/50">
+                <h3 id="drs-place-job-title" class="text-base font-bold text-[var(--eny-text-primary)]">Book a Job</h3>
+                <button onclick="closeDrsPlaceJobModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] transition-colors cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto custom-scrollbar flex-1">
+                <div id="drs-place-job-step1">
+                    <p class="text-xs text-[var(--eny-text-muted)] mb-3">Choose a floating (unbooked) job to place into this slot:</p>
+                    <div id="drs-place-job-picker-list" class="space-y-1.5 mb-3"></div>
+                    <button onclick="startDrsCallOut()" class="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-700 font-bold text-sm py-2.5 rounded-xl cursor-pointer">
+                        <i data-lucide="siren" class="w-4 h-4"></i> CallOut
+                    </button>
+                </div>
+                <div id="drs-callout-entry" class="hidden space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Job Title *</label>
+                        <input type="text" id="drs-callout-title" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Property</label>
+                        <input type="text" id="drs-callout-property-search" oninput="filterDrsCalloutPropertyDropdown()" placeholder="Search properties..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500 mb-1.5">
+                        <select id="drs-callout-property-select" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            <option value="">-- None / Not linked --</option>
+                        </select>
+                    </div>
+                    <button onclick="confirmDrsCallOutDetails()" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-sm cursor-pointer">Continue to Time</button>
+                    <button onclick="cancelDrsCallOut()" class="text-xs text-[var(--eny-accent-text)] hover:underline cursor-pointer w-full text-center">← Back</button>
+                </div>
+                <div id="drs-place-job-step2" class="hidden space-y-4">
+                    <div id="drs-place-job-selected-summary" class="hidden text-sm font-bold text-[var(--eny-text-primary)] text-center"></div>
+                    <div id="drs-place-job-title-edit-wrapper">
+                        <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Job Title</label>
+                        <input type="text" id="drs-place-job-title-edit" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div class="flex items-center justify-center gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider text-center mb-1">Hour</label>
+                            <select id="drs-place-job-hour" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-lg font-bold text-[var(--eny-text-primary)] text-center focus:outline-none focus:border-amber-500"></select>
+                        </div>
+                        <span class="text-xl font-bold text-[var(--eny-text-muted)] mt-4">:</span>
+                        <div>
+                            <label class="block text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider text-center mb-1">Minute</label>
+                            <select id="drs-place-job-minute" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-lg font-bold text-[var(--eny-text-primary)] text-center focus:outline-none focus:border-amber-500"></select>
+                        </div>
+                    </div>
+                    <button onclick="backToDrsJobPicker()" class="text-xs text-[var(--eny-accent-text)] hover:underline cursor-pointer w-full text-center">← Choose a different job</button>
+                </div>
+            </div>
+            <div id="drs-place-job-footer" class="hidden p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
+                <button onclick="confirmDrsJobPlacement()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Confirm Booking</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reschedule-job-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
+                <h3 class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="calendar-cog" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Reschedule Job</h3>
+                <p id="reschedule-job-current-info" class="text-xs text-[var(--eny-text-muted)] mt-1"></p>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">New Date</label>
+                    <input type="date" id="reschedule-job-date" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                </div>
+                <div class="flex items-center justify-center gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider text-center mb-1">Hour</label>
+                        <select id="reschedule-job-hour" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-lg font-bold text-[var(--eny-text-primary)] text-center focus:outline-none focus:border-amber-500"></select>
+                    </div>
+                    <span class="text-xl font-bold text-[var(--eny-text-muted)] mt-4">:</span>
+                    <div>
+                        <label class="block text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider text-center mb-1">Minute</label>
+                        <select id="reschedule-job-minute" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-lg font-bold text-[var(--eny-text-primary)] text-center focus:outline-none focus:border-amber-500"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex gap-2">
+                <button onclick="confirmRescheduleJob()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Confirm</button>
+                <button onclick="closeRescheduleJobModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-300)] font-medium px-4 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="drs-multi-engineer-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
+                <h3 class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Additional Engineer Needed</h3>
+                <p id="drs-multi-engineer-subtitle" class="text-xs text-[var(--eny-text-muted)] mt-1"></p>
+            </div>
+            <div id="drs-multi-engineer-list" class="p-4 space-y-2"></div>
         </div>
     </div>
 
@@ -1960,6 +2181,19 @@
             'jmabbley@yahoo.com': 'Mabbley',
             'willbutler1404@gmail.com': 'Butler',
         };
+        // Keyed by email (stable) rather than the display name shown in the
+        // app, since engineer names are editable in Settings and could drift
+        // from these hardcoded values — falls back to the plain name if no
+        // match is found rather than producing a blank signature.
+        const EMAIL_TO_SMS_NICKNAME = {
+            'electriciansnearyou@gmail.com': 'Jordan.H',
+            'jmabbley@yahoo.com': 'Jordan.M',
+            'willbutler1404@gmail.com': 'William.B',
+        };
+        function getEngineerSmsNickname(displayName) {
+            const email = Object.keys(EMAIL_TO_ENGINEER_NAME).find(e => EMAIL_TO_ENGINEER_NAME[e] === displayName);
+            return (email && EMAIL_TO_SMS_NICKNAME[email]) || displayName;
+        }
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -1975,6 +2209,14 @@
         function isPrimaryOwnerLoggedIn() {
             const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
             return email === 'electriciansnearyou@gmail.com';
+        }
+        // Separate from isPrimaryOwnerLoggedIn deliberately — DRS access
+        // extends to more than one person, but other primary-owner-only
+        // features (like Engineer Stats) shouldn't automatically follow.
+        const DRS_AUTHORIZED_EMAILS = ['electriciansnearyou@gmail.com', 'jmabbley@yahoo.com'];
+        function isDrsAuthorized() {
+            const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
+            return DRS_AUTHORIZED_EMAILS.some(e => e.toLowerCase() === email);
         }
         function getCurrentUserEngineerName() {
             const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
@@ -2014,6 +2256,10 @@
             document.querySelectorAll('.primary-owner-only').forEach(el => {
                 el.classList.toggle('hidden', !primaryOwner);
             });
+            const drsAuthorized = isDrsAuthorized();
+            document.querySelectorAll('.drs-authorized-only').forEach(el => {
+                el.classList.toggle('hidden', !drsAuthorized);
+            });
             // Defensive: if a non-owner is somehow on an owner-only tab (e.g. was
             // signed in as owner, switched account without reloading), bounce
             // them back to the Dashboard. The real protection is still the
@@ -2027,6 +2273,12 @@
             if (!primaryOwner) {
                 const active = document.querySelector('.tab-content.active');
                 if (active && active.classList.contains('primary-owner-only-tab')) {
+                    switchTab('dashboard-tab');
+                }
+            }
+            if (!drsAuthorized) {
+                const active = document.querySelector('.tab-content.active');
+                if (active && active.classList.contains('drs-authorized-only-tab')) {
                     switchTab('dashboard-tab');
                 }
             }
@@ -2082,7 +2334,7 @@
         // Replaces confirm() throughout the app — styled to match the rest of
         // the theme. Unlike confirm(), this is non-blocking, so every caller
         // uses `await showConfirm(...)` instead of a plain if-check.
-        function showConfirm(message, { confirmText = 'Confirm', cancelText = 'Cancel', danger = false } = {}) {
+        function showConfirm(message, { confirmText = 'Confirm', cancelText = 'Cancel', danger = false, hideCancel = false } = {}) {
             return new Promise((resolve) => {
                 const modal = document.getElementById('confirm-modal');
                 document.getElementById('confirm-modal-message').innerText = message;
@@ -2091,6 +2343,7 @@
                 const icon = document.getElementById('confirm-modal-icon');
                 confirmBtn.innerText = confirmText;
                 cancelBtn.innerText = cancelText;
+                cancelBtn.classList.toggle('hidden', hideCancel);
                 confirmBtn.className = danger
                     ? 'flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer'
                     : 'flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer';
@@ -2100,6 +2353,7 @@
                 lucide.createIcons();
                 const cleanup = (result) => {
                     modal.classList.add('hidden');
+                    cancelBtn.classList.remove('hidden'); // restore for the next caller
                     confirmBtn.onclick = null;
                     cancelBtn.onclick = null;
                     resolve(result);
@@ -2201,6 +2455,10 @@
             if (!isPrimaryOwnerLoggedIn()) {
                 const targetEl = document.getElementById(targetTabId);
                 if (targetEl && targetEl.classList.contains('primary-owner-only-tab')) return;
+            }
+            if (!isDrsAuthorized()) {
+                const targetEl = document.getElementById(targetTabId);
+                if (targetEl && targetEl.classList.contains('drs-authorized-only-tab')) return;
             }
 
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -2487,6 +2745,7 @@
                 renderCalendarGrid();
                 renderTrashTab();
                 renderTodayTab();
+                renderFloatingJobsCard();
                 autoLinkJobsToQuotes();
                 if (activeJobDetailId) {
                     const openJob = currentJobs.find(j => j.id === activeJobDetailId);
@@ -2508,6 +2767,9 @@
                     const e1 = document.getElementById('setting-engineer-1'); if (e1) e1.value = currentSettings.engineer1 || 'Engineer 1';
                     const e2 = document.getElementById('setting-engineer-2'); if (e2) e2.value = currentSettings.engineer2 || 'Engineer 2';
                     const e3 = document.getElementById('setting-engineer-3'); if (e3) e3.value = currentSettings.engineer3 || 'Engineer 3';
+                    const p1 = document.getElementById('setting-engineer-1-phone'); if (p1) p1.value = currentSettings.engineer1Phone || '';
+                    const p2 = document.getElementById('setting-engineer-2-phone'); if (p2) p2.value = currentSettings.engineer2Phone || '';
+                    const p3 = document.getElementById('setting-engineer-3-phone'); if (p3) p3.value = currentSettings.engineer3Phone || '';
                 } else if (isOwnerLoggedIn()) {
                     db.collection('settings').doc('engineers').set(currentSettings);
                 }
@@ -2515,6 +2777,16 @@
                 renderJobsList();
                 renderCalendarGrid();
             }, (err) => console.error('Engineers listener error:', err));
+
+            db.collection('settings').doc('jobNumbering').onSnapshot((doc) => {
+                if (doc.exists) {
+                    currentJobNumberSettings = doc.data();
+                } else if (isOwnerLoggedIn()) {
+                    db.collection('settings').doc('jobNumbering').set(currentJobNumberSettings);
+                }
+                const field = document.getElementById('setting-next-job-number');
+                if (field) field.value = currentJobNumberSettings.nextNumber || 100001;
+            }, (err) => console.error('Job numbering listener error:', err));
 
             db.collection('stockPublic').onSnapshot((snapshot) => {
                 currentStockPublic = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -2555,6 +2827,12 @@
                     syncStockPublicMirror(currentStock);
                 }, (err) => console.error('Stock listener error:', err));
 
+                db.collection('businessCompliance').onSnapshot((snapshot) => {
+                    currentComplianceItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    renderComplianceItemsList();
+                    renderDashboard();
+                }, (err) => console.error('Business compliance listener error:', err));
+
                 db.collection('quotes').onSnapshot((snapshot) => {
                     const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     repairLegacyImportedQuotes(allDocs);
@@ -2568,7 +2846,6 @@
                     renderDashboard();
                     renderTrashTab();
                     autoLinkJobsToQuotes();
-                    filterJobFormQuoteDropdown();
                 }, (err) => console.error('Quotes listener error:', err));
 
                 db.collection('templates').onSnapshot((snapshot) => {
@@ -2605,13 +2882,145 @@
             }
         }
 
+        let currentComplianceItems = [];
+        const COMPLIANCE_TYPE_CONFIG = {
+            equipment: { nameLabel: 'Equipment Name', dateLabel: 'Last Calibrated', placeholder: 'e.g. Megger MFT1835', showEngineer: false, showSerial: true, serialLabel: 'Serial Number (optional)' },
+            qualification: { nameLabel: 'Qualification / Registration', dateLabel: 'Last Renewed', placeholder: 'e.g. NICEIC Registration, 18th Edition', showEngineer: true, showSerial: false },
+            vehicle: { nameLabel: 'Vehicle & Item', dateLabel: 'Last Renewed', placeholder: 'e.g. Van 1 - MOT', showEngineer: false, showSerial: true, serialLabel: 'Registration Plate (optional)' },
+            insurance: { nameLabel: 'Insurance Policy', dateLabel: 'Last Renewed', placeholder: 'e.g. Public Liability Insurance', showEngineer: false, showSerial: true, serialLabel: 'Policy Number (optional)' },
+            pat: { nameLabel: 'Tool Name', dateLabel: 'Last PAT Tested', placeholder: 'e.g. SDS Drill', showEngineer: false, showSerial: true, serialLabel: 'Asset/Serial Number (optional)' },
+        };
+        function setComplianceItemType(type) {
+            const config = COMPLIANCE_TYPE_CONFIG[type] || COMPLIANCE_TYPE_CONFIG.equipment;
+            document.getElementById('compliance-type-select').value = type;
+            document.getElementById('compliance-engineer-field-wrapper').classList.toggle('hidden', !config.showEngineer);
+            document.getElementById('compliance-serial-field-wrapper').classList.toggle('hidden', !config.showSerial);
+            document.getElementById('compliance-name-label').innerText = config.nameLabel;
+            document.getElementById('compliance-date-label').innerText = config.dateLabel;
+            document.getElementById('compliance-item-name').placeholder = config.placeholder;
+            if (config.showSerial) {
+                const serialLabelEl = document.getElementById('compliance-serial-label');
+                if (serialLabelEl) serialLabelEl.innerText = config.serialLabel;
+            }
+            if (config.showEngineer) {
+                const select = document.getElementById('compliance-engineer-select');
+                select.innerHTML = getEngineerNames().map(n => `<option value="${n}">${n}</option>`).join('');
+            }
+        }
+        function saveComplianceItem() {
+            const id = document.getElementById('compliance-item-id-field').value;
+            const type = document.getElementById('compliance-type-select').value;
+            const config = COMPLIANCE_TYPE_CONFIG[type] || COMPLIANCE_TYPE_CONFIG.equipment;
+            const name = document.getElementById('compliance-item-name').value.trim();
+            const lastDate = document.getElementById('compliance-last-date').value;
+            const cycleMonths = parseInt(document.getElementById('compliance-cycle-months').value) || 12;
+            if (!name) { showToast('Please give this item a name.', 'warning'); return; }
+            const payload = {
+                type, name, lastDate, cycleMonths,
+                notes: document.getElementById('compliance-notes').value.trim(),
+                serialNumber: config.showSerial ? document.getElementById('compliance-serial-number').value.trim() : null,
+                engineerName: config.showEngineer ? document.getElementById('compliance-engineer-select').value : null,
+            };
+            if (id) db.collection('businessCompliance').doc(id).update(payload);
+            else db.collection('businessCompliance').add(payload);
+            clearComplianceItemForm();
+            showToast('Saved.', 'success');
+        }
+        function clearComplianceItemForm() {
+            document.getElementById('compliance-item-id-field').value = '';
+            document.getElementById('compliance-item-name').value = '';
+            document.getElementById('compliance-serial-number').value = '';
+            document.getElementById('compliance-last-date').value = '';
+            document.getElementById('compliance-cycle-months').value = '12';
+            document.getElementById('compliance-notes').value = '';
+            setComplianceItemType('equipment');
+        }
+        function loadComplianceItemForModification(id) {
+            const item = currentComplianceItems.find(i => i.id === id);
+            if (!item) return;
+            setComplianceItemType(item.type);
+            document.getElementById('compliance-item-id-field').value = item.id;
+            document.getElementById('compliance-item-name').value = item.name;
+            document.getElementById('compliance-serial-number').value = item.serialNumber || '';
+            document.getElementById('compliance-last-date').value = item.lastDate || '';
+            document.getElementById('compliance-cycle-months').value = item.cycleMonths || 12;
+            document.getElementById('compliance-notes').value = item.notes || '';
+            if ((COMPLIANCE_TYPE_CONFIG[item.type] || {}).showEngineer && item.engineerName) document.getElementById('compliance-engineer-select').value = item.engineerName;
+        }
+        async function deleteComplianceItem(id) {
+            if (!(await showConfirm('Delete this compliance item? This cannot be undone.', { confirmText: 'Delete', danger: true }))) return;
+            db.collection('businessCompliance').doc(id).delete();
+        }
+        function renderComplianceItemsList() {
+            const listEl = document.getElementById('compliance-items-list');
+            if (!listEl) return;
+            if (currentComplianceItems.length === 0) { listEl.innerHTML = `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">Nothing tracked yet.</p>`; return; }
+            const sorted = [...currentComplianceItems].sort((a, b) => (a.type).localeCompare(b.type) || a.name.localeCompare(b.name));
+            listEl.innerHTML = sorted.map(item => {
+                const status = computeReminderStatusMonths(item.lastDate, item.cycleMonths, 30);
+                const config = COMPLIANCE_TYPE_CONFIG[item.type] || COMPLIANCE_TYPE_CONFIG.equipment;
+                const sub = config.showEngineer ? (item.engineerName || config.nameLabel) : (item.serialNumber || config.nameLabel);
+                return `<div onclick="loadComplianceItemForModification('${item.id}')" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 cursor-pointer">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="min-w-0"><div class="text-xs font-bold text-[var(--eny-text-200)] truncate">${item.name}</div><div class="text-[10px] text-[var(--eny-text-muted2)]">${sub}</div></div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            ${reminderStatusBadge(status.status, status.daysUntilDue)}
+                            <button onclick="event.stopPropagation(); deleteComplianceItem('${item.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        let currentJobNumberSettings = { nextNumber: 100001 };
+        function saveJobNumberSettings() {
+            const val = parseInt(document.getElementById('setting-next-job-number').value) || 100001;
+            currentJobNumberSettings = { nextNumber: val };
+            db.collection('settings').doc('jobNumbering').set(currentJobNumberSettings);
+        }
+        // A transaction, not a plain read-then-write — two jobs created at
+        // the same moment (DRS + Quote Builder, or two people using the app
+        // at once) must never end up with the same number. Firestore retries
+        // the transaction automatically if the counter changed underneath it.
+        async function getNextJobNumber() {
+            const ref = db.collection('settings').doc('jobNumbering');
+            const issuedNumber = await db.runTransaction(async (t) => {
+                const doc = await t.get(ref);
+                const current = (doc.exists && doc.data().nextNumber) || 100001;
+                t.set(ref, { nextNumber: current + 1 }, { merge: true });
+                return current;
+            });
+            return `J${issuedNumber}`;
+        }
+        // Looks at every job sharing the same base number and takes the
+        // highest suffix seen, rather than just incrementing whichever job
+        // was clicked — safe even if a follow-on is raised from an earlier
+        // instance (e.g. /1) after later ones (/2, /3) already exist.
+        function getNextFollowOnSuffix(baseJobNumber) {
+            const related = currentJobs.filter(j => j.jobNumber === baseJobNumber);
+            const maxSuffix = related.reduce((max, j) => Math.max(max, j.jobNumberSuffix || 1), 0);
+            return maxSuffix + 1;
+        }
+        function formatJobNumber(job) {
+            if (!job.jobNumber) return null;
+            return `${job.jobNumber}/${job.jobNumberSuffix || 1}`;
+        }
+
         function saveEngineerSettings() {
             currentSettings = {
                 engineer1: document.getElementById('setting-engineer-1').value.trim() || 'Engineer 1',
                 engineer2: document.getElementById('setting-engineer-2').value.trim() || 'Engineer 2',
                 engineer3: document.getElementById('setting-engineer-3').value.trim() || 'Engineer 3',
+                engineer1Phone: document.getElementById('setting-engineer-1-phone').value.trim(),
+                engineer2Phone: document.getElementById('setting-engineer-2-phone').value.trim(),
+                engineer3Phone: document.getElementById('setting-engineer-3-phone').value.trim(),
             };
             db.collection('settings').doc('engineers').set(currentSettings);
+        }
+        function getEngineerPhoneNumber(engineerName) {
+            const idx = getEngineerNames().indexOf(engineerName);
+            return [currentSettings.engineer1Phone, currentSettings.engineer2Phone, currentSettings.engineer3Phone][idx] || '';
         }
 
         function getEngineerNames() {
@@ -2640,44 +3049,8 @@
             }
             if (unavailableSelect) unavailableSelect.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
 
-            const checklist = document.getElementById('job-engineers-checklist');
-            if (checklist) {
-                const previouslyChecked = getSelectedJobEngineersFromForm();
-                checklist.innerHTML = names.map(n => `
-                    <label class="flex items-center gap-2 text-sm text-[var(--eny-text-200)] cursor-pointer select-none">
-                        <input type="checkbox" class="job-engineer-checkbox w-4 h-4 rounded bg-[var(--eny-bg-recessed)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] cursor-pointer" value="${n}">
-                        ${n}
-                    </label>`).join('');
-                document.querySelectorAll('.job-engineer-checkbox').forEach(chk => { if (previouslyChecked.includes(chk.value)) chk.checked = true; });
-            }
+            populateJobEngineersNeededSelect();
             renderTodayTab();
-        }
-        function getSelectedJobEngineersFromForm() {
-            return [...document.querySelectorAll('.job-engineer-checkbox:checked')].map(chk => chk.value);
-        }
-        // If one engineer has clearly done most of the recent work at this
-        // property, pre-check them rather than picking manually every time —
-        // never overrides an engineer already selected.
-        function suggestEngineerForJobProperty() {
-            const noteEl = document.getElementById('job-engineer-suggestion-note');
-            if (!noteEl) return;
-            if (getSelectedJobEngineersFromForm().length > 0) { noteEl.classList.add('hidden'); return; }
-            const propertyId = document.getElementById('job-property-select').value;
-            if (!propertyId) { noteEl.classList.add('hidden'); return; }
-            const editingJobId = document.getElementById('job-id-field').value;
-            const pastJobs = currentJobs.filter(j => j.propertyId === propertyId && j.id !== editingJobId && j.status === 'Completed');
-            if (pastJobs.length < 2) { noteEl.classList.add('hidden'); return; } // not enough history to mean anything
-            const counts = {};
-            pastJobs.forEach(j => getJobEngineers(j).forEach(name => { counts[name] = (counts[name] || 0) + 1; }));
-            const names = Object.keys(counts);
-            if (names.length === 0) { noteEl.classList.add('hidden'); return; }
-            const topName = names.reduce((a, b) => (counts[b] > counts[a] ? b : a));
-            if (counts[topName] / pastJobs.length < 0.6) { noteEl.classList.add('hidden'); return; } // no clear pattern
-            const checkbox = [...document.querySelectorAll('.job-engineer-checkbox')].find(chk => chk.value === topName);
-            if (!checkbox) { noteEl.classList.add('hidden'); return; }
-            checkbox.checked = true;
-            noteEl.classList.remove('hidden');
-            noteEl.innerText = `Auto-suggested ${topName} — they've done ${counts[topName]} of the last ${pastJobs.length} jobs here. Untick if that's wrong.`;
         }
         // Backward-compatible reader: older job records only have a single
         // assignedEngineer string; newer ones have an assignedEngineers array.
@@ -2776,6 +3149,39 @@
             else status = 'ok';
             return { dueDate, status, daysUntilDue };
         }
+        function addMonths(dateStr, months) {
+            const d = new Date(dateStr);
+            d.setMonth(d.getMonth() + months);
+            return d.toISOString().split('T')[0];
+        }
+        // Same shape and logic as computeReminderStatus, but for cycles
+        // measured in months — equipment calibration, insurance renewals,
+        // and qualifications are usually 6- or 12-month cycles, and passing
+        // a fractional year (0.5) to addYears' setFullYear wouldn't work.
+        function computeReminderStatusMonths(lastDateStr, cycleMonths, dueSoonWindowDays) {
+            const today = todayISO();
+            if (!lastDateStr) return { dueDate: null, status: 'unknown', daysUntilDue: null };
+            const dueDate = addMonths(lastDateStr, cycleMonths);
+            const daysUntilDue = daysBetween(today, dueDate);
+            let status;
+            if (daysUntilDue < 0) status = 'overdue';
+            else if (daysUntilDue <= dueSoonWindowDays) status = 'due-soon';
+            else status = 'ok';
+            return { dueDate, status, daysUntilDue };
+        }
+        // Anchors to the linked job's completion date where one exists (the
+        // work was actually finished then), falling back to the quote's own
+        // timestamp otherwise — quotes don't store a reverse link to their
+        // job, only jobs link forward to their quote, so this searches for it.
+        function computeWarrantyStatus(quote) {
+            if (!quote.warrantyMonths) return { tracked: false };
+            const linkedJob = currentJobs.find(j => j.linkedQuoteId === quote.id && j.status === 'Completed');
+            const anchorDateStr = linkedJob ? linkedJob.date : (quote.timestamp ? quote.timestamp.split(' ')[0].split('/').reverse().join('-') : null);
+            if (!anchorDateStr) return { tracked: false };
+            const expiryDate = addMonths(anchorDateStr, quote.warrantyMonths);
+            const isValid = daysBetween(todayISO(), expiryDate) >= 0;
+            return { tracked: true, anchorDateStr, expiryDate, isValid };
+        }
         // A property's overall visual state for the illustrated grid — worst
         // of the two individual checks wins. "Never tested" is deliberately
         // folded into the same bucket as "ok" rather than treated as its own
@@ -2832,10 +3238,12 @@
             scheduled: { sceneBg: 'linear-gradient(180deg, #f7ecd6, #f2dcac)', iconColor: '#a97b3a', sealGradient: 'radial-gradient(circle at 35% 30%, #eab35c, #c98a2e)', sealSymbol: '◷', sealLabel: 'DUE' },
             completed: { sceneBg: 'linear-gradient(180deg, #e8f0e2, #d9e8ce)', iconColor: '#6b8f5f', sealGradient: 'radial-gradient(circle at 35% 30%, #86b878, #5a8a4d)', sealSymbol: '✓', sealLabel: 'DONE' },
             cancelled: { sceneBg: 'linear-gradient(180deg, #ece7de, #ddd5c8)', iconColor: '#a8998a', sealGradient: 'radial-gradient(circle at 35% 30%, #b5aa9a, #8a7c6d)', sealSymbol: '✕', sealLabel: 'OFF' },
+            floating: { sceneBg: 'linear-gradient(180deg, #e3e8ee, #d3dbe4)', iconColor: '#7c8896', sealGradient: 'radial-gradient(circle at 35% 30%, #9aa7b5, #6b7684)', sealSymbol: '○', sealLabel: 'BOOK' },
         };
         function computeJobTileState(j) {
             if (j.status === 'Completed') return 'completed';
             if (j.status === 'Cancelled') return 'cancelled';
+            if (j.status === 'Floating') return 'floating';
             return 'scheduled';
         }
         // Not a pass/fail state like properties or servicing — just a type
@@ -2998,6 +3406,33 @@
                             <div class="shrink-0">${reminderStatusBadge(r.status, r.daysUntilDue)}</div>
                         </div>
                     `).join('');
+            }
+
+            // Own compliance (equipment calibration, engineer quals) — a
+            // separate panel since these aren't property-shaped, and only
+            // shown at all once something's actually being tracked, so a
+            // fresh setup doesn't show a permanently-empty panel with
+            // nothing yet to configure.
+            const compliancePanel = document.getElementById('dashboard-compliance-panel');
+            if (compliancePanel) {
+                compliancePanel.classList.toggle('hidden', currentComplianceItems.length === 0);
+                if (currentComplianceItems.length > 0) {
+                    const complianceRows = currentComplianceItems.map(item => ({ item, ...computeReminderStatusMonths(item.lastDate, item.cycleMonths, 30) }))
+                        .filter(r => r.status === 'overdue' || r.status === 'due-soon')
+                        .sort((a, b) => (a.daysUntilDue ?? 0) - (b.daysUntilDue ?? 0));
+                    const complianceListEl = document.getElementById('dashboard-compliance-list');
+                    complianceListEl.innerHTML = complianceRows.length === 0
+                        ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">Nothing overdue or due soon.</p>`
+                        : complianceRows.map(r => `
+                            <div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="text-xs font-semibold text-[var(--eny-text-200)] truncate">${r.item.name}</div>
+                                    <div class="text-[10px] text-[var(--eny-text-muted2)]">${r.item.type === 'equipment' || r.item.type === 'pat' ? 'Calibration/Test' : 'Renewal'} — due ${formatUkDate(r.dueDate)}</div>
+                                </div>
+                                <div class="shrink-0">${reminderStatusBadge(r.status, r.daysUntilDue)}</div>
+                            </div>
+                        `).join('');
+                }
             }
 
             const today = todayISO();
@@ -4235,9 +4670,14 @@
         }
         function addJobForSelectedDay() {
             closeDayDetailModal();
-            switchTab('jobs-tab');
-            clearJobForm();
-            if (selectedCalendarDate) document.getElementById('job-date').value = selectedCalendarDate;
+            if (selectedCalendarDate && isDrsAuthorized()) {
+                toggleDrsView();
+                drsCurrentDate = selectedCalendarDate;
+                renderDrsGrid();
+            } else {
+                switchTab('jobs-tab');
+                clearJobForm();
+            }
         }
 
         // ============================================================
@@ -4373,22 +4813,6 @@
         }
         // Owner-only "link ahead of time" option in the Jobs form — non-owners
         // never see this, since they can't see quotes to pick from anyway.
-        function filterJobFormQuoteDropdown() {
-            const wrapper = document.getElementById('job-form-quote-link-wrapper');
-            if (!wrapper) return;
-            wrapper.classList.toggle('hidden', !isOwnerLoggedIn());
-            if (!isOwnerLoggedIn()) return;
-            const searchInput = document.getElementById('job-form-quote-search-input');
-            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
-            const select = document.getElementById('job-form-quote-select');
-            if (!select) return;
-            const previousValue = select.value;
-            const filtered = currentQuotes.filter(q => !filterText || q.jobName.toLowerCase().includes(filterText) || q.clientDetailsPayload.name.toLowerCase().includes(filterText));
-            select.innerHTML = '<option value="">-- None / Not linked --</option>' +
-                filtered.map(q => `<option value="${q.id}">${q.jobName} — ${q.clientDetailsPayload.name} (${q.status})</option>`).join('');
-            if (filtered.some(q => q.id === previousValue)) select.value = previousValue;
-        }
-
         function findPropertyIdByAddress(address) {
             const trimmed = (address || '').trim().toLowerCase();
             if (!trimmed) return '';
@@ -4446,93 +4870,74 @@
             const editId = document.getElementById('job-id-field').value;
             const propertyId = document.getElementById('job-property-select').value;
             const property = currentProperties.find(p => p.id === propertyId);
-            const assignedEngineers = getSelectedJobEngineersFromForm();
-            if (assignedEngineers.length === 0) { showToast('Select at least one engineer for this job.', 'warning'); return; }
+            const engineersNeeded = parseInt(document.getElementById('job-engineers-needed').value) || 1;
 
             const basePayload = {
                 title: document.getElementById('job-title').value.trim(),
                 propertyId: propertyId || null,
                 propertyAddress: property ? property.address : null,
-                assignedEngineers,
-                time: document.getElementById('job-time').value || '09:00',
-                status: document.getElementById('job-status-select').value,
+                engineersNeeded,
                 notes: document.getElementById('job-notes').value.trim(),
             };
-            // Only the owner can see/set this field — if a non-owner saves the
-            // same job, leave whatever link already exists completely
-            // untouched rather than silently wiping it via an empty field
-            // they never had the chance to see.
-            if (isOwnerLoggedIn()) {
-                const selectedQuoteId = document.getElementById('job-form-quote-select').value;
-                basePayload.linkedQuoteId = selectedQuoteId || null;
-            }
-
-            const startDate = document.getElementById('job-date').value;
-            let jobDates = [startDate];
-            // Multi-day only applies to brand-new jobs — editing an existing
-            // single job record into several was more likely to cause confusion
-            // than help, so the toggle is hidden in edit mode and ignored here.
-            if (!editId && document.getElementById('job-multi-day-toggle').checked) {
-                const endDateRaw = document.getElementById('job-end-date').value;
-                if (endDateRaw && endDateRaw > startDate) {
-                    jobDates = [];
-                    let cursor = new Date(startDate + 'T00:00:00');
-                    const endCursor = new Date(endDateRaw + 'T00:00:00');
-                    let safety = 0;
-                    while (cursor <= endCursor && safety < 366) {
-                        jobDates.push(toLocalISODate(cursor));
-                        cursor.setDate(cursor.getDate() + 1);
-                        safety++;
-                    }
-                }
-            }
-
-            if (basePayload.status === 'Scheduled') {
-                const allUnavailable = new Set();
-                const allDoubleBooked = new Set();
-                jobDates.forEach(d => {
-                    assignedEngineers.filter(name => isEngineerUnavailable(name, d)).forEach(n => allUnavailable.add(n));
-                    findDoubleBookedEngineers(assignedEngineers, d, editId || null, basePayload.time).forEach(n => allDoubleBooked.add(n));
-                });
-                if (allUnavailable.size > 0) {
-                    const names = [...allUnavailable].join(' and ');
-                    if (!(await showConfirm(`${names} ${allUnavailable.size === 1 ? 'is' : 'are'} marked unavailable on one or more of these day(s). Schedule anyway?`))) return;
-                }
-                if (allDoubleBooked.size > 0) {
-                    const names = [...allDoubleBooked].join(' and ');
-                    if (!(await showConfirm(`${names} already ${allDoubleBooked.size === 1 ? 'has' : 'have'} a job around this time on one or more of these day(s). Schedule this too?`))) return;
-                }
-            }
 
             if (editId) {
-                const existing = currentJobs.find(j => j.id === editId);
-                const existingCalendarEventId = existing ? existing.calendarEventId : null;
-                const payload = { ...basePayload, date: startDate };
-                await db.collection('jobs').doc(editId).update(payload);
-                if (isGoogleCalendarConnected()) {
-                    const eventId = await pushJobToCalendar(payload, existingCalendarEventId);
-                    if (eventId) db.collection('jobs').doc(editId).update({ calendarEventId: eventId });
-                }
+                // Editing only ever touches these basic details — once a job
+                // is actually booked, date/time/engineer/status changes
+                // happen through DRS or the job itself, not this form.
+                await db.collection('jobs').doc(editId).update(basePayload);
             } else {
-                for (const d of jobDates) {
-                    const jobNumber = await getNextSequentialNumber('jobNumberCounter', 'JOB');
-                    const payload = { ...basePayload, date: d, jobNumber, createdAt: new Date().toISOString() };
-                    const ref = await db.collection('jobs').add(payload);
-                    if (isGoogleCalendarConnected()) {
-                        const eventId = await pushJobToCalendar(payload, null);
-                        if (eventId) db.collection('jobs').doc(ref.id).update({ calendarEventId: eventId });
-                    }
-                }
+                const jobNumber = await getNextJobNumber();
+                const payload = {
+                    ...basePayload,
+                    status: 'Floating', date: null, time: null, assignedEngineers: [],
+                    isEmergency: false, linkedQuoteId: null,
+                    jobNumber, jobNumberSuffix: 1,
+                    floatingSince: new Date().toISOString(),
+                };
+                await db.collection('jobs').add(payload);
             }
             clearJobForm();
         }
-        function toggleJobMultiDayField() {
-            const checked = document.getElementById('job-multi-day-toggle').checked;
-            document.getElementById('job-end-date-wrapper').classList.toggle('hidden', !checked);
+        // EMERGENCY CALL-OUT RATES — the brief described "before 00:00" and
+        // "after 00:01am" as two conditions, which describe almost the same
+        // moment if read literally (both are about midnight). Read instead
+        // as: a call-out starting in the evening/daytime is the lower tier;
+        // one starting in the small hours after midnight — genuinely
+        // unsociable — is the higher tier. Overnight is defined here as
+        // midnight up to 6am; adjust EMERGENCY_OVERNIGHT_END_HOUR directly
+        // if that boundary should sit somewhere else. £45/hr after the
+        // first hour is only stated for the lower tier in the brief — kept
+        // the same for the overnight tier too since no separate figure was
+        // given; change EMERGENCY_RATE_OVERNIGHT_SUBSEQUENT_HOUR if that's
+        // wrong.
+        const EMERGENCY_RATE_EVENING_FIRST_HOUR = 100;
+        const EMERGENCY_RATE_EVENING_SUBSEQUENT_HOUR = 45;
+        const EMERGENCY_RATE_OVERNIGHT_FIRST_HOUR = 150;
+        const EMERGENCY_RATE_OVERNIGHT_SUBSEQUENT_HOUR = 45;
+        const EMERGENCY_OVERNIGHT_END_HOUR = 6; // midnight up to (not including) this hour counts as overnight
+        function getEmergencyRateTier(timeStr) {
+            const hours = parseInt((timeStr || '09:00').split(':')[0]);
+            const isOvernight = hours >= 0 && hours < EMERGENCY_OVERNIGHT_END_HOUR;
+            return isOvernight
+                ? { firstHour: EMERGENCY_RATE_OVERNIGHT_FIRST_HOUR, subsequentHour: EMERGENCY_RATE_OVERNIGHT_SUBSEQUENT_HOUR, label: `Overnight (midnight–${EMERGENCY_OVERNIGHT_END_HOUR}am)` }
+                : { firstHour: EMERGENCY_RATE_EVENING_FIRST_HOUR, subsequentHour: EMERGENCY_RATE_EVENING_SUBSEQUENT_HOUR, label: 'Standard emergency rate' };
+        }
+        function computeEmergencyInvoiceTotal(totalMinutes, tier) {
+            if (totalMinutes <= 0) return 0;
+            const firstHourMinutes = Math.min(totalMinutes, 60);
+            const extraMinutes = Math.max(0, totalMinutes - 60);
+            // Any part of a subsequent hour is billed as a full hour —
+            // standard, fair call-out billing convention.
+            const extraHoursBilled = Math.ceil(extraMinutes / 60);
+            return tier.firstHour + (extraHoursBilled * tier.subsequentHour);
         }
         function loadJobForModification(jobId) {
             const j = currentJobs.find(x => x.id === jobId);
             if (!j) return;
+            if (j.status !== 'Floating') {
+                showToast('This job is already booked — use DRS or the job\'s own actions to change it.', 'info');
+                return;
+            }
             switchTab('jobs-tab');
             expandCollapsibleForm('job-form-wrapper', 'job-form-chevron');
             const searchInput = document.getElementById('job-property-search-input');
@@ -4541,17 +4946,8 @@
             document.getElementById('job-id-field').value = j.id;
             document.getElementById('job-title').value = j.title || '';
             document.getElementById('job-property-select').value = j.propertyId || '';
-            const engineersForThisJob = getJobEngineers(j);
-            document.querySelectorAll('.job-engineer-checkbox').forEach(chk => { chk.checked = engineersForThisJob.includes(chk.value); });
-            document.getElementById('job-date').value = j.date || '';
-            document.getElementById('job-time').value = j.time || '09:00';
-            document.getElementById('job-status-select').value = j.status || 'Scheduled';
+            document.getElementById('job-engineers-needed').value = j.engineersNeeded || 1;
             document.getElementById('job-notes').value = j.notes || '';
-            document.getElementById('job-multi-day-row').classList.add('hidden');
-            const quoteSearchInput = document.getElementById('job-form-quote-search-input');
-            if (quoteSearchInput) quoteSearchInput.value = '';
-            filterJobFormQuoteDropdown();
-            document.getElementById('job-form-quote-select').value = j.linkedQuoteId || '';
             document.getElementById('job-form-title').innerText = 'Modify Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Job`;
             document.getElementById('job-cancel-btn').classList.remove('hidden');
@@ -4561,22 +4957,23 @@
         function clearJobForm() {
             document.getElementById('job-form').reset();
             document.getElementById('job-id-field').value = '';
-            document.getElementById('job-time').value = '09:00';
-            document.querySelectorAll('.job-engineer-checkbox').forEach(chk => { chk.checked = false; });
+            populateJobEngineersNeededSelect();
             const searchInput = document.getElementById('job-property-search-input');
             if (searchInput) searchInput.value = '';
             filterJobPropertyDropdown();
-            document.getElementById('job-multi-day-row').classList.remove('hidden');
-            document.getElementById('job-multi-day-toggle').checked = false;
-            document.getElementById('job-end-date').value = '';
-            document.getElementById('job-end-date-wrapper').classList.add('hidden');
-            const quoteSearchInput = document.getElementById('job-form-quote-search-input');
-            if (quoteSearchInput) quoteSearchInput.value = '';
-            filterJobFormQuoteDropdown();
             document.getElementById('job-form-title').innerText = 'Add Job';
-            document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Save Job`;
+            document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Raise Job`;
             document.getElementById('job-cancel-btn').classList.add('hidden');
             lucide.createIcons();
+        }
+        // Options run up to however many engineers are actually configured,
+        // rather than a hardcoded 1-3, so it stays correct if the team grows.
+        function populateJobEngineersNeededSelect() {
+            const select = document.getElementById('job-engineers-needed');
+            if (!select) return;
+            const count = Math.max(1, getEngineerNames().length);
+            select.innerHTML = Array.from({ length: count }, (_, i) => i + 1)
+                .map(n => `<option value="${n}">${n} Engineer${n > 1 ? 's' : ''}</option>`).join('');
         }
         async function deleteJob(jobId) {
             if (!(await showConfirm('Move this job to Trash? You can restore it within 30 days.', { confirmText: 'Move to Trash', danger: true }))) return;
@@ -4590,9 +4987,20 @@
             if (newStatus === 'Cancelled' && j.calendarEventId && isGoogleCalendarConnected()) {
                 await deleteCalendarEvent(j.calendarEventId);
                 await db.collection('jobs').doc(jobId).update({ status: newStatus, calendarEventId: null });
-            } else {
-                await db.collection('jobs').doc(jobId).update({ status: newStatus });
+                return;
             }
+            if (newStatus === 'Completed' && j.isEmergency) {
+                // This "quick action" path skips the full Today-tab workflow
+                // entirely (no signature, no stopping a timer along the way) —
+                // finalize whatever timer data exists here so the auto-invoice
+                // still generates correctly, exactly as it would going through
+                // the full workflow.
+                const settledEngineerState = await stopAllRunningEngineerTimersForJob(j);
+                await db.collection('jobs').doc(jobId).update({ status: newStatus });
+                await generateEmergencyInvoice(j, settledEngineerState);
+                return;
+            }
+            await db.collection('jobs').doc(jobId).update({ status: newStatus });
         }
         // ============================================================
         // TODAY TAB + JOB WORKFLOW (Accept -> Start -> Complete)
@@ -4890,6 +5298,37 @@
             document.getElementById('job-detail-comments-section').classList.remove('hidden');
             document.getElementById('job-detail-action-area').innerHTML = '';
         }
+        // Auto-generates an invoice for an emergency call-out the moment its
+        // timer is finalized — using the same simplified single-line PDF
+        // layout already built for completed-service invoices, so it needs
+        // no new rendering logic, just the right payload shape.
+        async function generateEmergencyInvoice(job, settledEngineerState) {
+            const totalMinutes = Object.values(settledEngineerState).reduce((sum, s) => sum + (s.totalMinutes || 0), 0);
+            const tier = getEmergencyRateTier(job.time);
+            const total = computeEmergencyInvoiceTotal(totalMinutes, tier);
+            if (total <= 0) return; // timer was never actually used — nothing to bill
+            const client = findClientForJob(job);
+            const hours = Math.floor(totalMinutes / 60), mins = totalMinutes % 60;
+            const payload = {
+                jobName: job.title,
+                linkedClientId: client ? client.id : null,
+                clientDetailsPayload: {
+                    name: client ? client.name : 'Unknown Client',
+                    email: client ? client.email : '',
+                    phone: client ? client.phone : '',
+                    address: job.propertyAddress || '',
+                },
+                financials: { netMaterialsExVat: 0, materialsVat: 0, markedMaterials: total, laborCosts: 0, testingCosts: 0, sundriesAmount: 0, grossTotal: total, markupApplied: 0 },
+                isServiceInvoice: true,
+                serviceLabel: `Emergency Call-Out — ${job.title} (${tier.label}, ${hours}h ${mins}m on site)`,
+                status: 'Invoiced',
+                materials: [],
+                timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+            };
+            const ref = await db.collection('quotes').add(payload);
+            await db.collection('jobs').doc(job.id).update({ linkedQuoteId: ref.id });
+            showToast(`Emergency call-out invoice auto-generated: £${total.toFixed(2)} (${tier.label}).`, 'success');
+        }
         async function resolveJobOutcome(outcome) {
             const jobId = activeJobDetailId;
             const job = currentJobs.find(j => j.id === jobId);
@@ -4899,6 +5338,7 @@
 
             if (outcome === 'Completed') {
                 await db.collection('jobs').doc(jobId).update({ operativeComments: comments, completionOutcome: 'Completed' });
+                if (job.isEmergency) await generateEmergencyInvoice(job, settledEngineerState);
                 // Signature capture already stops here with its own Save flow —
                 // the job is marked Completed once that's actually saved, not
                 // before, so a job never shows "done" without being signed off
@@ -5006,6 +5446,52 @@
                 pickerEl.classList.remove('hidden');
                 renderJobQuoteLinkOptions();
             }
+            renderAdditionalQuotesSection(job);
+        }
+        // Deliberately separate from the primary linked quote above — these
+        // are just extra quotes associated with the same job for visibility
+        // (e.g. phased work quoted separately), not wired into the on-site
+        // materials/hours auto-add behaviour, which stays tied to the one
+        // primary quote only.
+        function renderAdditionalQuotesSection(job) {
+            const section = document.getElementById('job-additional-quotes-section');
+            if (!section) return;
+            if (!isOwnerLoggedIn()) { section.classList.add('hidden'); return; }
+            section.classList.remove('hidden');
+            const ids = job.additionalQuoteIds || [];
+            const listEl = document.getElementById('job-additional-quotes-list');
+            listEl.innerHTML = ids.length === 0 ? `<p class="text-[11px] text-[var(--eny-text-muted2)] italic">None attached.</p>` :
+                ids.map(id => {
+                    const quote = currentQuotes.find(q => q.id === id);
+                    const label = quote ? `${quote.jobName} — ${quote.clientDetailsPayload.name} (£${quote.financials.grossTotal.toFixed(2)})` : 'Quote not found (may have been deleted)';
+                    return `<div class="flex items-center justify-between gap-2 bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded-lg p-2">
+                        <span class="text-xs text-[var(--eny-text-200)] truncate">${label}</span>
+                        <button onclick="removeAdditionalQuoteFromJob('${job.id}', '${id}')" class="text-[10px] font-bold text-red-400 hover:text-red-300 cursor-pointer shrink-0">Remove</button>
+                    </div>`;
+                }).join('');
+            renderAdditionalQuoteLinkOptions();
+        }
+        function renderAdditionalQuoteLinkOptions() {
+            const job = currentJobs.find(j => j.id === activeJobDetailId);
+            const optionsEl = document.getElementById('job-additional-quote-options');
+            if (!job || !optionsEl) return;
+            const searchInput = document.getElementById('job-additional-quote-search');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            if (!filterText) { optionsEl.innerHTML = ''; return; }
+            const alreadyAttached = new Set([job.linkedQuoteId, ...(job.additionalQuoteIds || [])].filter(Boolean));
+            const filtered = currentQuotes.filter(q => !alreadyAttached.has(q.id) && (q.jobName.toLowerCase().includes(filterText) || q.clientDetailsPayload.name.toLowerCase().includes(filterText))).slice(0, 10);
+            optionsEl.innerHTML = filtered.length === 0 ? `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-2">No matching quotes.</p>` : filtered.map(q => `
+                <button onclick="addAdditionalQuoteToJob('${job.id}', '${q.id}')" class="w-full text-left bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] hover:border-amber-500 rounded-lg p-2 text-[11px] text-[var(--eny-text-300)] cursor-pointer">
+                    ${q.jobName} — ${q.clientDetailsPayload.name} <span class="text-[var(--eny-text-muted2)]">(${q.status})</span>
+                </button>`).join('');
+        }
+        async function addAdditionalQuoteToJob(jobId, quoteId) {
+            await db.collection('jobs').doc(jobId).update({ additionalQuoteIds: firebase.firestore.FieldValue.arrayUnion(quoteId) });
+            const searchInput = document.getElementById('job-additional-quote-search');
+            if (searchInput) searchInput.value = '';
+        }
+        async function removeAdditionalQuoteFromJob(jobId, quoteId) {
+            await db.collection('jobs').doc(jobId).update({ additionalQuoteIds: firebase.firestore.FieldValue.arrayRemove(quoteId) });
         }
         function renderJobQuoteLinkOptions() {
             const searchInput = document.getElementById('job-link-quote-search');
@@ -5237,6 +5723,8 @@
             const quickActions = j.status === 'Scheduled' ? `
                 <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-[var(--eny-text-muted)] hover:text-emerald-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
                 <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>` : '';
+            const assignEngineerBtn = ((j.status === 'Scheduled' || j.status === 'Accepted') && isDrsAuthorized()) ? `<button onclick="openDrsAssignAdditionalEngineer('${j.id}')" title="Assign an additional engineer" class="text-[var(--eny-text-muted)] hover:text-purple-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i></button>` : '';
+            const rescheduleBtn = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? `<button onclick="openRescheduleJobModal('${j.id}')" title="Reschedule to a different day" class="text-[var(--eny-text-muted)] hover:text-blue-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="calendar-cog" class="w-3.5 h-3.5"></i></button>` : '';
             const reviewClient = (j.status === 'Completed' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
             const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
             const signatureBtn = j.status === 'Completed' ? `<button onclick="openSignatureModal('${j.id}')" title="${j.signature ? 'View/redo signature' : 'Get client signature'}" class="${j.signature ? 'text-emerald-400 hover:text-emerald-300' : 'text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)]'} p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="${j.signature ? 'file-check' : 'pen-tool'}" class="w-3.5 h-3.5"></i></button>` : '';
@@ -5244,9 +5732,66 @@
             const onMyWayBtn = (onMyWayClient && onMyWayClient.phone) ? `<button onclick="sendOnMyWayMessage('${j.id}')" title="Send 'on my way' to ${onMyWayClient.name}" class="text-[var(--eny-text-muted)] hover:text-blue-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="navigation" class="w-3.5 h-3.5"></i></button>` : '';
             const reminderClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
             const reminderBtn = (reminderClient && reminderClient.phone) ? `<button onclick="openSendReminderModal('${j.id}')" title="Send reminder to ${reminderClient.name}" class="text-[var(--eny-text-muted)] hover:text-emerald-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>` : '';
-            return `${quickActions}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}
+            const handoffBtns = (j.status === 'Completed' && isDrsAuthorized()) ? `
+                <button onclick="confirmAndPerformHandoff('${j.id}', 'rebook')" title="Rebook — job wasn't attended, raise it again" class="text-[var(--eny-text-muted)] hover:text-amber-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i></button>
+                <button onclick="confirmAndPerformHandoff('${j.id}', 'followon')" title="Raise a follow-on for another day" class="text-[var(--eny-text-muted)] hover:text-blue-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="git-branch" class="w-3.5 h-3.5"></i></button>` : '';
+            const generateInvoiceBtn = (j.status === 'Completed' && !j.linkedQuoteId && isDrsAuthorized()) ? `<button onclick="manuallyGenerateEmergencyInvoice('${j.id}')" title="Generate invoice from time on site" class="text-[var(--eny-text-muted)] hover:text-emerald-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="receipt" class="w-3.5 h-3.5"></i></button>` : '';
+            return `${quickActions}${assignEngineerBtn}${rescheduleBtn}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}${generateInvoiceBtn}
                 <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 <button onclick="deleteJob('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
+        }
+        // Uses existing timer data if any was logged; otherwise prompts for
+        // the actual duration, so this works as a reliable manual fallback
+        // regardless of whether the timer was ever started — that's the
+        // whole point of having a manual button at all.
+        async function manuallyGenerateEmergencyInvoice(jobId) {
+            const j = currentJobs.find(x => x.id === jobId);
+            if (!j) return;
+            const existingMinutes = Object.values(j.engineerState || {}).reduce((sum, s) => sum + (s.totalMinutes || 0), 0);
+            let settledEngineerState = j.engineerState || {};
+            let totalMinutes = existingMinutes;
+            if (totalMinutes <= 0) {
+                const enteredRaw = prompt('No timer data was logged for this job. How many minutes did it actually take?', '60');
+                if (!enteredRaw) return;
+                const entered = parseInt(enteredRaw);
+                if (!entered || entered <= 0) { showToast('Please enter a valid number of minutes.', 'warning'); return; }
+                settledEngineerState = { 'Manual entry': { totalMinutes: entered } };
+                totalMinutes = entered;
+            }
+            if (j.isEmergency) {
+                await generateEmergencyInvoice(j, settledEngineerState);
+                return;
+            }
+            // Ordinary (non-emergency) jobs have no fixed rate structure to
+            // fall back on, so ask for one — this is genuinely a manual,
+            // one-off invoice, not something with an automatic tier like
+            // call-outs have.
+            const hours = Math.floor(totalMinutes / 60), mins = totalMinutes % 60;
+            const rateRaw = prompt(`This job logged ${hours}h ${mins}m on site. What hourly rate should be used?`, '45');
+            if (!rateRaw) return;
+            const rate = parseFloat(rateRaw);
+            if (!rate || rate <= 0) { showToast('Please enter a valid hourly rate.', 'warning'); return; }
+            const total = Math.round((rate * totalMinutes / 60) * 100) / 100;
+            const client = findClientForJob(j);
+            const payload = {
+                jobName: j.title,
+                linkedClientId: client ? client.id : null,
+                clientDetailsPayload: {
+                    name: client ? client.name : 'Unknown Client',
+                    email: client ? client.email : '',
+                    phone: client ? client.phone : '',
+                    address: j.propertyAddress || '',
+                },
+                financials: { netMaterialsExVat: 0, materialsVat: 0, markedMaterials: total, laborCosts: 0, testingCosts: 0, sundriesAmount: 0, grossTotal: total, markupApplied: 0 },
+                isServiceInvoice: true,
+                serviceLabel: `${j.title} (${hours}h ${mins}m on site at £${rate}/hr)`,
+                status: 'Invoiced',
+                materials: [],
+                timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+            };
+            const ref = await db.collection('quotes').add(payload);
+            await db.collection('jobs').doc(j.id).update({ linkedQuoteId: ref.id });
+            showToast(`Invoice generated: £${total.toFixed(2)} (${hours}h ${mins}m at £${rate}/hr).`, 'success');
         }
         let activeJobInfoModalId = null;
         function openJobInfoModal(jobId) {
@@ -5255,6 +5800,7 @@
             activeJobInfoModalId = jobId;
             document.getElementById('job-info-modal-title').innerText = j.title;
             document.getElementById('job-info-modal-meta').innerText = `${formatUkDate(j.date)} at ${j.time || '—'} · ${j.status}`;
+            document.getElementById('job-info-emergency-badge').classList.toggle('hidden', !j.isEmergency);
             const addressEl = document.getElementById('job-info-address');
             if (j.propertyAddress) { addressEl.classList.remove('hidden'); addressEl.innerText = j.propertyAddress; }
             else addressEl.classList.add('hidden');
@@ -5271,6 +5817,830 @@
         function closeJobInfoModal() {
             document.getElementById('job-info-modal').classList.add('hidden');
             activeJobInfoModalId = null;
+        }
+        let activeRescheduleJobId = null;
+        function openRescheduleJobModal(jobId) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            activeRescheduleJobId = jobId;
+            document.getElementById('reschedule-job-current-info').innerText = `Currently: ${formatUkDate(job.date)} at ${job.time || '—'}`;
+            document.getElementById('reschedule-job-date').value = job.date;
+            const [h, m] = (job.time || '09:00').split(':').map(Number);
+            const hourSelect = document.getElementById('reschedule-job-hour');
+            hourSelect.innerHTML = '';
+            for (let hh = 0; hh <= 23; hh++) hourSelect.innerHTML += `<option value="${hh}" ${hh === h ? 'selected' : ''}>${String(hh).padStart(2,'0')}</option>`;
+            const minuteSelect = document.getElementById('reschedule-job-minute');
+            minuteSelect.innerHTML = '';
+            const nearestTen = Math.round(m / 10) * 10 % 60;
+            for (let mm = 0; mm < 60; mm += 10) minuteSelect.innerHTML += `<option value="${mm}" ${mm === nearestTen ? 'selected' : ''}>${String(mm).padStart(2,'0')}</option>`;
+            document.getElementById('reschedule-job-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeRescheduleJobModal() {
+            document.getElementById('reschedule-job-modal').classList.add('hidden');
+            activeRescheduleJobId = null;
+        }
+        async function confirmRescheduleJob() {
+            if (!activeRescheduleJobId) return;
+            const job = currentJobs.find(j => j.id === activeRescheduleJobId);
+            if (!job) { showToast('That job could not be found.', 'warning'); closeRescheduleJobModal(); return; }
+            const newDate = document.getElementById('reschedule-job-date').value;
+            if (!newDate) { showToast('Please choose a date.', 'warning'); return; }
+            const hour = document.getElementById('reschedule-job-hour').value.padStart(2, '0');
+            const minute = document.getElementById('reschedule-job-minute').value.padStart(2, '0');
+            const newTime = `${hour}:${minute}`;
+
+            const engineers = getJobEngineers(job);
+            const conflicts = findDoubleBookedEngineers(engineers, newDate, job.id, newTime);
+            if (conflicts.length > 0) {
+                if (!(await showConfirm(`${conflicts.join(', ')} already ${conflicts.length === 1 ? 'has' : 'have'} a job around this time on ${formatUkDate(newDate)}. Reschedule anyway?`))) return;
+            }
+
+            await db.collection('jobs').doc(job.id).update({ date: newDate, time: newTime });
+            if (isGoogleCalendarConnected()) {
+                try {
+                    const eventId = await pushJobToCalendar({ title: job.title, propertyAddress: job.propertyAddress, date: newDate, time: newTime, assignedEngineers: engineers, notes: job.notes || '' }, job.calendarEventId || null);
+                    if (eventId && eventId !== job.calendarEventId) await db.collection('jobs').doc(job.id).update({ calendarEventId: eventId });
+                } catch (e) { console.error('Failed to update Google Calendar for rescheduled job:', e); }
+            }
+            closeRescheduleJobModal();
+            closeJobInfoModal();
+            renderDrsGrid();
+            showDrsSidebarPanel(drsActiveSidebarPanel);
+            const client = findClientForJob(job);
+            if (client && client.phone) {
+                const engineerName = engineers[0];
+                const nickname = engineerName ? getEngineerSmsNickname(engineerName) : '';
+                const firstName = (client.name || '').split(' ')[0];
+                const message = `Hi ${firstName}, your job has been rescheduled to ${formatUkDate(newDate)} at ${newTime}${nickname ? ' with ' + nickname : ''}. Thanks, ENY Electrical.`;
+                openSendMessageModal(client.name, client.phone, message);
+            } else {
+                showToast(`Job rescheduled to ${formatUkDate(newDate)} at ${newTime}.`, 'success');
+            }
+        }
+        // Rebook (job not attended, same day needed again) and Follow-On
+        // (more work needed, different day) both complete the original job
+        // immediately and raise a new floating job with the next number
+        // suffix — no date prompt, no approval step. DRS's Floating Jobs
+        // panel is where it actually gets booked in.
+        async function confirmAndPerformHandoff(jobId, type) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const message = type === 'rebook'
+                ? `Mark "${job.title}" as Not Attended and raise it again as a floating job to book?`
+                : `Close off "${job.title}" and raise a follow-on as a floating job to book?`;
+            if (!(await showConfirm(message, { confirmText: 'Yes, raise it' }))) return;
+            await performJobHandoff(jobId, type);
+        }
+        async function performJobHandoff(jobId, type) {
+            const originalJob = currentJobs.find(j => j.id === jobId);
+            if (!originalJob) return;
+            let baseNumber = originalJob.jobNumber;
+            let newSuffix;
+            if (!baseNumber) {
+                baseNumber = await getNextJobNumber();
+                await db.collection('jobs').doc(originalJob.id).update({ jobNumber: baseNumber, jobNumberSuffix: 1 });
+                newSuffix = 2;
+            } else {
+                newSuffix = getNextFollowOnSuffix(baseNumber);
+            }
+            const oldJobUpdate = type === 'rebook'
+                ? { status: 'Completed', completionOutcome: 'Not Attended' }
+                : { status: 'Completed' }; // follow-on: original genuinely was completed, just closed off
+            await db.collection('jobs').doc(originalJob.id).update(oldJobUpdate);
+            await db.collection('jobs').add({
+                title: originalJob.title, propertyId: originalJob.propertyId, propertyAddress: originalJob.propertyAddress,
+                notes: originalJob.notes || '', engineersNeeded: originalJob.engineersNeeded || 1,
+                assignedEngineers: [], date: null, time: null, status: 'Floating',
+                isEmergency: false, linkedQuoteId: originalJob.linkedQuoteId || null,
+                jobNumber: baseNumber, jobNumberSuffix: newSuffix,
+                floatingSince: new Date().toISOString(),
+            });
+            closeJobInfoModal();
+            showToast(`${type === 'rebook' ? 'Rebook' : 'Follow-on'} raised as ${baseNumber}/${newSuffix} — ready to book in DRS.`, 'success');
+        }
+        function toggleReassignPicker() {
+            const picker = document.getElementById('job-info-reassign-picker');
+            const isOpening = picker.classList.contains('hidden');
+            if (!isOpening) { picker.classList.add('hidden'); return; }
+            const job = currentJobs.find(j => j.id === activeJobInfoModalId);
+            if (!job) return;
+            const currentlyAssigned = getJobEngineers(job);
+            const others = getEngineerNames().filter(name => !currentlyAssigned.includes(name));
+            picker.innerHTML = others.length === 0
+                ? `<p class="text-[11px] text-[var(--eny-text-muted2)] italic">No other engineers to hand off to.</p>`
+                : others.map(name => { const c = getEngineerColorClass(name); return `<button onclick="reassignJobTo('${job.id}', '${name}')" class="text-xs font-bold px-2.5 py-1.5 rounded-lg border cursor-pointer ${c.badge} hover:opacity-80">${name}</button>`; }).join('');
+            picker.classList.remove('hidden');
+        }
+        async function reassignJobTo(jobId, newEngineerName) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            // Same conflict check as the full save form — quick handoff
+            // shouldn't skip the one safety net that actually matters, just
+            // the rest of the friction.
+            if (job.status === 'Scheduled') {
+                const conflicts = findDoubleBookedEngineers([newEngineerName], job.date, jobId, job.time);
+                if (conflicts.length > 0) {
+                    if (!(await showConfirm(`${newEngineerName} already has a job around this time on ${formatUkDate(job.date)}. Hand this one off anyway?`))) return;
+                }
+            }
+            await db.collection('jobs').doc(jobId).update({ assignedEngineers: [newEngineerName] });
+            showToast(`Handed off to ${newEngineerName}.`, 'success');
+            closeJobInfoModal();
+        }
+        // ===== DRS (Dynamic Resource Manager) =====
+        let drsCurrentDate = todayISO();
+        let drsWeekViewActive = false;
+        const DRS_START_HOUR = 0;
+        const DRS_END_HOUR = 24;
+        const DRS_MIN_PIXELS_PER_MINUTE = 0.6;
+        const DRS_MAX_PIXELS_PER_MINUTE = 3.2;
+        let DRS_PIXELS_PER_MINUTE = DRS_MIN_PIXELS_PER_MINUTE;
+        let drsPreviousTabId = 'today-tab';
+        function toggleDrsView() {
+            const drsTab = document.getElementById('drs-tab');
+            const isCurrentlyInDrs = drsTab && drsTab.classList.contains('active');
+            if (isCurrentlyInDrs) {
+                document.getElementById('main-nav-bar').classList.remove('hidden');
+                switchTab(drsPreviousTabId);
+                return;
+            }
+            const activeTab = document.querySelector('.tab-content.active');
+            drsPreviousTabId = activeTab ? activeTab.id : 'today-tab';
+            document.getElementById('main-nav-bar').classList.add('hidden');
+            switchTab('drs-tab');
+            drsCurrentDate = todayISO();
+            renderDrsGrid();
+            drsSyncCalendarUnavailability();
+            showDrsSidebarPanel('booked');
+            initDrsPinchZoom();
+        }
+        // Pulls fresh Google Calendar events for the currently-viewed month
+        // and lets the existing syncAutoUnavailabilityFromEvents logic (already
+        // built for the Calendar tab) turn any engineer-named events into
+        // unavailability records — which DRS already reads from directly, so
+        // this is the one piece needed to keep DRS in sync independently of
+        // whether anyone's actually opened the Calendar tab. Deliberately
+        // NOT called from inside renderDrsGrid itself — its callback here
+        // re-renders once new data lands, and doing that the other way
+        // around would re-trigger this on every render, indefinitely (even
+        // once fully cached, it'd still loop).
+        function drsSyncCalendarUnavailability() {
+            if (!isGoogleCalendarConnected()) return;
+            const d = new Date(drsCurrentDate + 'T00:00:00');
+            const targetYear = d.getFullYear(), targetMonth = d.getMonth();
+            fetchGoogleCalendarEventsForMonth(targetYear, targetMonth).then(() => {
+                const currentD = new Date(drsCurrentDate + 'T00:00:00');
+                if (currentD.getFullYear() === targetYear && currentD.getMonth() === targetMonth) renderDrsGrid();
+            });
+        }
+        // Two-finger pinch adjusts the grid's time density (pixels per
+        // minute) rather than the browser's native page zoom — touch-action
+        // on the container stops the browser fighting this for the pinch
+        // gesture specifically, while still allowing normal vertical scroll.
+        let drsPinchStartDistance = null;
+        let drsPinchStartScale = null;
+        function drsGetTouchDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        function initDrsPinchZoom() {
+            const container = document.getElementById('drs-day-view');
+            if (!container || container.dataset.pinchInit) return;
+            container.dataset.pinchInit = 'true';
+            container.style.touchAction = 'pan-y';
+            container.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    drsPinchStartDistance = drsGetTouchDistance(e.touches);
+                    drsPinchStartScale = DRS_PIXELS_PER_MINUTE;
+                }
+            }, { passive: true });
+            container.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2 && drsPinchStartDistance) {
+                    e.preventDefault();
+                    const ratio = drsGetTouchDistance(e.touches) / drsPinchStartDistance;
+                    const newScale = Math.min(DRS_MAX_PIXELS_PER_MINUTE, Math.max(DRS_MIN_PIXELS_PER_MINUTE, drsPinchStartScale * ratio));
+                    if (Math.abs(newScale - DRS_PIXELS_PER_MINUTE) > 0.02) {
+                        DRS_PIXELS_PER_MINUTE = newScale;
+                        requestAnimationFrame(() => { if (!drsWeekViewActive) renderDrsGrid(); });
+                    }
+                }
+            }, { passive: false });
+            container.addEventListener('touchend', (e) => {
+                if (e.touches.length < 2) { drsPinchStartDistance = null; drsPinchStartScale = null; }
+            }, { passive: true });
+        }
+        function drsGoToDate(dateStr) {
+            if (!dateStr) return;
+            drsCurrentDate = dateStr;
+            renderDrsGrid();
+            drsSyncCalendarUnavailability();
+        }
+        function drsNavigateDay(delta) {
+            const stepDays = drsWeekViewActive ? delta * 7 : delta;
+            const d = new Date(drsCurrentDate + 'T00:00:00');
+            d.setDate(d.getDate() + stepDays);
+            drsCurrentDate = toLocalISODate(d);
+            renderDrsGrid();
+            drsSyncCalendarUnavailability();
+        }
+        function drsGoToToday() {
+            drsCurrentDate = todayISO();
+            renderDrsGrid();
+            drsSyncCalendarUnavailability();
+        }
+        function drsRefresh() {
+            renderDrsGrid();
+            drsSyncCalendarUnavailability();
+        }
+        function drsToggleWeekView() {
+            drsWeekViewActive = !drsWeekViewActive;
+            document.getElementById('drs-day-view').classList.toggle('hidden', drsWeekViewActive);
+            document.getElementById('drs-week-view').classList.toggle('hidden', !drsWeekViewActive);
+            document.getElementById('drs-week-toggle-btn').classList.toggle('bg-amber-500', drsWeekViewActive);
+            renderDrsGrid();
+            drsSyncCalendarUnavailability();
+        }
+        function toggleDrsSidebar() {
+            const sidebar = document.getElementById('drs-sidebar');
+            const collapsed = sidebar.classList.toggle('drs-sidebar-collapsed');
+            sidebar.style.width = collapsed ? '52px' : '';
+            const navEl = document.getElementById('drs-sidebar-nav');
+            navEl.classList.toggle('hidden', collapsed);
+            navEl.classList.toggle('flex', !collapsed);
+            document.getElementById('drs-sidebar-title').classList.toggle('hidden', collapsed);
+            document.getElementById('drs-sidebar-toggle-icon').setAttribute('data-lucide', collapsed ? 'panel-left-open' : 'panel-left-close');
+            if (collapsed) document.getElementById('drs-sidebar-content').innerHTML = '';
+            else showDrsSidebarPanel(drsActiveSidebarPanel || 'booked');
+            lucide.createIcons();
+        }
+        // Mon-Thu 8:00-16:30, Fri 8:00-15:30, no BCP on weekends. Deliberately
+        // never touches Google Calendar sync — this is a fixed, known
+        // commitment, not a real "booking" that needs syncing anywhere.
+        function getBcpBlockForDate(dateStr) {
+            const dayOfWeek = new Date(dateStr + 'T00:00:00').getDay(); // 0=Sun ... 6=Sat
+            if (dayOfWeek === 0 || dayOfWeek === 6) return null;
+            return dayOfWeek === 5 ? { start: '08:00', end: '15:30' } : { start: '08:00', end: '16:30' };
+        }
+        function drsTimeToMinutesFromStart(timeStr) {
+            const [h, m] = (timeStr || '09:00').split(':').map(Number);
+            return (h - DRS_START_HOUR) * 60 + m;
+        }
+        function drsBlockPosition(startTime, durationMinutes) {
+            const top = Math.max(0, drsTimeToMinutesFromStart(startTime)) * DRS_PIXELS_PER_MINUTE;
+            const height = Math.max(20, durationMinutes * DRS_PIXELS_PER_MINUTE);
+            return { top, height };
+        }
+        const DRS_JOB_STATUS_COLORS = {
+            Scheduled: { bg: '#3b82f6', text: '#ffffff' },   // blue — booked, not yet accepted
+            Accepted: { bg: '#8b5cf6', text: '#ffffff' },    // purple — engineer accepted, on the way
+            Started: { bg: '#f59e0b', text: '#1f2937' },     // amber — actively being worked on right now
+            Completed: { bg: '#10b981', text: '#ffffff' },   // green — done
+            Cancelled: { bg: '#94a3b8', text: '#1f2937' },   // grey
+        };
+        // Job-level status alone doesn't distinguish "accepted, on the way"
+        // from "actually being worked on right now" — that lives in each
+        // engineer's own timer state, so check that too.
+        function computeDrsJobDisplayStatus(job) {
+            if (job.status === 'Completed' || job.status === 'Cancelled') return job.status;
+            if (job.status === 'Accepted') {
+                const anyStarted = getJobEngineers(job).some(name => getEngineerJobState(job, name).status === 'Started');
+                return anyStarted ? 'Started' : 'Accepted';
+            }
+            return 'Scheduled';
+        }
+        function renderDrsGrid() {
+            if (drsWeekViewActive) { renderDrsWeekGrid(); return; }
+            const engineers = getEngineerNames();
+            const dateObj = new Date(drsCurrentDate + 'T00:00:00');
+            document.getElementById('drs-date-picker').value = drsCurrentDate;
+            document.getElementById('drs-date-heading').innerText = dateObj.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+            const totalMinutes = (DRS_END_HOUR - DRS_START_HOUR) * 60;
+            const gridHeight = totalMinutes * DRS_PIXELS_PER_MINUTE;
+            const bcp = getBcpBlockForDate(drsCurrentDate);
+            const dayJobs = currentJobs.filter(j => j.date === drsCurrentDate && j.status !== 'Cancelled');
+            const dayUnavailable = currentUnavailability.filter(u => u.date === drsCurrentDate);
+
+            let hourLabelsHtml = '';
+            for (let h = DRS_START_HOUR; h < DRS_END_HOUR; h++) {
+                const top = (h - DRS_START_HOUR) * 60 * DRS_PIXELS_PER_MINUTE;
+                hourLabelsHtml += `<div class="absolute left-0 right-0 text-[10px] font-bold text-[var(--eny-text-muted2)] border-t border-[var(--eny-border-subtle)]" style="top:${top}px;">${String(h).padStart(2,'0')}:00</div>`;
+            }
+
+            const columnsHtml = engineers.map(name => {
+                const isUnavailable = dayUnavailable.some(u => u.engineerName === name);
+                let blocksHtml = '';
+                if (bcp) {
+                    const startMin = drsTimeToMinutesFromStart(bcp.start);
+                    const endMin = drsTimeToMinutesFromStart(bcp.end);
+                    const pos = drsBlockPosition(bcp.start, endMin - startMin);
+                    blocksHtml += `<div class="absolute left-0.5 right-0.5 rounded-md bg-slate-600 text-white text-[10px] font-bold flex items-center justify-center pointer-events-none" style="top:${pos.top}px; height:${pos.height}px;">BCP</div>`;
+                }
+                const engineerJobs = dayJobs.filter(j => getJobEngineers(j).includes(name));
+                engineerJobs.forEach(j => {
+                    const durationMinutes = (j.engineerState && j.engineerState[name] && j.engineerState[name].totalMinutes) || 60;
+                    const pos = drsBlockPosition(j.time, durationMinutes);
+                    const colors = DRS_JOB_STATUS_COLORS[computeDrsJobDisplayStatus(j)] || DRS_JOB_STATUS_COLORS.Scheduled;
+                    const addressLine = (j.propertyAddress || '').split('\n')[0];
+                    blocksHtml += `<div onclick="openJobInfoModal('${j.id}')" class="absolute left-0.5 right-0.5 rounded-md text-[10px] p-1 cursor-pointer overflow-hidden shadow" style="top:${pos.top}px; height:${pos.height}px; background:${colors.bg}; color:${colors.text};">
+                        <div class="font-bold truncate">${j.isEmergency ? '🚨 ' : ''}${j.time} ${j.title}</div>
+                        ${addressLine ? `<div class="truncate opacity-90">${addressLine}</div>` : ''}
+                    </div>`;
+                });
+                return `<div class="drs-engineer-col flex-1 relative border-l border-[var(--eny-border-subtle)] ${isUnavailable ? 'bg-slate-400/10' : ''}" style="height:${gridHeight}px; min-width:0;" data-engineer="${escapeHtmlForPopup(name)}" onclick="drsHandleColumnClick(event, '${escapeHtmlForPopup(name)}')">
+                    ${isUnavailable ? `<div class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[var(--eny-text-muted2)] pointer-events-none">Unavailable</div>` : ''}
+                    ${blocksHtml}
+                </div>`;
+            }).join('');
+
+            const headerHtml = `<div class="flex sticky top-0 z-10 bg-[var(--eny-bg-card)] border-b border-[var(--eny-border-standard)]">
+                <div class="w-14 shrink-0"></div>
+                ${engineers.map(name => `<div class="flex-1 text-center text-xs font-bold text-[var(--eny-text-primary)] py-2 border-l border-[var(--eny-border-subtle)] truncate px-1" style="min-width:0;">${name}</div>`).join('')}
+            </div>`;
+
+            document.getElementById('drs-grid-container').innerHTML = `
+                ${headerHtml}
+                <div class="flex relative">
+                    <div class="w-14 shrink-0 relative" style="height:${gridHeight}px;">${hourLabelsHtml}</div>
+                    ${columnsHtml}
+                    <div id="drs-current-time-line" class="absolute left-14 right-0 border-t-2 border-dashed border-red-500 pointer-events-none z-[5]"></div>
+                </div>
+            `;
+            updateDrsCurrentTimeLine();
+            lucide.createIcons();
+        }
+        function updateDrsCurrentTimeLine() {
+            const line = document.getElementById('drs-current-time-line');
+            if (!line) return;
+            if (drsCurrentDate !== todayISO()) { line.classList.add('hidden'); return; }
+            line.classList.remove('hidden');
+            const now = new Date();
+            const minutesFromStart = (now.getHours() - DRS_START_HOUR) * 60 + now.getMinutes();
+            if (minutesFromStart < 0 || minutesFromStart > (DRS_END_HOUR - DRS_START_HOUR) * 60) { line.classList.add('hidden'); return; }
+            line.style.top = (minutesFromStart * DRS_PIXELS_PER_MINUTE) + 'px';
+        }
+        setInterval(() => { if (document.getElementById('drs-tab') && document.getElementById('drs-tab').classList.contains('active')) updateDrsCurrentTimeLine(); }, 60000);
+        let drsPlacementContext = null; // { engineerName, date, source: {type:'quote'|'job', id}, defaultTime }
+        function drsHandleColumnClick(event, engineerName) {
+            if (event.target.closest('[onclick*="openJobInfoModal"]')) return; // a job block was clicked, not empty space
+            const columnEl = event.currentTarget;
+            const rect = columnEl.getBoundingClientRect();
+            const clickY = event.clientY - rect.top + columnEl.scrollTop;
+            const minutesFromStart = Math.max(0, clickY / DRS_PIXELS_PER_MINUTE);
+            const totalMinutesOfDay = DRS_START_HOUR * 60 + minutesFromStart;
+            // Snap to the nearest 10 minutes, matching the scroller's own
+            // 10-minute increments, so the pre-selected time in step 2 lines
+            // up with roughly where the user actually clicked.
+            const snappedMinutes = Math.round(totalMinutesOfDay / 10) * 10;
+            const hour = Math.min(23, Math.floor(snappedMinutes / 60));
+            const minute = snappedMinutes % 60;
+            const approxTime = `${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}`;
+            openDrsPlaceJobModal(engineerName, approxTime);
+        }
+        function drsPopulateTimeSelects(defaultTime) {
+            const [defaultHour, defaultMinute] = defaultTime.split(':').map(Number);
+            const hourSelect = document.getElementById('drs-place-job-hour');
+            hourSelect.innerHTML = '';
+            for (let h = 0; h <= 23; h++) hourSelect.innerHTML += `<option value="${h}" ${h === defaultHour ? 'selected' : ''}>${String(h).padStart(2,'0')}</option>`;
+            const minuteSelect = document.getElementById('drs-place-job-minute');
+            minuteSelect.innerHTML = '';
+            const nearestTenMinute = Math.round(defaultMinute / 10) * 10 % 60;
+            for (let m = 0; m < 60; m += 10) minuteSelect.innerHTML += `<option value="${m}" ${m === nearestTenMinute ? 'selected' : ''}>${String(m).padStart(2,'0')}</option>`;
+        }
+        // The picker shows two sources of "not yet booked" work: quotes with
+        // no job raised against them yet (the original flow), and floating
+        // job records (raised via the bare job form, or via rebook/follow-on)
+        // — both need a way to land on the diary.
+        function openDrsPlaceJobModal(engineerName, approxTime) {
+            drsPlacementContext = { engineerName, date: drsCurrentDate, source: null, defaultTime: approxTime };
+            document.getElementById('drs-place-job-title').innerText = `Book — ${engineerName}, ${formatUkDate(drsCurrentDate)}`;
+            document.getElementById('drs-place-job-step1').classList.remove('hidden');
+            document.getElementById('drs-place-job-step2').classList.add('hidden');
+            document.getElementById('drs-place-job-footer').classList.add('hidden');
+            const scheduledQuoteIds = new Set(currentJobs.map(j => j.linkedQuoteId).filter(Boolean));
+            const floatingQuotes = currentQuotes.filter(q => (q.status === 'Sent' || q.status === 'Approved') && !scheduledQuoteIds.has(q.id));
+            const floatingJobs = currentJobs.filter(j => j.status === 'Floating');
+            const listEl = document.getElementById('drs-place-job-picker-list');
+            const quoteRows = floatingQuotes.map(q => `<button onclick="selectDrsFloatingJobForPlacement('quote', '${q.id}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2.5 cursor-pointer">
+                <div class="text-xs font-bold text-[var(--eny-text-200)] truncate">${q.jobName}</div>
+                <div class="text-[10px] text-[var(--eny-text-muted2)] truncate">${q.clientDetailsPayload.name} — ${(q.clientDetailsPayload.address || '').split('\n')[0]}</div>
+            </button>`);
+            const jobRows = floatingJobs.map(j => `<button onclick="selectDrsFloatingJobForPlacement('job', '${j.id}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2.5 cursor-pointer">
+                <div class="text-xs font-bold text-[var(--eny-text-200)] truncate">${j.title}${j.jobNumber ? ` <span class="font-mono font-normal text-[var(--eny-text-muted2)]">(${formatJobNumber(j)})</span>` : ''}</div>
+                <div class="text-[10px] text-[var(--eny-text-muted2)] truncate">${(j.propertyAddress || '').split('\n')[0]}${j.engineersNeeded > 1 ? ` — needs ${j.engineersNeeded} engineers` : ''}</div>
+            </button>`);
+            const allRows = [...jobRows, ...quoteRows];
+            listEl.innerHTML = allRows.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">Nothing floating to book in.</p>` : allRows.join('');
+            document.getElementById('drs-place-job-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeDrsPlaceJobModal() {
+            document.getElementById('drs-place-job-modal').classList.add('hidden');
+            document.getElementById('drs-callout-entry').classList.add('hidden');
+            document.getElementById('drs-place-job-step1').classList.remove('hidden');
+            drsPlacementContext = null;
+        }
+        function selectDrsFloatingJobForPlacement(sourceType, sourceId) {
+            if (!drsPlacementContext) return;
+            let title, contextLabel = '';
+            if (sourceType === 'quote') {
+                const q = currentQuotes.find(x => x.id === sourceId);
+                if (!q) return;
+                title = q.jobName;
+                contextLabel = `For ${q.clientDetailsPayload.name}`;
+            } else {
+                const j = currentJobs.find(x => x.id === sourceId);
+                if (!j) return;
+                title = j.title;
+            }
+            drsPlacementContext.source = { type: sourceType, id: sourceId };
+            document.getElementById('drs-place-job-step1').classList.add('hidden');
+            document.getElementById('drs-place-job-step2').classList.remove('hidden');
+            document.getElementById('drs-place-job-footer').classList.remove('hidden');
+            const summaryEl = document.getElementById('drs-place-job-selected-summary');
+            if (contextLabel) { summaryEl.classList.remove('hidden'); summaryEl.innerText = contextLabel; }
+            else summaryEl.classList.add('hidden');
+            document.getElementById('drs-place-job-title-edit-wrapper').classList.remove('hidden');
+            document.getElementById('drs-place-job-title-edit').value = title;
+            drsPopulateTimeSelects(drsPlacementContext.defaultTime);
+        }
+        function backToDrsJobPicker() {
+            document.getElementById('drs-place-job-step1').classList.remove('hidden');
+            document.getElementById('drs-place-job-step2').classList.add('hidden');
+            document.getElementById('drs-place-job-footer').classList.add('hidden');
+            document.getElementById('drs-place-job-selected-summary').classList.add('hidden');
+            document.getElementById('drs-place-job-title-edit-wrapper').classList.remove('hidden');
+            if (drsPlacementContext) drsPlacementContext.source = null;
+        }
+        function startDrsCallOut() {
+            document.getElementById('drs-place-job-step1').classList.add('hidden');
+            document.getElementById('drs-callout-entry').classList.remove('hidden');
+            document.getElementById('drs-callout-title').value = '';
+            document.getElementById('drs-callout-property-search').value = '';
+            filterDrsCalloutPropertyDropdown();
+        }
+        function cancelDrsCallOut() {
+            document.getElementById('drs-callout-entry').classList.add('hidden');
+            document.getElementById('drs-place-job-step1').classList.remove('hidden');
+        }
+        function filterDrsCalloutPropertyDropdown() {
+            const searchInput = document.getElementById('drs-callout-property-search');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const select = document.getElementById('drs-callout-property-select');
+            if (!select) return;
+            const previousValue = select.value;
+            const filtered = currentProperties.filter(p => (p.address || '').toLowerCase().includes(filterText));
+            select.innerHTML = '<option value="">-- None / Not linked --</option>' +
+                filtered.map(p => `<option value="${p.id}">${(p.address || '').split('\n')[0]}</option>`).join('');
+            if (filtered.some(p => p.id === previousValue)) select.value = previousValue;
+        }
+        function confirmDrsCallOutDetails() {
+            const title = document.getElementById('drs-callout-title').value.trim();
+            if (!title) { showToast('Please enter a job title for the call-out.', 'warning'); return; }
+            const propertyId = document.getElementById('drs-callout-property-select').value;
+            const property = currentProperties.find(p => p.id === propertyId);
+            drsPlacementContext.source = { type: 'callout', title, propertyId: propertyId || null, propertyAddress: property ? property.address : null };
+            document.getElementById('drs-callout-entry').classList.add('hidden');
+            document.getElementById('drs-place-job-step2').classList.remove('hidden');
+            document.getElementById('drs-place-job-footer').classList.remove('hidden');
+            document.getElementById('drs-place-job-title-edit-wrapper').classList.add('hidden');
+            const summaryEl = document.getElementById('drs-place-job-selected-summary');
+            summaryEl.classList.remove('hidden');
+            summaryEl.innerText = `🚨 CallOut — ${title}`;
+            drsPopulateTimeSelects(drsPlacementContext.defaultTime);
+        }
+        // Tracks state explicitly rather than re-reading currentJobs for each
+        // pick — the Firestore listener hasn't necessarily caught up with
+        // the write that just happened, so re-deriving "who's assigned so
+        // far" from currentJobs would risk working from stale data.
+        let drsMultiEngineerContext = null; // { jobId, date, time, assignedSoFar, neededTotal }
+        // On-demand version, reachable from any active job's info modal — not
+        // gated by engineersNeeded, just "let me pick one more right now".
+        // Reuses the same modal/availability-checking as the initial booking
+        // flow rather than duplicating it.
+        function openDrsAssignAdditionalEngineer(jobId) {
+            const j = currentJobs.find(x => x.id === jobId);
+            if (!j) return;
+            const currentEngineers = getJobEngineers(j);
+            if (currentEngineers.length >= getEngineerNames().length) { showToast('Every engineer is already assigned to this job.', 'info'); return; }
+            closeJobInfoModal();
+            openDrsMultiEngineerModal(jobId, currentEngineers, currentEngineers.length + 1, j.date, j.time);
+        }
+        function openDrsMultiEngineerModal(jobId, assignedSoFar, neededTotal, date, time) {
+            drsMultiEngineerContext = { jobId, date, time, assignedSoFar, neededTotal };
+            renderDrsMultiEngineerModal();
+        }
+        function renderDrsMultiEngineerModal() {
+            const ctx = drsMultiEngineerContext;
+            if (!ctx) return;
+            const remaining = ctx.neededTotal - ctx.assignedSoFar.length;
+            if (remaining <= 0) { closeDrsMultiEngineerModal(); return; }
+            document.getElementById('drs-multi-engineer-subtitle').innerText = `Needs ${remaining} more engineer${remaining > 1 ? 's' : ''} — ${ctx.assignedSoFar.join(', ')} already booked.`;
+            const others = getEngineerNames().filter(name => !ctx.assignedSoFar.includes(name));
+            const listEl = document.getElementById('drs-multi-engineer-list');
+            listEl.innerHTML = others.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-4">No other engineers to add.</p>` : others.map(name => {
+                const isUnavailable = isEngineerUnavailable(name, ctx.date);
+                const hasConflict = findDoubleBookedEngineers([name], ctx.date, ctx.jobId, ctx.time).length > 0;
+                const statusHtml = isUnavailable ? `<span class="text-red-600 text-[10px] font-bold">Unavailable</span>` : hasConflict ? `<span class="text-amber-600 text-[10px] font-bold">Booked nearby</span>` : `<span class="text-emerald-600 text-[10px] font-bold">Free</span>`;
+                return `<button onclick="addAdditionalEngineerToJob('${name}')" class="w-full flex items-center justify-between p-3 rounded-xl border border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)] hover:border-amber-500 cursor-pointer">
+                    <span class="font-bold text-sm text-[var(--eny-text-200)]">${name}</span>
+                    ${statusHtml}
+                </button>`;
+            }).join('');
+            document.getElementById('drs-multi-engineer-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        async function addAdditionalEngineerToJob(engineerName) {
+            const ctx = drsMultiEngineerContext;
+            if (!ctx) return;
+            const isUnavailable = isEngineerUnavailable(engineerName, ctx.date);
+            const hasConflict = findDoubleBookedEngineers([engineerName], ctx.date, ctx.jobId, ctx.time).length > 0;
+            if (isUnavailable || hasConflict) {
+                const reason = isUnavailable ? 'marked unavailable' : 'already has a job around this time';
+                if (!(await showConfirm(`${engineerName} is ${reason} on this date. Add them anyway?`))) return;
+            }
+            ctx.assignedSoFar.push(engineerName);
+            await db.collection('jobs').doc(ctx.jobId).update({ assignedEngineers: [...ctx.assignedSoFar] });
+            if (ctx.assignedSoFar.length >= ctx.neededTotal) {
+                closeDrsMultiEngineerModal();
+                showToast('All engineers booked for this job.', 'success');
+                renderDrsGrid();
+            } else {
+                renderDrsMultiEngineerModal();
+            }
+        }
+        function closeDrsMultiEngineerModal() {
+            document.getElementById('drs-multi-engineer-modal').classList.add('hidden');
+            drsMultiEngineerContext = null;
+        }
+        // Never blocks the booking flow if this fails — a calendar push
+        // going wrong shouldn't stop the actual job from being booked, SMS
+        // sent, etc. Silently does nothing if Calendar isn't connected.
+        async function pushDrsBookingToCalendar(jobId, jobDataForPush) {
+            if (!isGoogleCalendarConnected()) return;
+            try {
+                const eventId = await pushJobToCalendar(jobDataForPush, null);
+                if (eventId) await db.collection('jobs').doc(jobId).update({ calendarEventId: eventId });
+            } catch (e) {
+                console.error('Failed to push DRS booking to Google Calendar:', e);
+            }
+        }
+        async function confirmDrsJobPlacement() {
+            if (!drsPlacementContext || !drsPlacementContext.source) return;
+            const { engineerName, date, source } = drsPlacementContext;
+            const hour = document.getElementById('drs-place-job-hour').value.padStart(2, '0');
+            const minute = document.getElementById('drs-place-job-minute').value.padStart(2, '0');
+            const time = `${hour}:${minute}`;
+            const titleEditEl = document.getElementById('drs-place-job-title-edit');
+            const editedTitle = titleEditEl ? titleEditEl.value.trim() : '';
+
+            if (source.type === 'callout') {
+                const jobNumber = await getNextJobNumber();
+                const jobRef = await db.collection('jobs').add({
+                    title: source.title, propertyId: source.propertyId, propertyAddress: source.propertyAddress,
+                    assignedEngineers: [engineerName], date, time, status: 'Scheduled',
+                    notes: '', isEmergency: true, linkedQuoteId: null,
+                    jobNumber, jobNumberSuffix: 1,
+                });
+                pushDrsBookingToCalendar(jobRef.id, { title: source.title, propertyAddress: source.propertyAddress, date, time, assignedEngineers: [engineerName], notes: '' });
+                closeDrsPlaceJobModal();
+                renderDrsGrid();
+                showDrsSidebarPanel(drsActiveSidebarPanel);
+                const tier = getEmergencyRateTier(time);
+                // Auto-invoicing happens automatically once this job's timer
+                // is finalized on completion — generateEmergencyInvoice
+                // already handles that for any job with isEmergency: true,
+                // nothing extra needed here.
+                const calloutJob = { propertyId: source.propertyId };
+                const client = findClientForJob(calloutJob);
+                if (client && client.phone) {
+                    const nickname = getEngineerSmsNickname(engineerName);
+                    const firstName = (client.name || '').split(' ')[0];
+                    const message = `Hi ${firstName}, your emergency call-out has been booked for ${formatUkDate(date)} at ${time} with ${nickname}. Thanks, ENY Electrical.`;
+                    openSendMessageModal(client.name, client.phone, message);
+                } else {
+                    showToast(`Call-out booked (${tier.label}: £${tier.firstHour} first hour, £${tier.subsequentHour}/hr after). Invoice generates automatically once marked complete.`, 'success');
+                }
+                return;
+            }
+
+            if (source.type === 'job') {
+                const j = currentJobs.find(x => x.id === source.id);
+                if (!j) { showToast('That job could not be found — it may have been removed.', 'warning'); closeDrsPlaceJobModal(); return; }
+                const finalTitle = editedTitle || j.title;
+                await db.collection('jobs').doc(j.id).update({ title: finalTitle, assignedEngineers: [engineerName], date, time, status: 'Scheduled' });
+                pushDrsBookingToCalendar(j.id, { title: finalTitle, propertyAddress: j.propertyAddress, date, time, assignedEngineers: [engineerName], notes: j.notes || '' });
+                closeDrsPlaceJobModal();
+                renderDrsGrid();
+                showDrsSidebarPanel(drsActiveSidebarPanel);
+                const client = findClientForJob(j);
+                if (client && client.phone) {
+                    const nickname = getEngineerSmsNickname(engineerName);
+                    const firstName = (client.name || '').split(' ')[0];
+                    const message = `Hi ${firstName}, your job has been booked in for ${formatUkDate(date)} at ${time} with ${nickname}. Thanks, ENY Electrical.`;
+                    openSendMessageModal(client.name, client.phone, message);
+                } else {
+                    showToast(`Booked${j.jobNumber ? ' as ' + formatJobNumber(j) : ''} — no phone number on file to send a confirmation to.`, 'info');
+                }
+                if ((j.engineersNeeded || 1) > 1) {
+                    openDrsMultiEngineerModal(j.id, [engineerName], j.engineersNeeded, date, time);
+                }
+                return;
+            }
+
+            const q = currentQuotes.find(x => x.id === source.id);
+            if (!q) { showToast('That quote could not be found — it may have been removed.', 'warning'); closeDrsPlaceJobModal(); return; }
+            const finalQuoteTitle = editedTitle || q.jobName;
+            const address = q.clientDetailsPayload.address || '';
+            const propertyId = await ensurePropertyExistsForAddress(address);
+            const jobNumber = await getNextJobNumber();
+            const jobRef = await db.collection('jobs').add({
+                title: finalQuoteTitle, propertyId, propertyAddress: address,
+                assignedEngineers: [engineerName], date, time, status: 'Scheduled',
+                notes: '', isEmergency: false, linkedQuoteId: source.id,
+                jobNumber, jobNumberSuffix: 1,
+            });
+            pushDrsBookingToCalendar(jobRef.id, { title: finalQuoteTitle, propertyAddress: address, date, time, assignedEngineers: [engineerName], notes: '' });
+            closeDrsPlaceJobModal();
+            renderDrsGrid();
+            showDrsSidebarPanel(drsActiveSidebarPanel);
+            sendDrsBookingConfirmation(q, engineerName, date, time);
+        }
+        // "Automatically sends" here means pre-filled and opened in the
+        // send-message modal, same as reminders/on-my-way messages elsewhere
+        // in the app — a web app can't silently push an SMS through the
+        // phone's own Messages app without that final tap, so this gets it
+        // one tap away rather than claiming a fully silent send.
+        function sendDrsBookingConfirmation(quote, engineerName, date, time) {
+            const client = quote.clientDetailsPayload;
+            if (!client.phone) { showToast('Job booked — no phone number on file to send a confirmation to.', 'info'); return; }
+            const nickname = getEngineerSmsNickname(engineerName);
+            const firstName = (client.name || '').split(' ')[0];
+            const message = `Hi ${firstName}, your job has been booked in for ${formatUkDate(date)} at ${time} with ${nickname}. Thanks, ENY Electrical.`;
+            openSendMessageModal(client.name, client.phone, message);
+        }
+        // Monday is treated as the start of the week — standard UK convention.
+        function drsGetWeekStart(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            const dayOfWeek = d.getDay(); // 0=Sun...6=Sat
+            const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            d.setDate(d.getDate() + diffToMonday);
+            return toLocalISODate(d);
+        }
+        function renderDrsWeekGrid() {
+            const engineers = getEngineerNames();
+            const weekStart = drsGetWeekStart(drsCurrentDate);
+            const today = todayISO();
+            const days = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(weekStart + 'T00:00:00');
+                d.setDate(d.getDate() + i);
+                days.push(toLocalISODate(d));
+            }
+            const headerHtml = `<div class="flex sticky top-0 z-10 bg-[var(--eny-bg-card)] border-b border-[var(--eny-border-standard)]">
+                <div class="w-24 shrink-0 text-xs font-bold text-[var(--eny-text-muted)] py-2 px-2">Week of ${formatUkDate(weekStart)}</div>
+                ${engineers.map(name => `<div class="flex-1 text-center text-xs font-bold text-[var(--eny-text-primary)] py-2 border-l border-[var(--eny-border-subtle)] truncate px-1" style="min-width:0;">${name}</div>`).join('')}
+            </div>`;
+            const rowsHtml = days.map(dateStr => {
+                const dateObj = new Date(dateStr + 'T00:00:00');
+                const isToday = dateStr === today;
+                const dayLabel = dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+                const dayJobs = currentJobs.filter(j => j.date === dateStr && j.status !== 'Cancelled');
+                const cellsHtml = engineers.map(name => {
+                    const hasJob = dayJobs.some(j => getJobEngineers(j).includes(name));
+                    const jobCount = dayJobs.filter(j => getJobEngineers(j).includes(name)).length;
+                    const isUnavailable = currentUnavailability.some(u => u.engineerName === name && u.date === dateStr);
+                    let iconHtml;
+                    if (hasJob) {
+                        iconHtml = `<span class="inline-flex items-center gap-1 text-emerald-600 font-bold text-xs"><i data-lucide="check-circle-2" class="w-4 h-4"></i>${jobCount > 1 ? jobCount : ''}</span>`;
+                    } else if (isUnavailable) {
+                        iconHtml = `<i data-lucide="x-circle" class="w-4 h-4 text-red-500"></i>`;
+                    } else {
+                        iconHtml = `<i data-lucide="minus-circle" class="w-4 h-4 text-[var(--eny-text-subtle)]"></i>`;
+                    }
+                    return `<div class="flex-1 flex items-center justify-center py-3 border-l border-[var(--eny-border-subtle)]" style="min-width:0;">${iconHtml}</div>`;
+                }).join('');
+                return `<button onclick="drsGoToDateFromWeekView('${dateStr}')" class="w-full flex items-stretch border-b border-[var(--eny-border-subtle)] cursor-pointer text-left ${isToday ? 'bg-amber-500/10' : 'hover:bg-[var(--eny-bg-page)]'}">
+                    <div class="w-24 shrink-0 text-xs font-semibold ${isToday ? 'text-amber-700' : 'text-[var(--eny-text-300)]'} py-3 px-2 flex items-center gap-1">${isToday ? '<i data-lucide="dot" class="w-4 h-4"></i>' : ''}${dayLabel}</div>
+                    ${cellsHtml}
+                </button>`;
+            }).join('');
+            document.getElementById('drs-week-grid-container').innerHTML = headerHtml + rowsHtml;
+            lucide.createIcons();
+        }
+        function drsGoToDateFromWeekView(dateStr) {
+            drsCurrentDate = dateStr;
+            if (drsWeekViewActive) drsToggleWeekView(); // switches back to day view and re-renders
+            else renderDrsGrid();
+        }
+
+        let drsActiveSidebarPanel = 'booked';
+        function showDrsSidebarPanel(panel) {
+            drsActiveSidebarPanel = panel;
+            ['booked', 'floating', 'property'].forEach(p => {
+                const btn = document.getElementById(`drs-nav-${p}`);
+                if (btn) btn.classList.toggle('bg-amber-500', p === panel);
+                if (btn) btn.classList.toggle('text-slate-950', p === panel);
+            });
+            const contentEl = document.getElementById('drs-sidebar-content');
+            const sidebar = document.getElementById('drs-sidebar');
+            if (sidebar && sidebar.classList.contains('drs-sidebar-collapsed')) { contentEl.innerHTML = ''; return; }
+            if (panel === 'booked') {
+                const today = todayISO();
+                const booked = currentJobs.filter(j => j.date && j.date >= today && j.status !== 'Cancelled').sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+                contentEl.innerHTML = booked.length === 0 ? `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-6">No upcoming booked jobs.</p>` :
+                    booked.map(j => `<button onclick="drsGoToDate('${j.date}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2 mb-1.5 cursor-pointer">
+                        <div class="text-[11px] font-bold text-[var(--eny-text-200)] truncate">${j.title}</div>
+                        <div class="text-[10px] text-[var(--eny-text-muted2)]">${formatUkDate(j.date)} at ${j.time || '—'}</div>
+                    </button>`).join('');
+            } else if (panel === 'floating') {
+                const scheduledQuoteIds = new Set(currentJobs.map(j => j.linkedQuoteId).filter(Boolean));
+                const floatingQuotes = currentQuotes.filter(q => (q.status === 'Sent' || q.status === 'Approved') && !scheduledQuoteIds.has(q.id));
+                const floatingJobs = currentJobs.filter(j => j.status === 'Floating');
+                const jobRows = floatingJobs.map(j => `<button onclick="showDrsFloatingJobPopup('job', '${j.id}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2 mb-1.5 cursor-pointer">
+                        <div class="text-[11px] font-bold text-[var(--eny-text-200)] truncate">${j.title}${j.jobNumber ? ` <span class="font-mono font-normal text-[var(--eny-text-muted2)]">(${formatJobNumber(j)})</span>` : ''}</div>
+                        <div class="text-[10px] text-[var(--eny-text-muted2)] truncate">${(j.propertyAddress || '').split('\n')[0]}${j.engineersNeeded > 1 ? ` — needs ${j.engineersNeeded} engineers` : ''}</div>
+                    </button>`);
+                const quoteRows = floatingQuotes.map(q => `<button onclick="showDrsFloatingJobPopup('quote', '${q.id}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2 mb-1.5 cursor-pointer">
+                        <div class="text-[11px] font-bold text-[var(--eny-text-200)] truncate">${q.jobName}</div>
+                        <div class="text-[10px] text-[var(--eny-text-muted2)] truncate">${q.clientDetailsPayload.name}</div>
+                    </button>`);
+                const allRows = [...jobRows, ...quoteRows];
+                contentEl.innerHTML = allRows.length === 0 ? `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-6">Nothing floating.</p>` : allRows.join('');
+            } else if (panel === 'property') {
+                contentEl.innerHTML = `
+                    <input type="text" id="drs-property-search-input" oninput="renderDrsPropertySearchResults()" placeholder="Search address..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-primary)] mb-2">
+                    <div id="drs-property-search-results"></div>
+                `;
+            }
+        }
+        function showDrsFloatingJobPopup(sourceType, sourceId) {
+            if (sourceType === 'job') {
+                const j = currentJobs.find(x => x.id === sourceId);
+                if (!j) return;
+                showConfirm(`${j.propertyAddress || 'No address on file'}\n\n${j.title}${j.notes ? '\n\n' + j.notes : ''}`, { confirmText: 'OK', hideCancel: true });
+                return;
+            }
+            const q = currentQuotes.find(x => x.id === sourceId);
+            if (!q) return;
+            showConfirm(`${q.clientDetailsPayload.address || 'No address on file'}\n\n${q.jobName}`, { confirmText: 'OK', hideCancel: true });
+        }
+        function renderDrsPropertySearchResults() {
+            const filterText = document.getElementById('drs-property-search-input').value.toLowerCase().trim();
+            const resultsEl = document.getElementById('drs-property-search-results');
+            if (!filterText) { resultsEl.innerHTML = ''; return; }
+            const matches = currentProperties.filter(p => (p.address || '').toLowerCase().includes(filterText)).slice(0, 8);
+            resultsEl.innerHTML = matches.map(p => {
+                const propertyJobs = currentJobs.filter(j => j.propertyId === p.id && j.status === 'Completed').sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+                return `<div class="mb-2">
+                    <div class="text-[11px] font-bold text-[var(--eny-text-200)] px-1 mb-1 truncate">${(p.address || '').split('\n')[0]}</div>
+                    ${propertyJobs.length === 0 ? `<p class="text-[10px] text-[var(--eny-text-muted2)] px-1">No completed jobs yet.</p>` :
+                        propertyJobs.map(j => `<button onclick="showDrsPastJobOutcome('${j.id}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2 mb-1 cursor-pointer">
+                            <div class="text-[10px] font-bold text-[var(--eny-text-300)] truncate">${j.title}</div>
+                            <div class="text-[9px] text-[var(--eny-text-muted2)]">${formatUkDate(j.date)}</div>
+                        </button>`).join('')}
+                </div>`;
+            }).join('') || `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-4">No matching properties.</p>`;
+        }
+        function showDrsPastJobOutcome(jobId) {
+            const j = currentJobs.find(x => x.id === jobId);
+            if (!j) return;
+            const outcome = j.completionOutcome || 'No outcome recorded';
+            const comments = j.operativeComments || 'No comments left';
+            const durations = getJobEngineers(j).map(name => {
+                const mins = (j.engineerState && j.engineerState[name] && j.engineerState[name].totalMinutes) || 0;
+                return `${name}: ${Math.floor(mins/60)}h ${mins%60}m`;
+            }).join(', ') || 'No timer data recorded';
+            showConfirm(`${j.title} — ${formatUkDate(j.date)}\n\nOutcome: ${outcome}\n\nComments: ${comments}\n\nTime on site: ${durations}`, { confirmText: 'OK', hideCancel: true });
+        }
+
+        function openQuickReachModal() {
+            const listEl = document.getElementById('quick-reach-list');
+            const self = getCurrentUserEngineerName();
+            // No point showing yourself in a "reach the team" list.
+            const others = getEngineerNames().filter(name => name !== self);
+            listEl.innerHTML = others.length === 0
+                ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">No other team members set up yet.</p>`
+                : others.map(name => {
+                    const phone = getEngineerPhoneNumber(name);
+                    const c = getEngineerColorClass(name);
+                    return `<div class="flex items-center justify-between gap-3 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3">
+                        <span class="text-sm font-bold px-2.5 py-1 rounded-lg border ${c.badge}">${name}</span>
+                        ${phone
+                            ? `<div class="flex items-center gap-1.5">
+                                <a href="tel:${phone}" class="text-emerald-600 hover:text-emerald-700 p-2 rounded-lg bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] cursor-pointer" title="Call ${name}"><i data-lucide="phone-call" class="w-4 h-4"></i></a>
+                                <a href="sms:${phone}" class="text-blue-600 hover:text-blue-700 p-2 rounded-lg bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] cursor-pointer" title="Text ${name}"><i data-lucide="message-square" class="w-4 h-4"></i></a>
+                            </div>`
+                            : `<span class="text-[10px] text-[var(--eny-text-muted2)] italic">No number set</span>`}
+                    </div>`;
+                }).join('');
+            document.getElementById('quick-reach-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeQuickReachModal() {
+            document.getElementById('quick-reach-modal').classList.add('hidden');
         }
         // Any action button clicked inside the actions area closes the modal
         // afterward (the click bubbles up here after the button's own handler
@@ -5485,10 +6855,10 @@
             return 'low';
         }
         const REVENUE_TIER_STYLES = {
-            none: { color: '#cbd5e1', radius: 7 },
-            low: { color: '#fcd34d', radius: 8 },
-            medium: { color: '#f59e0b', radius: 11 },
-            high: { color: '#b45309', radius: 15 },
+            none: { color: '#cbd5e1', dotRadius: 6, glowRadiusMeters: 0 },
+            low: { color: '#fcd34d', dotRadius: 6, glowRadiusMeters: 150 },
+            medium: { color: '#f59e0b', dotRadius: 7, glowRadiusMeters: 300 },
+            high: { color: '#b45309', dotRadius: 8, glowRadiusMeters: 500 },
         };
         let propertyMapMode = 'compliance';
         function setPropertyMapMode(mode) {
@@ -5537,6 +6907,25 @@
             }
             const allRevenues = Object.values(revenueByPropertyId);
 
+            // Two passes so every glow sits beneath every dot, regardless of
+            // property order — glows are added first as a full layer, then
+            // dots on top. Where two properties are close together, their
+            // translucent glows naturally overlap and darken where they
+            // overlap (ordinary alpha blending) — the same "hot zone" effect
+            // a proper heatmap gives, without needing an extra plugin/library
+            // that can't be verified in this offline environment.
+            if (propertyMapMode === 'revenue') {
+                geotagged.forEach(p => {
+                    const revenue = revenueByPropertyId[p.id];
+                    const tier = computeRevenueTier(revenue, allRevenues);
+                    const style = REVENUE_TIER_STYLES[tier];
+                    if (style.glowRadiusMeters > 0) {
+                        const glow = L.circle([p.lat, p.lng], { radius: style.glowRadiusMeters, fillColor: style.color, fillOpacity: 0.22, stroke: false, interactive: false }).addTo(propertyLeafletMap);
+                        propertyMapMarkers.push(glow);
+                    }
+                });
+            }
+
             geotagged.forEach(p => {
                 const landlord = p.landlordId ? currentClients.find(c => c.id === p.landlordId) : null;
                 const addressLine = escapeHtmlForPopup((p.address || '').split('\n')[0]);
@@ -5545,7 +6934,7 @@
                     const revenue = revenueByPropertyId[p.id];
                     const tier = computeRevenueTier(revenue, allRevenues);
                     const style = REVENUE_TIER_STYLES[tier];
-                    marker = L.circleMarker([p.lat, p.lng], { radius: style.radius, fillColor: style.color, color: '#0f172a', weight: 2, fillOpacity: 0.9 }).addTo(propertyLeafletMap);
+                    marker = L.circleMarker([p.lat, p.lng], { radius: style.dotRadius, fillColor: style.color, color: '#0f172a', weight: 2, fillOpacity: 0.95 }).addTo(propertyLeafletMap);
                     revenueLine = `<div style="font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 6px;">Total revenue: £${revenue.toFixed(2)}</div>`;
                 } else {
                     const color = getPropertyComplianceColor(p);
@@ -5808,6 +7197,70 @@
         function findClientForJob(job) {
             if (!job.propertyId) return null;
             return currentClients.find(c => (c.linkedPropertyIds || []).includes(job.propertyId)) || null;
+        }
+        // green: within the first week; amber: weeks 2-3; red: 4+ weeks.
+        // Days 22-27 sit between the amber and red bands as originally
+        // described (amber "2-3 weeks", red "over 4 weeks") — extended amber
+        // to cover that gap rather than leaving an undefined band.
+        function computeFloatingJobAgeState(floatingSince) {
+            if (!floatingSince) return { state: 'green', daysSince: 0 };
+            const daysSince = Math.max(0, Math.floor((Date.now() - new Date(floatingSince).getTime()) / 86400000));
+            let state;
+            if (daysSince < 7) state = 'green';
+            else if (daysSince < 28) state = 'amber';
+            else state = 'red';
+            return { state, daysSince };
+        }
+        function toggleFloatingJobsCard() {
+            const wrapper = document.getElementById('floating-jobs-list-wrapper');
+            const chevron = document.getElementById('floating-jobs-chevron');
+            const nowHidden = wrapper.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180', !nowHidden);
+            if (!nowHidden) renderFloatingJobsCard();
+        }
+        // The count badge always stays live (cheap), but the actual list
+        // only renders while expanded, so collapsed dashboards aren't doing
+        // needless DOM work every time a job changes.
+        function renderFloatingJobsCard() {
+            const badge = document.getElementById('floating-jobs-count-badge');
+            if (!badge) return;
+            const floating = currentJobs.filter(j => j.status === 'Floating');
+            badge.innerText = floating.length;
+            const listEl = document.getElementById('floating-jobs-list-wrapper');
+            if (!listEl || listEl.classList.contains('hidden')) return;
+            const sorted = [...floating].sort((a, b) => (a.floatingSince || '').localeCompare(b.floatingSince || ''));
+            const stateStyles = {
+                green: { border: 'border-emerald-500/40', bg: 'bg-emerald-500/5', text: 'text-emerald-600' },
+                amber: { border: 'border-amber-500/40', bg: 'bg-amber-500/5', text: 'text-amber-600' },
+                red: { border: 'border-red-500/40', bg: 'bg-red-500/5', text: 'text-red-600' },
+            };
+            listEl.innerHTML = sorted.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-4">Nothing waiting to be booked.</p>` :
+                sorted.map(j => {
+                    const { state, daysSince } = computeFloatingJobAgeState(j.floatingSince);
+                    const s = stateStyles[state];
+                    return `<div class="border ${s.border} ${s.bg} rounded-xl p-3 flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold text-[var(--eny-text-200)] truncate">${j.title}${j.jobNumber ? ` <span class="font-mono font-normal text-[var(--eny-text-muted2)]">(${formatJobNumber(j)})</span>` : ''}</div>
+                            <div class="text-[10px] ${s.text} font-semibold mt-0.5">${daysSince} day${daysSince === 1 ? '' : 's'} waiting${j.engineersNeeded > 1 ? ` · needs ${j.engineersNeeded} engineers` : ''}</div>
+                        </div>
+                        <button onclick="nudgeFloatingJob('${j.id}')" class="text-[10px] font-bold bg-[var(--eny-bg-page)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-text-muted)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer shrink-0">Nudge</button>
+                    </div>`;
+                }).join('');
+        }
+        // "Automatically sends" here means pre-filled and opened, same
+        // honest caveat as every other message in this app — a web app
+        // can't silently push an SMS without a final tap in the user's own
+        // Messages app.
+        async function nudgeFloatingJob(jobId) {
+            const job = currentJobs.find(j => j.id === jobId);
+            if (!job) return;
+            const client = findClientForJob(job);
+            if (!client || !client.phone) { showToast('No phone number on file for this job\'s client.', 'warning'); return; }
+            const firstName = (client.name || '').split(' ')[0];
+            const message = `Hi ${firstName}, following up on "${job.title}" — are you ready for us to get this booked in? Please give us a call if so. Thanks, ENY Electrical.`;
+            openSendMessageModal(client.name, client.phone, message);
+            await db.collection('jobs').doc(jobId).update({ floatingSince: new Date().toISOString() });
+            renderFloatingJobsCard();
         }
         function buildReminderMessageText(job, client) {
             const firstName = (client.name || '').split(' ')[0];
@@ -6428,6 +7881,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         serviceLabel: metrics.flatJobCostEnabled ? metrics.worksDescription : null,
                         materials: activeAllocatedMaterials.map(m => ({ ...m })),
                         laborBookingFormat: activeLaborBookingFormat,
+                        warrantyMonths: parseInt(document.getElementById('job-warranty-months').value) || null,
                         timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
                     };
                     if (currentlyEditingQuoteId && overwrite) {
@@ -6466,6 +7920,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         function cancelActiveEditingSessionMode() {
             currentlyEditingQuoteId = null; activeLinkedClientId = ''; activeLinkedPropertyId = ''; activeAllocatedMaterials = [];
             document.getElementById('job-name').value = ''; document.getElementById('client-name').value = '';
+            document.getElementById('job-warranty-months').value = '12';
             document.getElementById('client-email').value = ''; document.getElementById('client-phone').value = '';
             document.getElementById('client-address').value = ''; document.getElementById('quote-client-select').value = '';
             const qps = document.getElementById('quote-property-select'); if (qps) qps.value = '';
@@ -6492,6 +7947,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 activeLinkedClientId = target.linkedClientId || '';
                 document.getElementById('quote-client-select').value = activeLinkedClientId;
                 document.getElementById('job-name').value = target.jobName || '';
+                document.getElementById('job-warranty-months').value = target.warrantyMonths || '';
                 document.getElementById('client-name').value = (target.clientDetailsPayload && target.clientDetailsPayload.name) || '';
                 document.getElementById('client-email').value = (target.clientDetailsPayload && target.clientDetailsPayload.email) || '';
                 const linkedClient = currentClients.find(c => c.id === activeLinkedClientId);
@@ -6539,6 +7995,16 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const invNumWrapper = document.getElementById('quote-info-invoice-number-wrapper');
             if (r.invoiceNumber) { invNumWrapper.classList.remove('hidden'); invNumWrapper.innerText = r.invoiceNumber; }
             else invNumWrapper.classList.add('hidden');
+            const warrantyWrapper = document.getElementById('quote-info-warranty-wrapper');
+            const warrantyStatus = computeWarrantyStatus(r);
+            if (warrantyStatus.tracked) {
+                warrantyWrapper.classList.remove('hidden');
+                warrantyWrapper.innerHTML = warrantyStatus.isValid
+                    ? `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/30">Within Warranty — until ${formatUkDate(warrantyStatus.expiryDate)}</span>`
+                    : `<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-red-500/10 text-red-600 border border-red-500/30">Warranty Expired — ${formatUkDate(warrantyStatus.expiryDate)}</span>`;
+            } else {
+                warrantyWrapper.classList.add('hidden');
+            }
             document.getElementById('quote-info-status-select').value = r.status;
             const isInvoiceOrPaid = r.status === 'Invoiced' || r.status === 'Paid';
             const primaryBtn = document.getElementById('quote-info-primary-action-btn');
@@ -8009,7 +9475,15 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
 
             const jobsEl = document.getElementById('client-info-jobs');
             jobsEl.innerHTML = jobs.length === 0 ? `<p class="text-xs text-[var(--eny-text-muted2)] italic">No historical sheets.</p>` :
-                jobs.map(j => `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] p-2 rounded-lg"><div class="font-bold text-[var(--eny-text-200)] text-[11px] truncate">${j.jobName}</div><div class="flex items-center justify-between text-[10px] text-[var(--eny-text-muted)] font-mono mt-0.5"><span>${j.id}</span><span class="text-[var(--eny-accent-text)] font-bold">£${j.financials.grossTotal.toFixed(2)}</span></div></div>`).join('');
+                jobs.map(j => {
+                    const warrantyStatus = computeWarrantyStatus(j);
+                    const warrantyBadge = warrantyStatus.tracked
+                        ? (warrantyStatus.isValid
+                            ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 border border-emerald-500/30">In Warranty</span>`
+                            : `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red-500/10 text-red-600 border border-red-500/30">Expired</span>`)
+                        : '';
+                    return `<div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] p-2 rounded-lg"><div class="flex items-center justify-between gap-2"><div class="font-bold text-[var(--eny-text-200)] text-[11px] truncate">${j.jobName}</div>${warrantyBadge}</div><div class="flex items-center justify-between text-[10px] text-[var(--eny-text-muted)] font-mono mt-0.5"><span>${j.id}</span><span class="text-[var(--eny-accent-text)] font-bold">£${j.financials.grossTotal.toFixed(2)}</span></div></div>`;
+                }).join('');
 
             document.getElementById('client-info-modal').classList.remove('hidden');
             lucide.createIcons();
