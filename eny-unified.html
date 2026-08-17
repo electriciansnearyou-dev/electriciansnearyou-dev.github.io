@@ -237,10 +237,7 @@
                     <button onclick="openQuickReachModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Quick reach — call or text the team">
                         <i data-lucide="users-round" class="w-[18px] h-[18px]"></i>
                     </button>
-                    <button onclick="openFullCalendarModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Calendar">
-                        <i data-lucide="calendar-days" class="w-[18px] h-[18px]"></i>
-                    </button>
-                    <button onclick="toggleDrsView()" id="drs-toggle-btn" class="primary-owner-only hidden text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch to DRS (Dynamic Resource Manager)">
+                    <button onclick="toggleDrsView()" id="drs-toggle-btn" class="drs-authorized-only hidden text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch to DRS (Dynamic Resource Manager)">
                         <i data-lucide="calendar-cog" class="w-[18px] h-[18px]"></i>
                     </button>
                     <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
@@ -1508,7 +1505,7 @@
                 <div id="engineer-stats-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
 
-            <div id="drs-tab" class="tab-content primary-owner-only-tab">
+            <div id="drs-tab" class="tab-content drs-authorized-only-tab">
                 <div class="flex gap-3 h-[calc(100vh-180px)] min-h-0">
                     <div id="drs-sidebar" class="drs-sidebar-collapsed w-64 shrink-0 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] flex flex-col overflow-hidden transition-all duration-200" style="width:52px;">
                         <div class="p-3 border-b border-[var(--eny-border-standard)] flex items-center justify-between">
@@ -1531,6 +1528,7 @@
                             <button onclick="drsGoToToday()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Today</button>
                             <button onclick="drsNavigateDay(1)" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1">Forward <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i></button>
                             <button onclick="drsToggleWeekView()" id="drs-week-toggle-btn" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="calendar-range" class="w-3.5 h-3.5"></i> Week View</button>
+                            <button onclick="openFullCalendarModal()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1"><i data-lucide="calendar-days" class="w-3.5 h-3.5"></i> Calendar</button>
                             <span id="drs-date-heading" class="ml-auto text-sm font-bold text-[var(--eny-text-primary)]"></span>
                         </div>
                         <div id="drs-day-view" class="flex-1 overflow-auto relative min-h-0">
@@ -2212,6 +2210,14 @@
             const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
             return email === 'electriciansnearyou@gmail.com';
         }
+        // Separate from isPrimaryOwnerLoggedIn deliberately — DRS access
+        // extends to more than one person, but other primary-owner-only
+        // features (like Engineer Stats) shouldn't automatically follow.
+        const DRS_AUTHORIZED_EMAILS = ['electriciansnearyou@gmail.com', 'jmabbley@yahoo.com'];
+        function isDrsAuthorized() {
+            const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
+            return DRS_AUTHORIZED_EMAILS.some(e => e.toLowerCase() === email);
+        }
         function getCurrentUserEngineerName() {
             const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
             const matchedEmail = Object.keys(EMAIL_TO_ENGINEER_NAME).find(e => e.toLowerCase() === email);
@@ -2250,6 +2256,10 @@
             document.querySelectorAll('.primary-owner-only').forEach(el => {
                 el.classList.toggle('hidden', !primaryOwner);
             });
+            const drsAuthorized = isDrsAuthorized();
+            document.querySelectorAll('.drs-authorized-only').forEach(el => {
+                el.classList.toggle('hidden', !drsAuthorized);
+            });
             // Defensive: if a non-owner is somehow on an owner-only tab (e.g. was
             // signed in as owner, switched account without reloading), bounce
             // them back to the Dashboard. The real protection is still the
@@ -2263,6 +2273,12 @@
             if (!primaryOwner) {
                 const active = document.querySelector('.tab-content.active');
                 if (active && active.classList.contains('primary-owner-only-tab')) {
+                    switchTab('dashboard-tab');
+                }
+            }
+            if (!drsAuthorized) {
+                const active = document.querySelector('.tab-content.active');
+                if (active && active.classList.contains('drs-authorized-only-tab')) {
                     switchTab('dashboard-tab');
                 }
             }
@@ -2439,6 +2455,10 @@
             if (!isPrimaryOwnerLoggedIn()) {
                 const targetEl = document.getElementById(targetTabId);
                 if (targetEl && targetEl.classList.contains('primary-owner-only-tab')) return;
+            }
+            if (!isDrsAuthorized()) {
+                const targetEl = document.getElementById(targetTabId);
+                if (targetEl && targetEl.classList.contains('drs-authorized-only-tab')) return;
             }
 
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -4650,7 +4670,7 @@
         }
         function addJobForSelectedDay() {
             closeDayDetailModal();
-            if (selectedCalendarDate && isPrimaryOwnerLoggedIn()) {
+            if (selectedCalendarDate && isDrsAuthorized()) {
                 toggleDrsView();
                 drsCurrentDate = selectedCalendarDate;
                 renderDrsGrid();
@@ -5703,7 +5723,7 @@
             const quickActions = j.status === 'Scheduled' ? `
                 <button onclick="markJobStatus('${j.id}', 'Completed')" title="Mark Completed" class="text-[var(--eny-text-muted)] hover:text-emerald-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i></button>
                 <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>` : '';
-            const assignEngineerBtn = ((j.status === 'Scheduled' || j.status === 'Accepted') && isPrimaryOwnerLoggedIn()) ? `<button onclick="openDrsAssignAdditionalEngineer('${j.id}')" title="Assign an additional engineer" class="text-[var(--eny-text-muted)] hover:text-purple-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i></button>` : '';
+            const assignEngineerBtn = ((j.status === 'Scheduled' || j.status === 'Accepted') && isDrsAuthorized()) ? `<button onclick="openDrsAssignAdditionalEngineer('${j.id}')" title="Assign an additional engineer" class="text-[var(--eny-text-muted)] hover:text-purple-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i></button>` : '';
             const rescheduleBtn = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? `<button onclick="openRescheduleJobModal('${j.id}')" title="Reschedule to a different day" class="text-[var(--eny-text-muted)] hover:text-blue-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="calendar-cog" class="w-3.5 h-3.5"></i></button>` : '';
             const reviewClient = (j.status === 'Completed' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
             const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
@@ -5712,10 +5732,10 @@
             const onMyWayBtn = (onMyWayClient && onMyWayClient.phone) ? `<button onclick="sendOnMyWayMessage('${j.id}')" title="Send 'on my way' to ${onMyWayClient.name}" class="text-[var(--eny-text-muted)] hover:text-blue-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="navigation" class="w-3.5 h-3.5"></i></button>` : '';
             const reminderClient = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
             const reminderBtn = (reminderClient && reminderClient.phone) ? `<button onclick="openSendReminderModal('${j.id}')" title="Send reminder to ${reminderClient.name}" class="text-[var(--eny-text-muted)] hover:text-emerald-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="message-square" class="w-3.5 h-3.5"></i></button>` : '';
-            const handoffBtns = (j.status === 'Completed' && isPrimaryOwnerLoggedIn()) ? `
+            const handoffBtns = (j.status === 'Completed' && isDrsAuthorized()) ? `
                 <button onclick="confirmAndPerformHandoff('${j.id}', 'rebook')" title="Rebook — job wasn't attended, raise it again" class="text-[var(--eny-text-muted)] hover:text-amber-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i></button>
                 <button onclick="confirmAndPerformHandoff('${j.id}', 'followon')" title="Raise a follow-on for another day" class="text-[var(--eny-text-muted)] hover:text-blue-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="git-branch" class="w-3.5 h-3.5"></i></button>` : '';
-            const generateInvoiceBtn = (j.status === 'Completed' && !j.linkedQuoteId && isPrimaryOwnerLoggedIn()) ? `<button onclick="manuallyGenerateEmergencyInvoice('${j.id}')" title="Generate invoice from time on site" class="text-[var(--eny-text-muted)] hover:text-emerald-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="receipt" class="w-3.5 h-3.5"></i></button>` : '';
+            const generateInvoiceBtn = (j.status === 'Completed' && !j.linkedQuoteId && isDrsAuthorized()) ? `<button onclick="manuallyGenerateEmergencyInvoice('${j.id}')" title="Generate invoice from time on site" class="text-[var(--eny-text-muted)] hover:text-emerald-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="receipt" class="w-3.5 h-3.5"></i></button>` : '';
             return `${quickActions}${assignEngineerBtn}${rescheduleBtn}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}${generateInvoiceBtn}
                 <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 <button onclick="deleteJob('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
