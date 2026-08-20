@@ -9611,16 +9611,55 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         function saveGoogleTokenToStorage(token, expiry) {
             try { localStorage.setItem(GOOGLE_TOKEN_STORAGE_KEY, JSON.stringify({ token, expiry })); } catch (e) {}
         }
+        // Returns the stored token even if expired — the caller decides
+        // whether to use it as-is or attempt a silent refresh. Previously
+        // this returned null for anything expired, which meant "expired but
+        // was connected before" was indistinguishable from "never connected".
         function loadGoogleTokenFromStorage() {
             try {
                 const raw = localStorage.getItem(GOOGLE_TOKEN_STORAGE_KEY);
                 if (!raw) return null;
                 const parsed = JSON.parse(raw);
-                if (parsed && parsed.token && parsed.expiry && Date.now() < parsed.expiry) return parsed;
+                if (parsed && parsed.token && parsed.expiry) return parsed;
             } catch (e) {}
             return null;
         }
         function clearGoogleTokenFromStorage() { try { localStorage.removeItem(GOOGLE_TOKEN_STORAGE_KEY); } catch (e) {} }
+
+        let googleSilentRefreshTimer = null;
+        let googleRefreshInFlightPromise = null;
+        let googleSilentRefreshResolve = null;
+        // Requests a fresh token with no popup shown — only succeeds if the
+        // user still has an active Google session in this browser and
+        // previously granted consent. A shared in-flight promise means
+        // several places asking for a fresh token at once (e.g. DRS syncing
+        // while the Calendar tab also renders) share one actual request
+        // rather than firing off several concurrently.
+        function ensureFreshGoogleToken() {
+            if (googleAccessToken && Date.now() < googleAccessTokenExpiry - 60000) return Promise.resolve(true);
+            if (googleRefreshInFlightPromise) return googleRefreshInFlightPromise;
+            if (!gisTokenClient) return Promise.resolve(false);
+            googleRefreshInFlightPromise = new Promise((resolve) => {
+                googleSilentRefreshResolve = resolve;
+                try {
+                    gisTokenClient.requestAccessToken({ prompt: '' });
+                } catch (e) {
+                    resolve(false);
+                }
+            }).finally(() => { googleRefreshInFlightPromise = null; });
+            return googleRefreshInFlightPromise;
+        }
+        // Renews proactively a couple of minutes before the token would
+        // actually expire, so normal use never hits a dead token mid-action.
+        // This alone isn't fully reliable — browsers throttle setTimeout in
+        // backgrounded tabs — which is exactly why every real API call also
+        // calls ensureFreshGoogleToken() itself as a safety net.
+        function scheduleGoogleSilentRefresh() {
+            if (googleSilentRefreshTimer) clearTimeout(googleSilentRefreshTimer);
+            if (!googleAccessTokenExpiry) return;
+            const msUntilRefresh = Math.max(30000, googleAccessTokenExpiry - Date.now() - (2 * 60 * 1000));
+            googleSilentRefreshTimer = setTimeout(() => { ensureFreshGoogleToken(); }, msUntilRefresh);
+        }
 
         window.addEventListener('load', () => {
             if (window.google && google.accounts && google.accounts.oauth2) {
@@ -9633,11 +9672,38 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                             googleAccessTokenExpiry = Date.now() + (tokenResponse.expires_in * 1000);
                             saveGoogleTokenToStorage(googleAccessToken, googleAccessTokenExpiry);
                             updateCalendarConnectionUI(true);
+                            scheduleGoogleSilentRefresh();
+                        } else {
+                            // Silent refresh genuinely failed (session ended,
+                            // access revoked) — reflect that honestly rather
+                            // than leaving stale "connected" state showing.
+                            googleAccessToken = null; googleAccessTokenExpiry = 0;
+                            clearGoogleTokenFromStorage();
+                            updateCalendarConnectionUI(false);
                         }
+                        if (googleSilentRefreshResolve) { googleSilentRefreshResolve(!!(tokenResponse && tokenResponse.access_token)); googleSilentRefreshResolve = null; }
+                    },
+                    error_callback: () => {
+                        googleAccessToken = null; googleAccessTokenExpiry = 0;
+                        clearGoogleTokenFromStorage();
+                        updateCalendarConnectionUI(false);
+                        if (googleSilentRefreshResolve) { googleSilentRefreshResolve(false); googleSilentRefreshResolve = null; }
                     },
                 });
                 const stored = loadGoogleTokenFromStorage();
-                if (stored) { googleAccessToken = stored.token; googleAccessTokenExpiry = stored.expiry; updateCalendarConnectionUI(true); }
+                if (stored) {
+                    googleAccessToken = stored.token; googleAccessTokenExpiry = stored.expiry;
+                    if (Date.now() < stored.expiry) {
+                        updateCalendarConnectionUI(true);
+                        scheduleGoogleSilentRefresh();
+                    } else {
+                        // Expired, but they were connected before — try to
+                        // pick back up silently rather than showing
+                        // disconnected right away. The callback above
+                        // updates the UI once the outcome is actually known.
+                        ensureFreshGoogleToken();
+                    }
+                }
             }
         });
 
@@ -9739,7 +9805,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             return `${start.getFullYear()}-${pad(start.getMonth()+1)}-${pad(start.getDate())}T${pad(start.getHours())}:${pad(start.getMinutes())}:00`;
         }
         async function createOrUpdateCalendarEvent(existingEventId, eventPayload) {
-            if (!isGoogleCalendarConnected()) return null;
+            if (!googleAccessToken) return null; // never connected at all — nothing to refresh
+            if (!(await ensureFreshGoogleToken())) return null;
             const url = existingEventId ? `https://www.googleapis.com/calendar/v3/calendars/primary/events/${existingEventId}` : `https://www.googleapis.com/calendar/v3/calendars/primary/events`;
             const method = existingEventId ? 'PATCH' : 'POST';
             try {
@@ -9750,7 +9817,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             } catch (e) { console.error('Calendar API request failed:', e); return null; }
         }
         async function deleteCalendarEvent(eventId) {
-            if (!isGoogleCalendarConnected() || !eventId) return;
+            if (!googleAccessToken || !eventId) return;
+            if (!(await ensureFreshGoogleToken())) return;
             try { await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${googleAccessToken}` } }); } catch (e) { console.error('Calendar delete failed:', e); }
         }
         function getKnownPushedEventIds() {
@@ -9760,9 +9828,10 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             return ids;
         }
         async function fetchGoogleCalendarEventsForMonth(year, monthIndexZeroBased) {
-            if (!isGoogleCalendarConnected()) return [];
+            if (!googleAccessToken) return []; // never connected at all — nothing to refresh
             const cacheKey = `${year}-${monthIndexZeroBased}`;
             if (externalGoogleEventsCache[cacheKey]) return externalGoogleEventsCache[cacheKey];
+            if (!(await ensureFreshGoogleToken())) return [];
             const timeMin = new Date(year, monthIndexZeroBased, 1).toISOString();
             const timeMax = new Date(year, monthIndexZeroBased + 1, 1).toISOString();
             try {
