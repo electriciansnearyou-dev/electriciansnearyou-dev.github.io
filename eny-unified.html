@@ -1560,6 +1560,7 @@
                     <button onclick="renderAdProfitTab()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-3 py-2 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1.5 shrink-0"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh</button>
                 </div>
                 <div id="ad-profit-not-configured-note" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-sm text-amber-700">Ad tracking isn't fully configured yet — check Settings → Ad Tracking.</div>
+                <div id="ad-profit-error-detail" class="hidden bg-red-500/10 border border-red-500/30 rounded-2xl p-4 text-xs text-red-700 font-mono break-words"></div>
                 <div id="ad-profit-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
                         <div class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)] mb-2">Ad Cost</div>
@@ -2559,7 +2560,7 @@
             // .nav-btn class, so the sweep above never reaches them — without
             // this, a highlighted dropdown item stayed highlighted forever
             // after switching away from it.
-            ['btn-jobs-tab', 'btn-lookup-tab', 'btn-crm-tab', 'btn-settings-tab', 'btn-trash-tab'].forEach(id => {
+            ['btn-jobs-tab', 'btn-lookup-tab', 'btn-crm-tab', 'btn-settings-tab', 'btn-trash-tab', 'btn-engineer-stats-tab', 'btn-ad-profit-tab'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
                     el.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
@@ -2575,7 +2576,7 @@
             // Settings and Trash live inside the More dropdown now — highlight
             // that trigger button too, so it's clear which section is active
             // even once the dropdown itself has closed.
-            if (targetTabId === 'settings-tab' || targetTabId === 'trash-tab') {
+            if (targetTabId === 'settings-tab' || targetTabId === 'trash-tab' || targetTabId === 'engineer-stats-tab' || targetTabId === 'ad-profit-tab') {
                 const moreBtn = document.getElementById('btn-more-menu');
                 if (moreBtn) {
                     moreBtn.classList.remove('text-[var(--eny-text-muted)]', 'hover:text-[var(--eny-text-primary)]');
@@ -10114,20 +10115,31 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const escapedTabName = tabName.replace(/'/g, "''");
             return `'${escapedTabName}'!${cellsOrRange}`;
         }
+        // Stores the real Google API error message so it can be shown to the
+        // user directly, rather than only logged to a browser console they
+        // likely can't easily see — guessing at the cause without this has
+        // already been wrong twice.
+        let lastSheetsApiError = '';
         async function readGoogleSheetCell(sheetId, tabName, cellRef) {
-            if (!googleAccessToken) return null;
-            if (!(await ensureFreshGoogleToken())) return null;
+            if (!googleAccessToken) { lastSheetsApiError = 'Not connected to Google.'; return null; }
+            if (!(await ensureFreshGoogleToken())) { lastSheetsApiError = 'Could not refresh Google access — try reconnecting.'; return null; }
             try {
                 const range = buildSheetRange(tabName, cellRef);
                 const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}`, { headers: { 'Authorization': `Bearer ${googleAccessToken}` } });
-                if (!res.ok) { console.error('Sheets read error:', await res.text()); return null; }
+                if (!res.ok) {
+                    const errText = await res.text();
+                    console.error('Sheets read error:', errText);
+                    lastSheetsApiError = `${res.status} ${res.statusText}: ${errText.slice(0, 300)}`;
+                    return null;
+                }
+                lastSheetsApiError = '';
                 const data = await res.json();
                 return (data.values && data.values[0] && data.values[0][0]) || null;
-            } catch (e) { console.error('Sheets read failed:', e); return null; }
+            } catch (e) { console.error('Sheets read failed:', e); lastSheetsApiError = String(e.message || e); return null; }
         }
         async function writeGoogleSheetCell(sheetId, tabName, cellRef, value) {
-            if (!googleAccessToken) return false;
-            if (!(await ensureFreshGoogleToken())) return false;
+            if (!googleAccessToken) { lastSheetsApiError = 'Not connected to Google.'; return false; }
+            if (!(await ensureFreshGoogleToken())) { lastSheetsApiError = 'Could not refresh Google access — try reconnecting.'; return false; }
             try {
                 const range = buildSheetRange(tabName, cellRef);
                 const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
@@ -10135,9 +10147,15 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     headers: { 'Authorization': `Bearer ${googleAccessToken}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ values: [[value]] }),
                 });
-                if (!res.ok) { console.error('Sheets write error:', await res.text()); return false; }
+                if (!res.ok) {
+                    const errText = await res.text();
+                    console.error('Sheets write error:', errText);
+                    lastSheetsApiError = `${res.status} ${res.statusText}: ${errText.slice(0, 300)}`;
+                    return false;
+                }
+                lastSheetsApiError = '';
                 return true;
-            } catch (e) { console.error('Sheets write failed:', e); return false; }
+            } catch (e) { console.error('Sheets write failed:', e); lastSheetsApiError = String(e.message || e); return false; }
         }
         // Uses the Sheets API's own append behaviour to land on the next
         // empty row after whatever's already in the given column range,
@@ -10145,8 +10163,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         // assumes row 1 in that range holds headers (matching "F2 then F3"),
         // so the very first entry correctly lands on row 2.
         async function appendGoogleSheetRow(sheetId, tabName, rangeCols, rowValues) {
-            if (!googleAccessToken) return false;
-            if (!(await ensureFreshGoogleToken())) return false;
+            if (!googleAccessToken) { lastSheetsApiError = 'Not connected to Google.'; return false; }
+            if (!(await ensureFreshGoogleToken())) { lastSheetsApiError = 'Could not refresh Google access — try reconnecting.'; return false; }
             try {
                 const range = buildSheetRange(tabName, rangeCols);
                 const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
@@ -10154,9 +10172,15 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     headers: { 'Authorization': `Bearer ${googleAccessToken}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ values: [rowValues] }),
                 });
-                if (!res.ok) { console.error('Sheets append error:', await res.text()); return false; }
+                if (!res.ok) {
+                    const errText = await res.text();
+                    console.error('Sheets append error:', errText);
+                    lastSheetsApiError = `${res.status} ${res.statusText}: ${errText.slice(0, 300)}`;
+                    return false;
+                }
+                lastSheetsApiError = '';
                 return true;
-            } catch (e) { console.error('Sheets append failed:', e); return false; }
+            } catch (e) { console.error('Sheets append failed:', e); lastSheetsApiError = String(e.message || e); return false; }
         }
         async function appendLostQuoteToSheet(address, phone, jobName, quotePrice, reason) {
             if (!currentAdTrackingSettings.sheetId || !currentAdTrackingSettings.outputTab) return;
@@ -10224,6 +10248,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         async function renderAdProfitTab() {
             const note = document.getElementById('ad-profit-not-configured-note');
             const cards = document.getElementById('ad-profit-cards');
+            const errorDetail = document.getElementById('ad-profit-error-detail');
+            errorDetail.classList.add('hidden');
             if (!isAdTrackingConfigured()) {
                 note.classList.remove('hidden');
                 cards.classList.add('hidden');
@@ -10241,6 +10267,9 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 document.getElementById('ad-profit-net-value').innerText = 'N/A';
                 document.getElementById('ad-profit-percent-value').innerText = 'N/A';
                 showToast('Could not read ad spend from the sheet — check the connection or cell reference in Settings.', 'warning');
+                const attemptedRange = buildSheetRange(currentAdTrackingSettings.inputTab, currentAdTrackingSettings.spendCell);
+                errorDetail.innerText = `Tried to read: ${attemptedRange}\nError: ${lastSheetsApiError || '(none captured)'}`;
+                errorDetail.classList.remove('hidden');
                 return;
             }
             const netProfit = Math.round((jobProfit - adSpend) * 100) / 100;
