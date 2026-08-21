@@ -2877,10 +2877,28 @@
             }, (err) => console.error('Job numbering listener error:', err));
 
             db.collection('settings').doc('adTracking').onSnapshot((doc) => {
+                const defaults = {
+                    sheetId: '1nzPu8D3X6of9UyIMx35GPkpycchn9db_tZzelCP3hzY',
+                    inputTab: 'Report Chart', spendCell: 'F9',
+                    outputTab: 'Profit Info', jobProfitCell: 'A2', netProfitCell: 'B2', percentCell: 'C2',
+                };
                 if (doc.exists) {
-                    currentAdTrackingSettings = doc.data();
+                    const loaded = doc.data();
+                    // This document's shape changed twice since it was first
+                    // built (date-column filtering removed, then the real
+                    // sheet layout added) — a document saved under an older
+                    // version won't have the newer field names at all, and a
+                    // field present in every version (like sheetId) could
+                    // still be an empty string from the very first seed —
+                    // both count as "missing" here, not just undefined.
+                    const merged = { ...defaults };
+                    Object.keys(defaults).forEach(k => { if (loaded[k]) merged[k] = loaded[k]; });
+                    const wasIncomplete = Object.keys(defaults).some(k => !loaded[k]);
+                    currentAdTrackingSettings = merged;
+                    if (wasIncomplete && isOwnerLoggedIn()) db.collection('settings').doc('adTracking').set(merged);
                 } else if (isOwnerLoggedIn()) {
-                    db.collection('settings').doc('adTracking').set(currentAdTrackingSettings);
+                    currentAdTrackingSettings = defaults;
+                    db.collection('settings').doc('adTracking').set(defaults);
                 }
                 const idField = document.getElementById('setting-ads-sheet-id');
                 if (idField) {
