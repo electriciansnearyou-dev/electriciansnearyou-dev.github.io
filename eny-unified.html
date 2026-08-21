@@ -4730,12 +4730,18 @@
                 if (!(await showConfirm(`${engineerName} already has job(s) booked in ${dayWord} (${jobTitles}). Mark them unavailable anyway?`))) return;
             }
 
-            datesToAdd.forEach(d => {
-                db.collection('unavailability').add({ engineerName, date: d, createdAt: new Date().toISOString() });
-            });
+            for (const d of datesToAdd) {
+                const ref = await db.collection('unavailability').add({ engineerName, date: d, createdAt: new Date().toISOString() });
+                const eventId = await pushUnavailabilityToCalendar(engineerName, d);
+                if (eventId) await db.collection('unavailability').doc(ref.id).update({ calendarEventId: eventId });
+            }
             document.getElementById('day-detail-unavailable-end-date').value = '';
         }
-        function removeEngineerUnavailability(id) { db.collection('unavailability').doc(id).delete(); }
+        async function removeEngineerUnavailability(id) {
+            const record = currentUnavailability.find(u => u.id === id);
+            if (record && record.calendarEventId) await deleteCalendarEvent(record.calendarEventId);
+            db.collection('unavailability').doc(id).delete();
+        }
 
         function detectEngineerFromEventTitle(summary) {
             if (!summary) return null;
@@ -5725,6 +5731,7 @@
                 <button onclick="markJobStatus('${j.id}', 'Cancelled')" title="Mark Cancelled" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="x-circle" class="w-3.5 h-3.5"></i></button>` : '';
             const assignEngineerBtn = ((j.status === 'Scheduled' || j.status === 'Accepted') && isDrsAuthorized()) ? `<button onclick="openDrsAssignAdditionalEngineer('${j.id}')" title="Assign an additional engineer" class="text-[var(--eny-text-muted)] hover:text-purple-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i></button>` : '';
             const rescheduleBtn = (j.status === 'Scheduled' && isOwnerLoggedIn()) ? `<button onclick="openRescheduleJobModal('${j.id}')" title="Reschedule to a different day" class="text-[var(--eny-text-muted)] hover:text-blue-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="calendar-cog" class="w-3.5 h-3.5"></i></button>` : '';
+            const unbookBtn = ((j.status === 'Scheduled' || j.status === 'Accepted') && isDrsAuthorized()) ? `<button onclick="unbookJob('${j.id}')" title="Unbook — clear the date/time/engineer and return to Floating Jobs" class="text-[var(--eny-text-muted)] hover:text-orange-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="calendar-x" class="w-3.5 h-3.5"></i></button>` : '';
             const reviewClient = (j.status === 'Completed' && isOwnerLoggedIn()) ? findClientForJob(j) : null;
             const reviewBtn = (reviewClient && reviewClient.phone) ? `<button onclick="openSendReviewRequestModal('${j.id}')" title="Ask ${reviewClient.name} for a review" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="star" class="w-3.5 h-3.5"></i></button>` : '';
             const signatureBtn = j.status === 'Completed' ? `<button onclick="openSignatureModal('${j.id}')" title="${j.signature ? 'View/redo signature' : 'Get client signature'}" class="${j.signature ? 'text-emerald-400 hover:text-emerald-300' : 'text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)]'} p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="${j.signature ? 'file-check' : 'pen-tool'}" class="w-3.5 h-3.5"></i></button>` : '';
@@ -5736,7 +5743,7 @@
                 <button onclick="confirmAndPerformHandoff('${j.id}', 'rebook')" title="Rebook — job wasn't attended, raise it again" class="text-[var(--eny-text-muted)] hover:text-amber-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i></button>
                 <button onclick="confirmAndPerformHandoff('${j.id}', 'followon')" title="Raise a follow-on for another day" class="text-[var(--eny-text-muted)] hover:text-blue-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="git-branch" class="w-3.5 h-3.5"></i></button>` : '';
             const generateInvoiceBtn = (j.status === 'Completed' && !j.linkedQuoteId && isDrsAuthorized()) ? `<button onclick="manuallyGenerateEmergencyInvoice('${j.id}')" title="Generate invoice from time on site" class="text-[var(--eny-text-muted)] hover:text-emerald-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="receipt" class="w-3.5 h-3.5"></i></button>` : '';
-            return `${quickActions}${assignEngineerBtn}${rescheduleBtn}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}${generateInvoiceBtn}
+            return `${quickActions}${assignEngineerBtn}${rescheduleBtn}${unbookBtn}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}${generateInvoiceBtn}
                 <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 <button onclick="deleteJob('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
         }
@@ -5819,6 +5826,18 @@
             activeJobInfoModalId = null;
         }
         let activeRescheduleJobId = null;
+        async function unbookJob(jobId) {
+            const j = currentJobs.find(x => x.id === jobId);
+            if (!j) return;
+            if (!(await showConfirm(`Unbook "${j.title}"? This clears the date, time, and engineer, and puts it back in Floating Jobs.`))) return;
+            if (j.calendarEventId) await deleteCalendarEvent(j.calendarEventId);
+            await db.collection('jobs').doc(jobId).update({
+                status: 'Floating', date: null, time: null, assignedEngineers: [],
+                calendarEventId: null, floatingSince: new Date().toISOString(),
+            });
+            closeJobInfoModal();
+            showToast('Job unbooked — back in Floating Jobs.', 'success');
+        }
         function openRescheduleJobModal(jobId) {
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
@@ -9736,6 +9755,19 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             lucide.createIcons();
         }
 
+        // All-day event — Google's API wants the end date exclusive (the day
+        // after), even for a single day of unavailability.
+        async function pushUnavailabilityToCalendar(engineerName, date) {
+            const d = new Date(date + 'T00:00:00');
+            d.setDate(d.getDate() + 1);
+            const endDate = toLocalISODate(d);
+            const eventPayload = {
+                summary: `${engineerName} — Unavailable`,
+                start: { date },
+                end: { date: endDate },
+            };
+            return await createOrUpdateCalendarEvent(null, eventPayload);
+        }
         async function pushJobToCalendar(job, existingEventId) {
             const startDateTime = `${job.date}T${job.time || '09:00'}:00`;
             const endDateTime = computeJobEndTime(job.date, job.time || '09:00');
@@ -9825,6 +9857,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const ids = new Set();
             currentJobs.forEach(j => { if (j.calendarEventId) ids.add(j.calendarEventId); });
             currentProperties.forEach(p => { if (p.electricalCalendarEventId) ids.add(p.electricalCalendarEventId); if (p.smokeAlarmCalendarEventId) ids.add(p.smokeAlarmCalendarEventId); });
+            currentUnavailability.forEach(u => { if (u.calendarEventId) ids.add(u.calendarEventId); });
             return ids;
         }
         async function fetchGoogleCalendarEventsForMonth(year, monthIndexZeroBased) {
