@@ -10105,11 +10105,20 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             return ids;
         }
         // === Google Sheets (ad tracking) ===
+        // Google's range notation requires the sheet/tab name to be wrapped
+        // in single quotes whenever it contains a space (or other special
+        // characters) — "Report Chart!F9" is invalid, "'Report Chart'!F9" is
+        // required. Always quoting is safe even for tab names without
+        // spaces, so this is used everywhere rather than only sometimes.
+        function buildSheetRange(tabName, cellsOrRange) {
+            const escapedTabName = tabName.replace(/'/g, "''");
+            return `'${escapedTabName}'!${cellsOrRange}`;
+        }
         async function readGoogleSheetCell(sheetId, tabName, cellRef) {
             if (!googleAccessToken) return null;
             if (!(await ensureFreshGoogleToken())) return null;
             try {
-                const range = `${tabName}!${cellRef}`;
+                const range = buildSheetRange(tabName, cellRef);
                 const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}`, { headers: { 'Authorization': `Bearer ${googleAccessToken}` } });
                 if (!res.ok) { console.error('Sheets read error:', await res.text()); return null; }
                 const data = await res.json();
@@ -10120,7 +10129,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (!googleAccessToken) return false;
             if (!(await ensureFreshGoogleToken())) return false;
             try {
-                const range = `${tabName}!${cellRef}`;
+                const range = buildSheetRange(tabName, cellRef);
                 const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
                     method: 'PUT',
                     headers: { 'Authorization': `Bearer ${googleAccessToken}`, 'Content-Type': 'application/json' },
@@ -10139,7 +10148,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (!googleAccessToken) return false;
             if (!(await ensureFreshGoogleToken())) return false;
             try {
-                const range = `${tabName}!${rangeCols}`;
+                const range = buildSheetRange(tabName, rangeCols);
                 const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${googleAccessToken}`, 'Content-Type': 'application/json' },
