@@ -10281,6 +10281,16 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const percentEl = document.getElementById('ad-profit-percent-value');
             percentEl.innerText = `${percent.toFixed(1)}%`;
             percentEl.className = `text-3xl font-black font-mono block ${percent >= 0 ? 'text-emerald-500' : 'text-red-500'}`;
+            const wroteOk = await writeGoogleSheetCell(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, currentAdTrackingSettings.jobProfitCell, jobProfit)
+                && await writeGoogleSheetCell(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, currentAdTrackingSettings.netProfitCell, netProfit)
+                && await writeGoogleSheetCell(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, currentAdTrackingSettings.percentCell, percent);
+            if (!wroteOk) {
+                const attemptedRange = buildSheetRange(currentAdTrackingSettings.outputTab, currentAdTrackingSettings.jobProfitCell);
+                errorDetail.innerText = `Read succeeded, but writing back to the sheet failed.\nTried to write: ${attemptedRange} (and nearby cells)\nError: ${lastSheetsApiError || '(none captured)'}`;
+                errorDetail.classList.remove('hidden');
+                showToast('Read the ad spend fine, but could not write the profit figures back to the sheet.', 'warning');
+            }
+            percentEl.className = `text-3xl font-black font-mono block ${percent >= 0 ? 'text-emerald-500' : 'text-red-500'}`;
         }
         async function fetchGoogleCalendarEventsForMonth(year, monthIndexZeroBased) {
             if (!googleAccessToken) return []; // never connected at all — nothing to refresh
