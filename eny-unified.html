@@ -8241,7 +8241,10 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             });
             closeQuoteInfoModal();
             showToast('Quote marked as lost.', 'success');
-            await appendLostQuoteToSheet(address, phone, q.jobName, q.financials.grossTotal, reason.trim());
+            const appended = await appendLostQuoteToSheet(address, phone, q.jobName, q.financials.grossTotal, reason.trim());
+            if (!appended) {
+                showToast(`Quote marked as lost, but couldn't write it to the sheet: ${lastSheetsApiError || 'unknown error'}`, 'warning');
+            }
         }
         async function deleteVaultRecord(id) {
             if (!(await showConfirm('Move this record to Trash? You can restore it within 30 days.', { confirmText: 'Move to Trash', danger: true }))) return;
@@ -10183,8 +10186,11 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             } catch (e) { console.error('Sheets append failed:', e); lastSheetsApiError = String(e.message || e); return false; }
         }
         async function appendLostQuoteToSheet(address, phone, jobName, quotePrice, reason) {
-            if (!currentAdTrackingSettings.sheetId || !currentAdTrackingSettings.outputTab) return;
-            await appendGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F:J', [address, phone, jobName, quotePrice, reason]);
+            if (!currentAdTrackingSettings.sheetId || !currentAdTrackingSettings.outputTab) {
+                lastSheetsApiError = 'Ad tracking sheet/output tab not configured.';
+                return false;
+            }
+            return await appendGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F:J', [address, phone, jobName, quotePrice, reason]);
         }
         // The sheet maintains its own rolling-year spend total — the app
         // just reads whatever figure is currently in that one cell as-is.
