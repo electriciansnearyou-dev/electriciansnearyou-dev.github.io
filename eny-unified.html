@@ -10112,7 +10112,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         // spaces, so this is used everywhere rather than only sometimes.
         function buildSheetRange(tabName, cellsOrRange) {
             const escapedTabName = tabName.replace(/'/g, "''");
-            return `='${escapedTabName}'!${cellsOrRange}`;
+            return `'${escapedTabName}'!${cellsOrRange}`;
         }
         async function readGoogleSheetCell(sheetId, tabName, cellRef) {
             if (!googleAccessToken) return null;
