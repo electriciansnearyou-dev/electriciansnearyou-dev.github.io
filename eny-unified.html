@@ -290,6 +290,9 @@
                             <button onclick="switchTab('engineer-stats-tab'); closeMoreMenu();" id="btn-engineer-stats-tab" class="primary-owner-only hidden w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
                                 <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Engineer Stats
                             </button>
+                            <button onclick="switchTab('ad-profit-tab'); closeMoreMenu(); renderAdProfitTab();" id="btn-ad-profit-tab" class="drs-authorized-only hidden w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
+                                <i data-lucide="line-chart" class="w-4 h-4"></i> Ad Profit
+                            </button>
                             <button onclick="switchTab('trash-tab'); closeMoreMenu();" id="btn-trash-tab" class="w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i> Trash
                             </button>
@@ -1188,33 +1191,44 @@
                 <div id="settings-sub-adtracking" class="settings-subtab-content">
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-lg space-y-4">
                         <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="line-chart" class="text-[var(--eny-accent-text)]"></i> Ad Tracking</h2>
-                        <p class="text-xs text-[var(--eny-text-muted)]">Reads daily ad spend from a Google Sheet (one row per day) and writes back the rolling 365-day ad-job profit total whenever an ad-sourced job completes.</p>
+                        <p class="text-xs text-[var(--eny-text-muted)]">Reads the sheet's own rolling-year ad spend total, and writes back three figures whenever an ad-sourced job completes.</p>
                         <div>
                             <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Google Sheet ID</label>
                             <input type="text" id="setting-ads-sheet-id" oninput="saveAdTrackingSettings()" placeholder="From the sheet's URL, between /d/ and /edit" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Sheet / Tab Name</label>
-                            <input type="text" id="setting-ads-sheet-tab" oninput="saveAdTrackingSettings()" placeholder="e.g. Sheet1" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
-                        </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Date Column</label>
-                                <input type="text" id="setting-ads-date-col" oninput="saveAdTrackingSettings()" placeholder="e.g. A" maxlength="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Input Tab</label>
+                                <input type="text" id="setting-ads-input-tab" oninput="saveAdTrackingSettings()" placeholder="e.g. Report Chart" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Spend Column</label>
-                                <input type="text" id="setting-ads-spend-col" oninput="saveAdTrackingSettings()" placeholder="e.g. B" maxlength="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Spend Cell</label>
+                                <input type="text" id="setting-ads-spend-cell" oninput="saveAdTrackingSettings()" placeholder="e.g. F9" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Profit Output Cell</label>
-                            <input type="text" id="setting-ads-profit-cell" oninput="saveAdTrackingSettings()" placeholder="e.g. D2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
-                            <p class="text-[10px] text-[var(--eny-text-muted2)] mt-1.5">Gets overwritten with the current rolling 365-day ad-job profit figure each time an ad-sourced job completes.</p>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Output Tab</label>
+                            <input type="text" id="setting-ads-output-tab" oninput="saveAdTrackingSettings()" placeholder="e.g. Profit Info" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                         </div>
-                        <div id="ad-tracking-not-configured-note" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-[11px] text-amber-700">Fill in all five fields above to activate ad tracking.</div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Job Profit Cell</label>
+                                <input type="text" id="setting-ads-jobprofit-cell" oninput="saveAdTrackingSettings()" placeholder="e.g. A2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Profit After Ads</label>
+                                <input type="text" id="setting-ads-netprofit-cell" oninput="saveAdTrackingSettings()" placeholder="e.g. B2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Profit %</label>
+                                <input type="text" id="setting-ads-percent-cell" oninput="saveAdTrackingSettings()" placeholder="e.g. C2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-[var(--eny-text-muted2)]">Job Profit = total ad-job revenue minus materials. Profit After Ads = that minus ad spend. Profit % = Profit After Ads ÷ ad spend × 100 (return on ad spend).</p>
+                        <div id="ad-tracking-not-configured-note" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-[11px] text-amber-700">Fill in all fields above to activate ad tracking.</div>
                     </div>
                 </div>
+
 
                 <!-- BANK DETAILS (per-operative, chosen per-invoice rather than a global toggle) -->
                 <div id="settings-sub-banking" class="settings-subtab-content">
@@ -1535,6 +1549,32 @@
                     <i data-lucide="users" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> No engineer activity recorded yet.
                 </div>
                 <div id="engineer-stats-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div id="ad-profit-tab" class="tab-content drs-authorized-only-tab space-y-4">
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06] flex items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-lg font-semibold flex items-center gap-2 text-[var(--eny-text-primary)]"><i data-lucide="line-chart" class="text-[var(--eny-accent-text)] w-5 h-5"></i> Ad Profit</h2>
+                        <p class="text-xs text-[var(--eny-text-muted)] mt-1">Rolling 365 days. Only visible to Hughes and Mabbley.</p>
+                    </div>
+                    <button onclick="renderAdProfitTab()" class="text-xs font-semibold bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] text-[var(--eny-text-300)] px-3 py-2 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1.5 shrink-0"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh</button>
+                </div>
+                <div id="ad-profit-not-configured-note" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-sm text-amber-700">Ad tracking isn't fully configured yet — check Settings → Ad Tracking.</div>
+                <div id="ad-profit-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
+                        <div class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)] mb-2">Ad Cost</div>
+                        <span id="ad-profit-cost-value" class="text-3xl font-black font-mono text-[var(--eny-text-primary)] block">—</span>
+                    </div>
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
+                        <div class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)] mb-2">Ad Job Profit</div>
+                        <span id="ad-profit-net-value" class="text-3xl font-black font-mono block">—</span>
+                        <p class="text-[10px] text-[var(--eny-text-muted2)] mt-1">Total ad-job profit minus ad cost</p>
+                    </div>
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
+                        <div class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)] mb-2">Return on Ad Spend</div>
+                        <span id="ad-profit-percent-value" class="text-3xl font-black font-mono block">—</span>
+                    </div>
+                </div>
             </div>
 
             <div id="drs-tab" class="tab-content drs-authorized-only-tab">
@@ -1887,13 +1927,14 @@
                 <div id="quote-info-warranty-wrapper" class="hidden"></div>
                 <div>
                     <div class="text-[10px] font-bold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Pipeline Status</div>
-                    <select id="quote-info-status-select" onchange="updateQuoteStatus(activeQuoteInfoModalId, this.value); closeQuoteInfoModal();" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-3 py-2.5 text-sm text-[var(--eny-text-100)]">
+                    <select id="quote-info-status-select" onchange="handleQuoteStatusChange(activeQuoteInfoModalId, this.value)" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-3 py-2.5 text-sm text-[var(--eny-text-100)]">
                         <option value="Draft">Draft</option>
                         <option value="Sent">Sent</option>
                         <option value="Approved">Approved</option>
                         <option value="Invoiced">Invoiced</option>
                         <option value="Paid">Paid</option>
                         <option value="Expired">Expired</option>
+                        <option value="Lost">Lost</option>
                     </select>
                 </div>
             </div>
@@ -1901,6 +1942,7 @@
                 <button id="quote-info-primary-action-btn" class="col-span-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"></button>
                 <button onclick="generateDocumentPDF(activeQuoteInfoModalId)" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-200)] font-medium py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="file-down" class="w-3.5 h-3.5"></i> PDF</button>
                 <button onclick="editQuoteFromInfoModal()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-200)] font-medium py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="pencil" class="w-3.5 h-3.5"></i> Edit</button>
+                <button id="quote-info-mark-lost-btn" onclick="markQuoteLost(activeQuoteInfoModalId)" class="col-span-2 bg-[var(--eny-bg-secondary)] hover:bg-red-500 hover:text-white border border-[var(--eny-border-standard)] text-[var(--eny-text-muted)] font-medium py-2 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="thumbs-down" class="w-3.5 h-3.5"></i> Mark Lost</button>
                 <button onclick="deleteQuoteFromInfoModal()" class="col-span-2 bg-[var(--eny-bg-secondary)] hover:bg-red-500 hover:text-white border border-[var(--eny-border-standard)] text-[var(--eny-text-muted)] font-medium py-2 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete</button>
             </div>
         </div>
@@ -2835,14 +2877,20 @@
             }, (err) => console.error('Job numbering listener error:', err));
 
             db.collection('settings').doc('adTracking').onSnapshot((doc) => {
-                if (doc.exists) currentAdTrackingSettings = doc.data();
+                if (doc.exists) {
+                    currentAdTrackingSettings = doc.data();
+                } else if (isOwnerLoggedIn()) {
+                    db.collection('settings').doc('adTracking').set(currentAdTrackingSettings);
+                }
                 const idField = document.getElementById('setting-ads-sheet-id');
                 if (idField) {
                     idField.value = currentAdTrackingSettings.sheetId || '';
-                    document.getElementById('setting-ads-sheet-tab').value = currentAdTrackingSettings.sheetTab || '';
-                    document.getElementById('setting-ads-date-col').value = currentAdTrackingSettings.dateCol || '';
-                    document.getElementById('setting-ads-spend-col').value = currentAdTrackingSettings.spendCol || '';
-                    document.getElementById('setting-ads-profit-cell').value = currentAdTrackingSettings.profitCell || '';
+                    document.getElementById('setting-ads-input-tab').value = currentAdTrackingSettings.inputTab || '';
+                    document.getElementById('setting-ads-spend-cell').value = currentAdTrackingSettings.spendCell || '';
+                    document.getElementById('setting-ads-output-tab').value = currentAdTrackingSettings.outputTab || '';
+                    document.getElementById('setting-ads-jobprofit-cell').value = currentAdTrackingSettings.jobProfitCell || '';
+                    document.getElementById('setting-ads-netprofit-cell').value = currentAdTrackingSettings.netProfitCell || '';
+                    document.getElementById('setting-ads-percent-cell').value = currentAdTrackingSettings.percentCell || '';
                     const note = document.getElementById('ad-tracking-not-configured-note');
                     if (note) note.classList.toggle('hidden', isAdTrackingConfigured());
                 }
@@ -3034,14 +3082,20 @@
         }
 
         let currentJobNumberSettings = { nextNumber: 100001 };
-        let currentAdTrackingSettings = { sheetId: '', sheetTab: '', dateCol: '', spendCol: '', profitCell: '' };
+        let currentAdTrackingSettings = {
+            sheetId: '1nzPu8D3X6of9UyIMx35GPkpycchn9db_tZzelCP3hzY',
+            inputTab: 'Report Chart', spendCell: 'F9',
+            outputTab: 'Profit Info', jobProfitCell: 'A2', netProfitCell: 'B2', percentCell: 'C2',
+        };
         function saveAdTrackingSettings() {
             currentAdTrackingSettings = {
                 sheetId: document.getElementById('setting-ads-sheet-id').value.trim(),
-                sheetTab: document.getElementById('setting-ads-sheet-tab').value.trim(),
-                dateCol: document.getElementById('setting-ads-date-col').value.trim().toUpperCase(),
-                spendCol: document.getElementById('setting-ads-spend-col').value.trim().toUpperCase(),
-                profitCell: document.getElementById('setting-ads-profit-cell').value.trim().toUpperCase(),
+                inputTab: document.getElementById('setting-ads-input-tab').value.trim(),
+                spendCell: document.getElementById('setting-ads-spend-cell').value.trim().toUpperCase(),
+                outputTab: document.getElementById('setting-ads-output-tab').value.trim(),
+                jobProfitCell: document.getElementById('setting-ads-jobprofit-cell').value.trim().toUpperCase(),
+                netProfitCell: document.getElementById('setting-ads-netprofit-cell').value.trim().toUpperCase(),
+                percentCell: document.getElementById('setting-ads-percent-cell').value.trim().toUpperCase(),
             };
             db.collection('settings').doc('adTracking').set(currentAdTrackingSettings);
             const note = document.getElementById('ad-tracking-not-configured-note');
@@ -3049,7 +3103,7 @@
         }
         function isAdTrackingConfigured() {
             const s = currentAdTrackingSettings;
-            return !!(s.sheetId && s.sheetTab && s.dateCol && s.spendCol && s.profitCell);
+            return !!(s.sheetId && s.inputTab && s.spendCell && s.outputTab && s.jobProfitCell && s.netProfitCell && s.percentCell);
         }
         function saveJobNumberSettings() {
             const val = parseInt(document.getElementById('setting-next-job-number').value) || 100001;
@@ -5014,6 +5068,35 @@
             const extraHoursBilled = Math.ceil(extraMinutes / 60);
             return tier.firstHour + (extraHoursBilled * tier.subsequentHour);
         }
+        // Same round-up-to-the-hour billing convention as call-outs, just a
+        // different rate — first hour flat, any part of a further hour
+        // rounds up to a full one.
+        const AD_JOB_RATE_FIRST_HOUR = 70;
+        const AD_JOB_RATE_SUBSEQUENT_HOUR = 45;
+        // Only for ad-sourced jobs with no linked quote — a quoted job's
+        // profit comes straight from the quote's real financials instead,
+        // no prompt needed. Cancelling either prompt leaves the job marked
+        // Completed but without a profit recorded yet — recoverable later
+        // via the retry button in buildJobActionButtons.
+        async function promptAndRecordAdJobCompletion(job, settledEngineerState) {
+            const totalMinutes = Object.values(settledEngineerState || {}).reduce((sum, s) => sum + (s.totalMinutes || 0), 0);
+            const suggestedCharge = totalMinutes > 0 ? computeEmergencyInvoiceTotal(totalMinutes, { firstHour: AD_JOB_RATE_FIRST_HOUR, subsequentHour: AD_JOB_RATE_SUBSEQUENT_HOUR }) : 0;
+            const hours = Math.floor(totalMinutes / 60), mins = totalMinutes % 60;
+            const chargedRaw = prompt(`This ad-sourced job logged ${hours}h ${mins}m on site (suggested at £${AD_JOB_RATE_FIRST_HOUR} first hour, £${AD_JOB_RATE_SUBSEQUENT_HOUR}/hr after). How much was charged in total, inc VAT? Edit if different.`, suggestedCharge > 0 ? suggestedCharge.toFixed(2) : '');
+            if (chargedRaw === null) return;
+            const charged = parseFloat(chargedRaw);
+            if (isNaN(charged) || charged < 0) { showToast('Please enter a valid charged amount.', 'warning'); return; }
+            const materialRaw = prompt('Total material cost for this job, inc VAT?', '0');
+            if (materialRaw === null) return;
+            const material = parseFloat(materialRaw);
+            if (isNaN(material) || material < 0) { showToast('Please enter a valid material cost.', 'warning'); return; }
+            const profit = Math.round((charged - material) * 100) / 100;
+            await db.collection('jobs').doc(job.id).update({
+                manualChargedAmount: charged, manualMaterialCost: material, adProfit: profit,
+            });
+            showToast(`Ad job profit recorded: £${profit.toFixed(2)}.`, 'success');
+            await updateAdProfitSheet();
+        }
         function loadJobForModification(jobId) {
             const j = currentJobs.find(x => x.id === jobId);
             if (!j) return;
@@ -5079,11 +5162,26 @@
                 // still generates correctly, exactly as it would going through
                 // the full workflow.
                 const settledEngineerState = await stopAllRunningEngineerTimersForJob(j);
-                await db.collection('jobs').doc(jobId).update({ status: newStatus });
+                await db.collection('jobs').doc(jobId).update({ status: newStatus, completedAt: new Date().toISOString() });
                 await generateEmergencyInvoice(j, settledEngineerState);
                 return;
             }
-            await db.collection('jobs').doc(jobId).update({ status: newStatus });
+            if (newStatus === 'Completed' && j.fromAds && !j.linkedQuoteId) {
+                const settledEngineerState = await stopAllRunningEngineerTimersForJob(j);
+                await db.collection('jobs').doc(jobId).update({ status: newStatus, completedAt: new Date().toISOString() });
+                await promptAndRecordAdJobCompletion(j, settledEngineerState);
+                return;
+            }
+            if (newStatus === 'Completed' && j.fromAds && j.linkedQuoteId) {
+                // A quoted ad job's profit is already known from the quote's
+                // own financials — no prompt needed, just refresh the sheet.
+                await db.collection('jobs').doc(jobId).update({ status: newStatus, completedAt: new Date().toISOString() });
+                await updateAdProfitSheet();
+                return;
+            }
+            const payload = { status: newStatus };
+            if (newStatus === 'Completed') payload.completedAt = new Date().toISOString();
+            await db.collection('jobs').doc(jobId).update(payload);
         }
         // ============================================================
         // TODAY TAB + JOB WORKFLOW (Accept -> Start -> Complete)
@@ -5423,8 +5521,10 @@
             const settledEngineerState = await stopAllRunningEngineerTimersForJob(job);
 
             if (outcome === 'Completed') {
-                await db.collection('jobs').doc(jobId).update({ operativeComments: comments, completionOutcome: 'Completed' });
+                await db.collection('jobs').doc(jobId).update({ operativeComments: comments, completionOutcome: 'Completed', completedAt: new Date().toISOString() });
                 if (job.isEmergency) await generateEmergencyInvoice(job, settledEngineerState);
+                else if (job.fromAds && !job.linkedQuoteId) await promptAndRecordAdJobCompletion(job, settledEngineerState);
+                else if (job.fromAds && job.linkedQuoteId) await updateAdProfitSheet();
                 // Signature capture already stops here with its own Save flow —
                 // the job is marked Completed once that's actually saved, not
                 // before, so a job never shows "done" without being signed off
@@ -5823,7 +5923,8 @@
                 <button onclick="confirmAndPerformHandoff('${j.id}', 'rebook')" title="Rebook — job wasn't attended, raise it again" class="text-[var(--eny-text-muted)] hover:text-amber-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i></button>
                 <button onclick="confirmAndPerformHandoff('${j.id}', 'followon')" title="Raise a follow-on for another day" class="text-[var(--eny-text-muted)] hover:text-blue-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="git-branch" class="w-3.5 h-3.5"></i></button>` : '';
             const generateInvoiceBtn = (j.status === 'Completed' && !j.linkedQuoteId && isDrsAuthorized()) ? `<button onclick="manuallyGenerateEmergencyInvoice('${j.id}')" title="Generate invoice from time on site" class="text-[var(--eny-text-muted)] hover:text-emerald-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="receipt" class="w-3.5 h-3.5"></i></button>` : '';
-            return `${quickActions}${assignEngineerBtn}${rescheduleBtn}${unbookBtn}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}${generateInvoiceBtn}
+            const recordAdProfitBtn = (j.status === 'Completed' && j.fromAds && !j.linkedQuoteId && typeof j.adProfit !== 'number' && isDrsAuthorized()) ? `<button onclick="retryAdJobCompletion('${j.id}')" title="Record ad job profit" class="text-[var(--eny-text-muted)] hover:text-amber-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="line-chart" class="w-3.5 h-3.5"></i></button>` : '';
+            return `${quickActions}${assignEngineerBtn}${rescheduleBtn}${unbookBtn}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}${generateInvoiceBtn}${recordAdProfitBtn}
                 <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 <button onclick="deleteJob('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
         }
@@ -5831,6 +5932,11 @@
         // the actual duration, so this works as a reliable manual fallback
         // regardless of whether the timer was ever started — that's the
         // whole point of having a manual button at all.
+        async function retryAdJobCompletion(jobId) {
+            const j = currentJobs.find(x => x.id === jobId);
+            if (!j) return;
+            await promptAndRecordAdJobCompletion(j, j.engineerState || {});
+        }
         async function manuallyGenerateEmergencyInvoice(jobId) {
             const j = currentJobs.find(x => x.id === jobId);
             if (!j) return;
@@ -8090,6 +8196,34 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             }
         }
         function updateQuoteStatus(id, newStatus) { db.collection('quotes').doc(id).update({ status: newStatus }); }
+        function handleQuoteStatusChange(id, newStatus) {
+            if (newStatus === 'Lost') { markQuoteLost(id); return; }
+            updateQuoteStatus(id, newStatus);
+            closeQuoteInfoModal();
+        }
+        async function markQuoteLost(quoteId) {
+            const q = currentQuotes.find(x => x.id === quoteId);
+            if (!q) return;
+            const reason = prompt('Why was this quote lost?');
+            if (reason === null || !reason.trim()) { showToast('A reason is required to mark a quote lost.', 'warning'); return; }
+            let phone = q.clientDetailsPayload.phone || '';
+            let address = q.clientDetailsPayload.address || '';
+            if (!phone) {
+                const enteredPhone = prompt('No phone number on file for this client. Enter one (or leave blank to skip):');
+                if (enteredPhone) phone = enteredPhone.trim();
+            }
+            if (!address) {
+                const enteredAddress = prompt('No address on file for this client. Enter one (or leave blank to skip):');
+                if (enteredAddress) address = enteredAddress.trim();
+            }
+            const updatedClientDetails = { ...q.clientDetailsPayload, phone, address };
+            await db.collection('quotes').doc(quoteId).update({
+                status: 'Lost', lostReason: reason.trim(), clientDetailsPayload: updatedClientDetails,
+            });
+            closeQuoteInfoModal();
+            showToast('Quote marked as lost.', 'success');
+            await appendLostQuoteToSheet(address, phone, q.jobName, q.financials.grossTotal, reason.trim());
+        }
         async function deleteVaultRecord(id) {
             if (!(await showConfirm('Move this record to Trash? You can restore it within 30 days.', { confirmText: 'Move to Trash', danger: true }))) return;
             db.collection('quotes').doc(id).update({ deleted: true, deletedAt: new Date().toISOString() });
@@ -8117,6 +8251,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             }
             document.getElementById('quote-info-status-select').value = r.status;
             const isInvoiceOrPaid = r.status === 'Invoiced' || r.status === 'Paid';
+            document.getElementById('quote-info-mark-lost-btn').classList.toggle('hidden', isInvoiceOrPaid || r.status === 'Lost');
             const primaryBtn = document.getElementById('quote-info-primary-action-btn');
             if (isInvoiceOrPaid) {
                 primaryBtn.innerHTML = `<i data-lucide="pie-chart" class="w-4 h-4"></i> View Profitability`;
@@ -9952,33 +10087,15 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             return ids;
         }
         // === Google Sheets (ad tracking) ===
-        function columnLetterToIndex(letter) {
-            let result = 0;
-            for (let i = 0; i < letter.length; i++) result = result * 26 + (letter.charCodeAt(i) - 64);
-            return result - 1; // zero-indexed
-        }
-        // The Sheets API returns display-formatted values by default (e.g.
-        // "16/08/2026" as shown in the cell, not a raw serial number) — but
-        // that's ambiguous for new Date() to parse reliably (UK DD/MM vs US
-        // MM/DD), so this handles the two formats actually likely to appear
-        // explicitly rather than trusting the browser to guess correctly.
-        function parseSheetDate(raw) {
-            if (!raw) return null;
-            const str = String(raw).trim();
-            if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return new Date(str + 'T00:00:00');
-            const ukMatch = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-            if (ukMatch) return new Date(parseInt(ukMatch[3]), parseInt(ukMatch[2]) - 1, parseInt(ukMatch[1]));
-            const fallback = new Date(str);
-            return isNaN(fallback.getTime()) ? null : fallback;
-        }
-        async function readGoogleSheetGrid(sheetId, tabName) {
+        async function readGoogleSheetCell(sheetId, tabName, cellRef) {
             if (!googleAccessToken) return null;
             if (!(await ensureFreshGoogleToken())) return null;
             try {
-                const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(tabName)}`, { headers: { 'Authorization': `Bearer ${googleAccessToken}` } });
+                const range = `${tabName}!${cellRef}`;
+                const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}`, { headers: { 'Authorization': `Bearer ${googleAccessToken}` } });
                 if (!res.ok) { console.error('Sheets read error:', await res.text()); return null; }
                 const data = await res.json();
-                return data.values || [];
+                return (data.values && data.values[0] && data.values[0][0]) || null;
             } catch (e) { console.error('Sheets read failed:', e); return null; }
         }
         async function writeGoogleSheetCell(sheetId, tabName, cellRef, value) {
@@ -9995,26 +10112,119 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 return true;
             } catch (e) { console.error('Sheets write failed:', e); return false; }
         }
-        // Sums whichever rows fall inside the rolling 365-day window ending
-        // today — recalculated fresh from the full grid each time, rather
-        // than incrementally maintained, so it self-corrects rather than
-        // drifting if a row was ever edited or missed.
-        async function computeRollingAdSpend() {
+        // Uses the Sheets API's own append behaviour to land on the next
+        // empty row after whatever's already in the given column range,
+        // rather than the app trying to compute which row is free itself —
+        // assumes row 1 in that range holds headers (matching "F2 then F3"),
+        // so the very first entry correctly lands on row 2.
+        async function appendGoogleSheetRow(sheetId, tabName, rangeCols, rowValues) {
+            if (!googleAccessToken) return false;
+            if (!(await ensureFreshGoogleToken())) return false;
+            try {
+                const range = `${tabName}!${rangeCols}`;
+                const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${googleAccessToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ values: [rowValues] }),
+                });
+                if (!res.ok) { console.error('Sheets append error:', await res.text()); return false; }
+                return true;
+            } catch (e) { console.error('Sheets append failed:', e); return false; }
+        }
+        async function appendLostQuoteToSheet(address, phone, jobName, quotePrice, reason) {
+            if (!currentAdTrackingSettings.sheetId || !currentAdTrackingSettings.outputTab) return;
+            await appendGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F:J', [address, phone, jobName, quotePrice, reason]);
+        }
+        // The sheet maintains its own rolling-year spend total — the app
+        // just reads whatever figure is currently in that one cell as-is.
+        // Date-based filtering only applies to the app's own job data
+        // (handled separately, in the ad-job-profit calculation).
+        async function getAdSpendFromSheet() {
             if (!isAdTrackingConfigured()) return null;
-            const grid = await readGoogleSheetGrid(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.sheetTab);
-            if (!grid) return null;
-            const dateIdx = columnLetterToIndex(currentAdTrackingSettings.dateCol);
-            const spendIdx = columnLetterToIndex(currentAdTrackingSettings.spendCol);
+            const raw = await readGoogleSheetCell(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.inputTab, currentAdTrackingSettings.spendCell);
+            if (raw === null) return null;
+            const spend = parseFloat(String(raw).replace(/[^0-9.-]/g, ''));
+            return isNaN(spend) ? null : spend;
+        }
+        // Quoted ad jobs: profit comes straight from the quote's real
+        // financials. Non-quoted ones: whatever was manually recorded at
+        // completion. Returns null if the figure genuinely isn't known yet
+        // (e.g. a non-quoted job whose completion prompt was cancelled).
+        function computeJobAdProfit(job) {
+            if (job.linkedQuoteId) {
+                const q = currentQuotes.find(x => x.id === job.linkedQuoteId);
+                if (!q) return null;
+                return Math.round((q.financials.grossTotal - (q.financials.netMaterialsExVat + q.financials.materialsVat)) * 100) / 100;
+            }
+            if (typeof job.adProfit === 'number') return job.adProfit;
+            return null;
+        }
+        // Only the app's own job data gets date-filtered to a rolling
+        // window — the ad spend side already comes pre-rolled from the sheet
+        // itself, per how this was scoped.
+        function computeRollingAdJobProfit() {
             const cutoff = new Date();
             cutoff.setDate(cutoff.getDate() - 365);
             let total = 0;
-            grid.forEach(row => {
-                const rowDate = parseSheetDate(row[dateIdx]);
-                if (!rowDate || rowDate < cutoff) return;
-                const spend = parseFloat(String(row[spendIdx] || '').replace(/[^0-9.-]/g, ''));
-                if (!isNaN(spend)) total += spend;
+            currentJobs.forEach(job => {
+                if (!job.fromAds || job.status !== 'Completed') return;
+                // Older jobs completed before completedAt was tracked at all
+                // fall back to their scheduled date, so retroactively marking
+                // one "from ads" and filling in its profit later doesn't
+                // silently exclude it forever.
+                const referenceDate = job.completedAt ? new Date(job.completedAt) : (job.date ? new Date(job.date + 'T00:00:00') : null);
+                if (!referenceDate || referenceDate < cutoff) return;
+                const profit = computeJobAdProfit(job);
+                if (profit !== null) total += profit;
             });
-            return total;
+            return Math.round(total * 100) / 100;
+        }
+        // Writes all three figures fresh each time, rather than incrementally
+        // adjusting stored numbers — self-correcting if a job's profit is
+        // edited or a completion was missed, same reasoning as the rest of
+        // this app's sheet-sync logic.
+        async function updateAdProfitSheet() {
+            if (!isAdTrackingConfigured()) return;
+            const jobProfit = computeRollingAdJobProfit();
+            const adSpend = await getAdSpendFromSheet();
+            if (adSpend === null) return; // can't compute the other two without a real spend figure
+            const netProfit = Math.round((jobProfit - adSpend) * 100) / 100;
+            const percent = adSpend > 0 ? Math.round((netProfit / adSpend) * 10000) / 100 : 0;
+            await writeGoogleSheetCell(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, currentAdTrackingSettings.jobProfitCell, jobProfit);
+            await writeGoogleSheetCell(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, currentAdTrackingSettings.netProfitCell, netProfit);
+            await writeGoogleSheetCell(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, currentAdTrackingSettings.percentCell, percent);
+        }
+        async function renderAdProfitTab() {
+            const note = document.getElementById('ad-profit-not-configured-note');
+            const cards = document.getElementById('ad-profit-cards');
+            if (!isAdTrackingConfigured()) {
+                note.classList.remove('hidden');
+                cards.classList.add('hidden');
+                return;
+            }
+            note.classList.add('hidden');
+            cards.classList.remove('hidden');
+            document.getElementById('ad-profit-cost-value').innerText = '…';
+            document.getElementById('ad-profit-net-value').innerText = '…';
+            document.getElementById('ad-profit-percent-value').innerText = '…';
+            const jobProfit = computeRollingAdJobProfit();
+            const adSpend = await getAdSpendFromSheet();
+            if (adSpend === null) {
+                document.getElementById('ad-profit-cost-value').innerText = 'N/A';
+                document.getElementById('ad-profit-net-value').innerText = 'N/A';
+                document.getElementById('ad-profit-percent-value').innerText = 'N/A';
+                showToast('Could not read ad spend from the sheet — check the connection or cell reference in Settings.', 'warning');
+                return;
+            }
+            const netProfit = Math.round((jobProfit - adSpend) * 100) / 100;
+            const percent = adSpend > 0 ? Math.round((netProfit / adSpend) * 10000) / 100 : 0;
+            document.getElementById('ad-profit-cost-value').innerText = `£${adSpend.toFixed(2)}`;
+            const netEl = document.getElementById('ad-profit-net-value');
+            netEl.innerText = `£${netProfit.toFixed(2)}`;
+            netEl.className = `text-3xl font-black font-mono block ${netProfit >= 0 ? 'text-emerald-500' : 'text-red-500'}`;
+            const percentEl = document.getElementById('ad-profit-percent-value');
+            percentEl.innerText = `${percent.toFixed(1)}%`;
+            percentEl.className = `text-3xl font-black font-mono block ${percent >= 0 ? 'text-emerald-500' : 'text-red-500'}`;
         }
         async function fetchGoogleCalendarEventsForMonth(year, monthIndexZeroBased) {
             if (!googleAccessToken) return []; // never connected at all — nothing to refresh
