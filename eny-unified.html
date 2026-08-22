@@ -10160,17 +10160,26 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 return true;
             } catch (e) { console.error('Sheets write failed:', e); lastSheetsApiError = String(e.message || e); return false; }
         }
-        // Uses the Sheets API's own append behaviour to land on the next
-        // empty row after whatever's already in the given column range,
-        // rather than the app trying to compute which row is free itself —
-        // assumes row 1 in that range holds headers (matching "F2 then F3"),
-        // so the very first entry correctly lands on row 2.
-        async function appendGoogleSheetRow(sheetId, tabName, rangeCols, rowValues) {
+        // Explicitly finds the next empty row rather than relying on the
+        // Sheets API's own append-endpoint table detection — that auto-detect
+        // behaviour turned out to misalign columns by one in practice, so
+        // this reads the anchor column directly and writes to an exact,
+        // unambiguous cell range instead.
+        // Uses Google's own append endpoint, anchored to just the header row
+        // (not an open-ended column range) so it can't accidentally expand
+        // into an adjacent column with its own header — and OVERWRITE mode
+        // rather than INSERT_ROWS, so it never physically shifts rows or
+        // disturbs anything in other columns on nearby rows. This replaced
+        // an earlier custom "read the column, count rows, then PUT" approach
+        // that had a real race-condition risk: two quotes marked lost close
+        // together could both compute the same target row and the second
+        // would silently overwrite the first.
+        async function appendGoogleSheetRow(sheetId, tabName, headerRangeCols, rowValues) {
             if (!googleAccessToken) { lastSheetsApiError = 'Not connected to Google.'; return false; }
             if (!(await ensureFreshGoogleToken())) { lastSheetsApiError = 'Could not refresh Google access — try reconnecting.'; return false; }
             try {
-                const range = buildSheetRange(tabName, rangeCols);
-                const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
+                const range = buildSheetRange(tabName, headerRangeCols);
+                const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=OVERWRITE`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${googleAccessToken}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ values: [rowValues] }),
@@ -10190,7 +10199,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 lastSheetsApiError = 'Ad tracking sheet/output tab not configured.';
                 return false;
             }
-            return await appendGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F:J', [address, phone, jobName, quotePrice, reason]);
+            return await appendGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F1:J1', [address, phone, jobName, quotePrice, reason]);
         }
         // The sheet maintains its own rolling-year spend total — the app
         // just reads whatever figure is currently in that one cell as-is.
