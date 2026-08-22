@@ -464,6 +464,25 @@
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Notes</label>
                                 <textarea id="job-notes" rows="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500"></textarea>
                             </div>
+                            <div id="job-form-ads-toggle-wrapper" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 space-y-3">
+                                <div class="flex items-center justify-between gap-3">
+                                    <label for="job-form-ads-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="line-chart" class="w-3.5 h-3.5"></i> From Ads</label>
+                                    <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                                        <input type="checkbox" id="job-form-ads-toggle" onchange="handleJobFormAdsToggle(this.checked)" class="sr-only peer">
+                                        <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-slate-950"></div>
+                                    </label>
+                                </div>
+                                <div id="job-form-ads-datetime-wrapper" class="hidden grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Date</label>
+                                        <input type="date" id="job-form-ads-request-date" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Time</label>
+                                        <input type="time" id="job-form-ads-request-time" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                    </div>
+                                </div>
+                            </div>
                             <div class="flex gap-2">
                                 <button type="submit" id="job-submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2">
                                     <i data-lucide="plus-circle" class="w-4 h-4"></i> Raise Job
@@ -1662,12 +1681,24 @@
                 </div>
                 <div class="p-6 space-y-4">
                     <div id="job-detail-status-badge"></div>
-                    <div id="job-detail-ads-toggle-wrapper" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
-                        <label for="job-detail-ads-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="line-chart" class="w-3.5 h-3.5"></i> From Ads</label>
-                        <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
-                            <input type="checkbox" id="job-detail-ads-toggle" onchange="toggleJobDetailFromAds(this.checked)" class="sr-only peer">
-                            <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-slate-950"></div>
-                        </label>
+                    <div id="job-detail-ads-toggle-wrapper" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 space-y-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <label for="job-detail-ads-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="line-chart" class="w-3.5 h-3.5"></i> From Ads</label>
+                            <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                                <input type="checkbox" id="job-detail-ads-toggle" onchange="toggleJobDetailFromAds(this.checked)" class="sr-only peer">
+                                <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-slate-950"></div>
+                            </label>
+                        </div>
+                        <div id="job-detail-ads-datetime-wrapper" class="hidden grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Date</label>
+                                <input type="date" id="job-detail-ads-request-date" onchange="saveJobDetailAdsDateTime()" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Time</label>
+                                <input type="time" id="job-detail-ads-request-time" onchange="saveJobDetailAdsDateTime()" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
                     </div>
                     <div id="job-detail-hazard-warning"></div>
                     <div id="job-detail-notes-wrapper" class="hidden bg-amber-500/5 border border-amber-500/20 rounded-xl p-3">
@@ -1963,12 +1994,24 @@
             </div>
             <div class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-4">
                 <div id="job-info-address" class="text-xs text-[var(--eny-text-300)]"></div>
-                <div id="job-info-ads-toggle-wrapper" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 flex items-center justify-between gap-3">
-                    <label for="job-info-ads-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="line-chart" class="w-3.5 h-3.5"></i> From Ads</label>
-                    <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
-                        <input type="checkbox" id="job-info-ads-toggle" onchange="toggleJobFromAds(this.checked)" class="sr-only peer">
-                        <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-slate-950"></div>
-                    </label>
+                <div id="job-info-ads-toggle-wrapper" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 space-y-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <label for="job-info-ads-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="line-chart" class="w-3.5 h-3.5"></i> From Ads</label>
+                        <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                            <input type="checkbox" id="job-info-ads-toggle" onchange="toggleJobFromAds(this.checked)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-slate-950"></div>
+                        </label>
+                    </div>
+                    <div id="job-info-ads-datetime-wrapper" class="hidden grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Date</label>
+                            <input type="date" id="job-info-ads-request-date" onchange="saveJobInfoAdsDateTime()" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Time</label>
+                            <input type="time" id="job-info-ads-request-time" onchange="saveJobInfoAdsDateTime()" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <div class="flex items-center justify-between mb-1.5">
@@ -2091,6 +2134,40 @@
                 <p id="drs-multi-engineer-subtitle" class="text-xs text-[var(--eny-text-muted)] mt-1"></p>
             </div>
             <div id="drs-multi-engineer-list" class="p-4 space-y-2"></div>
+        </div>
+    </div>
+
+    <div id="ad-job-completion-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
+                <h3 class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="line-chart" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Ad Job Completion</h3>
+                <p id="ad-job-completion-subtitle" class="text-xs text-[var(--eny-text-muted)] mt-1"></p>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Charge Basis</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="setAdJobCompletionMode('hourly')" id="ad-job-mode-hourly-btn" class="text-xs font-semibold py-2.5 rounded-lg border cursor-pointer transition-colors"><i data-lucide="clock" class="w-3.5 h-3.5 inline mr-1"></i> Hourly Rate</button>
+                        <button type="button" onclick="setAdJobCompletionMode('exact')" id="ad-job-mode-exact-btn" class="text-xs font-semibold py-2.5 rounded-lg border cursor-pointer transition-colors"><i data-lucide="pound-sterling" class="w-3.5 h-3.5 inline mr-1"></i> Exact Cost</button>
+                    </div>
+                </div>
+                <div id="ad-job-hourly-wrapper">
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Suggested Charge (editable)</label>
+                    <input type="number" step="0.01" id="ad-job-charged-hourly-input" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                </div>
+                <div id="ad-job-exact-wrapper" class="hidden">
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Exact Cost Charged, Inc VAT</label>
+                    <input type="number" step="0.01" id="ad-job-charged-exact-input" placeholder="0.00" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Material Cost, Inc VAT</label>
+                    <input type="number" step="0.01" id="ad-job-material-input" placeholder="0.00" value="0" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+            <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex gap-2">
+                <button onclick="closeAdJobCompletionModal()" class="flex-1 bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-200)] font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancel</button>
+                <button onclick="confirmAdJobCompletion()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Save</button>
+            </div>
         </div>
     </div>
 
@@ -5021,6 +5098,17 @@
             if (select) select.value = '';
         }
 
+        function handleJobFormAdsToggle(checked) {
+            document.getElementById('job-form-ads-datetime-wrapper').classList.toggle('hidden', !checked);
+            if (checked) {
+                const dateField = document.getElementById('job-form-ads-request-date');
+                const timeField = document.getElementById('job-form-ads-request-time');
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                if (!dateField.value) dateField.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+                if (!timeField.value) timeField.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+            }
+        }
         async function saveJobConfig(event) {
             event.preventDefault();
             const editId = document.getElementById('job-id-field').value;
@@ -5028,12 +5116,16 @@
             const property = currentProperties.find(p => p.id === propertyId);
             const engineersNeeded = parseInt(document.getElementById('job-engineers-needed').value) || 1;
 
+            const fromAds = document.getElementById('job-form-ads-toggle').checked;
             const basePayload = {
                 title: document.getElementById('job-title').value.trim(),
                 propertyId: propertyId || null,
                 propertyAddress: property ? property.address : null,
                 engineersNeeded,
                 notes: document.getElementById('job-notes').value.trim(),
+                fromAds,
+                adRequestDate: fromAds ? (document.getElementById('job-form-ads-request-date').value || null) : null,
+                adRequestTime: fromAds ? (document.getElementById('job-form-ads-request-time').value || null) : null,
             };
 
             if (editId) {
@@ -5097,32 +5189,60 @@
         // no prompt needed. Cancelling either prompt leaves the job marked
         // Completed but without a profit recorded yet — recoverable later
         // via the retry button in buildJobActionButtons.
-        async function promptAndRecordAdJobCompletion(job, settledEngineerState) {
+        let adJobCompletionContext = null;
+        let adJobCompletionMode = 'hourly';
+        // Opens the modal rather than using prompt() — gives an explicit,
+        // deliberate choice between the auto-calculated hourly-rate figure
+        // and typing in a flat exact cost, rather than relying on someone
+        // noticing they could just overwrite a pre-filled prompt value.
+        function promptAndRecordAdJobCompletion(job, settledEngineerState) {
             const totalMinutes = Object.values(settledEngineerState || {}).reduce((sum, s) => sum + (s.totalMinutes || 0), 0);
             const suggestedCharge = totalMinutes > 0 ? computeEmergencyInvoiceTotal(totalMinutes, { firstHour: AD_JOB_RATE_FIRST_HOUR, subsequentHour: AD_JOB_RATE_SUBSEQUENT_HOUR }) : 0;
+            adJobCompletionContext = { job, totalMinutes, suggestedCharge };
             const hours = Math.floor(totalMinutes / 60), mins = totalMinutes % 60;
-            const chargedRaw = prompt(`This ad-sourced job logged ${hours}h ${mins}m on site (suggested at £${AD_JOB_RATE_FIRST_HOUR} first hour, £${AD_JOB_RATE_SUBSEQUENT_HOUR}/hr after). How much was charged in total, inc VAT? Edit if different.`, suggestedCharge > 0 ? suggestedCharge.toFixed(2) : '');
-            if (chargedRaw === null) return;
+            document.getElementById('ad-job-completion-subtitle').innerText = totalMinutes > 0 ? `Logged ${hours}h ${mins}m on site.` : 'No timer data was logged for this job.';
+            document.getElementById('ad-job-charged-hourly-input').value = suggestedCharge > 0 ? suggestedCharge.toFixed(2) : '';
+            document.getElementById('ad-job-charged-exact-input').value = '';
+            document.getElementById('ad-job-material-input').value = '0';
+            setAdJobCompletionMode(totalMinutes > 0 ? 'hourly' : 'exact');
+            document.getElementById('ad-job-completion-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function setAdJobCompletionMode(mode) {
+            adJobCompletionMode = mode;
+            document.getElementById('ad-job-hourly-wrapper').classList.toggle('hidden', mode !== 'hourly');
+            document.getElementById('ad-job-exact-wrapper').classList.toggle('hidden', mode !== 'exact');
+            const hourlyBtn = document.getElementById('ad-job-mode-hourly-btn');
+            const exactBtn = document.getElementById('ad-job-mode-exact-btn');
+            hourlyBtn.className = `text-xs font-semibold py-2.5 rounded-lg border cursor-pointer transition-colors ${mode === 'hourly' ? 'bg-amber-500 text-slate-950 border-amber-500' : 'bg-[var(--eny-bg-page)] text-[var(--eny-text-300)] border-[var(--eny-border-standard)]'}`;
+            exactBtn.className = `text-xs font-semibold py-2.5 rounded-lg border cursor-pointer transition-colors ${mode === 'exact' ? 'bg-amber-500 text-slate-950 border-amber-500' : 'bg-[var(--eny-bg-page)] text-[var(--eny-text-300)] border-[var(--eny-border-standard)]'}`;
+        }
+        function closeAdJobCompletionModal() {
+            document.getElementById('ad-job-completion-modal').classList.add('hidden');
+            adJobCompletionContext = null;
+        }
+        async function confirmAdJobCompletion() {
+            if (!adJobCompletionContext) return;
+            const { job } = adJobCompletionContext;
+            const chargedRaw = adJobCompletionMode === 'hourly'
+                ? document.getElementById('ad-job-charged-hourly-input').value
+                : document.getElementById('ad-job-charged-exact-input').value;
             const charged = parseFloat(chargedRaw);
             if (isNaN(charged) || charged < 0) { showToast('Please enter a valid charged amount.', 'warning'); return; }
-            const materialRaw = prompt('Total material cost for this job, inc VAT?', '0');
-            if (materialRaw === null) return;
+            const materialRaw = document.getElementById('ad-job-material-input').value;
             const material = parseFloat(materialRaw);
             if (isNaN(material) || material < 0) { showToast('Please enter a valid material cost.', 'warning'); return; }
             const profit = Math.round((charged - material) * 100) / 100;
             await db.collection('jobs').doc(job.id).update({
                 manualChargedAmount: charged, manualMaterialCost: material, adProfit: profit,
             });
+            closeAdJobCompletionModal();
             showToast(`Ad job profit recorded: £${profit.toFixed(2)}.`, 'success');
             await updateAdProfitSheet();
         }
         function loadJobForModification(jobId) {
             const j = currentJobs.find(x => x.id === jobId);
             if (!j) return;
-            if (j.status !== 'Floating') {
-                showToast('This job is already booked — use DRS or the job\'s own actions to change it.', 'info');
-                return;
-            }
             switchTab('jobs-tab');
             expandCollapsibleForm('job-form-wrapper', 'job-form-chevron');
             const searchInput = document.getElementById('job-property-search-input');
@@ -5133,6 +5253,11 @@
             document.getElementById('job-property-select').value = j.propertyId || '';
             document.getElementById('job-engineers-needed').value = j.engineersNeeded || 1;
             document.getElementById('job-notes').value = j.notes || '';
+            document.getElementById('job-form-ads-toggle-wrapper').classList.toggle('hidden', !isDrsAuthorized());
+            document.getElementById('job-form-ads-toggle').checked = !!j.fromAds;
+            document.getElementById('job-form-ads-datetime-wrapper').classList.toggle('hidden', !j.fromAds);
+            document.getElementById('job-form-ads-request-date').value = j.adRequestDate || '';
+            document.getElementById('job-form-ads-request-time').value = j.adRequestTime || '';
             document.getElementById('job-form-title').innerText = 'Modify Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Job`;
             document.getElementById('job-cancel-btn').classList.remove('hidden');
@@ -5146,6 +5271,8 @@
             const searchInput = document.getElementById('job-property-search-input');
             if (searchInput) searchInput.value = '';
             filterJobPropertyDropdown();
+            document.getElementById('job-form-ads-toggle-wrapper').classList.toggle('hidden', !isDrsAuthorized());
+            document.getElementById('job-form-ads-datetime-wrapper').classList.add('hidden');
             document.getElementById('job-form-title').innerText = 'Add Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Raise Job`;
             document.getElementById('job-cancel-btn').classList.add('hidden');
@@ -5335,6 +5462,9 @@
             const adsWrapper = document.getElementById('job-detail-ads-toggle-wrapper');
             adsWrapper.classList.toggle('hidden', !isDrsAuthorized());
             document.getElementById('job-detail-ads-toggle').checked = !!job.fromAds;
+            document.getElementById('job-detail-ads-datetime-wrapper').classList.toggle('hidden', !job.fromAds);
+            document.getElementById('job-detail-ads-request-date').value = job.adRequestDate || '';
+            document.getElementById('job-detail-ads-request-time').value = job.adRequestTime || '';
 
             const property = job.propertyId ? currentProperties.find(p => p.id === job.propertyId) : null;
             document.getElementById('job-detail-hazard-warning').innerHTML = property ? buildHazardBadgesHtml(property) : '';
@@ -6016,6 +6146,9 @@
             const adsWrapper = document.getElementById('job-info-ads-toggle-wrapper');
             adsWrapper.classList.toggle('hidden', !isDrsAuthorized());
             document.getElementById('job-info-ads-toggle').checked = !!j.fromAds;
+            document.getElementById('job-info-ads-datetime-wrapper').classList.toggle('hidden', !j.fromAds);
+            document.getElementById('job-info-ads-request-date').value = j.adRequestDate || '';
+            document.getElementById('job-info-ads-request-time').value = j.adRequestTime || '';
             const addressEl = document.getElementById('job-info-address');
             if (j.propertyAddress) { addressEl.classList.remove('hidden'); addressEl.innerText = j.propertyAddress; }
             else addressEl.classList.add('hidden');
@@ -6031,11 +6164,45 @@
         }
         function toggleJobFromAds(checked) {
             if (!activeJobInfoModalId) return;
-            db.collection('jobs').doc(activeJobInfoModalId).update({ fromAds: checked });
+            document.getElementById('job-info-ads-datetime-wrapper').classList.toggle('hidden', !checked);
+            const updates = { fromAds: checked };
+            if (checked) {
+                const dateField = document.getElementById('job-info-ads-request-date');
+                const timeField = document.getElementById('job-info-ads-request-time');
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                if (!dateField.value) { dateField.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`; updates.adRequestDate = dateField.value; }
+                if (!timeField.value) { timeField.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`; updates.adRequestTime = timeField.value; }
+            }
+            db.collection('jobs').doc(activeJobInfoModalId).update(updates);
+        }
+        function saveJobInfoAdsDateTime() {
+            if (!activeJobInfoModalId) return;
+            db.collection('jobs').doc(activeJobInfoModalId).update({
+                adRequestDate: document.getElementById('job-info-ads-request-date').value || null,
+                adRequestTime: document.getElementById('job-info-ads-request-time').value || null,
+            });
         }
         function toggleJobDetailFromAds(checked) {
             if (!activeJobDetailId) return;
-            db.collection('jobs').doc(activeJobDetailId).update({ fromAds: checked });
+            document.getElementById('job-detail-ads-datetime-wrapper').classList.toggle('hidden', !checked);
+            const updates = { fromAds: checked };
+            if (checked) {
+                const dateField = document.getElementById('job-detail-ads-request-date');
+                const timeField = document.getElementById('job-detail-ads-request-time');
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                if (!dateField.value) { dateField.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`; updates.adRequestDate = dateField.value; }
+                if (!timeField.value) { timeField.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`; updates.adRequestTime = timeField.value; }
+            }
+            db.collection('jobs').doc(activeJobDetailId).update(updates);
+        }
+        function saveJobDetailAdsDateTime() {
+            if (!activeJobDetailId) return;
+            db.collection('jobs').doc(activeJobDetailId).update({
+                adRequestDate: document.getElementById('job-detail-ads-request-date').value || null,
+                adRequestTime: document.getElementById('job-detail-ads-request-time').value || null,
+            });
         }
         function closeJobInfoModal() {
             document.getElementById('job-info-modal').classList.add('hidden');
@@ -8241,7 +8408,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             });
             closeQuoteInfoModal();
             showToast('Quote marked as lost.', 'success');
-            const appended = await appendLostQuoteToSheet(address, phone, q.jobName, q.financials.grossTotal, reason.trim());
+            const [quoteDate, quoteTime] = (q.timestamp || '').split(' ');
+            const appended = await appendLostQuoteToSheet(address, phone, q.jobName, q.financials.grossTotal, reason.trim(), quoteDate || '', quoteTime || '');
             if (!appended) {
                 showToast(`Quote marked as lost, but couldn't write it to the sheet: ${lastSheetsApiError || 'unknown error'}`, 'warning');
             }
@@ -10204,7 +10372,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 return true;
             } catch (e) { console.error('Sheets write failed:', e); lastSheetsApiError = String(e.message || e); return false; }
         }
-        async function appendLostQuoteToSheet(address, phone, jobName, quotePrice, reason) {
+        async function appendLostQuoteToSheet(address, phone, jobName, quotePrice, reason, dateStr, timeStr) {
             if (!currentAdTrackingSettings.sheetId || !currentAdTrackingSettings.outputTab) {
                 lastSheetsApiError = 'Ad tracking sheet/output tab not configured.';
                 return false;
@@ -10212,7 +10380,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const existingValues = await readGoogleSheetColumn(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F');
             if (existingValues === null) return false;
             const nextRow = existingValues.length + 1; // row 1 is the header
-            return await writeGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, `F${nextRow}:J${nextRow}`, [address, phone, jobName, quotePrice, reason]);
+            // E is directly adjacent to F, so time rides along in the same
+            // write as the rest of the row — L is not contiguous with that
+            // range (K sits as a gap column), so it needs its own write.
+            const mainWriteOk = await writeGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, `E${nextRow}:J${nextRow}`, [timeStr || '', address, phone, jobName, quotePrice, reason]);
+            if (!mainWriteOk) return false;
+            return await writeGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, `L${nextRow}:L${nextRow}`, [dateStr || '']);
         }
         // The sheet maintains its own rolling-year spend total — the app
         // just reads whatever figure is currently in that one cell as-is.
