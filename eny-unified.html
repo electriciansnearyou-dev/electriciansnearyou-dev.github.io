@@ -460,6 +460,18 @@
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Engineers Needed *</label>
                                 <select id="job-engineers-needed" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500"></select>
                             </div>
+                            <div id="job-form-link-quote-section">
+                                <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Link Quote (optional)</label>
+                                <input type="hidden" id="job-form-linked-quote-id">
+                                <div id="job-form-linked-quote-display" class="hidden items-center justify-between gap-2 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5">
+                                    <span id="job-form-linked-quote-name" class="text-sm text-[var(--eny-text-200)] truncate"></span>
+                                    <button type="button" onclick="unlinkJobFormQuote()" class="text-[10px] font-bold text-red-400 hover:text-red-300 cursor-pointer shrink-0">Unlink</button>
+                                </div>
+                                <div id="job-form-linked-quote-picker">
+                                    <input type="text" id="job-form-quote-search" oninput="renderJobFormQuoteLinkOptions()" placeholder="Search quotes by client or job name..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-1.5">
+                                    <div id="job-form-quote-options" class="max-h-40 overflow-y-auto space-y-1 custom-scrollbar"></div>
+                                </div>
+                            </div>
                             <div>
                                 <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Notes</label>
                                 <textarea id="job-notes" rows="2" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500"></textarea>
@@ -481,6 +493,13 @@
                                         <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Time</label>
                                         <input type="time" id="job-form-ads-request-time" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                                     </div>
+                                </div>
+                                <div class="flex items-center justify-between gap-3 pt-1 border-t border-[var(--eny-border-standard)]">
+                                    <label for="job-form-organic-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="sprout" class="w-3.5 h-3.5"></i> Organic</label>
+                                    <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                                        <input type="checkbox" id="job-form-organic-toggle" onchange="handleJobFormOrganicToggle(this.checked)" class="sr-only peer">
+                                        <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-slate-950"></div>
+                                    </label>
                                 </div>
                             </div>
                             <div class="flex gap-2">
@@ -504,6 +523,7 @@
                                 <option value="Scheduled">Scheduled</option>
                                 <option value="Completed">Completed</option>
                                 <option value="Cancelled">Cancelled</option>
+                                <option value="Lost">Lost</option>
                             </select>
                         </div>
                         <div id="jobs-empty-state" class="hidden text-center py-12 text-[var(--eny-text-muted2)] text-sm bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl">
@@ -809,6 +829,32 @@
                                     <div>
                                         <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Warranty (Months)</label>
                                         <input type="number" id="job-warranty-months" min="0" value="12" placeholder="e.g., 12 (leave blank for none)" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-3 text-sm text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                    </div>
+                                </div>
+                                <div id="quote-ads-toggle-wrapper" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 space-y-3">
+                                    <div class="flex items-center justify-between gap-3">
+                                        <label for="quote-ads-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="line-chart" class="w-3.5 h-3.5"></i> From Ads</label>
+                                        <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                                            <input type="checkbox" id="quote-ads-toggle" onchange="handleQuoteAdsToggle(this.checked)" class="sr-only peer">
+                                            <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-slate-950"></div>
+                                        </label>
+                                    </div>
+                                    <div id="quote-ads-datetime-wrapper" class="hidden grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Date</label>
+                                            <input type="date" id="quote-ads-request-date" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Time</label>
+                                            <input type="time" id="quote-ads-request-time" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-3 pt-1 border-t border-[var(--eny-border-standard)]">
+                                        <label for="quote-organic-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="sprout" class="w-3.5 h-3.5"></i> Organic</label>
+                                        <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                                            <input type="checkbox" id="quote-organic-toggle" onchange="handleQuoteOrganicToggle(this.checked)" class="sr-only peer">
+                                            <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-slate-950"></div>
+                                        </label>
                                     </div>
                                 </div>
                                 <div class="pt-4 border-t border-[var(--eny-border-standard)]">
@@ -1699,6 +1745,13 @@
                                 <input type="time" id="job-detail-ads-request-time" onchange="saveJobDetailAdsDateTime()" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                             </div>
                         </div>
+                        <div class="flex items-center justify-between gap-3 pt-1 border-t border-[var(--eny-border-standard)]">
+                            <label for="job-detail-organic-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="sprout" class="w-3.5 h-3.5"></i> Organic</label>
+                            <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                                <input type="checkbox" id="job-detail-organic-toggle" onchange="toggleJobDetailOrganic(this.checked)" class="sr-only peer">
+                                <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-slate-950"></div>
+                            </label>
+                        </div>
                     </div>
                     <div id="job-detail-hazard-warning"></div>
                     <div id="job-detail-notes-wrapper" class="hidden bg-amber-500/5 border border-amber-500/20 rounded-xl p-3">
@@ -1969,6 +2022,32 @@
                         <option value="Lost">Lost</option>
                     </select>
                 </div>
+                <div id="quote-info-ads-toggle-wrapper" class="hidden bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-3 space-y-3">
+                    <div class="flex items-center justify-between gap-3">
+                        <label for="quote-info-ads-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="line-chart" class="w-3.5 h-3.5"></i> From Ads</label>
+                        <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                            <input type="checkbox" id="quote-info-ads-toggle" onchange="toggleQuoteInfoAds(this.checked)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500 peer-checked:after:bg-slate-950"></div>
+                        </label>
+                    </div>
+                    <div id="quote-info-ads-datetime-wrapper" class="hidden grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Date</label>
+                            <input type="date" id="quote-info-ads-request-date" onchange="saveQuoteInfoAdsDateTime()" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Time</label>
+                            <input type="time" id="quote-info-ads-request-time" onchange="saveQuoteInfoAdsDateTime()" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-3 pt-1 border-t border-[var(--eny-border-standard)]">
+                        <label for="quote-info-organic-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="sprout" class="w-3.5 h-3.5"></i> Organic</label>
+                        <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                            <input type="checkbox" id="quote-info-organic-toggle" onchange="toggleQuoteInfoOrganic(this.checked)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-slate-950"></div>
+                        </label>
+                    </div>
+                </div>
             </div>
             <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 grid grid-cols-2 gap-2">
                 <button id="quote-info-primary-action-btn" class="col-span-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"></button>
@@ -2011,6 +2090,13 @@
                             <label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1">Request Time</label>
                             <input type="time" id="job-info-ads-request-time" onchange="saveJobInfoAdsDateTime()" class="w-full bg-[var(--eny-bg-card)] border border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500">
                         </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-3 pt-1 border-t border-[var(--eny-border-standard)]">
+                        <label for="job-info-organic-toggle" class="text-xs font-bold text-[var(--eny-text-300)] flex items-center gap-1.5 cursor-pointer"><i data-lucide="sprout" class="w-3.5 h-3.5"></i> Organic</label>
+                        <label class="relative inline-flex items-center cursor-pointer select-none shrink-0">
+                            <input type="checkbox" id="job-info-organic-toggle" onchange="toggleJobOrganic(this.checked)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-[var(--eny-bg-secondary)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-[var(--eny-decorative)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 peer-checked:after:bg-slate-950"></div>
+                        </label>
                     </div>
                 </div>
                 <div>
@@ -2167,6 +2253,46 @@
             <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex gap-2">
                 <button onclick="closeAdJobCompletionModal()" class="flex-1 bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-200)] font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancel</button>
                 <button onclick="confirmAdJobCompletion()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mark-lost-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
+                <h3 class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="thumbs-down" class="w-4 h-4 text-red-500"></i> Mark Lost</h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Reason *</label>
+                    <select id="mark-lost-reason-select" onchange="handleMarkLostReasonChange()" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                        <option value="">-- Select a reason --</option>
+                        <option value="Too Expensive">Too Expensive</option>
+                        <option value="Waste Of Time Call">Waste Of Time Call</option>
+                        <option value="Rubbish Request">Rubbish Request</option>
+                        <option value="Solicitation">Solicitation</option>
+                        <option value="ENY Rejected">ENY Rejected</option>
+                        <option value="Out Of Bounds">Out Of Bounds</option>
+                        <option value="Out Of Scope">Out Of Scope</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div id="mark-lost-other-wrapper" class="hidden">
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Please specify</label>
+                    <input type="text" id="mark-lost-other-input" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                </div>
+                <div id="mark-lost-phone-wrapper" class="hidden">
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Phone Number</label>
+                    <input type="text" id="mark-lost-phone-input" placeholder="No phone on file — enter one, or leave blank" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                </div>
+                <div id="mark-lost-address-wrapper" class="hidden">
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Address</label>
+                    <input type="text" id="mark-lost-address-input" placeholder="No address on file — enter one, or leave blank" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+            <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex gap-2">
+                <button onclick="closeMarkLostModal()" class="flex-1 bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-200)] font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancel</button>
+                <button onclick="confirmMarkLost()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Confirm Lost</button>
             </div>
         </div>
     </div>
@@ -2864,6 +2990,7 @@
                 if (ageDays < QUOTE_EXPIRE_AFTER_DAYS) return;
                 q.status = 'Expired';
                 db.collection('quotes').doc(q.id).update({ status: 'Expired' });
+                syncQuoteAdTracking(q);
             });
         }
 
@@ -3466,11 +3593,13 @@
             completed: { sceneBg: 'linear-gradient(180deg, #e8f0e2, #d9e8ce)', iconColor: '#6b8f5f', sealGradient: 'radial-gradient(circle at 35% 30%, #86b878, #5a8a4d)', sealSymbol: '✓', sealLabel: 'DONE' },
             cancelled: { sceneBg: 'linear-gradient(180deg, #ece7de, #ddd5c8)', iconColor: '#a8998a', sealGradient: 'radial-gradient(circle at 35% 30%, #b5aa9a, #8a7c6d)', sealSymbol: '✕', sealLabel: 'OFF' },
             floating: { sceneBg: 'linear-gradient(180deg, #e3e8ee, #d3dbe4)', iconColor: '#7c8896', sealGradient: 'radial-gradient(circle at 35% 30%, #9aa7b5, #6b7684)', sealSymbol: '○', sealLabel: 'BOOK' },
+            lost: { sceneBg: 'linear-gradient(180deg, #f5ddd4, #eec3b6)', iconColor: '#c26847', sealGradient: 'radial-gradient(circle at 35% 30%, #e0876a, #b5502f)', sealSymbol: '✕', sealLabel: 'LOST' },
         };
         function computeJobTileState(j) {
             if (j.status === 'Completed') return 'completed';
             if (j.status === 'Cancelled') return 'cancelled';
             if (j.status === 'Floating') return 'floating';
+            if (j.status === 'Lost') return 'lost';
             return 'scheduled';
         }
         // Not a pass/fail state like properties or servicing — just a type
@@ -3538,7 +3667,7 @@
                 cellDate.setDate(cellDate.getDate() + i);
                 const cellISO = toLocalISODate(cellDate);
                 const isToday = cellISO === today;
-                const jobCount = currentJobs.filter(j => j.date === cellISO && j.status !== 'Cancelled').length;
+                const jobCount = currentJobs.filter(j => j.date === cellISO && j.status !== 'Cancelled' && j.status !== 'Lost').length;
                 html += `<button onclick="openDayDetailModal('${cellISO}')" class="flex flex-col items-center gap-1 py-2.5 rounded-xl border transition-colors cursor-pointer ${isToday ? 'border-amber-500 bg-amber-500/10' : 'border-[var(--eny-border-subtle)] bg-[var(--eny-bg-page)]/50 hover:border-amber-300'}">
                     <span class="text-[9px] font-bold uppercase tracking-wide ${isToday ? 'text-amber-600' : 'text-[var(--eny-text-muted)]'}">${dayLabels[i]}</span>
                     <span class="text-sm font-bold ${isToday ? 'text-amber-600' : 'text-[var(--eny-text-primary)]'}">${cellDate.getDate()}</span>
@@ -4848,7 +4977,7 @@
 
             const grid = document.getElementById('calendar-grid');
             grid.innerHTML = weeks.flat().map(cell => {
-                const jobsThisDay = currentJobs.filter(j => j.date === cell.dateISO && j.status !== 'Cancelled' && (engineerFilter === 'ALL' || getJobEngineers(j).includes(engineerFilter)));
+                const jobsThisDay = currentJobs.filter(j => j.date === cell.dateISO && j.status !== 'Cancelled' && j.status !== 'Lost' && (engineerFilter === 'ALL' || getJobEngineers(j).includes(engineerFilter)));
                 const unavailableThisDay = getUnavailableEngineersForDay(cell.dateISO).filter(u => engineerFilter === 'ALL' || u.engineerName === engineerFilter);
                 const externalThisDay = externalEvents.filter(evt => getGoogleEventDateRange(evt).includes(cell.dateISO));
                 const isToday = cell.dateISO === today;
@@ -5101,12 +5230,21 @@
         function handleJobFormAdsToggle(checked) {
             document.getElementById('job-form-ads-datetime-wrapper').classList.toggle('hidden', !checked);
             if (checked) {
+                document.getElementById('job-form-organic-toggle').checked = false;
                 const dateField = document.getElementById('job-form-ads-request-date');
                 const timeField = document.getElementById('job-form-ads-request-time');
                 const now = new Date();
                 const pad = n => String(n).padStart(2, '0');
                 if (!dateField.value) dateField.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
                 if (!timeField.value) timeField.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+            }
+        }
+        // Ads and Organic are mutually exclusive — a lead came from one
+        // source or the other, not both, so enabling one clears the other.
+        function handleJobFormOrganicToggle(checked) {
+            if (checked) {
+                document.getElementById('job-form-ads-toggle').checked = false;
+                document.getElementById('job-form-ads-datetime-wrapper').classList.add('hidden');
             }
         }
         async function saveJobConfig(event) {
@@ -5117,6 +5255,7 @@
             const engineersNeeded = parseInt(document.getElementById('job-engineers-needed').value) || 1;
 
             const fromAds = document.getElementById('job-form-ads-toggle').checked;
+            const organic = document.getElementById('job-form-organic-toggle').checked;
             const basePayload = {
                 title: document.getElementById('job-title').value.trim(),
                 propertyId: propertyId || null,
@@ -5126,6 +5265,7 @@
                 fromAds,
                 adRequestDate: fromAds ? (document.getElementById('job-form-ads-request-date').value || null) : null,
                 adRequestTime: fromAds ? (document.getElementById('job-form-ads-request-time').value || null) : null,
+                organic,
             };
 
             if (editId) {
@@ -5133,16 +5273,28 @@
                 // is actually booked, date/time/engineer/status changes
                 // happen through DRS or the job itself, not this form.
                 await db.collection('jobs').doc(editId).update(basePayload);
+                const existingJob = currentJobs.find(x => x.id === editId);
+                if (existingJob) await syncJobAdTracking({ ...existingJob, ...basePayload });
             } else {
                 const jobNumber = await getNextJobNumber();
+                const linkedQuoteId = document.getElementById('job-form-linked-quote-id').value || null;
                 const payload = {
                     ...basePayload,
                     status: 'Floating', date: null, time: null, assignedEngineers: [],
-                    isEmergency: false, linkedQuoteId: null,
+                    isEmergency: false, linkedQuoteId,
                     jobNumber, jobNumberSuffix: 1,
                     floatingSince: new Date().toISOString(),
                 };
-                await db.collection('jobs').add(payload);
+                const jobRef = await db.collection('jobs').add(payload);
+                // A linked quote that already has its own tracked row hands
+                // it over here — same lead, same row, throughout its whole
+                // life, rather than starting a second row for the same lead.
+                const linkedQuote = linkedQuoteId ? currentQuotes.find(q => q.id === linkedQuoteId) : null;
+                if (linkedQuote && linkedQuote.adTrackingRow) {
+                    await db.collection('jobs').doc(jobRef.id).update({ adTrackingRow: linkedQuote.adTrackingRow });
+                    payload.adTrackingRow = linkedQuote.adTrackingRow;
+                }
+                await syncJobAdTracking({ ...payload, id: jobRef.id });
             }
             clearJobForm();
         }
@@ -5258,6 +5410,8 @@
             document.getElementById('job-form-ads-datetime-wrapper').classList.toggle('hidden', !j.fromAds);
             document.getElementById('job-form-ads-request-date').value = j.adRequestDate || '';
             document.getElementById('job-form-ads-request-time').value = j.adRequestTime || '';
+            document.getElementById('job-form-organic-toggle').checked = !!j.organic;
+            document.getElementById('job-form-link-quote-section').classList.add('hidden');
             document.getElementById('job-form-title').innerText = 'Modify Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="check-square" class="w-4 h-4"></i> Overwrite Job`;
             document.getElementById('job-cancel-btn').classList.remove('hidden');
@@ -5273,6 +5427,8 @@
             filterJobPropertyDropdown();
             document.getElementById('job-form-ads-toggle-wrapper').classList.toggle('hidden', !isDrsAuthorized());
             document.getElementById('job-form-ads-datetime-wrapper').classList.add('hidden');
+            document.getElementById('job-form-link-quote-section').classList.remove('hidden');
+            unlinkJobFormQuote();
             document.getElementById('job-form-title').innerText = 'Add Job';
             document.getElementById('job-submit-btn').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4"></i> Raise Job`;
             document.getElementById('job-cancel-btn').classList.add('hidden');
@@ -5298,7 +5454,9 @@
             if (!j) return;
             if (newStatus === 'Cancelled' && j.calendarEventId && isGoogleCalendarConnected()) {
                 await deleteCalendarEvent(j.calendarEventId);
-                await db.collection('jobs').doc(jobId).update({ status: newStatus, calendarEventId: null });
+                const updates = { status: newStatus, calendarEventId: null };
+                await db.collection('jobs').doc(jobId).update(updates);
+                await syncJobAdTracking({ ...j, ...updates });
                 return;
             }
             if (newStatus === 'Completed' && j.isEmergency) {
@@ -5308,26 +5466,33 @@
                 // still generates correctly, exactly as it would going through
                 // the full workflow.
                 const settledEngineerState = await stopAllRunningEngineerTimersForJob(j);
-                await db.collection('jobs').doc(jobId).update({ status: newStatus, completedAt: new Date().toISOString() });
+                const updates = { status: newStatus, completedAt: new Date().toISOString() };
+                await db.collection('jobs').doc(jobId).update(updates);
                 await generateEmergencyInvoice(j, settledEngineerState);
+                await syncJobAdTracking({ ...j, ...updates });
                 return;
             }
             if (newStatus === 'Completed' && j.fromAds && !j.linkedQuoteId) {
                 const settledEngineerState = await stopAllRunningEngineerTimersForJob(j);
-                await db.collection('jobs').doc(jobId).update({ status: newStatus, completedAt: new Date().toISOString() });
+                const updates = { status: newStatus, completedAt: new Date().toISOString() };
+                await db.collection('jobs').doc(jobId).update(updates);
                 await promptAndRecordAdJobCompletion(j, settledEngineerState);
+                await syncJobAdTracking({ ...j, ...updates });
                 return;
             }
             if (newStatus === 'Completed' && j.fromAds && j.linkedQuoteId) {
                 // A quoted ad job's profit is already known from the quote's
                 // own financials — no prompt needed, just refresh the sheet.
-                await db.collection('jobs').doc(jobId).update({ status: newStatus, completedAt: new Date().toISOString() });
+                const updates = { status: newStatus, completedAt: new Date().toISOString() };
+                await db.collection('jobs').doc(jobId).update(updates);
                 await updateAdProfitSheet();
+                await syncJobAdTracking({ ...j, ...updates });
                 return;
             }
             const payload = { status: newStatus };
             if (newStatus === 'Completed') payload.completedAt = new Date().toISOString();
             await db.collection('jobs').doc(jobId).update(payload);
+            await syncJobAdTracking({ ...j, ...payload });
         }
         // ============================================================
         // TODAY TAB + JOB WORKFLOW (Accept -> Start -> Complete)
@@ -5378,7 +5543,7 @@
             if (viewingAsLabel) viewingAsLabel.innerText = `Showing: ${myName}`;
 
             const today = todayISO();
-            const todaysJobs = currentJobs.filter(j => j.date === today && j.status !== 'Cancelled' && getJobEngineers(j).includes(myName))
+            const todaysJobs = currentJobs.filter(j => j.date === today && j.status !== 'Cancelled' && j.status !== 'Lost' && getJobEngineers(j).includes(myName))
                 .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
 
             if (todaysJobs.length === 0) { emptyEl.classList.remove('hidden'); listEl.innerHTML = ''; return; }
@@ -5465,6 +5630,7 @@
             document.getElementById('job-detail-ads-datetime-wrapper').classList.toggle('hidden', !job.fromAds);
             document.getElementById('job-detail-ads-request-date').value = job.adRequestDate || '';
             document.getElementById('job-detail-ads-request-time').value = job.adRequestTime || '';
+            document.getElementById('job-detail-organic-toggle').checked = !!job.organic;
 
             const property = job.propertyId ? currentProperties.find(p => p.id === job.propertyId) : null;
             document.getElementById('job-detail-hazard-warning').innerHTML = property ? buildHazardBadgesHtml(property) : '';
@@ -5592,6 +5758,7 @@
             const freshEngineerState = {};
             getJobEngineers(job).forEach(name => { freshEngineerState[name] = { status: 'NotStarted', timerStartedAt: null, totalMinutes: 0 }; });
             await db.collection('jobs').doc(jobId).update({ status: 'Accepted', acceptedAt: new Date().toISOString(), engineerState: freshEngineerState });
+            await syncJobAdTracking({ ...job, status: 'Accepted', engineerState: freshEngineerState });
             renderJobDetailPageContent({ ...job, status: 'Accepted', engineerState: freshEngineerState });
             // Accepting implies heading there now — offer the on-my-way message
             // with its ETA immediately, same feature as the Jobs tab button.
@@ -5606,6 +5773,7 @@
             const newEngineerState = { ...(job.engineerState || {}), [engineerName]: { status: 'Started', timerStartedAt: new Date().toISOString(), totalMinutes: state.totalMinutes || 0 } };
             const newJobStatus = job.status === 'Accepted' ? 'Started' : job.status;
             await db.collection('jobs').doc(jobId).update({ engineerState: newEngineerState, status: newJobStatus });
+            await syncJobAdTracking({ ...job, engineerState: newEngineerState, status: newJobStatus });
             renderJobDetailPageContent({ ...job, engineerState: newEngineerState, status: newJobStatus });
         }
         // Stops (and compounds the elapsed time of) any engineer timers still
@@ -5670,10 +5838,12 @@
             const settledEngineerState = await stopAllRunningEngineerTimersForJob(job);
 
             if (outcome === 'Completed') {
-                await db.collection('jobs').doc(jobId).update({ operativeComments: comments, completionOutcome: 'Completed', completedAt: new Date().toISOString() });
+                const updates = { operativeComments: comments, completionOutcome: 'Completed', completedAt: new Date().toISOString() };
+                await db.collection('jobs').doc(jobId).update(updates);
                 if (job.isEmergency) await generateEmergencyInvoice(job, settledEngineerState);
                 else if (job.fromAds && !job.linkedQuoteId) await promptAndRecordAdJobCompletion(job, settledEngineerState);
                 else if (job.fromAds && job.linkedQuoteId) await updateAdProfitSheet();
+                await syncJobAdTracking({ ...job, ...updates });
                 // Signature capture already stops here with its own Save flow —
                 // the job is marked Completed once that's actually saved, not
                 // before, so a job never shows "done" without being signed off
@@ -5692,10 +5862,12 @@
                     const state = settledEngineerState[name] || getEngineerJobState(job, name);
                     resetEngineerState[name] = { status: 'NotStarted', timerStartedAt: null, totalMinutes: state.totalMinutes || 0 };
                 });
-                await db.collection('jobs').doc(jobId).update({
+                const updates = {
                     status: 'Accepted', date: newDateRaw, engineerState: resetEngineerState,
                     operativeComments: comments, completionOutcome: outcome,
-                });
+                };
+                await db.collection('jobs').doc(jobId).update(updates);
+                await syncJobAdTracking({ ...job, ...updates });
                 closeJobDetailPage();
                 showToast(`Job ${outcome === 'Rebook' ? 're-booked' : 'flagged for another visit'} for ${formatUkDate(newDateRaw)}. Logged time so far carries over.`, 'success');
             }
@@ -5843,6 +6015,44 @@
             const jobId = activeJobDetailId;
             if (!jobId) return;
             await db.collection('jobs').doc(jobId).update({ linkedQuoteId: quoteId });
+        }
+        function renderJobFormQuoteLinkOptions() {
+            const searchInput = document.getElementById('job-form-quote-search');
+            const filterText = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const optionsEl = document.getElementById('job-form-quote-options');
+            if (!optionsEl) return;
+            if (!filterText) { optionsEl.innerHTML = ''; return; }
+            const filtered = currentQuotes.filter(q => q.jobName.toLowerCase().includes(filterText) || q.clientDetailsPayload.name.toLowerCase().includes(filterText)).slice(0, 10);
+            optionsEl.innerHTML = filtered.length === 0 ? `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-2">No matching quotes.</p>` : filtered.map(q => `
+                <button type="button" onclick="selectJobFormQuote('${q.id}')" class="w-full text-left bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] hover:border-amber-500 rounded-lg p-2 text-[11px] text-[var(--eny-text-300)] cursor-pointer">
+                    ${q.jobName} — ${q.clientDetailsPayload.name} <span class="text-[var(--eny-text-muted2)]">(${q.status})</span>
+                </button>`).join('');
+        }
+        // Selecting a quote here also inherits its fromAds/organic/request
+        // date+time into the job form's own toggles — the quote is the
+        // source of truth for where a lead actually came from, so the job
+        // it produces should reflect the same origin, not need re-tagging.
+        function selectJobFormQuote(quoteId) {
+            const q = currentQuotes.find(x => x.id === quoteId);
+            if (!q) return;
+            document.getElementById('job-form-linked-quote-id').value = quoteId;
+            document.getElementById('job-form-linked-quote-name').innerText = `${q.jobName} — ${q.clientDetailsPayload.name}`;
+            document.getElementById('job-form-linked-quote-display').classList.remove('hidden');
+            document.getElementById('job-form-linked-quote-display').classList.add('flex');
+            document.getElementById('job-form-linked-quote-picker').classList.add('hidden');
+            document.getElementById('job-form-ads-toggle').checked = !!q.fromAds;
+            document.getElementById('job-form-ads-datetime-wrapper').classList.toggle('hidden', !q.fromAds);
+            document.getElementById('job-form-ads-request-date').value = q.adRequestDate || '';
+            document.getElementById('job-form-ads-request-time').value = q.adRequestTime || '';
+            document.getElementById('job-form-organic-toggle').checked = !!q.organic;
+        }
+        function unlinkJobFormQuote() {
+            document.getElementById('job-form-linked-quote-id').value = '';
+            document.getElementById('job-form-linked-quote-display').classList.add('hidden');
+            document.getElementById('job-form-linked-quote-display').classList.remove('flex');
+            document.getElementById('job-form-linked-quote-picker').classList.remove('hidden');
+            document.getElementById('job-form-quote-search').value = '';
+            renderJobFormQuoteLinkOptions();
         }
         async function unlinkJobQuote() {
             const jobId = activeJobDetailId;
@@ -6073,7 +6283,8 @@
                 <button onclick="confirmAndPerformHandoff('${j.id}', 'followon')" title="Raise a follow-on for another day" class="text-[var(--eny-text-muted)] hover:text-blue-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="git-branch" class="w-3.5 h-3.5"></i></button>` : '';
             const generateInvoiceBtn = (j.status === 'Completed' && !j.linkedQuoteId && isDrsAuthorized()) ? `<button onclick="manuallyGenerateEmergencyInvoice('${j.id}')" title="Generate invoice from time on site" class="text-[var(--eny-text-muted)] hover:text-emerald-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="receipt" class="w-3.5 h-3.5"></i></button>` : '';
             const recordAdProfitBtn = (j.status === 'Completed' && j.fromAds && !j.linkedQuoteId && typeof j.adProfit !== 'number' && isDrsAuthorized()) ? `<button onclick="retryAdJobCompletion('${j.id}')" title="Record ad job profit" class="text-[var(--eny-text-muted)] hover:text-amber-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="line-chart" class="w-3.5 h-3.5"></i></button>` : '';
-            return `${quickActions}${assignEngineerBtn}${rescheduleBtn}${unbookBtn}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}${generateInvoiceBtn}${recordAdProfitBtn}
+            const markJobLostBtn = (['Floating', 'Scheduled', 'Accepted'].includes(j.status) && isDrsAuthorized()) ? `<button onclick="markJobLost('${j.id}')" title="Mark job lost" class="text-[var(--eny-text-muted)] hover:text-red-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="thumbs-down" class="w-3.5 h-3.5"></i></button>` : '';
+            return `${quickActions}${assignEngineerBtn}${rescheduleBtn}${unbookBtn}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}${generateInvoiceBtn}${recordAdProfitBtn}${markJobLostBtn}
                 <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 <button onclick="deleteJob('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
         }
@@ -6149,6 +6360,7 @@
             document.getElementById('job-info-ads-datetime-wrapper').classList.toggle('hidden', !j.fromAds);
             document.getElementById('job-info-ads-request-date').value = j.adRequestDate || '';
             document.getElementById('job-info-ads-request-time').value = j.adRequestTime || '';
+            document.getElementById('job-info-organic-toggle').checked = !!j.organic;
             const addressEl = document.getElementById('job-info-address');
             if (j.propertyAddress) { addressEl.classList.remove('hidden'); addressEl.innerText = j.propertyAddress; }
             else addressEl.classList.add('hidden');
@@ -6162,11 +6374,17 @@
             document.getElementById('job-info-modal').classList.remove('hidden');
             lucide.createIcons();
         }
-        function toggleJobFromAds(checked) {
+        async function toggleJobFromAds(checked) {
             if (!activeJobInfoModalId) return;
+            if (!checked) {
+                const confirmed = await showConfirm('Are you sure you want to untoggle From Ads? Ad-tracking stops going forward for this job — its existing sheet row (if any) stays as-is.', { confirmText: 'Untoggle', danger: true });
+                if (!confirmed) { document.getElementById('job-info-ads-toggle').checked = true; return; }
+            }
             document.getElementById('job-info-ads-datetime-wrapper').classList.toggle('hidden', !checked);
             const updates = { fromAds: checked };
             if (checked) {
+                document.getElementById('job-info-organic-toggle').checked = false;
+                updates.organic = false;
                 const dateField = document.getElementById('job-info-ads-request-date');
                 const timeField = document.getElementById('job-info-ads-request-time');
                 const now = new Date();
@@ -6174,7 +6392,9 @@
                 if (!dateField.value) { dateField.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`; updates.adRequestDate = dateField.value; }
                 if (!timeField.value) { timeField.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`; updates.adRequestTime = timeField.value; }
             }
-            db.collection('jobs').doc(activeJobInfoModalId).update(updates);
+            await db.collection('jobs').doc(activeJobInfoModalId).update(updates);
+            const j = currentJobs.find(x => x.id === activeJobInfoModalId);
+            if (j) await syncJobAdTracking({ ...j, ...updates });
         }
         function saveJobInfoAdsDateTime() {
             if (!activeJobInfoModalId) return;
@@ -6183,11 +6403,33 @@
                 adRequestTime: document.getElementById('job-info-ads-request-time').value || null,
             });
         }
-        function toggleJobDetailFromAds(checked) {
+        async function toggleJobOrganic(checked) {
+            if (!activeJobInfoModalId) return;
+            if (!checked) {
+                const confirmed = await showConfirm('Are you sure you want to untoggle Organic? Ad-tracking stops going forward for this job — its existing sheet row (if any) stays as-is.', { confirmText: 'Untoggle', danger: true });
+                if (!confirmed) { document.getElementById('job-info-organic-toggle').checked = true; return; }
+            }
+            const updates = { organic: checked };
+            if (checked) {
+                document.getElementById('job-info-ads-toggle').checked = false;
+                document.getElementById('job-info-ads-datetime-wrapper').classList.add('hidden');
+                updates.fromAds = false;
+            }
+            await db.collection('jobs').doc(activeJobInfoModalId).update(updates);
+            const j = currentJobs.find(x => x.id === activeJobInfoModalId);
+            if (j) await syncJobAdTracking({ ...j, ...updates });
+        }
+        async function toggleJobDetailFromAds(checked) {
             if (!activeJobDetailId) return;
+            if (!checked) {
+                const confirmed = await showConfirm('Are you sure you want to untoggle From Ads? Ad-tracking stops going forward for this job — its existing sheet row (if any) stays as-is.', { confirmText: 'Untoggle', danger: true });
+                if (!confirmed) { document.getElementById('job-detail-ads-toggle').checked = true; return; }
+            }
             document.getElementById('job-detail-ads-datetime-wrapper').classList.toggle('hidden', !checked);
             const updates = { fromAds: checked };
             if (checked) {
+                document.getElementById('job-detail-organic-toggle').checked = false;
+                updates.organic = false;
                 const dateField = document.getElementById('job-detail-ads-request-date');
                 const timeField = document.getElementById('job-detail-ads-request-time');
                 const now = new Date();
@@ -6195,7 +6437,9 @@
                 if (!dateField.value) { dateField.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`; updates.adRequestDate = dateField.value; }
                 if (!timeField.value) { timeField.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`; updates.adRequestTime = timeField.value; }
             }
-            db.collection('jobs').doc(activeJobDetailId).update(updates);
+            await db.collection('jobs').doc(activeJobDetailId).update(updates);
+            const j = currentJobs.find(x => x.id === activeJobDetailId);
+            if (j) await syncJobAdTracking({ ...j, ...updates });
         }
         function saveJobDetailAdsDateTime() {
             if (!activeJobDetailId) return;
@@ -6203,6 +6447,22 @@
                 adRequestDate: document.getElementById('job-detail-ads-request-date').value || null,
                 adRequestTime: document.getElementById('job-detail-ads-request-time').value || null,
             });
+        }
+        async function toggleJobDetailOrganic(checked) {
+            if (!activeJobDetailId) return;
+            if (!checked) {
+                const confirmed = await showConfirm('Are you sure you want to untoggle Organic? Ad-tracking stops going forward for this job — its existing sheet row (if any) stays as-is.', { confirmText: 'Untoggle', danger: true });
+                if (!confirmed) { document.getElementById('job-detail-organic-toggle').checked = true; return; }
+            }
+            const updates = { organic: checked };
+            if (checked) {
+                document.getElementById('job-detail-ads-toggle').checked = false;
+                document.getElementById('job-detail-ads-datetime-wrapper').classList.add('hidden');
+                updates.fromAds = false;
+            }
+            await db.collection('jobs').doc(activeJobDetailId).update(updates);
+            const j = currentJobs.find(x => x.id === activeJobDetailId);
+            if (j) await syncJobAdTracking({ ...j, ...updates });
         }
         function closeJobInfoModal() {
             document.getElementById('job-info-modal').classList.add('hidden');
@@ -6214,12 +6474,14 @@
             if (!j) return;
             if (!(await showConfirm(`Unbook "${j.title}"? This clears the date, time, and engineer, and puts it back in Floating Jobs.`))) return;
             if (j.calendarEventId) await deleteCalendarEvent(j.calendarEventId);
-            await db.collection('jobs').doc(jobId).update({
+            const updates = {
                 status: 'Floating', date: null, time: null, assignedEngineers: [],
                 calendarEventId: null, floatingSince: new Date().toISOString(),
-            });
+            };
+            await db.collection('jobs').doc(jobId).update(updates);
             closeJobInfoModal();
             showToast('Job unbooked — back in Floating Jobs.', 'success');
+            await syncJobAdTracking({ ...j, ...updates });
         }
         function openRescheduleJobModal(jobId) {
             const job = currentJobs.find(j => j.id === jobId);
@@ -6310,16 +6572,30 @@
                 ? { status: 'Completed', completionOutcome: 'Not Attended' }
                 : { status: 'Completed' }; // follow-on: original genuinely was completed, just closed off
             await db.collection('jobs').doc(originalJob.id).update(oldJobUpdate);
-            await db.collection('jobs').add({
+            await syncJobAdTracking({ ...originalJob, ...oldJobUpdate });
+            // Inherits the lead source (Ads/Organic/request date+time) since
+            // it's the same underlying lead — but deliberately gets its own
+            // fresh row rather than the original's, since this is a distinct
+            // new work item (the original stays Completed on its own row;
+            // sharing a row here would let this new Floating entry overwrite
+            // that Won status with Quoted).
+            const newJobRef = await db.collection('jobs').add({
                 title: originalJob.title, propertyId: originalJob.propertyId, propertyAddress: originalJob.propertyAddress,
                 notes: originalJob.notes || '', engineersNeeded: originalJob.engineersNeeded || 1,
                 assignedEngineers: [], date: null, time: null, status: 'Floating',
                 isEmergency: false, linkedQuoteId: originalJob.linkedQuoteId || null,
                 jobNumber: baseNumber, jobNumberSuffix: newSuffix,
                 floatingSince: new Date().toISOString(),
+                fromAds: !!originalJob.fromAds, organic: !!originalJob.organic,
+                adRequestDate: originalJob.adRequestDate || null, adRequestTime: originalJob.adRequestTime || null,
             });
             closeJobInfoModal();
             showToast(`${type === 'rebook' ? 'Rebook' : 'Follow-on'} raised as ${baseNumber}/${newSuffix} — ready to book in DRS.`, 'success');
+            await syncJobAdTracking({
+                id: newJobRef.id, title: originalJob.title, propertyAddress: originalJob.propertyAddress,
+                status: 'Floating', fromAds: !!originalJob.fromAds, organic: !!originalJob.organic,
+                adRequestDate: originalJob.adRequestDate || null, adRequestTime: originalJob.adRequestTime || null,
+            });
         }
         function toggleReassignPicker() {
             const picker = document.getElementById('job-info-reassign-picker');
@@ -6522,7 +6798,7 @@
             const totalMinutes = (DRS_END_HOUR - DRS_START_HOUR) * 60;
             const gridHeight = totalMinutes * DRS_PIXELS_PER_MINUTE;
             const bcp = getBcpBlockForDate(drsCurrentDate);
-            const dayJobs = currentJobs.filter(j => j.date === drsCurrentDate && j.status !== 'Cancelled');
+            const dayJobs = currentJobs.filter(j => j.date === drsCurrentDate && j.status !== 'Cancelled' && j.status !== 'Lost');
             const dayUnavailable = currentUnavailability.filter(u => u.date === drsCurrentDate);
 
             let hourLabelsHtml = '';
@@ -6832,7 +7108,8 @@
                 const j = currentJobs.find(x => x.id === source.id);
                 if (!j) { showToast('That job could not be found — it may have been removed.', 'warning'); closeDrsPlaceJobModal(); return; }
                 const finalTitle = editedTitle || j.title;
-                await db.collection('jobs').doc(j.id).update({ title: finalTitle, assignedEngineers: [engineerName], date, time, status: 'Scheduled' });
+                const updates = { title: finalTitle, assignedEngineers: [engineerName], date, time, status: 'Scheduled' };
+                await db.collection('jobs').doc(j.id).update(updates);
                 pushDrsBookingToCalendar(j.id, { title: finalTitle, propertyAddress: j.propertyAddress, date, time, assignedEngineers: [engineerName], notes: j.notes || '' });
                 closeDrsPlaceJobModal();
                 renderDrsGrid();
@@ -6849,6 +7126,7 @@
                 if ((j.engineersNeeded || 1) > 1) {
                     openDrsMultiEngineerModal(j.id, [engineerName], j.engineersNeeded, date, time);
                 }
+                await syncJobAdTracking({ ...j, ...updates });
                 return;
             }
 
@@ -6858,17 +7136,25 @@
             const address = q.clientDetailsPayload.address || '';
             const propertyId = await ensurePropertyExistsForAddress(address);
             const jobNumber = await getNextJobNumber();
-            const jobRef = await db.collection('jobs').add({
+            const newJobPayload = {
                 title: finalQuoteTitle, propertyId, propertyAddress: address,
                 assignedEngineers: [engineerName], date, time, status: 'Scheduled',
                 notes: '', isEmergency: false, linkedQuoteId: source.id,
                 jobNumber, jobNumberSuffix: 1,
-            });
+                fromAds: !!q.fromAds, adRequestDate: q.adRequestDate || null, adRequestTime: q.adRequestTime || null,
+                organic: !!q.organic,
+            };
+            // Same lead, same row throughout its whole life — a quote that
+            // already has a tracked row hands it over to the job it becomes,
+            // rather than the job starting a fresh one.
+            if (q.adTrackingRow) newJobPayload.adTrackingRow = q.adTrackingRow;
+            const jobRef = await db.collection('jobs').add(newJobPayload);
             pushDrsBookingToCalendar(jobRef.id, { title: finalQuoteTitle, propertyAddress: address, date, time, assignedEngineers: [engineerName], notes: '' });
             closeDrsPlaceJobModal();
             renderDrsGrid();
             showDrsSidebarPanel(drsActiveSidebarPanel);
             sendDrsBookingConfirmation(q, engineerName, date, time);
+            await syncJobAdTracking({ ...newJobPayload, id: jobRef.id });
         }
         // "Automatically sends" here means pre-filled and opened in the
         // send-message modal, same as reminders/on-my-way messages elsewhere
@@ -6909,7 +7195,7 @@
                 const dateObj = new Date(dateStr + 'T00:00:00');
                 const isToday = dateStr === today;
                 const dayLabel = dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-                const dayJobs = currentJobs.filter(j => j.date === dateStr && j.status !== 'Cancelled');
+                const dayJobs = currentJobs.filter(j => j.date === dateStr && j.status !== 'Cancelled' && j.status !== 'Lost');
                 const cellsHtml = engineers.map(name => {
                     const hasJob = dayJobs.some(j => getJobEngineers(j).includes(name));
                     const jobCount = dayJobs.filter(j => getJobEngineers(j).includes(name)).length;
@@ -6951,7 +7237,7 @@
             if (sidebar && sidebar.classList.contains('drs-sidebar-collapsed')) { contentEl.innerHTML = ''; return; }
             if (panel === 'booked') {
                 const today = todayISO();
-                const booked = currentJobs.filter(j => j.date && j.date >= today && j.status !== 'Cancelled').sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+                const booked = currentJobs.filter(j => j.date && j.date >= today && j.status !== 'Cancelled' && j.status !== 'Lost').sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
                 contentEl.innerHTML = booked.length === 0 ? `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-6">No upcoming booked jobs.</p>` :
                     booked.map(j => `<button onclick="drsGoToDate('${j.date}')" class="w-full text-left bg-[var(--eny-bg-page)] hover:border-amber-500 border border-[var(--eny-border-standard)] rounded-lg p-2 mb-1.5 cursor-pointer">
                         <div class="text-[11px] font-bold text-[var(--eny-text-200)] truncate">${j.title}</div>
@@ -7884,6 +8170,8 @@
             // without a signature on file, rather than leaving it stuck.
             if (pendingJobCompletionAfterSignature === activeSignatureJobId && activeSignatureJobId) {
                 db.collection('jobs').doc(activeSignatureJobId).update({ status: 'Completed' });
+                const jb = currentJobs.find(x => x.id === activeSignatureJobId);
+                if (jb) syncJobAdTracking({ ...jb, status: 'Completed' });
                 pendingJobCompletionAfterSignature = null;
             }
             activeSignatureJobId = null;
@@ -7902,7 +8190,11 @@
                 const updatePayload = { signature: { strokes: strokesForFirestore, confirmationText: SIGNATURE_CONFIRMATION_TEXT, signedAt: new Date().toISOString() } };
                 if (pendingJobCompletionAfterSignature === jobIdBeingSigned) updatePayload.status = 'Completed';
                 db.collection('jobs').doc(jobIdBeingSigned).update(updatePayload).then(() => {
-                    if (pendingJobCompletionAfterSignature === jobIdBeingSigned) pendingJobCompletionAfterSignature = null;
+                    if (pendingJobCompletionAfterSignature === jobIdBeingSigned) {
+                        const jb = currentJobs.find(x => x.id === jobIdBeingSigned);
+                        if (jb) syncJobAdTracking({ ...jb, ...updatePayload });
+                        pendingJobCompletionAfterSignature = null;
+                    }
                     closeSignatureModal();
                 }).catch((err) => {
                     console.error('Failed to save signature:', err);
@@ -8285,12 +8577,19 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         laborBookingFormat: activeLaborBookingFormat,
                         warrantyMonths: parseInt(document.getElementById('job-warranty-months').value) || null,
                         timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+                        fromAds: document.getElementById('quote-ads-toggle').checked,
+                        adRequestDate: document.getElementById('quote-ads-toggle').checked ? (document.getElementById('quote-ads-request-date').value || null) : null,
+                        adRequestTime: document.getElementById('quote-ads-toggle').checked ? (document.getElementById('quote-ads-request-time').value || null) : null,
+                        organic: document.getElementById('quote-organic-toggle').checked,
                     };
                     if (currentlyEditingQuoteId && overwrite) {
                         await db.collection('quotes').doc(currentlyEditingQuoteId).update(payload);
+                        const existingQuote = currentQuotes.find(q => q.id === currentlyEditingQuoteId);
+                        if (existingQuote) await syncQuoteAdTracking({ ...existingQuote, ...payload });
                     } else {
                         payload.status = 'Draft';
-                        await db.collection('quotes').add(payload);
+                        const quoteRef = await db.collection('quotes').add(payload);
+                        await syncQuoteAdTracking({ ...payload, id: quoteRef.id });
                     }
                     if (formAddress) {
                         const propertyId = activeLinkedPropertyId || await ensurePropertyExistsForAddress(formAddress);
@@ -8319,6 +8618,24 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     });
             }
         }
+        function handleQuoteAdsToggle(checked) {
+            document.getElementById('quote-ads-datetime-wrapper').classList.toggle('hidden', !checked);
+            if (checked) {
+                document.getElementById('quote-organic-toggle').checked = false;
+                const dateField = document.getElementById('quote-ads-request-date');
+                const timeField = document.getElementById('quote-ads-request-time');
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                if (!dateField.value) dateField.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+                if (!timeField.value) timeField.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+            }
+        }
+        function handleQuoteOrganicToggle(checked) {
+            if (checked) {
+                document.getElementById('quote-ads-toggle').checked = false;
+                document.getElementById('quote-ads-datetime-wrapper').classList.add('hidden');
+            }
+        }
         function cancelActiveEditingSessionMode() {
             currentlyEditingQuoteId = null; activeLinkedClientId = ''; activeLinkedPropertyId = ''; activeAllocatedMaterials = [];
             document.getElementById('job-name').value = ''; document.getElementById('client-name').value = '';
@@ -8335,6 +8652,10 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('flat-job-cost-description').value = '';
             document.getElementById('flat-job-cost-amount').value = '';
             handleFlatJobCostToggle();
+            document.getElementById('quote-ads-toggle-wrapper').classList.toggle('hidden', !isDrsAuthorized());
+            document.getElementById('quote-ads-toggle').checked = false;
+            document.getElementById('quote-ads-datetime-wrapper').classList.add('hidden');
+            document.getElementById('quote-organic-toggle').checked = false;
             document.getElementById('editing-mode-banner').classList.add('hidden');
             document.getElementById('standard-save-actions-wrapper').classList.remove('hidden');
             document.getElementById('editing-save-actions-wrapper').classList.add('hidden');
@@ -8370,6 +8691,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 handleFlatJobCostToggle();
                 setLaborBookingFormat(target.laborBookingFormat || 'DAY');
                 rebuildAllocatedMaterialsTable();
+                document.getElementById('quote-ads-toggle-wrapper').classList.toggle('hidden', !isDrsAuthorized());
+                document.getElementById('quote-ads-toggle').checked = !!target.fromAds;
+                document.getElementById('quote-ads-datetime-wrapper').classList.toggle('hidden', !target.fromAds);
+                document.getElementById('quote-ads-request-date').value = target.adRequestDate || '';
+                document.getElementById('quote-ads-request-time').value = target.adRequestTime || '';
+                document.getElementById('quote-organic-toggle').checked = !!target.organic;
                 document.getElementById('editing-record-id-display').innerText = quoteId;
                 document.getElementById('editing-mode-banner').classList.remove('hidden');
                 document.getElementById('standard-save-actions-wrapper').classList.add('hidden');
@@ -8381,44 +8708,231 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 showToast('Could not open this quote for editing. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.', 'error');
             }
         }
-        function updateQuoteStatus(id, newStatus) { db.collection('quotes').doc(id).update({ status: newStatus }); }
+        async function updateQuoteStatus(id, newStatus) {
+            await db.collection('quotes').doc(id).update({ status: newStatus });
+            const q = currentQuotes.find(x => x.id === id);
+            if (q) await syncQuoteAdTracking({ ...q, status: newStatus });
+        }
         function handleQuoteStatusChange(id, newStatus) {
             if (newStatus === 'Lost') { markQuoteLost(id); return; }
             updateQuoteStatus(id, newStatus);
             closeQuoteInfoModal();
         }
-        async function markQuoteLost(quoteId) {
-            const q = currentQuotes.find(x => x.id === quoteId);
-            if (!q) return;
-            const reason = prompt('Why was this quote lost?');
-            if (reason === null || !reason.trim()) { showToast('A reason is required to mark a quote lost.', 'warning'); return; }
-            let phone = q.clientDetailsPayload.phone || '';
-            let address = q.clientDetailsPayload.address || '';
-            if (!phone) {
-                const enteredPhone = prompt('No phone number on file for this client. Enter one (or leave blank to skip):');
-                if (enteredPhone) phone = enteredPhone.trim();
+        function isoDateToUk(isoDate) {
+            const [y, m, d] = isoDate.split('-');
+            return `${d}/${m}/${y}`;
+        }
+        // === Ad/Organic tracking: one row per lead, updated in place ===
+        function getAdTrackingLabel(record) {
+            if (record.fromAds) return 'Ad';
+            if (record.organic) return 'Organic';
+            return '';
+        }
+        // Cancelled counts as Lost (per how the business actually treats it);
+        // rebooking a Lost job back to Scheduled naturally recovers to Won
+        // through this same mapping, no special-casing needed.
+        function computeJobTrackingStatus(job) {
+            if (job.status === 'Cancelled' || job.status === 'Lost') return 'Lost';
+            if (job.status === 'Floating') return 'Quoted';
+            return 'Won'; // Scheduled, Accepted, Completed
+        }
+        // Expired is treated the same as Lost — the opportunity didn't
+        // convert either way.
+        function computeQuoteTrackingStatus(quote) {
+            if (quote.status === 'Lost' || quote.status === 'Expired') return 'Lost';
+            if (quote.status === 'Invoiced' || quote.status === 'Paid') return 'Won';
+            return 'Quoted'; // Draft, Sent, Approved
+        }
+        async function findNextAdTrackingRow() {
+            if (!currentAdTrackingSettings.sheetId || !currentAdTrackingSettings.outputTab) return null;
+            const existingValues = await readGoogleSheetColumn(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F');
+            if (existingValues === null) return null;
+            return existingValues.length + 1; // row 1 is the header
+        }
+        // Reuses a record's already-assigned row if it has one (so a lead's
+        // whole history — Quoted, maybe Lost, maybe Won — lives on exactly
+        // one row) — otherwise claims the next free row and remembers it on
+        // the record itself, which is also how an old job/quote tagged
+        // before this feature existed gets "caught up" the first time it's
+        // touched again.
+        async function ensureAdTrackingRowNumber(collectionName, recordId, record) {
+            if (record.adTrackingRow) return record.adTrackingRow;
+            const row = await findNextAdTrackingRow();
+            if (row === null) return null;
+            await db.collection(collectionName).doc(recordId).update({ adTrackingRow: row });
+            return row;
+        }
+        // F:N is one contiguous range, so the whole row goes in a single
+        // write. The reason column intentionally always reflects
+        // record.lostReason as last set — it's not cleared just because the
+        // record later moves off Lost, since it's useful history either way.
+        async function syncJobAdTracking(job) {
+            if (!job.fromAds && !job.organic) return;
+            if (!currentAdTrackingSettings.sheetId || !currentAdTrackingSettings.outputTab) return;
+            const row = await ensureAdTrackingRowNumber('jobs', job.id, job);
+            if (row === null) return;
+            const client = findClientForJob(job);
+            const address = job.propertyAddress || (client && client.address) || '';
+            const phone = (client && client.phone) || job.manualPhone || '';
+            const linkedQuote = job.linkedQuoteId ? currentQuotes.find(q => q.id === job.linkedQuoteId) : null;
+            const quotesCost = (linkedQuote && linkedQuote.financials && linkedQuote.financials.grossTotal) || '';
+            // Ad-request date/time is the most accurate signal when set (only
+            // populated for Ads-tagged records) — falls back to when the job
+            // was first raised for Organic ones, so those columns aren't
+            // left blank just because there's no ad request to point to.
+            let dateStr = '', timeStr = '';
+            if (job.adRequestDate) {
+                dateStr = isoDateToUk(job.adRequestDate);
+                timeStr = job.adRequestTime || '';
+            } else if (job.floatingSince) {
+                const d = new Date(job.floatingSince);
+                dateStr = d.toLocaleDateString('en-GB');
+                timeStr = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
             }
-            if (!address) {
-                const enteredAddress = prompt('No address on file for this client. Enter one (or leave blank to skip):');
-                if (enteredAddress) address = enteredAddress.trim();
+            await writeGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, `F${row}:N${row}`,
+                [address, phone, job.title || '', quotesCost, job.lostReason || '', timeStr, dateStr, getAdTrackingLabel(job), computeJobTrackingStatus(job)]);
+        }
+        async function syncQuoteAdTracking(quote) {
+            if (!quote.fromAds && !quote.organic) return;
+            if (!currentAdTrackingSettings.sheetId || !currentAdTrackingSettings.outputTab) return;
+            const row = await ensureAdTrackingRowNumber('quotes', quote.id, quote);
+            if (row === null) return;
+            const address = quote.clientDetailsPayload.address || '';
+            const phone = quote.clientDetailsPayload.phone || '';
+            let dateStr = '', timeStr = '';
+            if (quote.adRequestDate) {
+                dateStr = isoDateToUk(quote.adRequestDate);
+                timeStr = quote.adRequestTime || '';
+            } else if (quote.timestamp) {
+                const parts = quote.timestamp.split(' ');
+                dateStr = parts[0] || '';
+                timeStr = parts[1] || '';
             }
-            const updatedClientDetails = { ...q.clientDetailsPayload, phone, address };
-            await db.collection('quotes').doc(quoteId).update({
-                status: 'Lost', lostReason: reason.trim(), clientDetailsPayload: updatedClientDetails,
-            });
-            closeQuoteInfoModal();
-            showToast('Quote marked as lost.', 'success');
-            const [quoteDate, quoteTime] = (q.timestamp || '').split(' ');
-            const appended = await appendLostQuoteToSheet(address, phone, q.jobName, q.financials.grossTotal, reason.trim(), quoteDate || '', quoteTime || '');
-            if (!appended) {
-                showToast(`Quote marked as lost, but couldn't write it to the sheet: ${lastSheetsApiError || 'unknown error'}`, 'warning');
+            await writeGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, `F${row}:N${row}`,
+                [address, phone, quote.jobName || '', (quote.financials && quote.financials.grossTotal) || '', quote.lostReason || '', timeStr, dateStr, getAdTrackingLabel(quote), computeQuoteTrackingStatus(quote)]);
+        }
+        let markLostContext = null;
+        function markJobLost(jobId) { openMarkLostModal('job', jobId); }
+        function openMarkLostModal(recordType, recordId) {
+            const record = recordType === 'job' ? currentJobs.find(x => x.id === recordId) : currentQuotes.find(x => x.id === recordId);
+            if (!record) return;
+            let existingPhone, existingAddress;
+            if (recordType === 'job') {
+                const client = findClientForJob(record);
+                existingPhone = (client && client.phone) || record.manualPhone || '';
+                existingAddress = record.propertyAddress || (client && client.address) || '';
+            } else {
+                existingPhone = record.clientDetailsPayload.phone || '';
+                existingAddress = record.clientDetailsPayload.address || '';
+            }
+            markLostContext = { recordType, recordId, existingPhone, existingAddress };
+            document.getElementById('mark-lost-reason-select').value = '';
+            document.getElementById('mark-lost-other-wrapper').classList.add('hidden');
+            document.getElementById('mark-lost-other-input').value = '';
+            document.getElementById('mark-lost-phone-wrapper').classList.toggle('hidden', !!existingPhone);
+            document.getElementById('mark-lost-phone-input').value = '';
+            document.getElementById('mark-lost-address-wrapper').classList.toggle('hidden', !!existingAddress);
+            document.getElementById('mark-lost-address-input').value = '';
+            document.getElementById('mark-lost-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function handleMarkLostReasonChange() {
+            const val = document.getElementById('mark-lost-reason-select').value;
+            document.getElementById('mark-lost-other-wrapper').classList.toggle('hidden', val !== 'Other');
+        }
+        function closeMarkLostModal() {
+            document.getElementById('mark-lost-modal').classList.add('hidden');
+            markLostContext = null;
+        }
+        async function confirmMarkLost() {
+            if (!markLostContext) return;
+            const { recordType, recordId, existingPhone, existingAddress } = markLostContext;
+            const reasonSelect = document.getElementById('mark-lost-reason-select').value;
+            if (!reasonSelect) { showToast('Please select a reason.', 'warning'); return; }
+            let reason = reasonSelect;
+            if (reasonSelect === 'Other') {
+                const otherText = document.getElementById('mark-lost-other-input').value.trim();
+                if (!otherText) { showToast('Please specify a reason.', 'warning'); return; }
+                reason = otherText;
+            }
+            const enteredPhone = document.getElementById('mark-lost-phone-input').value.trim();
+            const enteredAddress = document.getElementById('mark-lost-address-input').value.trim();
+            const finalPhone = existingPhone || enteredPhone;
+            const finalAddress = existingAddress || enteredAddress;
+
+            if (recordType === 'job') {
+                const j = currentJobs.find(x => x.id === recordId);
+                if (!j) { closeMarkLostModal(); return; }
+                const updates = { status: 'Lost', lostReason: reason };
+                if (!existingPhone && enteredPhone) updates.manualPhone = enteredPhone;
+                if (!existingAddress && enteredAddress) updates.propertyAddress = enteredAddress;
+                await db.collection('jobs').doc(recordId).update(updates);
+                closeJobInfoModal();
+                closeMarkLostModal();
+                showToast('Job marked as lost.', 'success');
+                await syncJobAdTracking({ ...j, ...updates });
+            } else {
+                const q = currentQuotes.find(x => x.id === recordId);
+                if (!q) { closeMarkLostModal(); return; }
+                const updatedClientDetails = { ...q.clientDetailsPayload, phone: finalPhone, address: finalAddress };
+                await db.collection('quotes').doc(recordId).update({ status: 'Lost', lostReason: reason, clientDetailsPayload: updatedClientDetails });
+                closeQuoteInfoModal();
+                closeMarkLostModal();
+                showToast('Quote marked as lost.', 'success');
+                await syncQuoteAdTracking({ ...q, status: 'Lost', lostReason: reason, clientDetailsPayload: updatedClientDetails });
             }
         }
+        function markQuoteLost(quoteId) { openMarkLostModal('quote', quoteId); }
         async function deleteVaultRecord(id) {
             if (!(await showConfirm('Move this record to Trash? You can restore it within 30 days.', { confirmText: 'Move to Trash', danger: true }))) return;
             db.collection('quotes').doc(id).update({ deleted: true, deletedAt: new Date().toISOString() });
         }
         let activeQuoteInfoModalId = null;
+        async function toggleQuoteInfoAds(checked) {
+            if (!activeQuoteInfoModalId) return;
+            if (!checked) {
+                const confirmed = await showConfirm('Are you sure you want to untoggle From Ads? Ad-tracking stops going forward for this quote — its existing sheet row (if any) stays as-is.', { confirmText: 'Untoggle', danger: true });
+                if (!confirmed) { document.getElementById('quote-info-ads-toggle').checked = true; return; }
+            }
+            document.getElementById('quote-info-ads-datetime-wrapper').classList.toggle('hidden', !checked);
+            const updates = { fromAds: checked };
+            if (checked) {
+                document.getElementById('quote-info-organic-toggle').checked = false;
+                updates.organic = false;
+                const dateField = document.getElementById('quote-info-ads-request-date');
+                const timeField = document.getElementById('quote-info-ads-request-time');
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                if (!dateField.value) { dateField.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`; updates.adRequestDate = dateField.value; }
+                if (!timeField.value) { timeField.value = `${pad(now.getHours())}:${pad(now.getMinutes())}`; updates.adRequestTime = timeField.value; }
+            }
+            await db.collection('quotes').doc(activeQuoteInfoModalId).update(updates);
+            const q = currentQuotes.find(x => x.id === activeQuoteInfoModalId);
+            if (q) await syncQuoteAdTracking({ ...q, ...updates });
+        }
+        function saveQuoteInfoAdsDateTime() {
+            if (!activeQuoteInfoModalId) return;
+            db.collection('quotes').doc(activeQuoteInfoModalId).update({
+                adRequestDate: document.getElementById('quote-info-ads-request-date').value || null,
+                adRequestTime: document.getElementById('quote-info-ads-request-time').value || null,
+            });
+        }
+        async function toggleQuoteInfoOrganic(checked) {
+            if (!activeQuoteInfoModalId) return;
+            if (!checked) {
+                const confirmed = await showConfirm('Are you sure you want to untoggle Organic? Ad-tracking stops going forward for this quote — its existing sheet row (if any) stays as-is.', { confirmText: 'Untoggle', danger: true });
+                if (!confirmed) { document.getElementById('quote-info-organic-toggle').checked = true; return; }
+            }
+            const updates = { organic: checked };
+            if (checked) {
+                document.getElementById('quote-info-ads-toggle').checked = false;
+                document.getElementById('quote-info-ads-datetime-wrapper').classList.add('hidden');
+                updates.fromAds = false;
+            }
+            await db.collection('quotes').doc(activeQuoteInfoModalId).update(updates);
+            const q = currentQuotes.find(x => x.id === activeQuoteInfoModalId);
+            if (q) await syncQuoteAdTracking({ ...q, ...updates });
+        }
         function openQuoteInfoModal(id) {
             const r = currentQuotes.find(q => q.id === id);
             if (!r) return;
@@ -8440,6 +8954,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 warrantyWrapper.classList.add('hidden');
             }
             document.getElementById('quote-info-status-select').value = r.status;
+            document.getElementById('quote-info-ads-toggle-wrapper').classList.toggle('hidden', !isDrsAuthorized());
+            document.getElementById('quote-info-ads-toggle').checked = !!r.fromAds;
+            document.getElementById('quote-info-ads-datetime-wrapper').classList.toggle('hidden', !r.fromAds);
+            document.getElementById('quote-info-ads-request-date').value = r.adRequestDate || '';
+            document.getElementById('quote-info-ads-request-time').value = r.adRequestTime || '';
+            document.getElementById('quote-info-organic-toggle').checked = !!r.organic;
             const isInvoiceOrPaid = r.status === 'Invoiced' || r.status === 'Paid';
             document.getElementById('quote-info-mark-lost-btn').classList.toggle('hidden', isInvoiceOrPaid || r.status === 'Lost');
             const primaryBtn = document.getElementById('quote-info-primary-action-btn');
@@ -8583,6 +9103,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 }
 
                 await db.collection('quotes').doc(id).update(updatePayload);
+                if (existing) await syncQuoteAdTracking({ ...existing, ...updatePayload });
                 closeInvoiceModal();
             } catch (err) {
                 console.error('Failed to convert to invoice:', err);
