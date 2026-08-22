@@ -10160,46 +10160,59 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 return true;
             } catch (e) { console.error('Sheets write failed:', e); lastSheetsApiError = String(e.message || e); return false; }
         }
-        // Explicitly finds the next empty row rather than relying on the
-        // Sheets API's own append-endpoint table detection — that auto-detect
-        // behaviour turned out to misalign columns by one in practice, so
-        // this reads the anchor column directly and writes to an exact,
-        // unambiguous cell range instead.
-        // Uses Google's own append endpoint, anchored to just the header row
-        // (not an open-ended column range) so it can't accidentally expand
-        // into an adjacent column with its own header — and OVERWRITE mode
-        // rather than INSERT_ROWS, so it never physically shifts rows or
-        // disturbs anything in other columns on nearby rows. This replaced
-        // an earlier custom "read the column, count rows, then PUT" approach
-        // that had a real race-condition risk: two quotes marked lost close
-        // together could both compute the same target row and the second
-        // would silently overwrite the first.
-        async function appendGoogleSheetRow(sheetId, tabName, headerRangeCols, rowValues) {
+        // Reads the anchor column to count existing rows, then writes
+        // directly to the exact next row — no append endpoint involved.
+        // That endpoint proved unpredictable across two attempts (it kept
+        // expanding into an adjacent column, and even in "overwrite" mode
+        // still ended up pushing other rows down). A direct write to an
+        // explicit range has no such ambiguity: it can only ever affect
+        // exactly the cells named in that range, nothing else.
+        async function readGoogleSheetColumn(sheetId, tabName, columnLetter) {
+            if (!googleAccessToken) { lastSheetsApiError = 'Not connected to Google.'; return null; }
+            if (!(await ensureFreshGoogleToken())) { lastSheetsApiError = 'Could not refresh Google access — try reconnecting.'; return null; }
+            try {
+                const range = buildSheetRange(tabName, `${columnLetter}:${columnLetter}`);
+                const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}`, { headers: { 'Authorization': `Bearer ${googleAccessToken}` } });
+                if (!res.ok) {
+                    const errText = await res.text();
+                    console.error('Sheets read error:', errText);
+                    lastSheetsApiError = `${res.status} ${res.statusText}: ${errText.slice(0, 300)}`;
+                    return null;
+                }
+                lastSheetsApiError = '';
+                const data = await res.json();
+                return data.values || [];
+            } catch (e) { console.error('Sheets read failed:', e); lastSheetsApiError = String(e.message || e); return null; }
+        }
+        async function writeGoogleSheetRow(sheetId, tabName, rangeCols, rowValues) {
             if (!googleAccessToken) { lastSheetsApiError = 'Not connected to Google.'; return false; }
             if (!(await ensureFreshGoogleToken())) { lastSheetsApiError = 'Could not refresh Google access — try reconnecting.'; return false; }
             try {
-                const range = buildSheetRange(tabName, headerRangeCols);
-                const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}:append?valueInputOption=USER_ENTERED&insertDataOption=OVERWRITE`, {
-                    method: 'POST',
+                const range = buildSheetRange(tabName, rangeCols);
+                const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?valueInputOption=USER_ENTERED`, {
+                    method: 'PUT',
                     headers: { 'Authorization': `Bearer ${googleAccessToken}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ values: [rowValues] }),
                 });
                 if (!res.ok) {
                     const errText = await res.text();
-                    console.error('Sheets append error:', errText);
+                    console.error('Sheets write error:', errText);
                     lastSheetsApiError = `${res.status} ${res.statusText}: ${errText.slice(0, 300)}`;
                     return false;
                 }
                 lastSheetsApiError = '';
                 return true;
-            } catch (e) { console.error('Sheets append failed:', e); lastSheetsApiError = String(e.message || e); return false; }
+            } catch (e) { console.error('Sheets write failed:', e); lastSheetsApiError = String(e.message || e); return false; }
         }
         async function appendLostQuoteToSheet(address, phone, jobName, quotePrice, reason) {
             if (!currentAdTrackingSettings.sheetId || !currentAdTrackingSettings.outputTab) {
                 lastSheetsApiError = 'Ad tracking sheet/output tab not configured.';
                 return false;
             }
-            return await appendGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F1:J1', [address, phone, jobName, quotePrice, reason]);
+            const existingValues = await readGoogleSheetColumn(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F');
+            if (existingValues === null) return false;
+            const nextRow = existingValues.length + 1; // row 1 is the header
+            return await writeGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, `F${nextRow}:J${nextRow}`, [address, phone, jobName, quotePrice, reason]);
         }
         // The sheet maintains its own rolling-year spend total — the app
         // just reads whatever figure is currently in that one cell as-is.
