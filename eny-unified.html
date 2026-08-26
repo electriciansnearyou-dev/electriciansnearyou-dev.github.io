@@ -3063,9 +3063,12 @@
                     const p1 = document.getElementById('setting-engineer-1-phone'); if (p1) p1.value = currentSettings.engineer1Phone || '';
                     const p2 = document.getElementById('setting-engineer-2-phone'); if (p2) p2.value = currentSettings.engineer2Phone || '';
                     const p3 = document.getElementById('setting-engineer-3-phone'); if (p3) p3.value = currentSettings.engineer3Phone || '';
-                } else if (isOwnerLoggedIn()) {
-                    db.collection('settings').doc('engineers').set(currentSettings);
                 }
+                // Deliberately no "else: write defaults" here — a transient
+                // false-negative on doc.exists (an auth-state hiccup, a read
+                // race on load, etc.) must never overwrite real settings
+                // with placeholders. Genuine first-time setup is handled by
+                // the owner saving the settings form themselves.
                 rebuildEngineerDropdowns();
                 renderJobsList();
                 renderCalendarGrid();
@@ -3074,9 +3077,8 @@
             db.collection('settings').doc('jobNumbering').onSnapshot((doc) => {
                 if (doc.exists) {
                     currentJobNumberSettings = doc.data();
-                } else if (isOwnerLoggedIn()) {
-                    db.collection('settings').doc('jobNumbering').set(currentJobNumberSettings);
                 }
+                // No auto-create on missing — same reasoning as engineers above.
                 const field = document.getElementById('setting-next-job-number');
                 if (field) field.value = currentJobNumberSettings.nextNumber || 100001;
             }, (err) => console.error('Job numbering listener error:', err));
@@ -3090,20 +3092,20 @@
                 if (doc.exists) {
                     const loaded = doc.data();
                     // This document's shape changed twice since it was first
-                    // built (date-column filtering removed, then the real
-                    // sheet layout added) — a document saved under an older
-                    // version won't have the newer field names at all, and a
-                    // field present in every version (like sheetId) could
-                    // still be an empty string from the very first seed —
-                    // both count as "missing" here, not just undefined.
+                    // built — a document saved under an older version won't
+                    // have the newer field names at all, and a field present
+                    // in every version (like sheetId) could still be an empty
+                    // string from the very first seed — both count as
+                    // "missing" here, not just undefined. This merge is kept
+                    // in-memory only now — it no longer writes back to
+                    // Firestore, since a transient partial read (an
+                    // auth-state hiccup, a read race on load) must never
+                    // risk overwriting real settings with defaults.
                     const merged = { ...defaults };
                     Object.keys(defaults).forEach(k => { if (loaded[k]) merged[k] = loaded[k]; });
-                    const wasIncomplete = Object.keys(defaults).some(k => !loaded[k]);
                     currentAdTrackingSettings = merged;
-                    if (wasIncomplete && isOwnerLoggedIn()) db.collection('settings').doc('adTracking').set(merged);
-                } else if (isOwnerLoggedIn()) {
+                } else {
                     currentAdTrackingSettings = defaults;
-                    db.collection('settings').doc('adTracking').set(defaults);
                 }
                 const idField = document.getElementById('setting-ads-sheet-id');
                 if (idField) {
@@ -3192,22 +3194,21 @@
                 db.collection('settings').doc('pricing').onSnapshot((doc) => {
                     if (doc.exists) {
                         currentPricing = doc.data();
-                    } else {
-                        db.collection('settings').doc('pricing').set(currentPricing);
                     }
+                    // No auto-create on missing — same reasoning as engineers above.
                     loadPricingSettingsIntoForm();
                     calculateComprehensiveMetrics();
                 }, (err) => console.error('Pricing listener error:', err));
 
                 db.collection('settings').doc('bankHughes').onSnapshot((doc) => {
                     if (doc.exists) currentBanking.HUGHES = doc.data();
-                    else db.collection('settings').doc('bankHughes').set(currentBanking.HUGHES);
+                    // No auto-create on missing — same reasoning as engineers above.
                     loadBankFormFields('HUGHES');
                 }, (err) => console.error('Bank (Hughes) listener error:', err));
 
                 db.collection('settings').doc('bankMabbley').onSnapshot((doc) => {
                     if (doc.exists) currentBanking.MABBLEY = doc.data();
-                    else db.collection('settings').doc('bankMabbley').set(currentBanking.MABBLEY);
+                    // No auto-create on missing — same reasoning as engineers above.
                     loadBankFormFields('MABBLEY');
                 }, (err) => console.error('Bank (Mabbley) listener error:', err));
             }
