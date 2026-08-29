@@ -1648,6 +1648,15 @@
                         <span id="ad-profit-percent-value" class="text-3xl font-black font-mono block">—</span>
                     </div>
                 </div>
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] overflow-hidden">
+                    <button onclick="toggleCollapsibleForm('ad-profit-breakdown-wrapper', 'ad-profit-breakdown-chevron')" class="w-full flex items-center justify-between p-4 cursor-pointer">
+                        <span class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="list" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Job Breakdown</span>
+                        <i data-lucide="chevron-down" id="ad-profit-breakdown-chevron" class="w-4 h-4 text-[var(--eny-text-muted)] transition-transform"></i>
+                    </button>
+                    <div id="ad-profit-breakdown-wrapper" class="hidden border-t border-[var(--eny-border-standard)] p-4 space-y-2">
+                        <div id="ad-profit-breakdown-list" class="space-y-2"></div>
+                    </div>
+                </div>
             </div>
 
             <div id="drs-tab" class="tab-content drs-authorized-only-tab">
@@ -2424,7 +2433,8 @@
                 <div class="pt-2 flex justify-between items-center"><span class="text-base font-bold text-[var(--eny-text-primary)] uppercase tracking-wide">Net Profit</span><span class="text-2xl font-black font-mono text-emerald-400" id="profit-net">£0.00</span></div>
                 <div class="flex justify-between items-center bg-[var(--eny-bg-page)] p-3 rounded-lg border border-[var(--eny-border-standard)]"><span class="text-xs font-semibold text-[var(--eny-text-muted)] uppercase">Gross Margin %</span><span class="text-lg font-bold font-mono text-[var(--eny-accent-text)]" id="profit-margin">0%</span></div>
             </div>
-            <div class="p-4 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex justify-center">
+            <div class="p-4 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex flex-col gap-2">
+                <button onclick="editActualCostsFromLedger()" class="w-full bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-300)] px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="pencil" class="w-3.5 h-3.5"></i> Edit Actual Costs</button>
                 <button onclick="closeProfitModal()" class="w-full bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-primary)] px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer">Close Ledger</button>
             </div>
         </div>
@@ -9111,7 +9121,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const operative = document.getElementById('recon-operative-select').value;
             try {
                 const existing = currentQuotes.find(q => q.id === id);
-                const updatePayload = { status: 'Invoiced', invoicingOperative: operative, actualCosts: { materials: actualMaterials, labor: actualLabor } };
+                // Only actually advance the status to Invoiced if it isn't
+                // already Paid — re-opening this to correct a materials
+                // figure after a wholesaler return, say, shouldn't regress
+                // an already-paid quote back a pipeline stage.
+                const updatePayload = { invoicingOperative: operative, actualCosts: { materials: actualMaterials, labor: actualLabor } };
+                if (!existing || existing.status !== 'Paid') updatePayload.status = 'Invoiced';
 
                 // Only assign a fresh sequential number the first time this
                 // quote becomes an invoice — re-confirming later (e.g. to
@@ -9134,9 +9149,11 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 showToast('Could not convert this to an invoice. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.', 'error');
             }
         }
+        let activeProfitModalQuoteId = null;
         function openProfitModal(id) {
             const target = currentQuotes.find(q => q.id === id);
             if (!target || !target.actualCosts) { showToast('No actual-cost reconciliation recorded for this record yet.', 'info'); return; }
+            activeProfitModalQuoteId = id;
             const revenue = target.financials.grossTotal;
             const materials = target.actualCosts.materials, labor = target.actualCosts.labor, testing = target.financials.testingCosts;
             const netProfit = revenue - materials - labor - testing;
@@ -9149,7 +9166,13 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('profit-margin').innerText = `${margin.toFixed(1)}%`;
             document.getElementById('profit-view-modal').classList.remove('hidden');
         }
-        function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); }
+        function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); activeProfitModalQuoteId = null; }
+        function editActualCostsFromLedger() {
+            if (!activeProfitModalQuoteId) return;
+            const id = activeProfitModalQuoteId;
+            closeProfitModal();
+            openInvoiceReconciliation(id);
+        }
 
         // ---- PDF generation (direct html2canvas + jsPDF; operative picked per-invoice) ----
         function generateDocumentPDF(id) {
@@ -10995,13 +11018,14 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (typeof job.adProfit === 'number') return job.adProfit;
             return null;
         }
-        // Only the app's own job data gets date-filtered to a rolling
-        // window — the ad spend side already comes pre-rolled from the sheet
-        // itself, per how this was scoped.
-        function computeRollingAdJobProfit() {
+        // Source of truth for which ad jobs count toward the rolling total,
+        // and how much each contributes — computeRollingAdJobProfit sums
+        // this list rather than duplicating the filter logic, so the total
+        // and the breakdown list shown in the UI can never drift apart.
+        function getAdJobProfitBreakdown() {
             const cutoff = new Date();
             cutoff.setDate(cutoff.getDate() - 365);
-            let total = 0;
+            const items = [];
             currentJobs.forEach(job => {
                 if (!job.fromAds || job.status !== 'Completed') return;
                 // Older jobs completed before completedAt was tracked at all
@@ -11011,8 +11035,14 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 const referenceDate = job.completedAt ? new Date(job.completedAt) : (job.date ? new Date(job.date + 'T00:00:00') : null);
                 if (!referenceDate || referenceDate < cutoff) return;
                 const profit = computeJobAdProfit(job);
-                if (profit !== null) total += profit;
+                if (profit === null) return;
+                items.push({ job, profit, referenceDate });
             });
+            items.sort((a, b) => b.referenceDate - a.referenceDate); // most recent first
+            return items;
+        }
+        function computeRollingAdJobProfit() {
+            const total = getAdJobProfitBreakdown().reduce((sum, item) => sum + item.profit, 0);
             return Math.round(total * 100) / 100;
         }
         // Writes all three figures fresh each time, rather than incrementally
@@ -11045,6 +11075,18 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('ad-profit-cost-value').innerText = '…';
             document.getElementById('ad-profit-net-value').innerText = '…';
             document.getElementById('ad-profit-percent-value').innerText = '…';
+            const breakdown = getAdJobProfitBreakdown();
+            const listEl = document.getElementById('ad-profit-breakdown-list');
+            listEl.innerHTML = breakdown.length === 0
+                ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-2">No ad jobs completed in the last 365 days.</p>`
+                : breakdown.map(item => `
+                    <div class="flex items-center justify-between gap-2 text-xs py-1.5 border-b border-[var(--eny-border-standard)] last:border-b-0">
+                        <div class="min-w-0">
+                            <p class="font-semibold text-[var(--eny-text-200)] truncate">${item.job.title || 'Untitled job'}</p>
+                            <p class="text-[10px] text-[var(--eny-text-muted2)]">${item.referenceDate.toLocaleDateString('en-GB')}</p>
+                        </div>
+                        <span class="font-mono font-bold shrink-0 ${item.profit >= 0 ? 'text-emerald-500' : 'text-red-500'}">£${item.profit.toFixed(2)}</span>
+                    </div>`).join('');
             const jobProfit = computeRollingAdJobProfit();
             const adSpend = await getAdSpendFromSheet();
             if (adSpend === null) {
