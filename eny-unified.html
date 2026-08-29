@@ -985,6 +985,13 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div id="day-half-selector-context-frame" class="invisible opacity-0 transition-opacity space-y-4">
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-[var(--eny-text-300)] uppercase tracking-wider cursor-pointer select-none">
+                                            <input type="checkbox" id="day-half-op2-enable-toggle" onchange="calculateComprehensiveMetrics()" class="rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] focus:ring-0">
+                                            Add Second Engineer
+                                        </label>
+                                        <p class="text-[10px] text-[var(--eny-text-muted2)] pl-6">Adds a second full/half-day rate for a second engineer working alongside the lead.</p>
+                                    </div>
                                 </div>
                                 <div class="bg-[var(--eny-bg-page)]/60 border border-[var(--eny-border-standard)] rounded-xl p-4 flex items-center justify-between gap-4">
                                     <div class="flex items-start gap-3">
@@ -8661,6 +8668,9 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('standard-save-actions-wrapper').classList.remove('hidden');
             document.getElementById('editing-save-actions-wrapper').classList.add('hidden');
             rebuildAllocatedMaterialsTable();
+            document.getElementById('op2-enable-toggle').checked = false;
+            toggleOp2Controls();
+            document.getElementById('day-half-op2-enable-toggle').checked = false;
             setLaborBookingFormat('DAY');
         }
         function loadQuoteForActiveModification(quoteId) {
@@ -9112,6 +9122,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
 
                 await db.collection('quotes').doc(id).update(updatePayload);
                 if (existing) await syncQuoteAdTracking({ ...existing, ...updatePayload });
+                // Reconciling actual materials cost directly changes the
+                // rolling Ad Job Profit total for whichever job this quote
+                // is linked to — refresh it now rather than leaving it stale
+                // until someone happens to revisit the Ad Profit tab.
+                const linkedAdJob = currentJobs.find(j => j.linkedQuoteId === id && j.fromAds && j.status === 'Completed');
+                if (linkedAdJob) await updateAdProfitSheet();
                 closeInvoiceModal();
             } catch (err) {
                 console.error('Failed to convert to invoice:', err);
@@ -9917,9 +9933,13 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const calculatedMarkedMaterials = netMaterialsIncVat * (1 + (markup / 100));
             let laborCosts = 0;
             const { rateDay, rateHalf, rateHourFirst, rateHourNext } = currentPricing;
-            if (activeLaborBookingFormat === 'DAY') laborCosts = rateDay;
-            else if (activeLaborBookingFormat === 'HALF') laborCosts = rateHalf;
-            else if (activeLaborBookingFormat === 'HOUR') {
+            if (activeLaborBookingFormat === 'DAY') {
+                laborCosts = rateDay;
+                if (document.getElementById('day-half-op2-enable-toggle')?.checked) laborCosts += rateDay;
+            } else if (activeLaborBookingFormat === 'HALF') {
+                laborCosts = rateHalf;
+                if (document.getElementById('day-half-op2-enable-toggle')?.checked) laborCosts += rateHalf;
+            } else if (activeLaborBookingFormat === 'HOUR') {
                 const nextHoursCount1 = parseInt(document.getElementById('labor-hour-slider').value) || 0;
                 laborCosts += rateHourFirst + (nextHoursCount1 * rateHourNext);
                 if (document.getElementById('op2-enable-toggle')?.checked) {
@@ -10093,7 +10113,14 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const targetBtn = document.getElementById(`lbl-btn-${formatMode.toLowerCase()}`);
             if (targetBtn) targetBtn.className = 'py-2 text-xs font-bold rounded-lg transition-all bg-amber-500 text-slate-950 shadow-md';
             const frame = document.getElementById('hourly-selector-context-frame');
-            if (formatMode === 'HOUR') { frame.classList.remove('invisible', 'opacity-0'); frame.classList.add('opacity-100'); } else { frame.classList.add('invisible', 'opacity-0'); frame.classList.remove('opacity-100'); }
+            const dayHalfFrame = document.getElementById('day-half-selector-context-frame');
+            if (formatMode === 'HOUR') {
+                frame.classList.remove('invisible', 'opacity-0'); frame.classList.add('opacity-100');
+                dayHalfFrame.classList.add('invisible', 'opacity-0'); dayHalfFrame.classList.remove('opacity-100');
+            } else {
+                frame.classList.add('invisible', 'opacity-0'); frame.classList.remove('opacity-100');
+                dayHalfFrame.classList.remove('invisible', 'opacity-0'); dayHalfFrame.classList.add('opacity-100');
+            }
             calculateComprehensiveMetrics();
         }
         function toggleOp2Controls() {
@@ -10624,6 +10651,18 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const msUntilRefresh = Math.max(30000, googleAccessTokenExpiry - Date.now() - (2 * 60 * 1000));
             googleSilentRefreshTimer = setTimeout(() => { ensureFreshGoogleToken(); }, msUntilRefresh);
         }
+        // The scheduled timer above is a best-effort proactive renewal, but
+        // browsers throttle (or fully suspend) setTimeout in a backgrounded
+        // tab — on mobile especially, returning to the app after any real
+        // time away can mean that timer never actually fired. Checking again
+        // right when the tab becomes visible catches that gap immediately,
+        // rather than waiting for the next calendar action to discover the
+        // token's stale and only refreshing (or failing) at that point.
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && gisTokenClient) {
+                ensureFreshGoogleToken();
+            }
+        });
 
         window.addEventListener('load', () => {
             if (window.google && google.accounts && google.accounts.oauth2) {
@@ -10941,7 +10980,17 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (job.linkedQuoteId) {
                 const q = currentQuotes.find(x => x.id === job.linkedQuoteId);
                 if (!q) return null;
-                return Math.round((q.financials.grossTotal - (q.financials.netMaterialsExVat + q.financials.materialsVat)) * 100) / 100;
+                // Actual, reconciled materials cost (set when converting to
+                // invoice) is the real figure once it exists — the quote's
+                // original estimated materials is only a fallback for a job
+                // that hasn't been invoiced yet, since actual usage often
+                // differs from what was originally quoted for. Labor is
+                // deliberately never subtracted — it's the owner's own time,
+                // so it counts as profit to them, not a cost.
+                const materialsCost = (q.actualCosts && typeof q.actualCosts.materials === 'number')
+                    ? q.actualCosts.materials
+                    : (q.financials.netMaterialsExVat + q.financials.materialsVat);
+                return Math.round((q.financials.grossTotal - materialsCost) * 100) / 100;
             }
             if (typeof job.adProfit === 'number') return job.adProfit;
             return null;
