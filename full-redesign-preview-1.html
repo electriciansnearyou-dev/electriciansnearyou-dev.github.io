@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>ElectriciansNearYou — Redesign Preview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Inter", sans-serif; background: #060a14; color: #e2e8f0; }
+
+  /* ---- reveal-on-scroll ---- */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal-left { opacity: 0; transform: translateX(-28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-left.in { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-right.in { opacity: 1; transform: translateX(0); }
+  .reveal-scale { opacity: 0; transform: scale(0.92); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal-scale.in { opacity: 1; transform: scale(1); }
+
+  /* ---- gradient text + glow utilities ---- */
+  .grad-text {
+    background: linear-gradient(90deg, #38bdf8, #d4af37);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .glow-btn { box-shadow: 0 0 0 1px rgba(56,189,248,0.4), 0 0 24px rgba(56,189,248,0.45); }
+  .glow-card { transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
+  .glow-card:hover { border-color: rgba(56,189,248,0.5) !important; box-shadow: 0 10px 28px rgba(56,189,248,0.15); transform: translateY(-3px); }
+  .glow-gold:hover { border-color: rgba(212,175,55,0.55) !important; box-shadow: 0 0 26px rgba(212,175,55,0.15); }
+
+  /* ---- circuit background for hero ---- */
+  .circuit-bg {
+    position: absolute; inset: 0; opacity: 0.3;
+    background-image: linear-gradient(90deg, rgba(56,189,248,0.08) 1px, transparent 1px),
+                       linear-gradient(rgba(56,189,248,0.08) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(circle at 50% 20%, black, transparent 75%);
+    animation: drift 7s linear infinite;
+  }
+  @keyframes drift { 0% { background-position: 0 0; } 100% { background-position: 88px 88px; } }
+
+  /* ---- pulse badge ---- */
+  .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 8px 2px rgba(239,68,68,0.8); animation: blink 1.6s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* ---- scroll-reactive nav ---- */
+  #topnav { transition: background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease; border-bottom: 1px solid transparent; }
+  #topnav.scrolled { background: rgba(6,10,20,0.85); backdrop-filter: blur(16px); border-bottom-color: rgba(56,189,248,0.15); }
+
+  /* ---- mobile drawer ---- */
+  #drawer { transition: opacity 0.3s ease; }
+  #drawer .panel { transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22,1,0.36,1); }
+  #drawer.open .panel { transform: translateX(0); }
+  #drawer .link { opacity: 0; transform: translateX(12px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  #drawer.open .link { opacity: 1; transform: translateX(0); }
+
+  /* ---- contact modal ---- */
+  #contactModal { transition: opacity 0.25s ease; }
+  #contactModal .panel { transform: scale(0.92) translateY(10px); transition: transform 0.3s cubic-bezier(0.22,1,0.36,1); }
+  #contactModal.open .panel { transform: scale(1) translateY(0); }
+
+  /* ---- floating buttons: real fixed positioning ---- */
+  .fab-row { position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 60; display: flex; justify-content: space-between; pointer-events: none; }
+  @media (min-width: 992px) { .fab-row { display: none; } }
+  .fab { width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; pointer-events: auto; box-shadow: 0 8px 22px rgba(0,0,0,0.55); }
+  .fab.emergency { background: #dc2626; border: 1px solid rgba(255,255,255,0.15); }
+  .fab.contact { background: rgba(255,255,255,0.95); color: #0f172a; }
+  .desktop-fab { display: none; }
+  @media (min-width: 992px) {
+    .desktop-fab { display: block; position: fixed; bottom: 24px; right: 30px; z-index: 60; width: 190px; }
+  }
+  main, footer { padding-bottom: 0; }
+  #contact { scroll-margin-top: 80px; }
+  body { padding-bottom: 110px; }
+  @media (min-width: 992px) { body { padding-bottom: 0; } }
+
+  /* ---- back to top ---- */
+  #backTop {
+    position: fixed; bottom: 92px; right: 20px; z-index: 55;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.4); color: #7dd3fc;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+    opacity: 0; transform: translateY(10px) scale(0.85); transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+  #backTop.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  @media (min-width: 992px) { #backTop { bottom: 100px; right: 30px; } }
+
+  /* ---- form focus glow ---- */
+  .glow-input:focus { border-color: #38bdf8 !important; box-shadow: 0 0 0 3px rgba(56,189,248,0.15); outline: none; }
+
+  /* ---- chips ---- */
+  .area-chip { transition: all 0.2s ease; }
+  .area-chip:hover { background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.5); color: #7dd3fc; transform: translateY(-2px); }
+</style>
+</head>
+<body class="text-slate-100">
+
+  <header id="topnav" class="fixed top-0 left-0 right-0 h-[70px] z-50 flex items-center">
+    <div class="w-full max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <a href="#" class="text-xl lg:text-2xl font-extrabold text-white tracking-tight">Electricians<span class="grad-text">NearYou</span></a>
+      <nav class="hidden md:flex items-center gap-6 font-bold text-sm text-white/90">
+        <a href="#" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full font-bold text-sm shadow transition">Emergency</a>
+        <a href="#pricing" class="hover:text-sky-400 transition">Pricing</a>
+        <a href="#services" class="hover:text-sky-400 transition">Services</a>
+        <a href="#about" class="hover:text-sky-400 transition">About</a>
+        <a href="#why" class="hover:text-sky-400 transition">Why Us</a>
+        <a href="#reviews" class="hover:text-sky-400 transition">Reviews</a>
+        <a href="#contact" class="hover:text-sky-400 transition">Contact</a>
+        <a href="blog.html" class="border border-sky-400/40 bg-sky-400/10 hover:bg-sky-400 hover:text-slate-950 text-white px-4 py-1.5 rounded-lg text-sm transition">📚 Blog Hub</a>
+      </nav>
+      <button id="menuBtn" class="md:hidden p-2 text-white" aria-label="Open menu">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="drawer" class="fixed inset-0 top-[70px] bg-black/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none flex justify-end">
+    <div class="panel w-[78%] max-w-xs h-full bg-[#0b111e] border-l border-sky-400/15 p-7 flex flex-col gap-1">
+      <a href="#" class="link py-3 font-bold text-red-400" style="transition-delay:0.03s">Emergency Electrician</a>
+      <a href="#pricing" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.06s">Pricing</a>
+      <a href="#services" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.09s">Services</a>
+      <a href="#about" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.12s">About</a>
+      <a href="#why" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.15s">Why Us</a>
+      <a href="#reviews" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.18s">Reviews</a>
+      <a href="blog.html" class="link py-3 font-semibold border-t border-white/5 text-sky-400" style="transition-delay:0.2s">📚 Read Blog Insights</a>
+      <a href="#contact" class="link mt-3 text-center py-3 rounded-xl font-bold text-slate-950" style="transition-delay:0.21s; background: linear-gradient(90deg,#38bdf8,#0ea5e9);">Get Free Quote</a>
+    </div>
+  </div>
+
+  <section class="relative min-h-[85vh] flex items-center text-white text-center" style="background: radial-gradient(ellipse at 50% -10%, #0e2a4a 0%, #060a14 60%);">
+    <div class="circuit-bg"></div>
+    <div class="relative z-10 container mx-auto px-4 py-32 max-w-3xl">
+      <div class="inline-flex items-center gap-2 bg-red-600/10 border border-red-500/40 text-red-300 px-5 py-2 rounded-full font-bold text-sm mb-6">
+        <span class="pulse-dot"></span> 24/7 Emergency Electrician Available Today
+      </div>
+      <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight">
+        Local Electricians in<br><span class="grad-text">Poole, Bournemouth &amp; Christchurch</span>
+      </h1>
+      <p class="text-lg md:text-xl max-w-2xl mx-auto mb-10 text-slate-300 font-medium">
+        Our fully qualified and insured electricians provide NICEIC certification, emergency callouts, rewiring, fuse board upgrades, EV charger installation, and landlord safety surveys across Dorset.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+        <a href="#contact" class="glow-btn bg-gradient-to-r from-sky-400 to-sky-500 text-slate-950 px-8 py-4 rounded-full font-bold text-lg transition hover:-translate-y-0.5">Get Free Quote</a>
+        <a href="tel:07711261478" class="bg-transparent border border-white/20 text-white px-8 py-4 rounded-full font-bold text-lg transition hover:-translate-y-0.5">Call Now</a>
+      </div>
+      <div class="flex flex-wrap justify-center gap-3 font-bold text-sm text-slate-100">
+        <div class="bg-sky-400/10 border border-sky-400/30 text-sky-300 px-4 py-2 rounded-full">✓ NICEIC Certification</div>
+        <div class="bg-sky-400/10 border border-sky-400/30 text-sky-300 px-4 py-2 rounded-full">✓ Fully Insured</div>
+        <div class="bg-sky-400/10 border border-sky-400/30 text-sky-300 px-4 py-2 rounded-full">✓ 24/7 Emergency Service</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-20 bg-slate-900 border-b border-slate-800">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <h2 class="reveal text-3xl font-extrabold text-center mb-10 tracking-tight text-white">Electricians Covering Poole, Bournemouth, Christchurch &amp; Dorset</h2>
+      <div class="space-y-6 text-md md:text-lg text-slate-300 leading-relaxed font-medium">
+        <p class="reveal">ElectriciansNearYou provides professional electrical services across Poole, Bournemouth, Christchurch and surrounding Dorset areas. Whether you need an emergency electrician, fuse board upgrade, EV charger installation, EICR certificate, lighting installation or a complete house rewire, our qualified electricians deliver safe, reliable and fully compliant electrical work for domestic and commercial customers.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="py-24 bg-slate-950 border-b border-slate-900">
+    <div class="container mx-auto px-4">
+      <h2 class="reveal text-3xl font-extrabold text-center mb-16 tracking-tight text-white">Our Professional Electrical Services</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">⚡</div>
+            <h3 class="font-bold text-white text-sm md:text-lg mb-1">Emergency Electricians</h3>
+            <p class="text-slate-400 text-xs md:text-sm mb-4">Fast response fault correction across Dorset.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Available 24/7 for electrical emergencies including power outages, tripping electrics, burning smells, faulty fuse boards and urgent repairs.<br><br><strong>Note:</strong> To arrange a callout please call us directly rather than submitting a web form.</div>
+          </div>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.06s">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">🔋</div>
+            <h3 class="font-bold text-white text-sm md:text-lg mb-1">EV Charger Installation</h3>
+            <p class="text-slate-400 text-xs md:text-sm mb-4">Home charging points, fully certified.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Professional installation of home EV charging systems with safe, compliant wiring and testing. We currently install high-quality Ohme and BG chargers.</div>
+          </div>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.12s">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">🏠</div>
+            <h3 class="font-bold text-white text-sm md:text-lg mb-1">House Rewiring</h3>
+            <p class="text-slate-400 text-xs md:text-sm mb-4">Full or partial rewires for any property.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Complete or partial rewiring services to improve safety, efficiency and compliance with the latest regulations. Contact us to check if your system truly needs a partial or full upgrade.</div>
+          </div>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.18s">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">🛡</div>
+            <h3 class="font-bold text-white text-sm md:text-lg mb-1">Fuse Board Upgrades</h3>
+            <p class="text-slate-400 text-xs md:text-sm mb-4">Modern units with surge protection.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Replacement of old boards with Amendment 3 metal consumer units packed with individual circuit RCBO switches and built-in surge protective devices.</div>
+          </div>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.24s">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">💡</div>
+            <h3 class="font-bold text-white text-sm md:text-lg mb-1">Lighting Installation</h3>
+            <p class="text-slate-400 text-xs md:text-sm mb-4">Indoor, outdoor, LED and security beams.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Installation and replacement of ceiling lights, spotlights, LED upgrades, garden configurations, and external security lights tailored around your premises.</div>
+          </div>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.3s">
+          <div>
+            <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">🔌</div>
+            <h3 class="font-bold text-white text-sm md:text-lg mb-1">Accessory Replacements</h3>
+            <p class="text-slate-400 text-xs md:text-sm mb-4">Sockets, switches, isolators, cooker points.</p>
+          </div>
+          <div>
+            <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Replacing old or broken fittings safely. We also offer Air Flow testing to improve air quality and help keep damp and humidity out of your property.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="py-24 bg-slate-900 border-b border-slate-950">
+    <div class="container mx-auto px-4 max-w-6xl">
+      <h2 class="reveal text-3xl font-extrabold text-white mb-10 tracking-tight text-center">About Our Team</h2>
+      <div class="grid lg:grid-cols-2 gap-6 mb-8">
+        <div class="reveal-left bg-[#0b111e] border border-white/6 rounded-2xl p-5">
+          <h3 class="text-xl font-extrabold text-white mb-1">Jordan H.</h3>
+          <div class="text-xs font-bold text-sky-400 uppercase tracking-wider mb-3">Co Founder — Electrical Tech</div>
+          <p class="text-sm text-slate-300 leading-relaxed">I have over 10 years of experience in the trade. I focus on emergency callouts, fault finding, and electrical safety inspections (EICRs).</p>
+        </div>
+        <div class="reveal-right bg-[#0b111e] border border-white/6 rounded-2xl p-5">
+          <h3 class="text-xl font-extrabold text-white mb-1">Jordan M.</h3>
+          <div class="text-xs font-bold text-sky-400 uppercase tracking-wider mb-3">Co Founder — Electrical Installer</div>
+          <p class="text-sm text-slate-300 leading-relaxed">I've been working as a qualified domestic and commercial electrician for over 6 years, handling rewires and large installation projects.</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+        <div class="reveal-scale bg-white/[0.03] border border-sky-400/15 rounded-xl p-5 text-center">
+          <div class="stat-num grad-text text-3xl font-black mb-1" data-count="16" data-suffix="+">0</div>
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Years Experience</div>
+        </div>
+        <div class="reveal-scale bg-white/[0.03] border border-sky-400/15 rounded-xl p-5 text-center" style="transition-delay:0.1s">
+          <div class="stat-num grad-text text-3xl font-black mb-1" data-count="200" data-suffix="+">0</div>
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Happy Clients</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="why" class="py-24 bg-slate-950 border-b border-slate-900">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <h2 class="reveal text-3xl font-extrabold text-center mb-12 tracking-tight text-white">Why Choose Us?</h2>
+      <div class="grid gap-5 md:grid-cols-3 max-w-3xl mx-auto">
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-xl">
+          <h3 class="font-bold text-lg text-sky-400 mb-2">⚡ Fast Response Times</h3>
+          <p class="text-sm text-slate-300 leading-relaxed">Local engineers reach you quickly for emergency callouts across Dorset.</p>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-xl" style="transition-delay:0.08s">
+          <h3 class="font-bold text-lg text-sky-400 mb-2">🛡 NICEIC Registered</h3>
+          <p class="text-sm text-slate-300 leading-relaxed">Every job is qualified, insured, and signed off to current UK regulations.</p>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-xl" style="transition-delay:0.16s">
+          <h3 class="font-bold text-lg text-sky-400 mb-2">£ Honest Upfront Pricing</h3>
+          <p class="text-sm text-slate-300 leading-relaxed">Clear itemised quotes before any work starts — no surprises.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="reviews" class="py-24 bg-slate-900 border-b border-slate-950">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <h2 class="reveal text-3xl font-extrabold text-center mb-12 tracking-tight text-white">What Our Customers Say</h2>
+      <div class="reveal rounded-2xl overflow-hidden border border-white/6">
+        <iframe src="https://widgets.sociablekit.com/google-reviews/iframe/25684459" frameborder="0" width="100%" height="560px" loading="lazy" title="Google Reviews Module"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="py-24 bg-slate-950 border-b border-slate-900">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <h2 class="reveal text-3xl font-extrabold text-center mb-3 tracking-tight text-white">Estimated Electrical Pricing</h2>
+      <p class="reveal text-center text-sm text-slate-400 max-w-2xl mx-auto mb-16 font-medium">Standard estimates, including VAT, for common electrical jobs across Poole and Bournemouth.</p>
+      <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3 mb-16">
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-2xl">
+          <h4 class="font-bold text-white text-lg mb-1">Emergency Callout</h4>
+          <div class="grad-text text-2xl font-black mb-3">From £100</div>
+          <p class="text-xs text-slate-300">Fast response for fault finding and urgent safety fixes.</p>
+        </div>
+        <div class="glow-card glow-gold reveal relative bg-[#0b111e] border-2 border-amber-400/50 p-6 rounded-2xl" style="transition-delay:0.06s">
+          <div class="absolute -top-3 left-5 bg-amber-400 text-amber-950 text-[10px] font-extrabold px-3 py-1 rounded-full tracking-wide">Most Requested</div>
+          <h4 class="font-bold text-white text-lg mb-1">Fuseboard Upgrade</h4>
+          <div class="grad-text text-2xl font-black mb-3">From £450</div>
+          <p class="text-xs text-slate-300">Modern metal consumer unit with surge protection.</p>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-2xl" style="transition-delay:0.12s">
+          <h4 class="font-bold text-white text-lg mb-1">EV Charger Install</h4>
+          <div class="grad-text text-2xl font-black mb-3">From £850</div>
+          <p class="text-xs text-slate-300">Supply and safe installation with full certs.</p>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-2xl" style="transition-delay:0.18s">
+          <h4 class="font-bold text-white text-lg mb-1">EICR Certificate</h4>
+          <div class="grad-text text-2xl font-black mb-3">From £140</div>
+          <p class="text-xs text-slate-300">Condition testing reports and safety stamps.</p>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-2xl" style="transition-delay:0.24s">
+          <h4 class="font-bold text-white text-lg mb-1">Accessory Fitting</h4>
+          <div class="grad-text text-2xl font-black mb-3">From £60</div>
+          <p class="text-xs text-slate-300">Replacing sockets, switches and light fittings.</p>
+        </div>
+        <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-2xl" style="transition-delay:0.3s">
+          <h4 class="font-bold text-white text-lg mb-1">Full House Rewire</h4>
+          <div class="grad-text text-2xl font-black mb-3">From £3,500</div>
+          <p class="text-xs text-slate-300">Complete rewiring for renovations and safety upgrades.</p>
+        </div>
+      </div>
+
+      <div class="border-t border-white/6 pt-16 max-w-4xl mx-auto">
+        <h3 class="reveal text-2xl font-extrabold text-center mb-2 text-white tracking-tight">Use Our Free Quotation Tools</h3>
+        <p class="reveal text-center text-xs text-slate-400 mb-10">Choose a tool to get a quick budget estimate for your job.</p>
+        <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 justify-center">
+          <a href="Calculators/Fuseboard-Calculator.html" class="reveal flex items-center justify-between p-4 bg-[#0b111e] border border-white/8 hover:border-sky-400/50 rounded-xl font-bold text-sm text-white hover:text-sky-300 transition">
+            <span>Consumer Unit Upgrade</span> <span>⚡</span>
+          </a>
+          <a href="Calculators/EV-Calculator.html" class="reveal flex items-center justify-between p-4 bg-[#0b111e] border border-white/8 hover:border-sky-400/50 rounded-xl font-bold text-sm text-white hover:text-sky-300 transition" style="transition-delay:0.06s">
+            <span>EV Charger Point</span> <span>🚗</span>
+          </a>
+          <a href="Calculators/Accessory-Calculator.html" class="reveal flex items-center justify-between p-4 bg-[#0b111e] border border-white/8 hover:border-sky-400/50 rounded-xl font-bold text-sm text-white hover:text-sky-300 transition" style="transition-delay:0.12s">
+            <span>Switches &amp; Sockets</span> <span>🔌</span>
+          </a>
+          <a href="Calculators/Lighting-Calculator.html" class="reveal flex items-center justify-between p-4 bg-[#0b111e] border border-white/8 hover:border-sky-400/50 rounded-xl font-bold text-sm text-white hover:text-sky-300 transition" style="transition-delay:0.18s">
+            <span>Lighting Indoor/Outdoor</span> <span>💡</span>
+          </a>
+          <a href="Calculators/EICR-Calculator.html" class="reveal flex items-center justify-between p-4 bg-[#0b111e] border border-white/8 hover:border-sky-400/50 rounded-xl font-bold text-sm text-white hover:text-sky-300 transition sm:col-span-2 md:col-span-1" style="transition-delay:0.24s">
+            <span>EICR Safety Check</span> <span>📋</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="areas" class="py-24 bg-slate-900 border-b border-slate-950 text-center">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <h2 class="reveal text-3xl font-extrabold mb-10 tracking-tight text-white">Our Service Areas</h2>
+      <div class="flex flex-wrap justify-center gap-3">
+        <div class="area-chip reveal bg-[#0b111e] border border-white/8 px-6 py-3 rounded-xl font-bold text-sm cursor-pointer">📍 Poole</div>
+        <div class="area-chip reveal bg-[#0b111e] border border-white/8 px-6 py-3 rounded-xl font-bold text-sm cursor-pointer" style="transition-delay:0.04s">📍 Bournemouth</div>
+        <div class="area-chip reveal bg-[#0b111e] border border-white/8 px-6 py-3 rounded-xl font-bold text-sm cursor-pointer" style="transition-delay:0.08s">📍 Christchurch</div>
+        <div class="area-chip reveal bg-[#0b111e] border border-white/8 px-6 py-3 rounded-xl font-bold text-sm cursor-pointer" style="transition-delay:0.12s">📍 Wimborne</div>
+        <div class="area-chip reveal bg-[#0b111e] border border-white/8 px-6 py-3 rounded-xl font-bold text-sm cursor-pointer" style="transition-delay:0.16s">📍 Ferndown</div>
+        <div class="area-chip reveal bg-[#0b111e] border border-white/8 px-6 py-3 rounded-xl font-bold text-sm cursor-pointer" style="transition-delay:0.2s">📍 Ringwood</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="py-24 bg-slate-950">
+    <div class="container mx-auto px-4 max-w-2xl">
+      <div class="reveal bg-[#0b111e] border border-sky-400/15 rounded-3xl p-8 md:p-10">
+        <h2 class="text-3xl font-black text-center mb-2 tracking-tight">Request a Free Quote</h2>
+        <p class="text-center text-xs text-slate-400 mb-8">We'll get back to you shortly with a free estimate.</p>
+
+        <form action="https://formspree.io/f/mlgvwwpv" method="POST" class="space-y-4">
+          <input type="text" name="_gotcha" style="display:none" />
+          <input type="hidden" name="_next" value="thankyou.html" />
+          <input type="hidden" name="landing_url" id="landingUrlField" />
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <input type="text" name="name" required placeholder="Full Name" class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 text-sm font-medium" />
+            <input type="email" name="email" required placeholder="Email Address" class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 text-sm font-medium" />
+          </div>
+
+          <input type="text" name="address" required placeholder="Home Address" class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 text-sm font-medium" />
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <input type="tel" name="phone" required placeholder="Phone Number" class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 text-sm font-medium" />
+            <select name="service" required class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-sm font-medium">
+              <option value="">Select Electrical Service</option>
+              <option>Emergency Electricians</option>
+              <option>EV Charger Installation</option>
+              <option>House Rewiring</option>
+              <option>Fuse Board Upgrades</option>
+              <option>EICR Certificates</option>
+            </select>
+          </div>
+
+          <textarea name="message" rows="4" required placeholder="Tell us about the job you need doing..." class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 text-sm font-medium"></textarea>
+
+          <button type="submit" class="glow-btn w-full py-4 rounded-xl font-black tracking-wider text-sm uppercase text-slate-950 transition hover:-translate-y-0.5" style="background: linear-gradient(90deg,#38bdf8,#d4af37);">Send Form Request</button>
+        </form>
+
+        <div class="mt-8 pt-8 border-t border-slate-800 text-center text-xs text-slate-400 space-y-1.5">
+          <div>Jordan H: <a href="tel:07711261478" class="text-sky-400 hover:underline">07711261478</a></div>
+          <div>Jordan M: <a href="tel:07907056422" class="text-sky-400 hover:underline">07907056422</a></div>
+          <div>Office Email: <a href="mailto:electriciansnearyou@gmail.com" class="text-sky-400 hover:underline">electriciansnearyou@gmail.com</a></div>
+          <div class="pt-2 text-slate-500">Regular Desk Hours: Mon - Fri (08:00 - 18:00) | Out-Of-Hours Emergency Callouts: 24 Hours</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-[#0a0e1a] rounded-t-[32px] text-white py-16 border-t border-white/6">
+    <div class="container mx-auto px-4 max-w-6xl grid md:grid-cols-3 gap-10">
+      <div>
+        <h3 class="text-xl font-black mb-3 grad-text">ElectriciansNearYou</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">Professional electrical services, repairs, and compliance certifications handled across Poole, Bournemouth, and nearby areas.</p>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-300 mb-4 border-b border-white/6 pb-1">Quick Links</h4>
+        <div class="space-y-2.5 text-sm font-semibold">
+          <a href="#services" class="block text-slate-400 hover:text-sky-400 transition">Our Services</a>
+          <a href="#about" class="block text-slate-400 hover:text-sky-400 transition">Team Bios</a>
+          <a href="#contact" class="block text-slate-400 hover:text-sky-400 transition">Get A Quote</a>
+          <a href="blog.html" class="block text-sky-400 hover:underline transition">📚 Bright Spark Blog</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-300 mb-4 border-b border-white/6 pb-1">Areas Covered</h4>
+        <div class="space-y-2 text-xs font-medium text-slate-400 grid grid-cols-2 gap-x-2">
+          <a href="#areas" class="hover:text-sky-400 transition">Poole</a>
+          <a href="#areas" class="hover:text-sky-400 transition">Bournemouth</a>
+          <a href="#areas" class="hover:text-sky-400 transition">Christchurch</a>
+          <a href="#areas" class="hover:text-sky-400 transition">Wimborne</a>
+          <a href="#areas" class="hover:text-sky-400 transition">Ferndown</a>
+          <a href="#areas" class="hover:text-sky-400 transition">Ringwood</a>
+        </div>
+      </div>
+    </div>
+    <div class="text-center text-slate-500 mt-14 text-xs tracking-wide">&copy; 2026 ElectriciansNearYou. All Rights Reserved. Fully Certified BS7671 Systems.</div>
+  </footer>
+
+  <!-- mobile floating action buttons (real position: fixed) -->
+  <div class="fab-row">
+    <a href="tel:07711261478" class="fab emergency">🚨</a>
+    <div class="fab contact" id="openModalMobile">📬</div>
+  </div>
+  <!-- desktop sticky button -->
+  <div class="desktop-fab">
+    <button id="openModalDesktop" class="w-full h-[50px] rounded-2xl border border-white/25 font-black text-sm tracking-wide text-white shadow-lg transition hover:-translate-y-0.5" style="background:#dc2626;">🚨 24/7 Contact</button>
+  </div>
+
+  <!-- back to top -->
+  <div id="backTop">↑</div>
+
+  <!-- contact modal -->
+  <div id="contactModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-[70] flex items-center justify-center opacity-0 pointer-events-none">
+    <div class="panel bg-slate-900/95 backdrop-blur rounded-3xl border border-slate-800 w-full max-w-[420px] mx-4 p-8 relative text-white">
+      <button id="closeModal" class="absolute top-5 right-5 text-2xl text-slate-400 hover:text-white">&times;</button>
+      <h3 class="text-xl font-extrabold mb-5 border-b border-slate-800 pb-3 flex items-center gap-2 text-sky-400">⚡ 24/7 Contacts</h3>
+      <a href="tel:07711261478" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-3 font-semibold hover:border-sky-400 transition">Jordan H. <span class="text-sm text-slate-400">07711261478</span></a>
+      <a href="tel:07907056422" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-4 font-semibold hover:border-sky-400 transition">Jordan M. <span class="text-sm text-slate-400">07907056422</span></a>
+      <a href="mailto:electriciansnearyou@gmail.com" class="flex justify-between items-center bg-white text-slate-950 p-4 rounded-xl font-bold hover:bg-gray-100 transition">Email Desk <span class="text-xs text-slate-600 font-semibold">electriciansnearyou@gmail.com</span></a>
+    </div>
+  </div>
+
+<script>
+  // service accordion toggles
+  document.querySelectorAll(".service-toggle").forEach(button => {
+    button.addEventListener("click", () => {
+      const content = button.nextElementSibling;
+      content.classList.toggle("hidden");
+      button.textContent = content.classList.contains("hidden") ? "Learn More" : "Show Less";
+    });
+  });
+
+  // landing URL capture for ad tracking
+  const landingUrlField = document.getElementById("landingUrlField");
+  if (landingUrlField) landingUrlField.value = window.location.href;
+
+  // scroll-reactive nav
+  const topnav = document.getElementById("topnav");
+  window.addEventListener("scroll", () => {
+    topnav.classList.toggle("scrolled", window.scrollY > 30);
+    document.getElementById("backTop").classList.toggle("show", window.scrollY > 500);
+  });
+
+  // mobile drawer
+  const menuBtn = document.getElementById("menuBtn");
+  const drawer = document.getElementById("drawer");
+  menuBtn.addEventListener("click", () => {
+    drawer.classList.toggle("open");
+    drawer.classList.toggle("opacity-0");
+    drawer.classList.toggle("pointer-events-none");
+  });
+  drawer.querySelectorAll(".link").forEach(l => l.addEventListener("click", () => {
+    drawer.classList.remove("open"); drawer.classList.add("opacity-0", "pointer-events-none");
+  }));
+
+  // contact modal
+  const contactModal = document.getElementById("contactModal");
+  function openModal() { contactModal.classList.add("open"); contactModal.classList.remove("opacity-0", "pointer-events-none"); }
+  function closeModalFn() { contactModal.classList.remove("open"); contactModal.classList.add("opacity-0", "pointer-events-none"); }
+  document.getElementById("openModalMobile").addEventListener("click", openModal);
+  document.getElementById("openModalDesktop").addEventListener("click", openModal);
+  document.getElementById("closeModal").addEventListener("click", closeModalFn);
+  contactModal.addEventListener("click", (e) => { if (e.target === contactModal) closeModalFn(); });
+
+  // back to top
+  document.getElementById("backTop").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  // reveal on scroll
+  const revealEls = document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .reveal-scale");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add("in"); io.unobserve(entry.target); } });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+
+  // count-up stats
+  const counters = document.querySelectorAll(".stat-num");
+  const countIo = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || "";
+      const duration = 1200;
+      const start = performance.now();
+      function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(eased * target) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+      countIo.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(el => countIo.observe(el));
+</script>
+
+</body>
+</html>
