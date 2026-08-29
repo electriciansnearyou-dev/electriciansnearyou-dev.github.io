@@ -132,14 +132,12 @@
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
 
-  <!-- FIXED NAVBAR -->
   <header class="top-navbar fixed top-0 left-0 right-0 h-[70px] z-50 flex items-center shadow-lg">
     <div class="w-full max-w-7xl mx-auto px-4 flex items-center justify-between">
       <a href="#" class="text-xl lg:text-2xl font-extrabold text-white tracking-tight">
         ElectriciansNearYou
       </a>
 
-      <!-- Desktop Navigation row -->
       <nav class="hidden md:flex items-center gap-5 lg:gap-6 font-bold text-sm lg:text-base text-white/90">
         <a href="emergency-electrician.html" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full font-bold text-sm shadow transition">
           🚨 Emergency
@@ -156,7 +154,6 @@
         </a>
       </nav>
 
-      <!-- Mobile Menu Button -->
       <button id="menu-btn" class="md:hidden p-2 text-white" aria-label="Open Menu">
         <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -165,7 +162,6 @@
     </div>
   </header>
 
-  <!-- MOBILE NAVIGATION DRAWER -->
   <div id="mobile-nav" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex-col items-center justify-start pt-28 px-6">
     <div class="relative bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-8 flex flex-col gap-5 text-xl font-bold w-full max-w-sm text-center max-h-[75vh] overflow-y-auto text-white">
       <button id="close-menu" class="absolute top-4 right-4 text-3xl font-bold text-slate-400 hover:text-white">&times;</button>
@@ -182,23 +178,20 @@
     </div>
   </div>
 
-  <!-- MOBILE ACTION CONTROLS -->
   <div class="mobile-footer-grid">
     <a href="tel:07711261478" class="mobile-action-circle circle-btn-emergency">🚨</a>
-    <div class="mobile-action-circle circle-btn-contact" onclick="toggleDesktopContactModal(true)">📬</div>
+    <div class="mobile-action-circle circle-btn-contact" onclick="toggleContactModal(true)">📬</div>
   </div>
 
-  <!-- DESKTOP STICKY BUTTON -->
   <div class="sticky-footer-bar">
-    <button class="desktop-footer-single" onclick="toggleDesktopContactModal(true)">
+    <button class="desktop-footer-single" onclick="toggleContactModal(true)">
         🚨 24/7 Contact
     </button>
   </div>
 
-  <!-- CONTACT OVERLAY PANEL MODAL -->
-  <div class="modal-overlay-contact fixed inset-0 bg-black/60 backdrop-blur-md z-[2001] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" id="contactModal" onclick="toggleDesktopContactModal(false)">
+  <div class="contact-modal-overlay fixed inset-0 bg-black/60 backdrop-blur-md z-[2001] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" id="contactModal" onclick="toggleContactModal(false)">
     <div class="bg-slate-900/95 backdrop-blur rounded-3xl border border-slate-800 w-full max-w-[440px] p-8 shadow-2xl relative text-white" onclick="event.stopPropagation()">
-        <button class="absolute top-5 right-5 text-2xl text-slate-400 hover:text-white" onclick="toggleDesktopContactModal(false)">&times;</button>
+        <button class="absolute top-5 right-5 text-2xl text-slate-400 hover:text-white" onclick="toggleContactModal(false)">&times;</button>
         <h3 class="text-xl font-extrabold mb-5 border-b border-slate-800 pb-3 flex items-center gap-2 text-[#c59b27]">⚡ 24/7 Contacts</h3>
         <a href="tel:07711261478" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-3 font-semibold hover:border-[#c59b27] hover:bg-slate-800 transition">Jordan H. <span class="text-sm text-slate-400">07711261478</span></a>
         <a href="tel:07907056422" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-4 font-semibold hover:border-[#c59b27] hover:bg-slate-800 transition">Jordan M. <span class="text-sm text-slate-400">07907056422</span></a>
@@ -206,7 +199,6 @@
     </div>
   </div>
 
-  <!-- HERO HEADER SECTION -->
   <section class="relative min-h-[90vh] flex items-center text-white bg-cover bg-center" style="background-image: url('Assets/20240412_212651.jpg');">
     <div class="absolute inset-0 bg-black/70"></div>
     <div class="relative z-10 container mx-auto px-4 py-32 text-center">
@@ -237,7 +229,6 @@
     </div>
   </section>
 
-  <!-- SECTION 1: MARKETING INTRODUCTION BACKGROUND (DEEP NAVY) -->
   <section class="py-20 bg-slate-900 border-b border-slate-800">
     <div class="container mx-auto px-4 max-w-4xl">
       <h2 class="text-3xl font-extrabold text-center mb-10 tracking-tight text-white">
@@ -251,13 +242,11 @@
     </div>
   </section>
 
-  <!-- SECTION 2: SERVICES GRID BACKGROUND (CHARCOAL BLUE) -->
   <section id="services" class="py-24 bg-slate-950 border-b border-slate-900">
     <div class="container mx-auto px-4">
       <h2 class="text-3xl font-extrabold text-center mb-16 tracking-tight text-white">Our Professional Electrical Services</h2>
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
         
-        <!-- CARD 1 -->
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">⚡</div>
@@ -272,7 +261,6 @@
           </div>
         </div>
 
-        <!-- CARD 2 -->
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">🔋</div>
@@ -287,7 +275,6 @@
           </div>
         </div>
 
-        <!-- CARD 3 -->
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">🏠</div>
@@ -302,7 +289,6 @@
           </div>
         </div>
 
-        <!-- CARD 4 -->
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">🛡️</div>
@@ -317,7 +303,6 @@
           </div>
         </div>
 
-        <!-- CARD 5 -->
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">💡</div>
@@ -332,7 +317,6 @@
           </div>
         </div>
 
-        <!-- CARD 6 -->
         <div class="glass-card rounded-2xl p-6 shadow-md hover:shadow-xl transition duration-300 flex flex-col justify-between">
           <div>
             <div class="text-4xl mb-4">🔌</div>
@@ -351,7 +335,6 @@
     </div>
   </section>
 
-  <!-- SECTION 3: TEAM BIOGRAPHIES BACKGROUND (MID SLATE BLUE) -->
   <section id="about" class="py-24 bg-slate-900 border-b border-slate-950">
     <div class="container mx-auto px-4 max-w-6xl">
       <div class="grid lg:grid-cols-2 gap-12 items-center">
@@ -379,7 +362,6 @@
 
           </div>
 
-          <!-- Counter Grid -->
           <div class="grid grid-cols-2 gap-4">
             <div class="dark-glass-card p-5 rounded-xl text-center text-white">
               <div class="text-3xl font-black text-[#c59b27] mb-1">16+</div>
@@ -399,7 +381,6 @@
     </div>
   </section>
 
-  <!-- SECTION 4: WHY CHOOSE US BACKGROUND (DEEP CHARCOAL SLATE) -->
   <section id="why" class="py-24 bg-slate-950 border-b border-slate-900">
     <div class="container mx-auto px-4 max-w-5xl">
       <h2 class="text-3xl font-extrabold text-center mb-12 tracking-tight text-white">Why Choose Us?</h2>
@@ -420,7 +401,6 @@
     </div>
   </section>
 
-  <!-- SECTION 5: REVIEWS MODULE BACKGROUND (MID NAVY) -->
   <section id="reviews" class="py-24 bg-slate-900 border-b border-slate-950">
     <div class="container mx-auto px-4 max-w-4xl">
       <h2 class="text-3xl font-extrabold text-center mb-12 tracking-tight text-white">What Our Customers Say</h2>
@@ -430,11 +410,10 @@
     </div>
   </section>
 
-  <!-- SECTION 6: PRICING HUB AND NEW QUOTATION TOOLS BACKGROUND (CHARCOAL NAVY) -->
   <section id="pricing" class="py-24 bg-slate-950 border-b border-slate-900">
     <div class="container mx-auto px-4 max-w-5xl">
       <h2 class="text-3xl font-extrabold text-center mb-3 tracking-tight text-white">Estimated Electrical Pricing</h2>
-      <p class="text-center text-sm md:text-md text-slate-400 max-w-2xl mx-auto mb-16 font-medium">Below are standard estimate guidelines including VAT for common electrical jobs across Poole and Bournemouth.</p>
+      <p class="text-center text-sm md:text-md text-slate-400 max-w-2xl mx-auto mb-16 font-medium">Standard estimates, including VAT, for common electrical jobs across Poole and Bournemouth.</p>
       
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-20">
         <div class="glass-card p-6 rounded-2xl flex flex-col justify-between border border-slate-800">
@@ -481,10 +460,9 @@
         </div>
       </div>
 
-      <!-- FREE QUOTATION TOOLS MATRIX -->
       <div class="border-t border-slate-800 pt-16 max-w-4xl mx-auto">
         <h3 class="text-2xl font-extrabold text-center mb-2 text-white tracking-tight">Use Our Free Quotation Tools</h3>
-        <p class="text-center text-xs text-slate-400 mb-10 font-medium">Select a calculator tool below to quickly estimate budget guidelines for your property layout projects.</p>
+        <p class="text-center text-xs text-slate-400 mb-10 font-medium">Choose a tool to get a quick budget estimate for your job.</p>
         
         <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 justify-center">
           <a href="Calculators/Fuseboard-Calculator.html" class="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 hover:border-[#c59b27] rounded-xl font-bold text-sm text-white hover:bg-white hover:text-slate-950 transition shadow-sm">
@@ -508,7 +486,6 @@
     </div>
   </section>
 
-  <!-- SECTION 7: SERVICE COVERAGE MAP FOOTPRINT BACKGROUND (MID SLATE NAVY) -->
   <section id="areas" class="py-24 bg-slate-900 border-b border-slate-950 text-center">
     <div class="container mx-auto px-4 max-w-4xl">
       <h2 class="text-3xl font-extrabold mb-10 tracking-tight text-white">Our Service Areas</h2>
@@ -523,12 +500,11 @@
     </div>
   </section>
 
-  <!-- SECTION 8: LEAD FORM WRAPPER BACKGROUND (DEEP SLATE NAVY) -->
   <section id="contact" class="py-24 bg-slate-950">
     <div class="container mx-auto px-4 max-w-3xl">
       <div class="dark-glass-card rounded-3xl p-8 md:p-10 shadow-2xl text-white">
         <h2 class="text-3xl font-black text-center mb-2 tracking-tight">Request a Free Quote</h2>
-        <p class="text-center text-xs text-slate-400 mb-8 font-medium">Fill out your details below and we'll get back to you shortly with a free estimate.</p>
+        <p class="text-center text-xs text-slate-400 mb-8 font-medium">We'll get back to you shortly with a free estimate.</p>
         
         <form action="https://formspree.io/f/mlgvwwpv" method="POST" class="space-y-5">
           <input type="text" name="_gotcha" style="display:none" />
@@ -581,7 +557,6 @@
     </div>
   </section>
 
-  <!-- MASTER SYSTEM FOOTER (CLEANED) -->
   <footer class="dark-glass-card rounded-t-[32px] text-white py-16 border-b-0">
     <div class="container mx-auto px-4 max-w-6xl grid md:grid-cols-3 gap-10">
       <div>
@@ -617,7 +592,6 @@
     </div>
   </footer>
 
-  <!-- SYSTEM SCRIPTS -->
   <script>
     const menuBtn = document.getElementById("menu-btn");
     const closeBtn = document.getElementById("close-menu");
@@ -641,7 +615,6 @@
       link.addEventListener("click", closeMobileMenu);
     });
 
-    // Service Description Accordions
     document.querySelectorAll(".service-toggle").forEach(button => {
       button.addEventListener("click", () => {
         const content = button.nextElementSibling;
@@ -650,8 +623,7 @@
       });
     });
 
-    // Contact Directory Overlay Functions
-    function toggleDesktopContactModal(open) {
+    function toggleContactModal(open) {
         const modal = document.getElementById('contactModal');
         if (open) {
             modal.classList.add('active');
