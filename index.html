@@ -1,9 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-5MJVXSNN');</script>
+  <!-- End Google Tag Manager -->
+
 <meta charset="UTF-8" />
-<title>ElectriciansNearYou — Redesign Preview</title>
+<title>Electrician Poole & Bournemouth — 5★ NICEIC, 24/7, EICRs from £140</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="24/7 emergency electricians in Poole, Bournemouth & Christchurch. EICRs, fuse board upgrades, EV chargers, rewires and electrical repairs. NICEIC registered, fully insured, rated 5.0 from 21 reviews. Free quotes." />
+
+<link rel="canonical" href="https://electriciansnearyou.uk" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="Local Electricians in Poole, Bournemouth & Christchurch" />
+<meta property="og:description" content="24/7 emergency and domestic electricians. NICEIC registered, insured, and rated 5.0 from 21 reviews." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://electriciansnearyou.uk" />
+<meta property="og:image" content="https://electriciansnearyou.uk/Logo.png" />
+
+<link rel="icon" type="image/png" href="Logo.png">
+
+<!-- LocalBusiness Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Electrician",
+  "name": "ElectriciansNearYou",
+  "description": "Local electricians covering Poole, Bournemouth and Christchurch. 24/7 emergency callouts, EICRs, fuse board upgrades, EV charger installations, rewires and electrical repairs.",
+  "telephone": "+447711261478",
+  "email": "electriciansnearyou@gmail.com",
+  "url": "https://electriciansnearyou.uk",
+  "priceRange": "££",
+  "image": "https://electriciansnearyou.uk/Logo.png",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Poole",
+    "addressRegion": "Dorset",
+    "addressCountry": "GB"
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Poole" },
+    { "@type": "City", "name": "Bournemouth" },
+    { "@type": "City", "name": "Christchurch" }
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5.0",
+    "reviewCount": "21"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "08:00",
+      "closes": "18:00",
+      "description": "Office hours"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "opens": "00:00",
+      "closes": "23:59",
+      "description": "Emergency callout line"
+    }
+  ],
+  "sameAs": [
+    "https://www.facebook.com/profile.php?id=61572092677352",
+    "https://g.page/r/CR0naPwKfXB_EBE"
+  ]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
@@ -66,9 +138,18 @@
   /* ---- floating buttons: real fixed positioning ---- */
   .fab-row { position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 60; display: flex; justify-content: space-between; pointer-events: none; }
   @media (min-width: 992px) { .fab-row { display: none; } }
-  .fab { width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; pointer-events: auto; box-shadow: 0 8px 22px rgba(0,0,0,0.55); }
-  .fab.emergency { background: #dc2626; border: 1px solid rgba(255,255,255,0.15); }
-  .fab.contact { background: rgba(255,255,255,0.95); color: #0f172a; }
+  .fab {
+    height: 54px; border-radius: 999px; display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 0 20px; pointer-events: auto; box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+    transition: padding 0.3s ease, width 0.3s ease;
+    white-space: nowrap; overflow: hidden;
+  }
+  .fab .fab-icon { font-size: 20px; flex-shrink: 0; }
+  .fab .fab-label { font-weight: 800; font-size: 14px; transition: opacity 0.2s ease, max-width 0.3s ease; max-width: 120px; opacity: 1; }
+  .fab.compact { width: 54px; padding: 0; }
+  .fab.compact .fab-label { max-width: 0; opacity: 0; }
+  .fab.emergency { background: #dc2626; border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; }
+  .fab.contact { background: rgba(255,255,255,0.95); color: #0f172a; cursor: pointer; }
   .desktop-fab { display: none; }
   @media (min-width: 992px) {
     .desktop-fab { display: block; position: fixed; bottom: 24px; right: 30px; z-index: 60; width: 190px; }
@@ -96,6 +177,35 @@
   /* ---- chips ---- */
   .area-chip { transition: all 0.2s ease; }
   .area-chip:hover { background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.5); color: #7dd3fc; transform: translateY(-2px); }
+
+  /* ---- recent work grid ---- */
+  .work-card { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3; }
+  .work-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+  .work-card:hover img { transform: scale(1.06); }
+  .work-caption {
+    position: absolute; inset: auto 0 0 0; padding: 14px 12px 10px;
+    background: linear-gradient(0deg, rgba(6,10,20,0.92), transparent);
+    font-size: 12px; font-weight: 700; color: #e2e8f0;
+  }
+
+  /* ---- review stack carousel ---- */
+  .review-stack { position: relative; height: 280px; max-width: 480px; margin: 0 auto; touch-action: pan-y; }
+  .review-card-stack {
+    position: absolute; inset: 0; background: #0b111e; border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px; padding: 24px; display: flex; flex-direction: column;
+    transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease, filter 0.4s ease;
+    cursor: grab; user-select: none;
+  }
+  .review-card-stack:active { cursor: grabbing; }
+  .review-card-stack .stars { color: #d4af37; font-size: 14px; margin-bottom: 10px; }
+  .review-card-stack .quote { font-size: 14px; color: #cbd5e1; line-height: 1.55; flex-grow: 1; overflow: hidden; }
+  .review-card-stack .attribution { font-size: 12px; color: #64748b; font-weight: 700; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .review-nav-btn {
+    width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; display: flex; align-items: center;
+    justify-content: center; font-size: 16px; transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .review-nav-btn:hover { border-color: rgba(56,189,248,0.5); background: rgba(56,189,248,0.08); }
 </style>
 </head>
 <body class="text-slate-100">
@@ -147,12 +257,16 @@
       <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
         <a href="#contact" class="glow-btn bg-gradient-to-r from-sky-400 to-sky-500 text-slate-950 px-8 py-4 rounded-full font-bold text-lg transition hover:-translate-y-0.5">Get Free Quote</a>
         <a href="tel:07711261478" class="bg-transparent border border-white/20 text-white px-8 py-4 rounded-full font-bold text-lg transition hover:-translate-y-0.5">Call Now</a>
+        <a href="https://wa.me/447711261478" target="_blank" rel="noopener" class="bg-emerald-500/10 border border-emerald-400/40 text-emerald-300 px-8 py-4 rounded-full font-bold text-lg transition hover:-translate-y-0.5 hover:bg-emerald-500/20">💬 WhatsApp</a>
       </div>
       <div class="flex flex-wrap justify-center gap-3 font-bold text-sm text-slate-100">
         <div class="bg-sky-400/10 border border-sky-400/30 text-sky-300 px-4 py-2 rounded-full">✓ NICEIC Certification</div>
         <div class="bg-sky-400/10 border border-sky-400/30 text-sky-300 px-4 py-2 rounded-full">✓ Fully Insured</div>
         <div class="bg-sky-400/10 border border-sky-400/30 text-sky-300 px-4 py-2 rounded-full">✓ 24/7 Emergency Service</div>
       </div>
+      <a href="https://g.page/r/CR0naPwKfXB_EBE" target="_blank" rel="noopener" class="inline-flex items-center gap-2 mt-5 text-amber-400 font-bold text-sm hover:underline">
+        <span>★★★★★</span><span class="text-slate-300">Rated 5 Stars on Google from 21 Reviews</span>
+      </a>
     </div>
   </section>
 
@@ -287,11 +401,102 @@
     </div>
   </section>
 
+  <section id="recent-work" class="py-24 bg-slate-900 border-b border-slate-950">
+    <div class="container mx-auto px-4 max-w-5xl">
+      <h2 class="reveal text-3xl font-extrabold text-center mb-3 tracking-tight text-white">Recent Work</h2>
+      <p class="reveal text-center text-sm text-slate-400 max-w-xl mx-auto mb-12">A few jobs we've completed recently across Dorset.</p>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div class="work-card reveal">
+          <img src="Assets/recent-work/consumer-unit-circuits-01.jpg" alt="Labelled consumer unit circuits installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <div class="work-caption">Consumer Unit Upgrade</div>
+        </div>
+        <div class="work-card reveal" style="transition-delay:0.06s">
+          <img src="Assets/recent-work/fusebox-consumer-unit-closeup-01.jpg" alt="FuseBox consumer unit installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <div class="work-caption">Fuse Board Upgrade</div>
+        </div>
+        <div class="work-card reveal" style="transition-delay:0.12s">
+          <img src="Assets/recent-work/ev-charger-driveway-install-01.jpg" alt="Home EV charger installed on a driveway by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <div class="work-caption">EV Charger Installation</div>
+        </div>
+        <div class="work-card reveal" style="transition-delay:0.18s">
+          <img src="Assets/recent-work/ev-charger-install-closeup-01.jpg" alt="Close-up of a home EV charger installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <div class="work-caption">EV Charger Installation</div>
+        </div>
+        <div class="work-card reveal" style="transition-delay:0.24s">
+          <img src="Assets/recent-work/exterior-wall-lantern-install-01.jpg" alt="Exterior wall lantern light installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <div class="work-caption">Lighting Installation</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="reviews" class="py-24 bg-slate-900 border-b border-slate-950">
-    <div class="container mx-auto px-4 max-w-4xl">
-      <h2 class="reveal text-3xl font-extrabold text-center mb-12 tracking-tight text-white">What Our Customers Say</h2>
-      <div class="reveal rounded-2xl overflow-hidden border border-white/6">
-        <iframe src="https://widgets.sociablekit.com/google-reviews/iframe/25684459" frameborder="0" width="100%" height="560px" loading="lazy" title="Google Reviews Module"></iframe>
+    <div class="container mx-auto px-4 max-w-5xl">
+      <h2 class="reveal text-3xl font-extrabold text-center mb-3 tracking-tight text-white">What Our Customers Say</h2>
+      <div class="reveal flex items-center justify-center gap-2 mb-10 text-amber-400 font-bold text-sm">
+        <span>★★★★★</span><span class="text-slate-300">5.0 from 21 Google reviews</span>
+      </div>
+
+      <div class="reveal review-stack" id="reviewStack">
+        <div class="review-card-stack" data-review>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"100% would recommend to anyone looking for any electrical work, the service I received was amazing. Very reasonably priced and reliable. Will definitely be using their services again."</p>
+          <div class="attribution">Luke Stickley · 3 months ago</div>
+        </div>
+        <div class="review-card-stack" data-review>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"They fixed our outdoor lamp without any problems. Very punctual and professional. Highly recommended."</p>
+          <div class="attribution">Berislav Poje · 3 months ago</div>
+        </div>
+        <div class="review-card-stack" data-review>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"Great service. Professional, quick and efficient job. Highly recommend."</p>
+          <div class="attribution">Alex Middleton · 3 months ago</div>
+        </div>
+        <div class="review-card-stack" data-review>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"Top service, top job, highly recommend."</p>
+          <div class="attribution">Tommy Walsh · 3 months ago</div>
+        </div>
+        <div class="review-card-stack" data-review>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"Reliable, reasonable and very friendly."</p>
+          <div class="attribution">Joanne Hutchison · 3 months ago</div>
+        </div>
+        <div class="review-card-stack" data-review>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"Jordan was great! Really responsive and quick with our request. Would recommend him for any electrical needs."</p>
+          <div class="attribution">Ryan · 1 month ago</div>
+        </div>
+        <div class="review-card-stack" data-review>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"100% would recommend to friends and family or to anyone who needs any work doing... Outstanding work!"</p>
+          <div class="attribution">Elite Dous Vlogs · 1 month ago</div>
+        </div>
+        <div class="review-card-stack" data-review>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"The lads were brilliant and professional. Very fair price for a full rewire, quick and trustworthy. Will definitely hire again."</p>
+          <div class="attribution">Chloe Goldsworthy · 3 months ago</div>
+        </div>
+        <div class="review-card-stack" data-review>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"Jordan was very helpful and completed the task quickly. Will definitely use Jordan again."</p>
+          <div class="attribution">Dorset Surveyors · 1 month ago</div>
+        </div>
+        <div class="review-card-stack" data-review>
+          <div class="stars">★★★★★</div>
+          <p class="quote">"Efficient, well mannered and professional 5/5. Would hire again without hesitation."</p>
+          <div class="attribution">Harry N · 3 months ago</div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center gap-5 mt-6">
+        <button class="review-nav-btn" id="reviewPrev" aria-label="Previous review">←</button>
+        <button class="review-nav-btn" id="reviewNext" aria-label="Next review">→</button>
+      </div>
+
+      <div class="reveal text-center mt-8">
+        <a href="https://g.page/r/CR0naPwKfXB_EBE" target="_blank" rel="noopener" class="inline-flex items-center gap-2 border border-sky-400/40 hover:bg-sky-400 hover:text-slate-950 text-sky-300 px-6 py-3 rounded-full font-bold text-sm transition">View More Reviews on Google →</a>
       </div>
     </div>
   </section>
@@ -388,7 +593,16 @@
             <input type="email" name="email" required placeholder="Email Address" class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 text-sm font-medium" />
           </div>
 
-          <input type="text" name="address" required placeholder="Home Address" class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 text-sm font-medium" />
+          <select name="area" required class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-sm font-medium">
+            <option value="">Select Your Area</option>
+            <option>Poole</option>
+            <option>Bournemouth</option>
+            <option>Christchurch</option>
+            <option>Wimborne</option>
+            <option>Ferndown</option>
+            <option>Ringwood</option>
+            <option>Other</option>
+          </select>
 
           <div class="grid sm:grid-cols-2 gap-4">
             <input type="tel" name="phone" required placeholder="Phone Number" class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 text-sm font-medium" />
@@ -398,18 +612,21 @@
               <option>EV Charger Installation</option>
               <option>House Rewiring</option>
               <option>Fuse Board Upgrades</option>
+              <option>Lighting Installation</option>
+              <option>Accessory Replacements</option>
               <option>EICR Certificates</option>
+              <option>Other</option>
             </select>
           </div>
 
-          <textarea name="message" rows="4" required placeholder="Tell us about the job you need doing..." class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 text-sm font-medium"></textarea>
+          <textarea name="message" rows="4" placeholder="Tell us about the job you need doing... (optional)" class="glow-input w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 text-white placeholder-slate-500 text-sm font-medium"></textarea>
 
           <button type="submit" class="glow-btn w-full py-4 rounded-xl font-black tracking-wider text-sm uppercase text-slate-950 transition hover:-translate-y-0.5" style="background: linear-gradient(90deg,#38bdf8,#d4af37);">Send Form Request</button>
         </form>
 
         <div class="mt-8 pt-8 border-t border-slate-800 text-center text-xs text-slate-400 space-y-1.5">
-          <div>Jordan H: <a href="tel:07711261478" class="text-sky-400 hover:underline">07711261478</a></div>
-          <div>Jordan M: <a href="tel:07907056422" class="text-sky-400 hover:underline">07907056422</a></div>
+          <div>Call Us: <a href="tel:07711261478" class="text-sky-400 hover:underline">07711261478</a></div>
+          <div>WhatsApp: <a href="https://wa.me/447711261478" target="_blank" rel="noopener" class="text-sky-400 hover:underline">07711261478</a></div>
           <div>Office Email: <a href="mailto:electriciansnearyou@gmail.com" class="text-sky-400 hover:underline">electriciansnearyou@gmail.com</a></div>
           <div class="pt-2 text-slate-500">Regular Desk Hours: Mon - Fri (08:00 - 18:00) | Out-Of-Hours Emergency Callouts: 24 Hours</div>
         </div>
@@ -449,8 +666,12 @@
 
   <!-- mobile floating action buttons (real position: fixed) -->
   <div class="fab-row">
-    <a href="tel:07711261478" class="fab emergency">🚨</a>
-    <div class="fab contact" id="openModalMobile">📬</div>
+    <a href="tel:07711261478" id="fabEmergency" class="fab emergency" aria-label="Call for emergency electrician">
+      <span class="fab-icon">🚨</span><span class="fab-label">Emergency</span>
+    </a>
+    <div id="fabContact" class="fab contact" aria-label="Open contact options">
+      <span class="fab-icon">📬</span><span class="fab-label">Contact Us</span>
+    </div>
   </div>
   <!-- desktop sticky button -->
   <div class="desktop-fab">
@@ -465,8 +686,8 @@
     <div class="panel bg-slate-900/95 backdrop-blur rounded-3xl border border-slate-800 w-full max-w-[420px] mx-4 p-8 relative text-white">
       <button id="closeModal" class="absolute top-5 right-5 text-2xl text-slate-400 hover:text-white">&times;</button>
       <h3 class="text-xl font-extrabold mb-5 border-b border-slate-800 pb-3 flex items-center gap-2 text-sky-400">⚡ 24/7 Contacts</h3>
-      <a href="tel:07711261478" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-3 font-semibold hover:border-sky-400 transition">Jordan H. <span class="text-sm text-slate-400">07711261478</span></a>
-      <a href="tel:07907056422" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-4 font-semibold hover:border-sky-400 transition">Jordan M. <span class="text-sm text-slate-400">07907056422</span></a>
+      <a href="tel:07711261478" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-3 font-semibold hover:border-sky-400 transition">📞 Call Us <span class="text-sm text-slate-400">07711261478</span></a>
+      <a href="https://wa.me/447711261478" target="_blank" rel="noopener" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-4 font-semibold hover:border-emerald-400 transition">💬 WhatsApp Us <span class="text-sm text-slate-400">07711261478</span></a>
       <a href="mailto:electriciansnearyou@gmail.com" class="flex justify-between items-center bg-white text-slate-950 p-4 rounded-xl font-bold hover:bg-gray-100 transition">Email Desk <span class="text-xs text-slate-600 font-semibold">electriciansnearyou@gmail.com</span></a>
     </div>
   </div>
@@ -481,6 +702,96 @@
     });
   });
 
+  // review stack carousel
+  (function () {
+    const stack = document.getElementById("reviewStack");
+    const cards = Array.from(stack.querySelectorAll("[data-review]"));
+    const total = cards.length;
+    const prevBtn = document.getElementById("reviewPrev");
+    const nextBtn = document.getElementById("reviewNext");
+    let current = 0;
+    let dragging = false;
+    let startX = 0;
+    let dragDeltaX = 0;
+
+    function circularDiff(i, current) {
+      const ahead = ((i - current) % total + total) % total; // 0..total-1
+      return ahead > total / 2 ? ahead - total : ahead; // shortest signed path
+    }
+
+    function layout(withDrag) {
+      cards.forEach((card, i) => {
+        const diff = circularDiff(i, current);
+        let transform, opacity, zIndex, blur, pointerEvents;
+        if (diff < 0) {
+          transform = "translateX(-120%) scale(0.9)"; opacity = 0; zIndex = 0; blur = 0; pointerEvents = "none";
+        } else if (diff === 0) {
+          const dragX = withDrag ? dragDeltaX : 0;
+          const rotate = withDrag ? dragDeltaX / 22 : 0;
+          transform = `translateX(${dragX}px) rotate(${rotate}deg)`; opacity = 1; zIndex = 30; blur = 0; pointerEvents = "auto";
+        } else if (diff === 1) {
+          transform = "translateX(9%) translateY(14px) scale(0.94)"; opacity = 0.6; zIndex = 20; blur = 1.5; pointerEvents = "none";
+        } else if (diff === 2) {
+          transform = "translateX(16%) translateY(26px) scale(0.88)"; opacity = 0.35; zIndex = 10; blur = 3; pointerEvents = "none";
+        } else {
+          transform = "translateX(16%) translateY(26px) scale(0.88)"; opacity = 0; zIndex = 0; blur = 3; pointerEvents = "none";
+        }
+        card.style.transform = transform;
+        card.style.opacity = opacity;
+        card.style.zIndex = zIndex;
+        card.style.filter = blur ? `blur(${blur}px)` : "none";
+        card.style.pointerEvents = pointerEvents;
+        card.setAttribute("aria-hidden", diff === 0 ? "false" : "true");
+      });
+    }
+
+    function goTo(index) {
+      current = ((index % total) + total) % total; // wraps both directions
+      layout(false);
+    }
+
+    prevBtn.addEventListener("click", () => goTo(current - 1));
+    nextBtn.addEventListener("click", () => goTo(current + 1));
+
+    const frontCard = () => cards[current];
+
+    function onPointerDown(e) {
+      if (e.target.closest("[data-review]") !== frontCard()) return;
+      dragging = true;
+      startX = e.clientX;
+      dragDeltaX = 0;
+      frontCard().style.transition = "none";
+      frontCard().setPointerCapture?.(e.pointerId);
+    }
+    function onPointerMove(e) {
+      if (!dragging) return;
+      dragDeltaX = e.clientX - startX;
+      layout(true);
+    }
+    function onPointerUp() {
+      if (!dragging) return;
+      dragging = false;
+      frontCard().style.transition = "";
+      const threshold = 70;
+      if (dragDeltaX < -threshold) {
+        goTo(current + 1);
+      } else if (dragDeltaX > threshold) {
+        goTo(current - 1);
+      } else {
+        layout(false);
+      }
+      dragDeltaX = 0;
+    }
+
+    stack.addEventListener("pointerdown", onPointerDown);
+    stack.addEventListener("pointermove", onPointerMove);
+    stack.addEventListener("pointerup", onPointerUp);
+    stack.addEventListener("pointercancel", onPointerUp);
+    stack.addEventListener("pointerleave", () => { if (dragging) onPointerUp(); });
+
+    layout(false);
+  })();
+
   // landing URL capture for ad tracking
   const landingUrlField = document.getElementById("landingUrlField");
   if (landingUrlField) landingUrlField.value = window.location.href;
@@ -490,6 +801,9 @@
   window.addEventListener("scroll", () => {
     topnav.classList.toggle("scrolled", window.scrollY > 30);
     document.getElementById("backTop").classList.toggle("show", window.scrollY > 500);
+    const fabCompact = window.scrollY > 120;
+    document.getElementById("fabEmergency").classList.toggle("compact", fabCompact);
+    document.getElementById("fabContact").classList.toggle("compact", fabCompact);
   });
 
   // mobile drawer
@@ -508,7 +822,7 @@
   const contactModal = document.getElementById("contactModal");
   function openModal() { contactModal.classList.add("open"); contactModal.classList.remove("opacity-0", "pointer-events-none"); }
   function closeModalFn() { contactModal.classList.remove("open"); contactModal.classList.add("opacity-0", "pointer-events-none"); }
-  document.getElementById("openModalMobile").addEventListener("click", openModal);
+  document.getElementById("fabContact").addEventListener("click", openModal);
   document.getElementById("openModalDesktop").addEventListener("click", openModal);
   document.getElementById("closeModal").addEventListener("click", closeModalFn);
   contactModal.addEventListener("click", (e) => { if (e.target === contactModal) closeModalFn(); });
