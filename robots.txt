@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /eny-unified.html
+Disallow: /job-manager.html
+
+Sitemap: https://electriciansnearyou.uk/sitemap.xml
