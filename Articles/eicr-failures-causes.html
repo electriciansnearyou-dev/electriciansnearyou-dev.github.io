@@ -1,54 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Common EICR Failure Causes | Landlord Safety Inspection Guide</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: "Inter", sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .glass-card { background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .top-navbar { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-    </style>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-5MJVXSNN');</script>
+  <!-- End Google Tag Manager -->
+
+<meta charset="UTF-8" />
+<title>EICR Failures: The Most Common Causes | ElectriciansNearYou</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Why EICRs actually fail for landlords in Poole, Bournemouth and Christchurch — missing RCD protection, poor earth bonding, and DIY damage, explained in plain English." />
+
+<link rel="canonical" href="https://electriciansnearyou.uk/Articles/eicr-failures-causes.html" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="EICR Failures: The Most Common Causes" />
+<meta property="og:description" content="Why EICRs actually fail — missing RCD protection, poor earth bonding, and DIY damage, explained in plain English." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://electriciansnearyou.uk/Articles/eicr-failures-causes.html" />
+<meta property="og:image" content="https://electriciansnearyou.uk/Logo.png" />
+
+<link rel="icon" type="image/png" href="../Logo.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="EICR Failures: The Most Common Causes" />
+<meta name="twitter:description" content="Why EICRs actually fail — missing RCD protection, poor earth bonding, and DIY damage, explained in plain English." />
+<meta name="twitter:image" content="https://electriciansnearyou.uk/Logo.png" />
+
+<!-- Article Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "EICR Failures: The Most Common Causes",
+  "description": "Why EICRs actually fail for landlords — missing RCD protection, poor earth bonding, and DIY damage, explained in plain English.",
+  "author": { "@type": "Organization", "name": "ElectriciansNearYou" },
+  "publisher": { "@type": "Organization", "name": "ElectriciansNearYou", "logo": { "@type": "ImageObject", "url": "https://electriciansnearyou.uk/Logo.png" } },
+  "mainEntityOfPage": "https://electriciansnearyou.uk/Articles/eicr-failures-causes.html"
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Inter", sans-serif; background: #060a14; color: #e2e8f0; }
+
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  .grad-text {
+    background: linear-gradient(90deg, #38bdf8, #d4af37);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .glow-btn { box-shadow: 0 0 0 1px rgba(56,189,248,0.4), 0 0 24px rgba(56,189,248,0.45); }
+
+  #topnav { transition: background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease; border-bottom: 1px solid transparent; }
+  #topnav.scrolled { background: rgba(6,10,20,0.85); backdrop-filter: blur(16px); border-bottom-color: rgba(56,189,248,0.15); }
+
+  #drawer { transition: opacity 0.3s ease; }
+  #drawer .panel { transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22,1,0.36,1); }
+  #drawer.open .panel { transform: translateX(0); }
+  #drawer .link { opacity: 0; transform: translateX(12px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  #drawer.open .link { opacity: 1; transform: translateX(0); }
+
+  #contactModal { transition: opacity 0.25s ease; }
+  #contactModal .panel { transform: scale(0.92) translateY(10px); transition: transform 0.3s cubic-bezier(0.22,1,0.36,1); }
+  #contactModal.open .panel { transform: scale(1) translateY(0); }
+
+  .fab-row { position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 60; display: flex; justify-content: space-between; pointer-events: none; }
+  @media (min-width: 992px) { .fab-row { display: none; } }
+  .fab {
+    height: 54px; border-radius: 999px; display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 0 20px; pointer-events: auto; box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+    transition: padding 0.3s ease, width 0.3s ease; white-space: nowrap; overflow: hidden;
+  }
+  .fab .fab-icon { font-size: 20px; flex-shrink: 0; }
+  .fab .fab-label { font-weight: 800; font-size: 14px; transition: opacity 0.2s ease, max-width 0.3s ease; max-width: 120px; opacity: 1; }
+  .fab.compact { width: 54px; padding: 0; }
+  .fab.compact .fab-label { max-width: 0; opacity: 0; }
+  .fab.emergency { background: #dc2626; border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; }
+  .fab.contact { background: rgba(255,255,255,0.95); color: #0f172a; cursor: pointer; }
+  .desktop-fab { display: none; }
+  @media (min-width: 992px) { .desktop-fab { display: block; position: fixed; bottom: 24px; right: 30px; z-index: 60; width: 190px; } }
+  body { padding-bottom: 110px; }
+  @media (min-width: 992px) { body { padding-bottom: 0; } }
+
+  #backTop {
+    position: fixed; bottom: 92px; right: 20px; z-index: 55;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.4); color: #7dd3fc;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+    opacity: 0; transform: translateY(10px) scale(0.85); transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+  #backTop.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  @media (min-width: 992px) { #backTop { bottom: 100px; right: 30px; } }
+
+  article h2 { color: #7dd3fc; font-size: 1.15rem; font-weight: 800; margin-top: 2rem; margin-bottom: 0.75rem; }
+  article p { color: #cbd5e1; font-size: 0.95rem; line-height: 1.7; margin-bottom: 1rem; }
+  .code-tag { display: inline-block; font-size: 0.7rem; font-weight: 800; padding: 2px 10px; border-radius: 999px; background: rgba(217,119,6,0.15); color: #fbbf24; border: 1px solid rgba(217,119,6,0.3); margin-left: 8px; vertical-align: middle; }
+  .note-box { background: rgba(56,189,248,0.07); border: 1px solid rgba(56,189,248,0.25); border-radius: 12px; padding: 14px 18px; font-size: 0.85rem; color: #cbd5e1; margin: 1rem 0; }
+</style>
 </head>
-<body class="pt-24 pb-12">
+<body class="text-slate-100">
 
-    <!-- NAVBAR -->
-    <header class="top-navbar fixed top-0 left-0 right-0 h-[70px] z-50 flex items-center shadow-lg">
-        <div class="w-full max-w-5xl mx-auto px-4 flex items-center justify-between">
-            <a href="../index.html" class="text-xl font-extrabold text-white tracking-tight">ElectriciansNearYou</a>
-            <div class="flex gap-3">
-                <a href="../index.html" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-white border border-slate-700 transition">🏡 Main Site</a>
-                <a href="../blog.html" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-white border border-slate-700 transition">📚 Blog Hub</a>
-            </div>
+  <header id="topnav" class="fixed top-0 left-0 right-0 h-[70px] z-50 flex items-center">
+    <div class="w-full max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <a href="../index.html" class="text-xl lg:text-2xl font-extrabold text-white tracking-tight">Electricians<span class="grad-text">NearYou</span></a>
+      <nav class="hidden md:flex items-center gap-6 font-bold text-sm text-white/90">
+        <a href="../index.html#contact" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full font-bold text-sm shadow transition">Emergency</a>
+        <a href="../blog.html" class="hover:text-sky-400 transition">📚 Blog Hub</a>
+        <a href="../index.html#services" class="hover:text-sky-400 transition">Services</a>
+        <a href="../index.html#contact" class="hover:text-sky-400 transition">Contact</a>
+      </nav>
+      <button id="menuBtn" class="md:hidden p-2 text-white" aria-label="Open menu">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="drawer" class="fixed inset-0 top-[70px] bg-black/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none flex justify-end">
+    <div class="panel w-[78%] max-w-xs h-full bg-[#0b111e] border-l border-sky-400/15 p-7 flex flex-col gap-1">
+      <a href="../index.html#contact" class="link py-3 font-bold text-red-400" style="transition-delay:0.03s">Emergency Electrician</a>
+      <a href="../blog.html" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.06s">📚 Blog Hub</a>
+      <a href="../index.html#services" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.09s">Services</a>
+      <a href="../index.html#contact" class="link mt-3 text-center py-3 rounded-xl font-bold text-slate-950" style="transition-delay:0.12s; background: linear-gradient(90deg,#38bdf8,#0ea5e9);">Get Free Quote</a>
+    </div>
+  </div>
+
+  <main class="max-w-3xl mx-auto px-4 pt-32 pb-20">
+    <article class="reveal bg-[#0b111e] border border-white/6 rounded-3xl p-6 md:p-10">
+      <span class="text-xs font-bold text-sky-400 uppercase tracking-widest block mb-3">Landlord Requirements</span>
+      <h1 class="text-3xl md:text-4xl font-black tracking-tight text-white mb-6 leading-tight">EICR Failures: The Most Common Causes</h1>
+
+      <p>An EICR only fails on C1 (danger present) or C2 (potentially dangerous) findings — a report with only C3 recommendations still passes as Satisfactory. In practice, three issues account for the large majority of the "Unsatisfactory" reports we write across <a href="../eicr-certificates.html" class="text-sky-400 hover:underline">Poole, Bournemouth and Christchurch</a> rental properties. None of them are exotic — they're just common, and worth knowing before you book an inspection.</p>
+
+      <h2>Missing RCD protection <span class="code-tag">Usually C2</span></h2>
+      <p>An RCD (Residual Current Device) monitors the current flowing out through the live and back through neutral, and cuts the power in milliseconds if it detects a mismatch — the kind of mismatch that happens when current is leaking to earth through, say, a person. Since the 18th Edition of the wiring regulations, socket circuits generally need RCD protection (BS 7671 Regulation 411.3.3), along with circuits in bathrooms and outdoor supplies.</p>
+      <p>If a property's consumer unit predates this and was never upgraded, it's very likely missing this protection — and it's consistently the single most common reason an EICR comes back Unsatisfactory. The fix is usually a consumer unit upgrade to a modern board with RCBOs (one per circuit), rather than a piecemeal repair.</p>
+
+      <h2>Missing or inadequate main earth bonding <span class="code-tag">Usually C2</span></h2>
+      <p>Main protective bonding connects the metal gas and water pipework entering your property to the electrical installation's main earthing terminal — normally with a green-and-yellow cable, usually a minimum of 10mm² copper, clamped near the meter or the pipe's point of entry. Its job is simple: if a fault ever makes those pipes live, the bonding gives the fault current a safe path away rather than leaving the pipework — and anything touching it — dangerously live.</p>
+      <p>It's a common finding for this bonding to be missing entirely, undersized, or disconnected (often after other work — a kitchen refit, a boiler swap — is done without it being reconnected properly). It's a straightforward fix, but not one to leave.</p>
+
+      <h2>Overheating and DIY damage <span class="code-tag">C1 or C2</span></h2>
+      <p>Discolouration or scorch marks around a socket, switch, or inside a consumer unit are a clear sign of a loose connection or an overloaded circuit generating heat — and it's taken seriously precisely because it's a genuine fire risk, not just a cosmetic issue. We also regularly find damage traced back to non-professional work: sockets spurred off incorrectly, connections made without a proper enclosure, or exposed conductors inside a damaged accessory. Any of these can trigger an immediate C1 or C2, depending on how exposed the risk is.</p>
+
+      <div class="note-box">Only a C1 or C2 makes a report "Unsatisfactory." A C3 is a recommendation, not a fail — worth knowing so you're not paying to fix something that was never actually required.</div>
+
+      <div class="mt-10 pt-6 border-t border-slate-800 text-center">
+        <p class="text-xs text-slate-400 mb-4">Need an EICR for a rental property in Poole, Bournemouth or Christchurch?</p>
+        <a href="../Calculators/EICR-Calculator.html" class="inline-block glow-btn bg-gradient-to-r from-sky-400 to-sky-500 text-slate-950 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wide transition">Get a Quick Estimate &rarr;</a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="bg-[#0a0e1a] rounded-t-[32px] text-white py-16 border-t border-white/6">
+    <div class="container mx-auto px-4 max-w-6xl grid md:grid-cols-3 gap-10">
+      <div>
+        <h3 class="text-xl font-black mb-3 grad-text">ElectriciansNearYou</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">Professional electrical services, repairs, and compliance certifications handled across Poole, Bournemouth, and nearby areas.</p>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-300 mb-4 border-b border-white/6 pb-1">Quick Links</h4>
+        <div class="space-y-2.5 text-sm font-semibold">
+          <a href="../index.html#services" class="block text-slate-400 hover:text-sky-400 transition">Our Services</a>
+          <a href="../index.html#about" class="block text-slate-400 hover:text-sky-400 transition">Team Bios</a>
+          <a href="../index.html#contact" class="block text-slate-400 hover:text-sky-400 transition">Get A Quote</a>
+          <a href="../blog.html" class="block text-sky-400 hover:underline transition">📚 Bright Spark Blog</a>
         </div>
-    </header>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-300 mb-4 border-b border-white/6 pb-1">Areas Covered</h4>
+        <div class="space-y-2 text-xs font-medium text-slate-400 grid grid-cols-2 gap-x-2">
+          <a href="../electrician-poole.html" class="hover:text-sky-400 transition">Poole</a>
+          <a href="../electrician-bournemouth.html" class="hover:text-sky-400 transition">Bournemouth</a>
+          <a href="../electrician-christchurch.html" class="hover:text-sky-400 transition">Christchurch</a>
+          <a href="../electrician-wimborne.html" class="hover:text-sky-400 transition">Wimborne</a>
+          <a href="../electrician-ferndown.html" class="hover:text-sky-400 transition">Ferndown</a>
+          <a href="../electrician-ringwood.html" class="hover:text-sky-400 transition">Ringwood</a>
+        </div>
+      </div>
+    </div>
+    <div class="text-center text-slate-500 mt-14 text-xs tracking-wide">&copy; 2026 ElectriciansNearYou. All Rights Reserved. Fully Certified BS7671 Systems.</div>
+  </footer>
 
-    <!-- ARTICLE LAYOUT -->
-    <main class="max-w-3xl mx-auto px-4">
-        <article class="glass-card rounded-3xl p-6 md:p-10 shadow-2xl">
-            <span class="text-xs font-bold text-[#c59b27] uppercase tracking-widest block mb-3">Landlord Requirements</span>
-            <h1 class="text-3xl md:text-4xl font-black tracking-tight text-white mb-6 leading-tight">EICR Failures: Most Common Causes</h1>
-            
-            <div class="space-y-6 text-slate-300 leading-relaxed text-sm md:text-base font-medium">
-                <p>An Electrical Installation Condition Report (EICR) is a strict mechanical health check of a property's underlying wiring. When an inspector issues an "Unsatisfactory" outcome grade, it's typically tied to a few recurring code discrepancies that present immediate shock or operational thermal breakdown risks.</p>
-                
-                <h2 class="text-xl font-bold text-white pt-4 text-[#c59b27]">Lack of Critical RCD Protection (Code C2)</h2>
-                <p>The single most frequent trigger for an automatic EICR safety fail is the absence of Residual Current Devices (RCDs) on general socket outlets and damp-zone lighting rings. If a circuit lacks a sensitive 30mA trip trigger window, an appliance wiring breakdown could pass live structural currents straight through human contact before standard fuse units register an overload, making this a top-tier safety breach.</p>
+  <div class="fab-row">
+    <a href="tel:07711261478" id="fabEmergency" class="fab emergency" aria-label="Call for emergency electrician">
+      <span class="fab-icon">🚨</span><span class="fab-label">Emergency</span>
+    </a>
+    <div id="fabContact" class="fab contact" aria-label="Open contact options">
+      <span class="fab-icon">📬</span><span class="fab-label">Contact Us</span>
+    </div>
+  </div>
+  <div class="desktop-fab">
+    <button id="openModalDesktop" class="w-full h-[50px] rounded-2xl border border-white/25 font-black text-sm tracking-wide text-white shadow-lg transition hover:-translate-y-0.5" style="background:#dc2626;">🚨 24/7 Contact</button>
+  </div>
 
-                <h2 class="text-xl font-bold text-white pt-4 text-[#c59b27]">Inadequate Main Earthing and Protective Bonding</h2>
-                <p>Testing engineers frequently log degraded, undersized, or missing bonding connections to central oncoming metallic incoming utility infrastructure installations like incoming gas lines and water mains. If a fault causes secondary metal pipes to become live, without correct thick copper connection loops down to the primary electrical earthing rod terminal, the breaker cannot drop fast enough, turning your entire plumbing footprint into an immediate shock risk zone.</p>
+  <div id="backTop">↑</div>
 
-                <h2 class="text-xl font-bold text-white pt-4 text-[#c59b27]">Thermal Degradation and DIY Alterations</h2>
-                <p>Overloaded ring main connections often show clear structural signs of heat degradation around terminal points inside wall boxes. Unprofessional layout modifications—like bridging rings, stacking high-draw utilities over loose screw connection lines, or exposing live copper paths inside broken accessories—trigger immediate C1 or C2 failure declarations that require fast isolation remedies.</p>
-            </div>
+  <div id="contactModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-[70] flex items-center justify-center opacity-0 pointer-events-none">
+    <div class="panel bg-slate-900/95 backdrop-blur rounded-3xl border border-slate-800 w-full max-w-[420px] mx-4 p-8 relative text-white">
+      <button id="closeModal" class="absolute top-5 right-5 text-2xl text-slate-400 hover:text-white">&times;</button>
+      <h3 class="text-xl font-extrabold mb-5 border-b border-slate-800 pb-3 flex items-center gap-2 text-sky-400">⚡ 24/7 Contacts</h3>
+      <a href="tel:07711261478" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-3 font-semibold hover:border-sky-400 transition">📞 Call Us <span class="text-sm text-slate-400">07711261478</span></a>
+      <a href="https://wa.me/447711261478" target="_blank" rel="noopener" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-4 font-semibold hover:border-emerald-400 transition">💬 WhatsApp Us <span class="text-sm text-slate-400">07711261478</span></a>
+      <a href="mailto:electriciansnearyou@gmail.com" class="flex justify-between items-center bg-white text-slate-950 p-4 rounded-xl font-bold hover:bg-gray-100 transition">Email Desk <span class="text-xs text-slate-600 font-semibold">electriciansnearyou@gmail.com</span></a>
+    </div>
+  </div>
 
-            <div class="mt-10 pt-6 border-t border-slate-800 text-center">
-                <p class="text-xs text-slate-400 mb-4">Need to schedule a certified safety inspection check for your rental property portfolio?</p>
-                <a href="../Calculators/EICR-Calculator.html" class="inline-block bg-[#c59b27] hover:bg-[#a17c1d] text-slate-950 px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wide transition shadow-md">Calculate EICR Assessment Fee &rarr;</a>
-            </div>
-        </article>
-    </main>
+<script>
+  const topnav = document.getElementById("topnav");
+  window.addEventListener("scroll", () => {
+    topnav.classList.toggle("scrolled", window.scrollY > 30);
+    document.getElementById("backTop").classList.toggle("show", window.scrollY > 500);
+    const fabCompact = window.scrollY > 120;
+    document.getElementById("fabEmergency").classList.toggle("compact", fabCompact);
+    document.getElementById("fabContact").classList.toggle("compact", fabCompact);
+  });
+
+  const menuBtn = document.getElementById("menuBtn");
+  const drawer = document.getElementById("drawer");
+  menuBtn.addEventListener("click", () => {
+    drawer.classList.toggle("open");
+    drawer.classList.toggle("opacity-0");
+    drawer.classList.toggle("pointer-events-none");
+  });
+  drawer.querySelectorAll(".link").forEach(l => l.addEventListener("click", () => {
+    drawer.classList.remove("open"); drawer.classList.add("opacity-0", "pointer-events-none");
+  }));
+
+  const contactModal = document.getElementById("contactModal");
+  function openModal() { contactModal.classList.add("open"); contactModal.classList.remove("opacity-0", "pointer-events-none"); }
+  function closeModalFn() { contactModal.classList.remove("open"); contactModal.classList.add("opacity-0", "pointer-events-none"); }
+  document.getElementById("fabContact").addEventListener("click", openModal);
+  document.getElementById("openModalDesktop").addEventListener("click", openModal);
+  document.getElementById("closeModal").addEventListener("click", closeModalFn);
+  contactModal.addEventListener("click", (e) => { if (e.target === contactModal) closeModalFn(); });
+
+  document.getElementById("backTop").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  const revealEls = document.querySelectorAll(".reveal");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add("in"); io.unobserve(entry.target); } });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
 </body>
 </html>
