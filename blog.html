@@ -1,1183 +1,396 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bright Spark | Electrical Insights & Interactive Estimators Price Hub</title>
-    <meta name="description" content="Expert electrical advice, safety tips, and instant 2026 price calculation wizards for UK homeowners and landlords.">
-    <meta name="keywords" content="led downlight installation cost, cost to change light fixtures, new lighting circuit price uk, outdoor security light installation cost">
-    
-    <!-- CUSTOM LOGO FILE SET AS YOUR TAB FAVICON -->
-    <link class="main-favicon" rel="icon" type="image/png" href="Logo.png">
-    
-    <!-- SYSTEM UNIFIED DATA GRAPH SCHEMA MARKUP (LOCALBUSINESS + FAQPAGE + BLOG INDEX) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "ProfessionalService",
-          "@id": "https://www.electriciansnearyou.uk/#corporation",
-          "name": "Bright Spark - Electricians Near You",
-          "url": "https://www.electriciansnearyou.uk",
-          "logo": "https://www.electriciansnearyou.uk/Logo.png",
-          "image": "https://www.electriciansnearyou.uk/background.jpg",
-          "telephone": "07711261478",
-          "email": "electriciansnearyou@gmail.com",
-          "priceRange": "££",
-          "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "GB"
-          }
-        },
-        {
-          "@type": "Blog",
-          "@id": "https://www.electriciansnearyou.uk/blog.html#blogHub",
-          "name": "Bright Spark Electrical Insights Blog",
-          "description": "Archive directory indexing historical articles, regulatory guidance, and wiring safety tips.",
-          "publisher": { "@id": "https://www.electriciansnearyou.uk/#corporation" },
-          "blogPost": [
-            {
-              "@type": "BlogPosting",
-              "headline": "Understanding UK Consumer Unit Regulations",
-              "url": "https://www.electriciansnearyou.uk/Articles/consumer-unit-regulations.html",
-              "datePublished": "2026-01-15"
-            },
-            {
-              "@type": "BlogPosting",
-              "headline": "EICR Failures: Most Common Causes",
-              "url": "https://www.electriciansnearyou.uk/Articles/eicr-failures-causes.html",
-              "datePublished": "2026-02-10"
-            },
-            {
-              "@type": "BlogPosting",
-              "headline": "Upgrading To Recessed LED Downlights Safely",
-              "url": "https://www.electriciansnearyou.uk/Articles/led-downlights-safety.html",
-              "datePublished": "2026-03-01"
-            },
-            {
-              "@type": "BlogPosting",
-              "headline": "Smart Home Automation Power Infrastructures",
-              "url": "https://www.electriciansnearyou.uk/Articles/smart-home-automation.html",
-              "datePublished": "2026-04-12"
-            }
-          ]
-        },
-        {
-          "@type": "FAQPage",
-          "@id": "https://www.electriciansnearyou.uk/blog.html#faqSystem",
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": "What is an EICR?",
-              "acceptedAnswer": { "@type": "Answer", "text": "An Electrical Installation Condition Report is a structured safety check verifying the integrity of your property's underlying electrical wiring, connections, and circuits." }
-            },
-            {
-              "@type": "Question",
-              "name": "How often is an EICR needed?",
-              "acceptedAnswer": { "@type": "Answer", "text": "For rental properties and commercial spaces across the UK, safety inspections are legally required every 5 years or at the start of any brand new tenancy layout shift." }
-            },
-            {
-              "@type": "Question",
-              "name": "What is an Amendment 3 board?",
-              "acceptedAnswer": { "@type": "Answer", "text": "It refers to consumer units wrapped in non-combustible metal casing arrays specifically designed to contain localized internal fire tracking faults within domestic consumer unit boxes." }
-            },
-            {
-              "@type": "Question",
-              "name": "Do you cover emergencies?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Yes, we operate a dedicated 24/7 call-out deployment engine tracking and rectifying power grid drops, burning anomalies, and tripping hazard faults across the region." }
-            },
-            {
-              "@type": "Question",
-              "name": "What causes circuits to trip?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Circuit breakers usually trip due to overloaded outlets, short circuits from faulty appliances, or temporary ground faults inside specialized wiring distributions." }
-            },
-            {
-              "@type": "Question",
-              "name": "Are your quotes fully binding?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Our interactive digital price wizards provide instant estimate guidelines based on standard materials. Exact quotes are finalized once on-site conditions are confirmed." }
-            },
-            {
-              "@type": "Question",
-              "name": "What is the cost of an electrician per hour?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Hourly rates across the UK typically vary by region, but standard professional rates average £45 to £80 per hour. Minor dynamic tasking or diagnostic operations are often priced as fixed layout components." }
-            },
-            {
-              "@type": "Question",
-              "name": "How long does a house rewiring take?",
-              "acceptedAnswer": { "@type": "Answer", "text": "A full domestic home rewire typically takes between 2 to 5 days depending on the house size, room layouts, wall material structures, and whether the property is fully occupied during construction." }
-            },
-            {
-              "@type": "Question",
-              "name": "What is an emergency call-out fee?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Emergency out-of-hours tracking dispatches carry a variable base attendance fee covering immediate response isolation safety tasking. Specific fault repairs are fully quoted on-site after parsing anomalies." }
-            },
-            {
-              "@type": "Question",
-              "name": "How long does an EICR certificate take?",
-              "acceptedAnswer": { "@type": "Answer", "text": "The physical testing tracking inspection usually takes 2 to 4 hours. Once the raw circuit field log values are processed, the final formal PDF certificate is generated and emailed within 24 to 48 hours." }
-            },
-            {
-              "@type": "Question",
-              "name": "Do downlights need to be fire rated?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Yes, UK building regulations require fire-rated recessed spot luminaires whenever cutting ceiling holes. They use heat-activated materials to seal apertures during thermal faults, preserving structural safety barrier thresholds." }
-            },
-            {
-              "@type": "Question",
-              "name": "Are you Part P registered?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Yes. All structural domestic electrical modifications follow strict Part P building control compliance paths, and safety notifications are handled cleanly through authorized scheme notification databases." }
-            },
-            {
-              "@type": "Question",
-              "name": "When should I replace my fuseboard?",
-              "acceptedAnswer": { "@type": "Answer", "text": "You should consider upgrading your consumer unit if it lacks RCD protection, uses wooden backings, has wire fuses, or struggles with regular circuit trips. Modern dual-RCD or RCBO consumer units heavily increase personal shock prevention safety." }
-            },
-            {
-              "@type": "Question",
-              "name": "What is an RCBO and do I need one?",
-              "acceptedAnswer": { "@type": "Answer", "text": "An RCBO combines overcurrent protection and residual current leakage detection into a single device for each individual circuit. This prevents localized faults from cutting power to the entire house, localizing the cutoff cleanly." }
-            },
-            {
-              "@type": "Question",
-              "name": "Can I install my own home EV charger?",
-              "acceptedAnswer": { "@type": "Answer", "text": "No. UK regulations state that electric vehicle charging points require installation by qualified, specialized installers under BS7671 section 722 rules. This ensures proper loading safety and correct grounding configurations." }
-            },
-            {
-              "@type": "Question",
-              "name": "Do EV charging ports qualify for UK grants?",
-              "acceptedAnswer": { "@type": "Answer", "text": "OZEV grants provide up to £350 off EV infrastructure installations for specific groups, including landlords, flat-owners, and residents utilizing dedicated off-street parking systems under specific tenancy criteria." }
-            },
-            {
-              "@type": "Question",
-              "name": "What does an EICR 'Code C1' mean?",
-              "acceptedAnswer": { "@type": "Answer", "text": "A C1 code indicates an active danger present with immediate risk of injury or shock (e.g., exposed live conductors). It requires immediate on-site safety isolation before our testing engineers depart." }
-            },
-            {
-              "@type": "Question",
-              "name": "What is the difference between C2 and C3 codes?",
-              "acceptedAnswer": { "@type": "Answer", "text": "A C2 code denotes a potential danger that requires urgent remedial attention to prevent a future hazard, triggering an automatic EICR fail. A C3 code suggests an optional safety improvement or regulation discrepancy that does not fail the report." }
-            },
-            {
-              "@type": "Question",
-              "name": "Why do my lightbulbs keep blowing?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Frequent bulb failures can point to excessive supply voltages, loose internal connection terminals behind light switches, high operational fixtures vibrations, or heat accumulation from unvented ceiling insulation layers." }
-            },
-            {
-              "@type": "Question",
-              "name": "What is an earth loop impedance check?",
-              "acceptedAnswer": { "@type": "Answer", "text": "This test measures the overall resistance path a fault current takes back to the main local transformer supply network. Low resistance values guarantee that protective devices trip fast enough during structural live-to-earth faults." }
-            },
-            {
-              "@type": "Question",
-              "name": "Are landlord electrical checks tax deductible?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Yes. Mandatory safety testing compliance expenses, such as EICR site inspections or minor repair maintenance actions on let properties, qualify as allowable revenue expenses offset against local rental yields." }
-            },
-            {
-              "@type": "Question",
-              "name": "What is a Surge Protection Device (SPD)?",
-              "acceptedAnswer": { "@type": "Answer", "text": "An SPD protects sensitive electronic equipment (like computers, TVs, and smart devices) from sudden voltage spikes caused by lightning strikes or grid switching activities, safely diverting excess electrical currents to the ground." }
-            },
-            {
-              "@type": "Question",
-              "name": "Can I replace a plug socket faceplate myself?",
-              "acceptedAnswer": { "@type": "Answer", "text": "While swapping out like-for-like accessories is not strictly non-notifiable work under Part P, it requires absolute power isolation at the consumer unit and a clear understanding of correct wiring. When in doubt, a professional check prevents structural fire risks." }
-            },
-            {
-              "@type": "Question",
-              "name": "What is the standard lifespan of home wiring?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Modern PVC-insulated copper cables generally function efficiently for 30 to 40 years. Older wiring systems wrapped in lead, rubber, or fabric coverings require full replacement to ensure safety compliance." }
-            }
-          ]
-        }
-      ]
-    }
-    </script>
-    
-    <style>
-        :root {
-            --bg-main: #f1f5f9;
-            --bg-card: rgba(255, 255, 255, 0.78);
-            /* Translucent dark grey choice for consistent aesthetic grouping */
-            --bg-dark-glass: rgba(30, 41, 59, 0.78);
-            --navy-text: #0f172a;
-            --text-muted: #475569;
-            --gold: #c59b27;
-            --gold-hover: #a17c1d;
-            --gold-bg: rgba(197, 155, 39, 0.08);
-            --border-color: rgba(226, 232, 240, 0.85);
-            --drawer-bg: rgba(255, 255, 255, 0.98);
-            --emergency-red: #dc2626;
-            --emergency-hover: #b91c1c;
-        }
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-5MJVXSNN');</script>
+  <!-- End Google Tag Manager -->
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+<meta charset="UTF-8" />
+<title>Bright Spark Blog — Electrical Advice & Guides | ElectriciansNearYou</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Plain-English electrical advice for Poole, Bournemouth & Christchurch — EICRs, consumer units, EV chargers and more, plus free quote calculators. From ElectriciansNearYou." />
 
-        body {
-            color: var(--navy-text);
-            line-height: 1.6;
-            overflow-x: hidden;
-            padding-bottom: 2rem;
-            background-color: var(--bg-main);
-        }
+<link rel="canonical" href="https://electriciansnearyou.uk/blog.html" />
 
-        /* --- IMMOVABLE SOLID MOBILE BACKGROUND ENGINE --- */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-image: linear-gradient(rgba(248, 250, 252, 0.2), rgba(248, 250, 252, 0.25)), 
-                              url('background.jpg');
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            z-index: -1;
-            transform: translateZ(0);
-            will-change: transform;
-        }
+<!-- Open Graph -->
+<meta property="og:title" content="Bright Spark Blog — Electrical Advice & Guides" />
+<meta property="og:description" content="Plain-English electrical advice for Poole, Bournemouth & Christchurch, plus free quote calculators." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://electriciansnearyou.uk/blog.html" />
+<meta property="og:image" content="https://electriciansnearyou.uk/Logo.png" />
 
-        /* --- CREDIBILITY BANNER TICKER --- */
-        .top-credibility-ribbon {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 32px;
-            background: #1e293b;
-            color: rgba(255, 255, 255, 0.9);
-            z-index: 1001;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
+<link rel="icon" type="image/png" href="Logo.png">
 
-        .ticker-track {
-            display: flex;
-            gap: 3rem;
-            width: max-content;
-            animation: scrollTicker 50s linear infinite;
-        }
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Bright Spark Blog — Electrical Advice & Guides" />
+<meta name="twitter:description" content="Plain-English electrical advice for Poole, Bournemouth & Christchurch, plus free quote calculators." />
+<meta name="twitter:image" content="https://electriciansnearyou.uk/Logo.png" />
 
-        .ticker-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
+<!-- Blog Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "Bright Spark Electrical Insights Blog",
+  "description": "Plain-English electrical advice for Poole, Bournemouth and Christchurch.",
+  "url": "https://electriciansnearyou.uk/blog.html",
+  "blogPost": [
+    { "@type": "BlogPosting", "headline": "EICR Failures: The Most Common Causes", "url": "https://electriciansnearyou.uk/Articles/eicr-failures-causes.html" },
+    { "@type": "BlogPosting", "headline": "Understanding UK Consumer Unit Regulations", "url": "https://electriciansnearyou.uk/Articles/consumer-unit-regulations.html" },
+    { "@type": "BlogPosting", "headline": "Upgrading to LED Downlights Safely", "url": "https://electriciansnearyou.uk/Articles/led-downlights-safety.html" },
+    { "@type": "BlogPosting", "headline": "Wiring a Home for Smart Switches & Automation", "url": "https://electriciansnearyou.uk/Articles/smart-home-automation.html" }
+  ]
+}
+</script>
 
-        .ticker-item span { color: var(--gold); }
+<!-- FAQ Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is an EICR?", "acceptedAnswer": { "@type": "Answer", "text": "An Electrical Installation Condition Report is a safety check that tests the fixed wiring in a property — the consumer unit, sockets, switches and cabling — against current wiring regulations (BS 7671)." } },
+    { "@type": "Question", "name": "How often is an EICR needed?", "acceptedAnswer": { "@type": "Answer", "text": "For rented and commercial properties, at least every 5 years, or sooner if a previous report specifies. Landlords also need a valid report before a new tenancy starts." } },
+    { "@type": "Question", "name": "What is an Amendment 3 board?", "acceptedAnswer": { "@type": "Answer", "text": "A consumer unit built with a non-combustible metal enclosure, required under Amendment 3 of the wiring regulations to help contain any internal fire risk." } },
+    { "@type": "Question", "name": "Do you cover emergencies?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, we offer a 24/7 emergency callout service across Poole, Bournemouth and Christchurch for faults, power outages and urgent safety issues." } },
+    { "@type": "Question", "name": "What causes circuits to trip?", "acceptedAnswer": { "@type": "Answer", "text": "Usually an overloaded circuit, a faulty appliance causing a short, or a genuine earth fault. Occasional trips can be normal; frequent ones are worth having checked." } },
+    { "@type": "Question", "name": "Are your quotes fully binding?", "acceptedAnswer": { "@type": "Answer", "text": "Our online calculators give a budget estimate based on typical jobs. The final price is confirmed once we've seen the property." } },
+    { "@type": "Question", "name": "What is the cost of an electrician per hour?", "acceptedAnswer": { "@type": "Answer", "text": "UK rates typically run £45–£80 per hour depending on region, though most small jobs are priced as a fixed fee rather than hourly." } },
+    { "@type": "Question", "name": "How long does a house rewiring take?", "acceptedAnswer": { "@type": "Answer", "text": "A full rewire on an average home usually takes 4–6 days, depending on size, layout and whether the property is occupied during the work." } },
+    { "@type": "Question", "name": "What is an emergency call-out fee?", "acceptedAnswer": { "@type": "Answer", "text": "A fixed attendance fee covers getting an engineer to you quickly and making things safe. Any further repair work is quoted on site." } },
+    { "@type": "Question", "name": "How long does an EICR certificate take?", "acceptedAnswer": { "@type": "Answer", "text": "The inspection itself usually takes 2–4 hours; the written certificate follows within 24–48 hours." } },
+    { "@type": "Question", "name": "Do downlights need to be fire rated?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — recessed downlights cut into a ceiling need to be fire-rated to maintain the fire resistance of the floor or ceiling above." } },
+    { "@type": "Question", "name": "Are you Part P registered?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, we're NICEIC registered, which lets us self-certify notifiable work under Part P without you needing to involve building control separately." } },
+    { "@type": "Question", "name": "When should I replace my fuseboard?", "acceptedAnswer": { "@type": "Answer", "text": "If it still uses rewireable fuses, has no RCD protection, or is made from wood or plastic rather than metal, it's overdue an upgrade." } },
+    { "@type": "Question", "name": "What is an RCBO and do I need one?", "acceptedAnswer": { "@type": "Answer", "text": "An RCBO protects a single circuit individually, so a fault in one room doesn't cut power to the rest of the house. Modern consumer units use one per circuit." } },
+    { "@type": "Question", "name": "Can I install my own home EV charger?", "acceptedAnswer": { "@type": "Answer", "text": "No — EV charger installation must be carried out by a qualified electrician under BS 7671 (Section 722), which covers the specific safety requirements for charging equipment." } },
+    { "@type": "Question", "name": "Do EV charging ports qualify for UK grants?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. As of April 2026, the OZEV grant covers 75% of installation cost up to £500, for on-street parking, renters and flat owners, and landlords — open until 31 March 2027." } },
+    { "@type": "Question", "name": "What does an EICR 'Code C1' mean?", "acceptedAnswer": { "@type": "Answer", "text": "A C1 means danger is present right now. We make it safe immediately, on the spot, before we leave." } },
+    { "@type": "Question", "name": "What is the difference between C2 and C3 codes?", "acceptedAnswer": { "@type": "Answer", "text": "C2 means potentially dangerous and needs fixing within 28 days — it's what makes a report 'Unsatisfactory.' C3 is just a recommended improvement, not a fail." } },
+    { "@type": "Question", "name": "Why do my lightbulbs keep blowing?", "acceptedAnswer": { "@type": "Answer", "text": "Often a loose connection, a fitting rated for a lower wattage than the bulb, or occasionally a voltage issue on the supply. Worth having checked if it keeps happening." } },
+    { "@type": "Question", "name": "What is an earth loop impedance check?", "acceptedAnswer": { "@type": "Answer", "text": "It measures how quickly a fault current would travel back through the earthing system, confirming your protective devices will trip fast enough to keep you safe." } },
+    { "@type": "Question", "name": "Are landlord electrical checks tax deductible?", "acceptedAnswer": { "@type": "Answer", "text": "Generally yes — EICR testing and related repair costs on a rental property are usually treated as an allowable expense, but check with your accountant for your specific situation." } },
+    { "@type": "Question", "name": "What is a Surge Protection Device (SPD)?", "acceptedAnswer": { "@type": "Answer", "text": "It protects your electronics from voltage spikes, caused by things like lightning strikes or grid switching, by safely diverting the excess current to earth." } },
+    { "@type": "Question", "name": "Can I replace a plug socket faceplate myself?", "acceptedAnswer": { "@type": "Answer", "text": "It's not something we'd recommend without electrical knowledge — the circuit needs to be safely isolated first. A like-for-like swap by a professional is quick and inexpensive." } },
+    { "@type": "Question", "name": "What is the standard lifespan of home wiring?", "acceptedAnswer": { "@type": "Answer", "text": "Modern PVC-insulated cable typically lasts 30–40 years. Older wiring insulated in rubber or fabric should be assessed for replacement regardless of its exact age." } }
+  ]
+}
+</script>
 
-        @keyframes scrollTicker {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Inter", sans-serif; background: #060a14; color: #e2e8f0; }
 
-        /* --- FIXED NAVBAR --- */
-        .top-navbar {
-            position: fixed;
-            top: 32px;
-            left: 0;
-            right: 0;
-            height: 70px;
-            background: rgba(30, 41, 59, 0.85);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1.5rem;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
-        }
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
 
-        .brand-block-split {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+  .grad-text {
+    background: linear-gradient(90deg, #38bdf8, #d4af37);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .glow-btn { box-shadow: 0 0 0 1px rgba(56,189,248,0.4), 0 0 24px rgba(56,189,248,0.45); }
+  .glow-card { transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
+  .glow-card:hover { border-color: rgba(56,189,248,0.5) !important; box-shadow: 0 10px 28px rgba(56,189,248,0.15); transform: translateY(-3px); }
 
-        .main-site-logo-link {
-            display: flex;
-            align-items: center;
-            transition: transform 0.25s ease;
-        }
+  .circuit-bg {
+    position: absolute; inset: 0; opacity: 0.3;
+    background-image: linear-gradient(90deg, rgba(56,189,248,0.08) 1px, transparent 1px),
+                       linear-gradient(rgba(56,189,248,0.08) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(circle at 50% 20%, black, transparent 75%);
+    animation: drift 7s linear infinite;
+  }
+  @keyframes drift { 0% { background-position: 0 0; } 100% { background-position: 88px 88px; } }
 
-        .main-site-logo-link:hover { transform: scale(1.06); }
+  #topnav { transition: background 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease; border-bottom: 1px solid transparent; }
+  #topnav.scrolled { background: rgba(6,10,20,0.85); backdrop-filter: blur(16px); border-bottom-color: rgba(56,189,248,0.15); }
 
-        .logo-img-nav {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            object-fit: contain;
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-        }
+  #drawer { transition: opacity 0.3s ease; }
+  #drawer .panel { transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22,1,0.36,1); }
+  #drawer.open .panel { transform: translateX(0); }
+  #drawer .link { opacity: 0; transform: translateX(12px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  #drawer.open .link { opacity: 1; transform: translateX(0); }
 
-        .nav-links-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
+  #contactModal { transition: opacity 0.25s ease; }
+  #contactModal .panel { transform: scale(0.92) translateY(10px); transition: transform 0.3s cubic-bezier(0.22,1,0.36,1); }
+  #contactModal.open .panel { transform: scale(1) translateY(0); }
 
-        .blog-home-text-link, .nav-contact-mail-btn {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -0.4px;
-            text-decoration: none;
-            transition: color 0.2s ease;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-        }
+  .fab-row { position: fixed; bottom: 20px; left: 20px; right: 20px; z-index: 60; display: flex; justify-content: space-between; pointer-events: none; }
+  @media (min-width: 992px) { .fab-row { display: none; } }
+  .fab {
+    height: 54px; border-radius: 999px; display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 0 20px; pointer-events: auto; box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+    transition: padding 0.3s ease, width 0.3s ease; white-space: nowrap; overflow: hidden;
+  }
+  .fab .fab-icon { font-size: 20px; flex-shrink: 0; }
+  .fab .fab-label { font-weight: 800; font-size: 14px; transition: opacity 0.2s ease, max-width 0.3s ease; max-width: 120px; opacity: 1; }
+  .fab.compact { width: 54px; padding: 0; }
+  .fab.compact .fab-label { max-width: 0; opacity: 0; }
+  .fab.emergency { background: #dc2626; border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; }
+  .fab.contact { background: rgba(255,255,255,0.95); color: #0f172a; cursor: pointer; }
+  .desktop-fab { display: none; }
+  @media (min-width: 992px) { .desktop-fab { display: block; position: fixed; bottom: 24px; right: 30px; z-index: 60; width: 190px; } }
+  body { padding-bottom: 110px; }
+  @media (min-width: 992px) { body { padding-bottom: 0; } }
 
-        .nav-contact-mail-btn {
-            font-size: 0.95rem;
-            font-weight: 700;
-            letter-spacing: 0px;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 0.4rem 0.9rem;
-            background: rgba(255, 255, 255, 0.03);
-        }
+  #backTop {
+    position: fixed; bottom: 92px; right: 20px; z-index: 55;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.4); color: #7dd3fc;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+    opacity: 0; transform: translateY(10px) scale(0.85); transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+  #backTop.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  @media (min-width: 992px) { #backTop { bottom: 100px; right: 30px; } }
 
-        .blog-home-text-link:hover { color: var(--gold); background: rgba(255, 255, 255, 0.05); }
-        .nav-contact-mail-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(197, 155, 39, 0.05); }
-
-        .btn-toggle-drawer {
-            background: #ffffff; 
-            color: #0f172a; 
-            border: none;
-            padding: 0.65rem 1.3rem;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-toggle-drawer:hover { background: #f1f5f9; transform: translateY(-1px); }
-
-        /* --- EDITORIAL HERO COVER SECTION --- */
-        header {
-            max-width: 1200px;
-            margin: 11rem auto 2rem auto;
-            padding: 2.5rem;
-            position: relative;
-            background: var(--bg-dark-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            color: #ffffff;
-        }
-
-        .pill-badge {
-            display: inline-block;
-            background: rgba(255, 192, 0, 0.15);
-            border: 1px solid rgba(255, 192, 0, 0.3);
-            color: var(--gold);
-            padding: 0.4rem 1.1rem;
-            border-radius: 100px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 1.5rem;
-        }
-
-        header h1 { font-size: 3.2rem; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 1.25rem; color: #ffffff; }
-        header p { color: #e2e8f0; font-size: 1.15rem; max-width: 780px; font-weight: 400; }
-
-        /* --- TWO COLUMN WRAPPER FULL PAGE LAYOUT --- */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
-
-        .split-layout-engine {
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        .left-content-stream {
-            width: 100%;
-            min-width: 0; 
-        }
-
-        /* --- RIGHT SIDEBAR FULL FAQ MATRIX SYSTEM --- */
-        .right-faq-sidebar {
-            width: 100%;
-        }
-
-        .faq-block-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 20px;
-            padding: 1.5rem;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
-        }
-
-        .faq-accordion-item {
-            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-            padding: 0.85rem 0;
-        }
-
-        .faq-accordion-item:last-child {
-            border-bottom: none;
-        }
-
-        .faq-trigger-btn {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-align: left;
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--navy-text);
-            cursor: pointer;
-            gap: 10px;
-            line-height: 1.3;
-        }
-
-        .faq-trigger-btn:hover { color: var(--gold); }
-
-        .faq-icon-indicator {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            transition: transform 0.25s ease;
-        }
-
-        .faq-panel-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
-        }
-
-        .faq-panel-answer p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            padding-top: 0.5rem;
-            line-height: 1.4;
-        }
-
-        /* Interactive toggle hook targets */
-        .faq-accordion-item.active-item .faq-icon-indicator { transform: rotate(180deg); color: var(--gold); }
-        .faq-accordion-item.active-item .faq-panel-answer { max-height: 250px; transition: max-height 0.3s cubic-bezier(1, 0, 1, 0); }
-
-        /* --- GENERAL TITLING TRACK STYLE --- */
-        .section-title-wrapper {
-            background: var(--bg-dark-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            padding: 0.75rem 1.5rem;
-            margin: 4rem 0 1.75rem 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-        }
-
-        .section-title-wrapper.first-wrapper {
-            margin-top: 0;
-        }
-
-        .section-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-grow: 1;
-        }
-
-        .section-title::after {
-            content: '';
-            flex-grow: 1;
-            height: 1px;
-            background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
-        }
-
-        .search-bar-wrapper { position: relative; display: flex; align-items: center; max-width: 240px; width: 100%; }
-        .search-bar-input { width: 100%; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50px; padding: 0.4rem 1rem 0.4rem 2.2rem; color: #ffffff; font-size: 0.85rem; font-weight: 500; outline: none; transition: all 0.25s ease; }
-        .search-bar-input:focus { background: rgba(255, 255, 255, 0.2); border-color: var(--gold); box-shadow: 0 0 10px rgba(197, 155, 39, 0.2); }
-        .search-bar-input::placeholder { color: #cbd5e1; font-weight: 400; }
-        .search-icon-svg { position: absolute; left: 14px; font-size: 0.85rem; color: #cbd5e1; pointer-events: none; }
-
-        /* --- CONDENSED ULTRA-MINI ARTICLE TILES --- */
-        .editorial-masonry {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-
-        .editorial-card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            text-decoration: none;
-            color: var(--navy-text);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 1.15rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.01);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            min-height: 145px;
-        }
-
-        .editorial-card.hidden-item { display: none !important; }
-        .editorial-card:hover { transform: translateY(-2px); border-color: rgba(197, 155, 39, 0.3); box-shadow: 0 15px 30px rgba(15, 23, 42, 0.05); background: rgba(255, 255, 255, 0.92); }
-        .card-content-top { margin-bottom: 0.25rem; }
-        .editorial-tag { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.15rem; }
-        .editorial-card h2 { font-size: 1.05rem; font-weight: 700; line-height: 1.25; letter-spacing: -0.2px; margin-bottom: 0.25rem; }
-        .editorial-card:hover h2 { color: var(--gold); }
-        .editorial-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .read-more-btn { font-size: 0.78rem; font-weight: 700; color: var(--gold); display: inline-flex; align-items: center; gap: 4px; margin-top: 0.35rem; transition: gap 0.2s ease; }
-        .editorial-card:hover .read-more-btn { color: var(--gold-hover); gap: 6px; }
-
-        /* --- OLDER ARTICLES MATRIX ARCHIVE DISPLAY GRID --- */
-        .older-articles-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-        }
-
-        .older-empty-block {
-            background: rgba(255, 255, 255, 0.45);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px dashed rgba(15, 23, 42, 0.15);
-            border-radius: 14px;
-            min-height: 110px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            transition: all 0.25s ease;
-        }
-
-        .older-empty-block.hidden-item { display: none !important; }
-        .older-empty-block:hover { background: rgba(255, 255, 255, 0.65); border-color: var(--gold); }
-
-        /* --- SECTION BOUNDARY BARRIER SEGMENT --- */
-        .section-barrier {
-            margin: 4rem 0 2rem 0;
-            border: none;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.15) 20%, rgba(197, 155, 39, 0.4) 50%, rgba(15, 23, 42, 0.15) 80%, transparent);
-            position: relative;
-        }
-
-        .section-barrier::after {
-            content: "⚡";
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: #f1f5f9;
-            padding: 0 10px;
-            font-size: 0.9rem;
-            color: var(--gold);
-        }
-
-        /* --- AUTOMATED INFINITE SCROLLING PROJECT GALLERY --- */
-        .gallery-container {
-            width: 100%;
-            overflow: hidden;
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 24px;
-            padding: 1.5rem 0;
-            margin-top: 1.5rem;
-            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
-        }
-
-        .gallery-track { display: flex; gap: 1.5rem; width: max-content; animation: scrollStream 70s linear infinite; }
-        .gallery-container:hover .gallery-track { animation-play-state: paused; }
-        .gallery-img { width: 220px; height: 150px; object-fit: cover; border-radius: 14px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.3s ease; }
-        .gallery-img:hover { transform: scale(1.03); }
-        @keyframes scrollStream { 0% { transform: translateX(0); } 100% { transform: translateX(-33.33%); } }
-
-        /* --- EXPANDABLE SIDE BAR DRAWERS --- */
-        .drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(5px); z-index: 1999; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
-        .drawer-overlay.active { opacity: 1; pointer-events: auto; }
-        .side-drawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 380px; height: 100%; background: var(--drawer-bg); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); box-shadow: -10px 0 40px rgba(0, 0, 0, 0.12); border-left: 1px solid var(--border-color); z-index: 2000; padding: 2.5rem 2rem; display: flex; flex-direction: column; transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .side-drawer.open { right: 0; }
-        .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
-        .drawer-header h2 { font-weight: 800; text-transform: uppercase; font-size: 1.1rem; color: var(--text-muted); letter-spacing: 1px; }
-        .btn-close-drawer { background: transparent; border: none; font-size: 1.7rem; cursor: pointer; color: var(--text-muted); line-height: 1; }
-        .btn-close-drawer:hover { color: var(--navy-text); }
-        .drawer-nav { display: flex; flex-direction: column; gap: 1rem; }
-        .nav-link-item { display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid var(--border-color); padding: 1.25rem; border-radius: 16px; text-decoration: none; color: var(--navy-text); font-weight: 600; font-size: 1.05rem; transition: all 0.25s ease; }
-        .nav-link-item span { font-size: 1.2rem; background: #f1f5f9; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.25s ease; }
-        .nav-link-item:hover { border-color: var(--gold); transform: translateX(-4px); box-shadow: 0 5px 15px rgba(197, 155, 39, 0.08); }
-        .nav-link-item:hover span { background: var(--gold); color: #fff; }
-
-        /* --- NEW PREMIUM MOBILE CIRCULAR CONTROLS ENGINE --- */
-        @media (max-width: 991px) {
-            .mobile-footer-grid {
-                position: fixed;
-                bottom: 24px;
-                left: 0;
-                right: 0;
-                width: 100%;
-                padding: 0 24px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                pointer-events: none; /* Prevents container background from eating user document clicks */
-                z-index: 1005;
-            }
-
-            .mobile-action-circle {
-                width: 54px;
-                height: 54px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 1.35rem;
-                cursor: pointer;
-                pointer-events: auto; /* Restores clickable path values back into button loops */
-                box-shadow: 0 8px 24px rgba(15, 23, 42, 0.25);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-                text-decoration: none;
-            }
-
-            .mobile-action-circle:active {
-                transform: scale(0.92);
-            }
-
-            .circle-btn-emergency {
-                background: var(--emergency-red);
-                border-color: rgba(255, 255, 255, 0.15);
-            }
-
-            .circle-btn-contact {
-                background: rgba(255, 255, 255, 0.9);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                border-color: rgba(15, 23, 42, 0.05);
-            }
-
-            .desktop-footer-single { display: none; }
-            .split-layout-engine { grid-template-columns: 1fr; } 
-            .older-articles-grid { grid-template-columns: repeat(2, 1fr); }
-            .right-faq-sidebar { margin-top: 2rem; }
-            .section-title-wrapper.first-wrapper { margin-top: 4rem; }
-        }
-
-        @media (min-width: 992px) {
-            .sticky-footer-bar { position: fixed; bottom: 20px; right: 30px; left: auto; transform: none; width: 180px; background: transparent; border: none; padding: 0; border-radius: 0; box-shadow: none; z-index: 999; }
-            .mobile-footer-grid { display: none; }
-            .desktop-footer-single { display: block; width: 100%; height: 50px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.25); cursor: pointer; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.2px; background: var(--emergency-red); color: #ffffff; box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2); transition: transform 0.2s ease, background 0.2s ease; }
-            .desktop-footer-single:hover { background: var(--emergency-hover); transform: translateY(-1px); }
-        }
-
-        /* --- DESKTOP DIRECTORY DIALOG WINDOW --- */
-        .modal-overlay-contact { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); z-index: 2001; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .modal-overlay-contact.active { opacity: 1; pointer-events: auto; }
-        .directory-modal-card { background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(20px); border: 1px solid var(--border-color); width: calc(100% - 2rem); max-width: 440px; border-radius: 24px; padding: 2rem; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2); position: relative; transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .modal-overlay-contact.active .directory-modal-card { transform: scale(1); }
-        .modal-close-trigger { position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted); }
-        .directory-modal-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; }
-        .directory-row-item { display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid var(--border-color); padding: 1rem 1.25rem; border-radius: 14px; margin-bottom: 0.75rem; text-decoration: none; color: var(--navy-text); font-weight: 600; transition: all 0.2s ease; }
-        .directory-row-item:hover { border-color: var(--gold); background: #f8fafc; }
-        .directory-row-item span { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
-        .directory-row-item.email-card-row { margin-top: 1.25rem; background: var(--navy-text); color: #ffffff; }
-        .directory-row-item.email-card-row:hover { background: #1e293b; }
-        .directory-row-item.email-card-row span { color: #94a3b8; }
-
-        /* --- SITE FOOTER BLOCK --- */
-        .site-corporate-footer { background: var(--bg-dark-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 3rem 2.5rem; margin: 4.5rem 0 2rem 0; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); color: #ffffff; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; width: 100%; }
-        .footer-col h4 { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 1.25rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 0.5rem; }
-        .footer-links-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
-        .footer-anchor-item { color: #e2e8f0; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px; }
-        .footer-anchor-item:hover { color: var(--gold); transform: translateX(3px); }
-
-        @media (max-width: 768px) {
-            .site-corporate-footer { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.5rem; }
-            .section-title-wrapper { flex-direction: column; align-items: flex-start; padding: 1rem; }
-            .search-bar-wrapper { max-width: 100%; }
-        }
-
-        @media (max-width: 600px) {
-            header h1 { font-size: 2.4rem; }
-            body > header { padding: 1.5rem; margin: 6.5rem 1rem 2rem 1rem; }
-            .side-drawer { max-width: 85%; }
-            .blog-home-text-link { font-size: 1.05rem; }
-            .top-navbar { top: 32px; padding: 0 1rem; }
-            .nav-contact-mail-btn { display: none; }
-        }
-    </style>
+  .calc-link {
+    display: flex; align-items: center; justify-content: space-between; padding: 16px 18px;
+    background: #0b111e; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+    font-weight: 700; font-size: 14px; color: #e2e8f0; transition: border-color 0.2s ease;
+  }
+  .calc-link:hover { border-color: rgba(56,189,248,0.5); color: #7dd3fc; }
+  .faq-card { background: #0b111e; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 18px 20px; }
+</style>
 </head>
-<body>
+<body class="text-slate-100">
 
-    <!-- ACCREDITATION TICKER -->
-    <div class="top-credibility-ribbon">
-        <div class="ticker-track">
-            <div class="ticker-item"><span>⚡</span> NICEIC Certification</div>
-            <div class="ticker-item"><span>⚡</span> City & Guilds</div>
-            <div class="ticker-item"><span>⚡</span> EAL Accredited</div>
-            <div class="ticker-item"><span>⚡</span> BS7671 Certified</div>
-            <div class="ticker-item"><span>⚡</span> 24/7 Service</div>
-            <div class="ticker-item"><span>⚡</span> Emergency CallOuts Available</div>
-            <div class="ticker-item"><span>⚡</span> Contact Us Today</div>
-            <div class="ticker-item"><span>⚡</span> NICEIC Certification</div>
-            <div class="ticker-item"><span>⚡</span> City & Guilds</div>
-            <div class="ticker-item"><span>⚡</span> EAL Accredited</div>
-            <div class="ticker-item"><span>⚡</span> BS7671 Certified</div>
-            <div class="ticker-item"><span>⚡</span> 24/7 Service</div>
-            <div class="ticker-item"><span>⚡</span> Emergency CallOuts Available</div>
-            <div class="ticker-item"><span>⚡</span> Contact Us Today</div>
+  <header id="topnav" class="fixed top-0 left-0 right-0 h-[70px] z-50 flex items-center">
+    <div class="w-full max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <a href="index.html" class="text-xl lg:text-2xl font-extrabold text-white tracking-tight">Electricians<span class="grad-text">NearYou</span></a>
+      <nav class="hidden md:flex items-center gap-6 font-bold text-sm text-white/90">
+        <a href="index.html#contact" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full font-bold text-sm shadow transition">Emergency</a>
+        <a href="index.html#pricing" class="hover:text-sky-400 transition">Pricing</a>
+        <a href="index.html#services" class="hover:text-sky-400 transition">Services</a>
+        <a href="index.html#about" class="hover:text-sky-400 transition">About</a>
+        <a href="index.html#reviews" class="hover:text-sky-400 transition">Reviews</a>
+        <a href="index.html#contact" class="hover:text-sky-400 transition">Contact</a>
+      </nav>
+      <button id="menuBtn" class="md:hidden p-2 text-white" aria-label="Open menu">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="drawer" class="fixed inset-0 top-[70px] bg-black/60 backdrop-blur-sm z-40 opacity-0 pointer-events-none flex justify-end">
+    <div class="panel w-[78%] max-w-xs h-full bg-[#0b111e] border-l border-sky-400/15 p-7 flex flex-col gap-1">
+      <a href="index.html#contact" class="link py-3 font-bold text-red-400" style="transition-delay:0.03s">Emergency Electrician</a>
+      <a href="index.html#pricing" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.06s">Pricing</a>
+      <a href="index.html#services" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.09s">Services</a>
+      <a href="index.html#about" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.12s">About</a>
+      <a href="index.html#reviews" class="link py-3 font-semibold border-t border-white/5" style="transition-delay:0.15s">Reviews</a>
+      <a href="index.html#contact" class="link mt-3 text-center py-3 rounded-xl font-bold text-slate-950" style="transition-delay:0.18s; background: linear-gradient(90deg,#38bdf8,#0ea5e9);">Get Free Quote</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="relative min-h-[55vh] flex items-center text-white text-center" style="background: radial-gradient(ellipse at 50% -10%, #0e2a4a 0%, #060a14 60%);">
+    <div class="circuit-bg"></div>
+    <div class="relative z-10 container mx-auto px-4 py-32 max-w-2xl">
+      <h1 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight tracking-tight">
+        Bright Spark <span class="grad-text">Blog</span>
+      </h1>
+      <p class="text-lg text-slate-300 font-medium">
+        Plain-English electrical advice for Poole, Bournemouth &amp; Christchurch — no jargon, just straight answers.
+      </p>
+    </div>
+  </section>
+
+  <!-- RECENTLY PUBLISHED ARTICLES -->
+  <section class="py-20 bg-slate-900 border-b border-slate-950">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <h2 class="reveal text-3xl font-extrabold text-center mb-3 tracking-tight text-white">Recently Published Articles</h2>
+      <p class="reveal text-center text-sm text-slate-400 max-w-xl mx-auto mb-12">Plain-English guides, fact-checked and sourced.</p>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <a href="Articles/eicr-failures-causes.html" class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-6 block">
+          <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-2">Landlord Requirements</span>
+          <h3 class="font-bold text-white text-base mb-2">EICR Failures: The Most Common Causes</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-3">Why EICRs actually fail — missing RCD protection, poor earth bonding, and DIY damage, explained in plain English.</p>
+          <span class="text-xs font-bold text-sky-400">Read Article →</span>
+        </a>
+        <a href="Articles/consumer-unit-regulations.html" class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-6 block" style="transition-delay:0.06s">
+          <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-2">Regulations</span>
+          <h3 class="font-bold text-white text-base mb-2">Understanding UK Consumer Unit Regulations</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-3">What consumer unit regulations actually require — metal enclosures, surge protection, and RCBOs, explained in plain English.</p>
+          <span class="text-xs font-bold text-sky-400">Read Article →</span>
+        </a>
+        <a href="Articles/led-downlights-safety.html" class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-6 block" style="transition-delay:0.12s">
+          <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-2">Lighting</span>
+          <h3 class="font-bold text-white text-base mb-2">Upgrading to LED Downlights Safely</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-3">Why fire-rated fittings, IC-rated insulation clearance, and the right dimmer all matter for a downlight upgrade.</p>
+          <span class="text-xs font-bold text-sky-400">Read Article →</span>
+        </a>
+        <a href="Articles/smart-home-automation.html" class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-6 block" style="transition-delay:0.18s">
+          <span class="text-[10px] font-bold text-amber-400 uppercase tracking-widest block mb-2">Home Automation</span>
+          <h3 class="font-bold text-white text-base mb-2">Wiring a Home for Smart Switches &amp; Automation</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-3">Why neutral wires at switches, deep back-boxes, and a dedicated circuit for your hub actually matter.</p>
+          <span class="text-xs font-bold text-sky-400">Read Article →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALCULATORS -->
+  <section class="py-24 bg-slate-950 border-b border-slate-900">
+    <div class="container mx-auto px-4 max-w-2xl">
+      <h2 class="reveal text-3xl font-extrabold text-center mb-3 tracking-tight text-white">Free Quote Calculators</h2>
+      <p class="reveal text-center text-sm text-slate-400 max-w-xl mx-auto mb-10">Get an instant budget estimate for common jobs.</p>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <a href="Calculators/EICR-Calculator.html" class="calc-link reveal">EICR Safety Check <span>📋</span></a>
+        <a href="Calculators/EV-Calculator.html" class="calc-link reveal" style="transition-delay:0.04s">EV Charger Point <span>🚗</span></a>
+        <a href="Calculators/Fuseboard-Calculator.html" class="calc-link reveal" style="transition-delay:0.08s">Consumer Unit Upgrade <span>⚡</span></a>
+        <a href="Calculators/Lighting-Calculator.html" class="calc-link reveal" style="transition-delay:0.12s">Lighting Indoor/Outdoor <span>💡</span></a>
+        <a href="Calculators/Accessory-Calculator.html" class="calc-link reveal sm:col-span-2" style="transition-delay:0.16s">Switches &amp; Sockets <span>🔌</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-24 bg-slate-900 border-b border-slate-950">
+    <div class="container mx-auto px-4 max-w-3xl">
+      <h2 class="reveal text-3xl font-extrabold text-center mb-3 tracking-tight text-white">Common Questions</h2>
+      <p class="reveal text-center text-sm text-slate-400 max-w-xl mx-auto mb-12">The questions we get asked most, answered straight.</p>
+      <div class="space-y-3">
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What is an EICR?</h4><p class="text-xs text-slate-400 leading-relaxed">An Electrical Installation Condition Report is a safety check that tests the fixed wiring in a property — the consumer unit, sockets, switches and cabling — against current wiring regulations (BS 7671).</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">How often is an EICR needed?</h4><p class="text-xs text-slate-400 leading-relaxed">For rented and commercial properties, at least every 5 years, or sooner if a previous report specifies. Landlords also need a valid report before a new tenancy starts.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What is an Amendment 3 board?</h4><p class="text-xs text-slate-400 leading-relaxed">A consumer unit built with a non-combustible metal enclosure, required under Amendment 3 of the wiring regulations to help contain any internal fire risk.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">Do you cover emergencies?</h4><p class="text-xs text-slate-400 leading-relaxed">Yes, we offer a 24/7 emergency callout service across Poole, Bournemouth and Christchurch for faults, power outages and urgent safety issues.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What causes circuits to trip?</h4><p class="text-xs text-slate-400 leading-relaxed">Usually an overloaded circuit, a faulty appliance causing a short, or a genuine earth fault. Occasional trips can be normal; frequent ones are worth having checked.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">Are your quotes fully binding?</h4><p class="text-xs text-slate-400 leading-relaxed">Our online calculators give a budget estimate based on typical jobs. The final price is confirmed once we've seen the property.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What is the cost of an electrician per hour?</h4><p class="text-xs text-slate-400 leading-relaxed">UK rates typically run £45–£80 per hour depending on region, though most small jobs are priced as a fixed fee rather than hourly.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">How long does a house rewiring take?</h4><p class="text-xs text-slate-400 leading-relaxed">A full rewire on an average home usually takes 4–6 days, depending on size, layout and whether the property is occupied during the work.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What is an emergency call-out fee?</h4><p class="text-xs text-slate-400 leading-relaxed">A fixed attendance fee covers getting an engineer to you quickly and making things safe. Any further repair work is quoted on site.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">How long does an EICR certificate take?</h4><p class="text-xs text-slate-400 leading-relaxed">The inspection itself usually takes 2–4 hours; the written certificate follows within 24–48 hours.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">Do downlights need to be fire rated?</h4><p class="text-xs text-slate-400 leading-relaxed">Yes — recessed downlights cut into a ceiling need to be fire-rated to maintain the fire resistance of the floor or ceiling above.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">Are you Part P registered?</h4><p class="text-xs text-slate-400 leading-relaxed">Yes, we're NICEIC registered, which lets us self-certify notifiable work under Part P without you needing to involve building control separately.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">When should I replace my fuseboard?</h4><p class="text-xs text-slate-400 leading-relaxed">If it still uses rewireable fuses, has no RCD protection, or is made from wood or plastic rather than metal, it's overdue an upgrade.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What is an RCBO and do I need one?</h4><p class="text-xs text-slate-400 leading-relaxed">An RCBO protects a single circuit individually, so a fault in one room doesn't cut power to the rest of the house. Modern consumer units use one per circuit.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">Can I install my own home EV charger?</h4><p class="text-xs text-slate-400 leading-relaxed">No — EV charger installation must be carried out by a qualified electrician under BS 7671 (Section 722), which covers the specific safety requirements for charging equipment.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">Do EV charging ports qualify for UK grants?</h4><p class="text-xs text-slate-400 leading-relaxed">Yes. As of April 2026, the OZEV grant covers 75% of installation cost up to £500, for on-street parking, renters and flat owners, and landlords — open until 31 March 2027.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What does an EICR "Code C1" mean?</h4><p class="text-xs text-slate-400 leading-relaxed">A C1 means danger is present right now. We make it safe immediately, on the spot, before we leave.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What is the difference between C2 and C3 codes?</h4><p class="text-xs text-slate-400 leading-relaxed">C2 means potentially dangerous and needs fixing within 28 days — it's what makes a report "Unsatisfactory." C3 is just a recommended improvement, not a fail.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">Why do my lightbulbs keep blowing?</h4><p class="text-xs text-slate-400 leading-relaxed">Often a loose connection, a fitting rated for a lower wattage than the bulb, or occasionally a voltage issue on the supply. Worth having checked if it keeps happening.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What is an earth loop impedance check?</h4><p class="text-xs text-slate-400 leading-relaxed">It measures how quickly a fault current would travel back through the earthing system, confirming your protective devices will trip fast enough to keep you safe.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">Are landlord electrical checks tax deductible?</h4><p class="text-xs text-slate-400 leading-relaxed">Generally yes — EICR testing and related repair costs on a rental property are usually treated as an allowable expense, but check with your accountant for your specific situation.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What is a Surge Protection Device (SPD)?</h4><p class="text-xs text-slate-400 leading-relaxed">It protects your electronics from voltage spikes, caused by things like lightning strikes or grid switching, by safely diverting the excess current to earth.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">Can I replace a plug socket faceplate myself?</h4><p class="text-xs text-slate-400 leading-relaxed">It's not something we'd recommend without electrical knowledge — the circuit needs to be safely isolated first. A like-for-like swap by a professional is quick and inexpensive.</p></div>
+        <div class="faq-card reveal"><h4 class="font-bold text-white text-sm mb-1">What is the standard lifespan of home wiring?</h4><p class="text-xs text-slate-400 leading-relaxed">Modern PVC-insulated cable typically lasts 30–40 years. Older wiring insulated in rubber or fabric should be assessed for replacement regardless of its exact age.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="py-24 bg-slate-950">
+    <div class="container mx-auto px-4 max-w-2xl text-center">
+      <h2 class="reveal text-3xl font-extrabold text-white mb-4 tracking-tight">Still Have a Question?</h2>
+      <p class="reveal text-slate-400 mb-8">Give us a call or send a message — we're happy to help.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="index.html#contact" class="reveal glow-btn bg-gradient-to-r from-sky-400 to-sky-500 text-slate-950 px-8 py-4 rounded-full font-bold text-lg transition hover:-translate-y-0.5">Get a Free Quote</a>
+        <a href="tel:07711261478" class="reveal bg-transparent border border-white/20 text-white px-8 py-4 rounded-full font-bold text-lg transition hover:-translate-y-0.5">Call Now</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-[#0a0e1a] rounded-t-[32px] text-white py-16 border-t border-white/6">
+    <div class="container mx-auto px-4 max-w-6xl grid md:grid-cols-3 gap-10">
+      <div>
+        <h3 class="text-xl font-black mb-3 grad-text">ElectriciansNearYou</h3>
+        <p class="text-xs text-slate-400 leading-relaxed">Professional electrical services, repairs, and compliance certifications handled across Poole, Bournemouth, and nearby areas.</p>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-300 mb-4 border-b border-white/6 pb-1">Quick Links</h4>
+        <div class="space-y-2.5 text-sm font-semibold">
+          <a href="index.html#services" class="block text-slate-400 hover:text-sky-400 transition">Our Services</a>
+          <a href="index.html#about" class="block text-slate-400 hover:text-sky-400 transition">Team Bios</a>
+          <a href="index.html#contact" class="block text-slate-400 hover:text-sky-400 transition">Get A Quote</a>
         </div>
-    </div>
-
-    <!-- NAVBAR HEADER -->
-    <div class="top-navbar">
-        <div class="brand-block-split">
-            <a href="https://www.electriciansnearyou.uk" class="main-site-logo-link" title="Return to Main Website">
-                <img src="Logo.png" alt="Electricians Near You Corporate Logo" class="logo-img-nav">
-            </a>
-            <a href="blog.html" class="blog-home-text-link" title="Return to Blog Home">
-                Bright Spark
-            </a>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm uppercase tracking-wider text-slate-300 mb-4 border-b border-white/6 pb-1">Areas Covered</h4>
+        <div class="space-y-2 text-xs font-medium text-slate-400 grid grid-cols-2 gap-x-2">
+          <a href="electrician-poole.html" class="hover:text-sky-400 transition">Poole</a>
+          <a href="electrician-bournemouth.html" class="hover:text-sky-400 transition">Bournemouth</a>
+          <a href="electrician-christchurch.html" class="hover:text-sky-400 transition">Christchurch</a>
+          <a href="electrician-wimborne.html" class="hover:text-sky-400 transition">Wimborne</a>
+          <a href="electrician-ferndown.html" class="hover:text-sky-400 transition">Ferndown</a>
+          <a href="electrician-ringwood.html" class="hover:text-sky-400 transition">Ringwood</a>
         </div>
-        <div class="nav-links-wrapper">
-            <a href="mailto:electriciansnearyou@gmail.com" class="nav-contact-mail-btn">Contact Us</a>
-            <button class="btn-toggle-drawer" onclick="toggleDrawer(true)">
-                <span>📊</span> Quote Calculators
-            </button>
-        </div>
+      </div>
     </div>
+    <div class="text-center text-slate-500 mt-14 text-xs tracking-wide">&copy; 2026 ElectriciansNearYou. All Rights Reserved. Fully Certified BS7671 Systems.</div>
+  </footer>
 
-    <!-- MOBILE FLOATING ACTION pod SHADOW HOOKS (DIALER & DIRECTORY BALANCED MODALS) -->
-    <div class="mobile-footer-grid">
-        <a href="tel:07711261478" class="mobile-action-circle circle-btn-emergency" title="Call Emergency Line">🚨</a>
-        <div class="mobile-action-circle circle-btn-contact" onclick="toggleContactModal(true)" title="Open Contact Directory">📬</div>
+  <div class="fab-row">
+    <a href="tel:07711261478" id="fabEmergency" class="fab emergency" aria-label="Call for emergency electrician">
+      <span class="fab-icon">🚨</span><span class="fab-label">Emergency</span>
+    </a>
+    <div id="fabContact" class="fab contact" aria-label="Open contact options">
+      <span class="fab-icon">📬</span><span class="fab-label">Contact Us</span>
     </div>
+  </div>
+  <div class="desktop-fab">
+    <button id="openModalDesktop" class="w-full h-[50px] rounded-2xl border border-white/25 font-black text-sm tracking-wide text-white shadow-lg transition hover:-translate-y-0.5" style="background:#dc2626;">🚨 24/7 Contact</button>
+  </div>
 
-    <!-- STICKY ACTION DESKTOP HUB NODE -->
-    <div class="sticky-footer-bar">
-        <button class="desktop-footer-single" onclick="toggleContactModal(true)">
-            🚨 24/7 Contact
-        </button>
+  <div id="backTop">↑</div>
+
+  <div id="contactModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-[70] flex items-center justify-center opacity-0 pointer-events-none">
+    <div class="panel bg-slate-900/95 backdrop-blur rounded-3xl border border-slate-800 w-full max-w-[420px] mx-4 p-8 relative text-white">
+      <button id="closeModal" class="absolute top-5 right-5 text-2xl text-slate-400 hover:text-white">&times;</button>
+      <h3 class="text-xl font-extrabold mb-5 border-b border-slate-800 pb-3 flex items-center gap-2 text-sky-400">⚡ 24/7 Contacts</h3>
+      <a href="tel:07711261478" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-3 font-semibold hover:border-sky-400 transition">📞 Call Us <span class="text-sm text-slate-400">07711261478</span></a>
+      <a href="https://wa.me/447711261478" target="_blank" rel="noopener" class="flex justify-between items-center bg-slate-800/50 border border-slate-700 p-4 rounded-xl mb-4 font-semibold hover:border-emerald-400 transition">💬 WhatsApp Us <span class="text-sm text-slate-400">07711261478</span></a>
+      <a href="mailto:electriciansnearyou@gmail.com" class="flex justify-between items-center bg-white text-slate-950 p-4 rounded-xl font-bold hover:bg-gray-100 transition">Email Desk <span class="text-xs text-slate-600 font-semibold">electriciansnearyou@gmail.com</span></a>
     </div>
+  </div>
 
-    <!-- CONTACT DETAILS DISPLAY PANEL MODAL -->
-    <div class="modal-overlay-contact" id="contactModal" onclick="toggleContactModal(false)">
-        <div class="directory-modal-card" onclick="event.stopPropagation()">
-            <button class="modal-close-trigger" onclick="toggleContactModal(false)">&times;</button>
-            <h3>⚡ 24/7 Contacts</h3>
-            <a href="tel:07711261478" class="directory-row-item">Jordan H. <span>07711261478</span></a>
-            <a href="tel:07907056422" class="directory-row-item">Jordan M. <span>07907056422</span></a>
-            <a href="mailto:electriciansnearyou@gmail.com" class="directory-row-item email-card-row">Email Desk <span>electriciansnearyou@gmail.com</span></a>
-        </div>
-    </div>
+<script>
+  const topnav = document.getElementById("topnav");
+  window.addEventListener("scroll", () => {
+    topnav.classList.toggle("scrolled", window.scrollY > 30);
+    document.getElementById("backTop").classList.toggle("show", window.scrollY > 500);
+    const fabCompact = window.scrollY > 120;
+    document.getElementById("fabEmergency").classList.toggle("compact", fabCompact);
+    document.getElementById("fabContact").classList.toggle("compact", fabCompact);
+  });
 
-    <div class="drawer-overlay" id="overlay" onclick="toggleDrawer(false)"></div>
+  const menuBtn = document.getElementById("menuBtn");
+  const drawer = document.getElementById("drawer");
+  menuBtn.addEventListener("click", () => {
+    drawer.classList.toggle("open");
+    drawer.classList.toggle("opacity-0");
+    drawer.classList.toggle("pointer-events-none");
+  });
+  drawer.querySelectorAll(".link").forEach(l => l.addEventListener("click", () => {
+    drawer.classList.remove("open"); drawer.classList.add("opacity-0", "pointer-events-none");
+  }));
 
-    <!-- SIDE SLIDE DRAWER -->
-    <div class="side-drawer" id="sidebar">
-        <div class="drawer-header">
-            <h2>Quote Calculators</h2>
-            <button class="btn-close-drawer" onclick="toggleDrawer(false)">&times;</button>
-        </div>
-        <nav class="drawer-nav">
-            <a href="Calculators/Fuseboard-Calculator.html" class="nav-link-item">Fuseboard Upgrade <span>⚡</span></a>
-            <a href="Calculators/EV-Calculator.html" class="nav-link-item">EV Charger Install <span>🚗</span></a>
-            <a href="Calculators/Accessory-Calculator.html" class="nav-link-item">Switches & Sockets <span>🔌</span></a>
-            <a href="Calculators/Lighting-Calculator.html" class="nav-link-item">Lighting Indoor & Outdoor <span>💡</span></a>
-            <a href="Calculators/EICR-Calculator.html" class="nav-link-item">EICR Electrical Safety Check<span>📋</span></a>
-        </nav>
-    </div>
+  const contactModal = document.getElementById("contactModal");
+  function openModal() { contactModal.classList.add("open"); contactModal.classList.remove("opacity-0", "pointer-events-none"); }
+  function closeModalFn() { contactModal.classList.remove("open"); contactModal.classList.add("opacity-0", "pointer-events-none"); }
+  document.getElementById("fabContact").addEventListener("click", openModal);
+  document.getElementById("openModalDesktop").addEventListener("click", openModal);
+  document.getElementById("closeModal").addEventListener("click", closeModalFn);
+  contactModal.addEventListener("click", (e) => { if (e.target === contactModal) closeModalFn(); });
 
-    <!-- HERO HEADER INTRO -->
-    <header>
-        <div class="pill-badge">Articles & Tools</div>
-        <h1>Electrical Insights & Advice</h1>
-        <p>With our many years of experience and research we hope to provide you with knowledge and understanding to help you tackle the day to day questions the public and other professionals have like BS7671 electrical Regs, Building Regs, and emergency electrical faults.</p>
-    </header>
+  document.getElementById("backTop").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
-    <!-- MAIN TWO-COLUMN SPLIT FRAMEWORK CONTAINER -->
-    <div class="main-container">
-        <div class="split-layout-engine">
-            
-            <!-- LEFT COLUMN: HOLDS ALL STREAMS (70%) -->
-            <div class="left-content-stream">
-                
-                <div class="section-title-wrapper first-wrapper">
-                    <div class="section-title">Recently Published Articles</div>
-                </div>
-                
-                <div class="editorial-masonry" id="articlesGridContainer">
-                    <a href="Articles/consumer-unit-regulations.html" class="editorial-card">
-                        <div class="card-content-top">
-                            <div class="editorial-tag">Regulations Compliance</div>
-                            <h2>Understanding UK Consumer Unit Regulations</h2>
-                            <p>An administrative breakdown highlighting safety compliance paths including mandatory Amendment 3 metal casing configurations, surge protective device integrations, and cross-floor isolation protocols.</p>
-                        </div>
-                        <div class="read-more-btn">Read Article &rarr;</div>
-                    </a>
-
-                    <a href="Articles/eicr-failures-causes.html" class="editorial-card">
-                        <div class="card-content-top">
-                            <div class="editorial-tag">Landlord Requirements</div>
-                            <h2>EICR Failures: Most Common Causes</h2>
-                            <p>An overview tracking the root technical anomalies that trigger immediate unsatisfactory marks on condition statements—focusing on missing identifiers and defects.</p>
-                        </div>
-                        <div class="read-more-btn">Read Article &rarr;</div>
-                    </a>
-
-                    <a href="Articles/led-downlights-safety.html" class="editorial-card">
-                        <div class="card-content-top">
-                            <div class="editorial-tag">Energy Efficiency</div>
-                            <h2>Upgrading To Recessed LED Downlights Safely</h2>
-                            <p>Why selecting fire-rated and fully sealed integrated core luminaires protects structural barriers, retains structural floor thermal values, and matches up seamlessly with modern dimming architectures without light flicker risks.</p>
-                        </div>
-                        <div class="read-more-btn">Read Article &rarr;</div>
-                    </a>
-
-                    <a href="Articles/smart-home-automation.html" class="editorial-card">
-                        <div class="card-content-top">
-                            <div class="editorial-tag">Future Technology</div>
-                            <h2>Smart Home Automation Power Infrastructures</h2>
-                            <p>A comprehensive setup architectural manual analyzing the structured localized wiring distribution frameworks needed to power automated systems cleanly without loop signals.</p>
-                        </div>
-                        <div class="read-more-btn">Read Article &rarr;</div>
-                    </a>
-                </div>
-
-                <hr class="section-barrier">
-
-                <div class="section-title-wrapper">
-                    <div class="section-title">On-Site Project Stream</div>
-                </div>
-                <div class="gallery-container">
-                    <div class="gallery-track" id="photo-stream-track"></div>
-                </div>
-
-                <hr class="section-barrier">
-
-                <div class="section-title-wrapper">
-                    <div class="section-title">Older Articles</div>
-                    <div class="search-bar-wrapper">
-                        <span class="search-icon-svg">🔍</span>
-                        <input type="text" class="search-bar-input" id="articleSearchInput" onkeyup="executeLiveSearch()" placeholder="Search archive...">
-                    </div>
-                </div>
-
-                <div class="older-articles-grid" id="olderArchiveContainer">
-                    <div class="older-empty-block" data-title="Archive Slot One empty layout slot placeholder">Slot Archive #1</div>
-                    <div class="older-empty-block" data-title="Archive Slot Two empty layout slot placeholder">Slot Archive #2</div>
-                    <div class="older-empty-block" data-title="Archive Slot Three empty layout slot placeholder">Slot Archive #3</div>
-                    <div class="older-empty-block" data-title="Archive Slot Four empty layout slot placeholder">Slot Archive #4</div>
-                    <div class="older-empty-block" data-title="Archive Slot Five empty layout slot placeholder">Slot Archive #5</div>
-                    <div class="older-empty-block" data-title="Archive Slot Six empty layout slot placeholder">Slot Archive #6</div>
-                    <div class="older-empty-block" data-title="Archive Slot Seven empty layout slot placeholder">Slot Archive #7</div>
-                    <div class="older-empty-block" data-title="Archive Slot Eight empty layout slot placeholder">Slot Archive #8</div>
-                    <div class="older-empty-block" data-title="Archive Slot Nine empty layout slot placeholder">Slot Archive #9</div>
-                    <div class="older-empty-block" data-title="Archive Slot Ten empty layout slot placeholder">Slot Archive #10</div>
-                    <div class="older-empty-block" data-title="Archive Slot Eleven empty layout slot placeholder">Slot Archive #11</div>
-                    <div class="older-empty-block" data-title="Archive Slot Twelve empty layout slot placeholder">Slot Archive #12</div>
-                </div>
-
-            </div>
-
-            <!-- RIGHT COLUMN: MASTER SEO FAQ ACCORDION ENGINE (24 DEEP ACCORDIONS) -->
-            <div class="right-faq-sidebar">
-                
-                <div class="section-title-wrapper first-wrapper">
-                    <div class="section-title">Common FAQs</div>
-                </div>
-                
-                <div class="faq-block-card">
-                    
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What is an EICR? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>An Electrical Installation Condition Report is a structured safety check verifying the integrity of your property's underlying electrical wiring, connections, and circuits.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">How often is an EICR needed? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>For rental properties and commercial spaces across the UK, safety inspections are legally required every 5 years or at the start of any brand new tenancy layout shift.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What is an Amendment 3 board? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>It refers to consumer units wrapped in non-combustible metal casing arrays specifically designed to contain localized internal fire tracking faults within domestic consumer unit boxes.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">Do you cover emergencies? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>Yes, we operate a dedicated 24/7 call-out deployment engine tracking and rectifying power grid drops, burning anomalies, and tripping hazard faults across the region.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What causes circuits to trip? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>Circuit breakers usually trip due to overloaded outlets, short circuits from faulty appliances, or temporary ground faults inside specialized wiring distributions.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">Are your quotes fully binding? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>Our interactive digital price wizards provide instant estimate guidelines based on standard materials. Exact quotes are finalized once on-site conditions are confirmed.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What is the cost of an electrician per hour? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>Hourly rates across the UK typically vary by region, but standard professional rates average £45 to £80 per hour. Minor dynamic tasking or diagnostic operations are often priced as fixed layout components.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">How long does a house rewiring take? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>A full domestic home rewire typically takes between 2 to 5 days depending on the house size, room layouts, wall material structures, and whether the property is fully occupied during construction.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What is an emergency call-out fee? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>Emergency out-of-hours tracking dispatches carry a variable base attendance fee covering immediate response isolation safety tasking. Specific fault repairs are fully quoted on-site after parsing anomalies.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">How long does an EICR certificate take? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>The physical testing tracking inspection usually takes 2 to 4 hours. Once the raw circuit field log values are processed, the final formal PDF certificate is generated and emailed within 24 to 48 hours.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">Do downlights need to be fire rated? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>Yes, UK building regulations require fire-rated recessed spot luminaires whenever cutting ceiling holes. They use heat-activated materials to seal apertures during thermal faults, preserving structural safety barrier thresholds.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">Are you Part P registered? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>Yes. All structural domestic electrical modifications follow strict Part P building control compliance paths, and safety notifications are handled cleanly through authorized scheme notification databases.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">When should I replace my fuseboard? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>You should consider upgrading your consumer unit if it lacks RCD protection, uses wooden backings, has wire fuses, or struggles with regular circuit trips. Modern dual-RCD or RCBO consumer units heavily increase personal shock prevention safety.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What is an RCBO and do I need one? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>An RCBO combines overcurrent protection and residual current leakage detection into a single device for each individual circuit. This prevents localized faults from cutting power to the entire house, localizing the cutoff cleanly.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">Can I install my own home EV charger? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>No. UK regulations state that electric vehicle charging points require installation by qualified, specialized installers under BS7671 section 722 rules. This ensures proper loading safety and correct grounding configurations.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">Do EV charging ports qualify for UK grants? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>OZEV grants provide up to £350 off EV infrastructure installations for specific groups, including landlords, flat-owners, and residents utilizing dedicated off-street parking systems under specific tenancy criteria.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What does an EICR 'Code C1' mean? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>A C1 code indicates an active danger present with immediate risk of injury or shock (e.g., exposed live conductors). It requires immediate on-site safety isolation before our testing engineers depart.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What is the difference between C2 and C3 codes? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>A C2 code denotes a potential danger that requires urgent remedial attention to prevent a future hazard, triggering an automatic EICR fail. A C3 code suggests an optional safety improvement or regulation discrepancy that does not fail the report.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">Why do my lightbulbs keep blowing? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>Frequent bulb failures can point to excessive supply voltages, loose internal connection terminals behind light switches, high operational fixtures vibrations, or heat accumulation from unvented ceiling insulation layers.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What is an earth loop impedance check? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>This test measures the overall resistance path a fault current takes back to the main local transformer supply network. Low resistance values guarantee that protective devices trip fast enough during structural live-to-earth faults.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">Are landlord electrical checks tax deductible? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>Yes. Mandatory safety testing compliance expenses, such as EICR site inspections or minor repair maintenance actions on let properties, qualify as allowable revenue expenses offset against local rental yields.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What is a Surge Protection Device (SPD)? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>An SPD protects sensitive electronic equipment (like computers, TVs, and smart devices) from sudden voltage spikes caused by lightning strikes or grid switching activities, safely diverting excess electrical currents to the ground.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">Can I replace a plug socket faceplate myself? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>While swapping out like-for-like accessories is not strictly non-notifiable work under Part P, it requires absolute power isolation at the consumer unit and a clear understanding of correct wiring. When in doubt, a professional check prevents structural fire risks.</p></div>
-                    </div>
-
-                    <div class="faq-accordion-item">
-                        <button class="faq-trigger-btn" onclick="toggleFaqAccordion(this)">What is the standard lifespan of home wiring? <span class="faq-icon-indicator">&#9662;</span></button>
-                        <div class="faq-panel-answer"><p>Modern PVC-insulated copper cables generally function efficiently for 30 to 40 years. Older wiring systems wrapped in lead, rubber, or fabric coverings require full replacement to ensure safety compliance.</p></div>
-                    </div>
-
-                </div>
-            </div>
-
-        </div> <!-- END OF SPLIT LAYOUT ENGINE -->
-
-        <!-- CORPORATE CONNECTIONS LINKS FOOTER -->
-        <footer class="site-corporate-footer">
-            <div class="footer-col">
-                <h4>Quote Calculators</h4>
-                <ul class="footer-links-list">
-                    <li><a href="Calculators/Fuseboard-Calculator.html" class="footer-anchor-item">⚡ Fuseboard Upgrade</a></li>
-                    <li><a href="Calculators/EV-Calculator.html" class="footer-anchor-item">🚗 EV Charger Install</a></li>
-                    <li><a href="Calculators/Accessory-Calculator.html" class="footer-anchor-item">🔌 Switches & Sockets</a></li>
-                    <li><a href="Calculators/Lighting-Calculator.html" class="footer-anchor-item">💡 Lighting Networks</a></li>
-                    <li><a href="Calculators/EICR-Calculator.html" class="footer-anchor-item">📋 EICR Safety Check</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Page Links</h4>
-                <ul class="footer-links-list">
-                    <li><a href="https://www.electriciansnearyou.uk" class="footer-anchor-item" target="_blank">🌐 Main Website</a></li>
-                    <li><a href="https://g.page/r/CR0naPwKfXB_EBM/review" class="footer-anchor-item" target="_blank">⭐ Write A Review</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Contact Links</h4>
-                <ul class="footer-links-list">
-                    <li><a href="tel:07711261478" class="footer-anchor-item">📞 Call Us (07711261478)</a></li>
-                    <li><a href="mailto:electriciansnearyou@gmail.com" class="footer-anchor-item">📧 Email Us</a></li>
-                    <li><a href="https://www.electriciansnearyou.uk/#contact" class="footer-anchor-item" target="_blank">💬 Request A Call</a></li>
-                </ul>
-            </div>
-        </footer>
-
-    </div>
-
-    <!-- Core Interactive Logic Modules -->
-    <script>
-        function toggleDrawer(open) {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            if (open) {
-                sidebar.classList.add('open');
-                overlay.classList.add('active');
-                document.body.style.overflow = 'hidden'; 
-            } else {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-
-        function toggleContactModal(open) {
-            const modal = document.getElementById('contactModal');
-            if (open) {
-                modal.classList.add('active');
-            } else {
-                modal.classList.remove('active');
-            }
-        }
-
-        function toggleFaqAccordion(buttonElement) {
-            const parentItem = buttonElement.parentElement;
-            const isAlreadyActive = parentItem.classList.contains('active-item');
-            
-            document.querySelectorAll('.faq-accordion-item').forEach(item => {
-                item.classList.remove('active-item');
-            });
-            
-            if (!isAlreadyActive) {
-                parentItem.classList.add('active-item');
-            }
-        }
-
-        function executeLiveSearch() {
-            const query = document.getElementById('articleSearchInput').value.toLowerCase().trim();
-            const archiveBlocks = document.querySelectorAll('#olderArchiveContainer .older-empty-block');
-            
-            archiveBlocks.forEach(block => {
-                const innerTextContent = block.innerText.toLowerCase();
-                const metaAttributeContent = block.getAttribute('data-title') ? block.getAttribute('data-title').toLowerCase() : '';
-                
-                if (innerTextContent.includes(query) || metaAttributeContent.includes(query)) {
-                    block.classList.remove('hidden-item');
-                } else {
-                    block.classList.add('hidden-item');
-                }
-            });
-        }
-
-        // =================================================================
-        // DYNAMIC PHOTO STREAM TRACK ENGINE
-        // =================================================================
-        const myUploadedPhotos = [
-            '20240412_212651.jpg',
-            '20241211_100613.jpg',
-            '20251003_185019.jpg',
-            'IMG-20240130-WA0001.jpg',
-            'IMG-20240810-WA0007.jpeg',
-            'Messenger_creation_1426197664391524.jpeg',
-            'Messenger_creation_382C3712-740B-4097-BDC1-3E42BFEAC1EE.jpeg',
-            'Messenger_creation_44B0FFD2-D333-4D6E-84FC-B1C44048777D.jpeg',
-            'Messenger_creation_473B0FC7-1FF6-4833-9967-57031A0DBBA1.jpeg',
-            'Messenger_creation_53365FE9-D2E3-4854-A2C8-E38933D05373.jpeg',
-            'Messenger_creation_799276988210282.jpeg',
-            'Screenshot_20260412_122340_Photos.jpg',
-            'Screenshot_20260412_122900_Photos.jpg'
-        ];
-
-        const galleryTrack = document.getElementById('photo-stream-track');
-        let imgNodesHTML = '';
-
-        myUploadedPhotos.forEach(fileName => {
-            if (fileName.trim() !== '') {
-                imgNodesHTML += `<img src="blog-gallary/${fileName}" alt="On-Site Project Image" class="gallery-img" onerror="this.style.display='none'">`;
-            }
-        });
-        
-        if(myUploadedPhotos.length > 0) {
-            galleryTrack.innerHTML = imgNodesHTML + imgNodesHTML + imgNodesHTML;
-        }
-    </script>
+  const revealEls = document.querySelectorAll(".reveal");
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add("in"); io.unobserve(entry.target); } });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
 
 </body>
 </html>
