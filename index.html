@@ -81,6 +81,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
   html { scroll-behavior: smooth; }
   body { font-family: "Inter", sans-serif; background: #060a14; color: #e2e8f0; }
 
@@ -301,7 +302,8 @@
     <div class="container mx-auto px-4">
       <h2 class="reveal text-3xl font-extrabold text-center mb-16 tracking-tight text-white">Our Professional Electrical Services</h2>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
-        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between">
+        <div class="glow-card reveal relative bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between">
+          <a href="emergency-electrician.html" class="absolute top-4 right-4 text-[10px] font-bold text-sky-400 bg-sky-400/10 border border-sky-400/30 px-2 py-1 rounded-full hover:bg-sky-400 hover:text-slate-950 transition">Guide →</a>
           <div>
             <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">⚡</div>
             <h3 class="font-bold text-white text-sm md:text-lg mb-1">Emergency Electricians</h3>
@@ -309,10 +311,11 @@
           </div>
           <div>
             <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
-            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Available 24/7 for electrical emergencies including power outages, tripping electrics, burning smells, faulty fuse boards and urgent repairs.<br><br><strong>Note:</strong> To arrange a callout please call us directly rather than submitting a web form. <a href="emergency-electrician.html" class="text-sky-400 hover:underline font-bold">Full guide →</a></div>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Available 24/7 for electrical emergencies including power outages, tripping electrics, burning smells, faulty fuse boards and urgent repairs.<br><br><strong>Note:</strong> To arrange a callout please call us directly rather than submitting a web form.</div>
           </div>
         </div>
-        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.06s">
+        <div class="glow-card reveal relative bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.06s">
+          <a href="ev-charger-installation.html" class="absolute top-4 right-4 text-[10px] font-bold text-sky-400 bg-sky-400/10 border border-sky-400/30 px-2 py-1 rounded-full hover:bg-sky-400 hover:text-slate-950 transition">Guide →</a>
           <div>
             <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">🔋</div>
             <h3 class="font-bold text-white text-sm md:text-lg mb-1">EV Charger Installation</h3>
@@ -320,10 +323,11 @@
           </div>
           <div>
             <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
-            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Professional installation of home EV charging systems with safe, compliant wiring and testing. We currently install high-quality Ohme and BG chargers. <a href="ev-charger-installation.html" class="text-sky-400 hover:underline font-bold">Full guide →</a></div>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Professional installation of home EV charging systems with safe, compliant wiring and testing. We currently install high-quality Ohme and BG chargers.</div>
           </div>
         </div>
-        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.12s">
+        <div class="glow-card reveal relative bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.12s">
+          <a href="house-rewiring.html" class="absolute top-4 right-4 text-[10px] font-bold text-sky-400 bg-sky-400/10 border border-sky-400/30 px-2 py-1 rounded-full hover:bg-sky-400 hover:text-slate-950 transition">Guide →</a>
           <div>
             <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">🏠</div>
             <h3 class="font-bold text-white text-sm md:text-lg mb-1">House Rewiring</h3>
@@ -331,10 +335,11 @@
           </div>
           <div>
             <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
-            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Complete or partial rewiring services to improve safety, efficiency and compliance with the latest regulations. Contact us to check if your system truly needs a partial or full upgrade. <a href="house-rewiring.html" class="text-sky-400 hover:underline font-bold">Full guide →</a></div>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Complete or partial rewiring services to improve safety, efficiency and compliance with the latest regulations. Contact us to check if your system truly needs a partial or full upgrade.</div>
           </div>
         </div>
-        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.18s">
+        <div class="glow-card reveal relative bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.18s">
+          <a href="fuse-board-upgrades.html" class="absolute top-4 right-4 text-[10px] font-bold text-sky-400 bg-sky-400/10 border border-sky-400/30 px-2 py-1 rounded-full hover:bg-sky-400 hover:text-slate-950 transition">Guide →</a>
           <div>
             <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">🛡</div>
             <h3 class="font-bold text-white text-sm md:text-lg mb-1">Fuse Board Upgrades</h3>
@@ -342,10 +347,11 @@
           </div>
           <div>
             <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
-            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Replacement of old boards with Amendment 3 metal consumer units packed with individual circuit RCBO switches and built-in surge protective devices. <a href="fuse-board-upgrades.html" class="text-sky-400 hover:underline font-bold">Full guide →</a></div>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Replacement of old boards with Amendment 3 metal consumer units packed with individual circuit RCBO switches and built-in surge protective devices.</div>
           </div>
         </div>
-        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.24s">
+        <div class="glow-card reveal relative bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.24s">
+          <a href="lighting-installation.html" class="absolute top-4 right-4 text-[10px] font-bold text-sky-400 bg-sky-400/10 border border-sky-400/30 px-2 py-1 rounded-full hover:bg-sky-400 hover:text-slate-950 transition">Guide →</a>
           <div>
             <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">💡</div>
             <h3 class="font-bold text-white text-sm md:text-lg mb-1">Lighting Installation</h3>
@@ -353,10 +359,11 @@
           </div>
           <div>
             <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
-            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Installation and replacement of ceiling lights, spotlights, LED upgrades, garden configurations, and external security lights tailored around your premises. <a href="lighting-installation.html" class="text-sky-400 hover:underline font-bold">Full guide →</a></div>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Installation and replacement of ceiling lights, spotlights, LED upgrades, garden configurations, and external security lights tailored around your premises.</div>
           </div>
         </div>
-        <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.3s">
+        <div class="glow-card reveal relative bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.3s">
+          <a href="accessory-replacements.html" class="absolute top-4 right-4 text-[10px] font-bold text-sky-400 bg-sky-400/10 border border-sky-400/30 px-2 py-1 rounded-full hover:bg-sky-400 hover:text-slate-950 transition">Guide →</a>
           <div>
             <div class="w-10 h-10 rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center text-lg mb-3">🔌</div>
             <h3 class="font-bold text-white text-sm md:text-lg mb-1">Accessory Replacements</h3>
@@ -364,7 +371,7 @@
           </div>
           <div>
             <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
-            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Replacing old or broken fittings safely. We also offer Air Flow testing to improve air quality and help keep damp and humidity out of your property. <a href="accessory-replacements.html" class="text-sky-400 hover:underline font-bold">Full guide →</a></div>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Replacing old or broken fittings safely. We also offer Air Flow testing to improve air quality and help keep damp and humidity out of your property.</div>
           </div>
         </div>
       </div>
