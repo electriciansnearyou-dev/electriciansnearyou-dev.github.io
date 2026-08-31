@@ -179,13 +179,31 @@
   .area-chip:hover { background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.5); color: #7dd3fc; transform: translateY(-2px); }
 
   /* ---- recent work grid ---- */
-  .work-card { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3; }
+  .work-card { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3; cursor: zoom-in; }
   .work-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
   .work-card:hover img { transform: scale(1.06); }
   .work-caption {
     position: absolute; inset: auto 0 0 0; padding: 14px 12px 10px;
     background: linear-gradient(0deg, rgba(6,10,20,0.92), transparent);
     font-size: 12px; font-weight: 700; color: #e2e8f0;
+  }
+
+  /* ---- image lightbox ---- */
+  #lightbox {
+    position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,0.88);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+  }
+  #lightbox.open { opacity: 1; pointer-events: auto; }
+  #lightbox img {
+    max-width: 100%; max-height: 88vh; border-radius: 12px;
+    transform: scale(0.94); transition: transform 0.25s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  #lightbox.open img { transform: scale(1); }
+  #lightboxClose {
+    position: absolute; top: 20px; right: 24px; font-size: 32px; color: #e2e8f0;
+    background: none; border: none; cursor: pointer; line-height: 1;
   }
 
   /* ---- review stack carousel ---- */
@@ -291,7 +309,7 @@
           </div>
           <div>
             <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
-            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Available 24/7 for electrical emergencies including power outages, tripping electrics, burning smells, faulty fuse boards and urgent repairs.<br><br><strong>Note:</strong> To arrange a callout please call us directly rather than submitting a web form.</div>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Available 24/7 for electrical emergencies including power outages, tripping electrics, burning smells, faulty fuse boards and urgent repairs.<br><br><strong>Note:</strong> To arrange a callout please call us directly rather than submitting a web form. <a href="emergency-electrician.html" class="text-sky-400 hover:underline font-bold">Full guide →</a></div>
           </div>
         </div>
         <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.06s">
@@ -302,7 +320,7 @@
           </div>
           <div>
             <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
-            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Professional installation of home EV charging systems with safe, compliant wiring and testing. We currently install high-quality Ohme and BG chargers.</div>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Professional installation of home EV charging systems with safe, compliant wiring and testing. We currently install high-quality Ohme and BG chargers. <a href="ev-charger-installation.html" class="text-sky-400 hover:underline font-bold">Full guide →</a></div>
           </div>
         </div>
         <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.12s">
@@ -313,7 +331,7 @@
           </div>
           <div>
             <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
-            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Complete or partial rewiring services to improve safety, efficiency and compliance with the latest regulations. Contact us to check if your system truly needs a partial or full upgrade.</div>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Complete or partial rewiring services to improve safety, efficiency and compliance with the latest regulations. Contact us to check if your system truly needs a partial or full upgrade. <a href="house-rewiring.html" class="text-sky-400 hover:underline font-bold">Full guide →</a></div>
           </div>
         </div>
         <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.18s">
@@ -324,7 +342,7 @@
           </div>
           <div>
             <button class="service-toggle bg-white text-slate-950 hover:bg-gray-200 w-full py-2 rounded-xl font-bold text-xs md:text-sm transition">Learn More</button>
-            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Replacement of old boards with Amendment 3 metal consumer units packed with individual circuit RCBO switches and built-in surge protective devices.</div>
+            <div class="service-content hidden mt-3 pt-3 border-t border-white/6 text-xs text-slate-400 leading-relaxed">Replacement of old boards with Amendment 3 metal consumer units packed with individual circuit RCBO switches and built-in surge protective devices. <a href="fuse-board-upgrades.html" class="text-sky-400 hover:underline font-bold">Full guide →</a></div>
           </div>
         </div>
         <div class="glow-card reveal bg-[#0b111e] border border-white/6 rounded-2xl p-4 md:p-6 flex flex-col justify-between" style="transition-delay:0.24s">
@@ -407,27 +425,27 @@
       <p class="reveal text-center text-sm text-slate-400 max-w-xl mx-auto mb-12">A few jobs we've completed recently across Dorset.</p>
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div class="work-card reveal">
-          <img src="Assets/recent-work/consumer-unit-circuits-01.jpg" alt="Labelled consumer unit circuits installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <img src="Assets/recent-work/consumer-unit-circuits-01.jpg" data-full="Assets/consumer-unit-circuits-01.jpg" alt="Labelled consumer unit circuits installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
           <div class="work-caption">Consumer Unit Upgrade</div>
         </div>
         <div class="work-card reveal" style="transition-delay:0.06s">
-          <img src="Assets/recent-work/fusebox-consumer-unit-closeup-01.jpg" alt="FuseBox consumer unit installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <img src="Assets/recent-work/fusebox-consumer-unit-closeup-01.jpg" data-full="Assets/fusebox-consumer-unit-closeup-01.jpg" alt="FuseBox consumer unit installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
           <div class="work-caption">Fuse Board Upgrade</div>
         </div>
         <div class="work-card reveal" style="transition-delay:0.12s">
-          <img src="Assets/recent-work/ev-charger-driveway-install-01.jpg" alt="Home EV charger installed on a driveway by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <img src="Assets/recent-work/ev-charger-driveway-install-01.jpg" data-full="Assets/ev-charger-driveway-install-01.jpg" alt="Home EV charger installed on a driveway by ElectriciansNearYou" loading="lazy" width="800" height="600" />
           <div class="work-caption">EV Charger Installation</div>
         </div>
         <div class="work-card reveal" style="transition-delay:0.18s">
-          <img src="Assets/recent-work/ev-charger-install-closeup-01.jpg" alt="Close-up of a home EV charger installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <img src="Assets/recent-work/ev-charger-install-closeup-01.jpg" data-full="Assets/ev-charger-install-closeup-01.jpg" alt="Close-up of a home EV charger installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
           <div class="work-caption">EV Charger Installation</div>
         </div>
         <div class="work-card reveal" style="transition-delay:0.24s">
-          <img src="Assets/recent-work/exterior-wall-lantern-install-01.jpg" alt="Exterior wall lantern light installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <img src="Assets/recent-work/exterior-wall-lantern-install-01.jpg" data-full="Assets/exterior-wall-lantern-install-01.jpg" alt="Exterior wall lantern light installed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
           <div class="work-caption">Lighting Installation</div>
         </div>
         <div class="work-card reveal" style="transition-delay:0.3s">
-          <img src="Assets/recent-work/commercial-cabling-install-01.jpg" alt="Commercial cabling installation completed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
+          <img src="Assets/recent-work/commercial-cabling-install-01.jpg" data-full="Assets/commercial-cabling-install-01.jpg" alt="Commercial cabling installation completed by ElectriciansNearYou" loading="lazy" width="800" height="600" />
           <div class="work-caption">Commercial Cabling</div>
         </div>
       </div>
@@ -519,32 +537,27 @@
           <div class="absolute -top-3 left-5 bg-amber-400 text-amber-950 text-[10px] font-extrabold px-3 py-1 rounded-full tracking-wide">Most Requested</div>
           <h4 class="font-bold text-white text-lg mb-1">Fuseboard Upgrade</h4>
           <div class="grad-text text-2xl font-black mb-3">From £450</div>
-          <p class="text-xs text-slate-300 mb-3">Modern metal consumer unit with surge protection.</p>
-          <a href="fuse-board-upgrades.html" class="text-xs font-bold text-sky-400 hover:underline">Old vs new &amp; pricing →</a>
+          <p class="text-xs text-slate-300">Modern metal consumer unit with surge protection.</p>
         </div>
         <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-2xl" style="transition-delay:0.12s">
           <h4 class="font-bold text-white text-lg mb-1">EV Charger Install</h4>
           <div class="grad-text text-2xl font-black mb-3">From £850</div>
-          <p class="text-xs text-slate-300 mb-3">Supply and safe installation with full certs.</p>
-          <a href="ev-charger-installation.html" class="text-xs font-bold text-sky-400 hover:underline">No driveway? Grants &amp; pricing →</a>
+          <p class="text-xs text-slate-300">Supply and safe installation with full certs.</p>
         </div>
         <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-2xl" style="transition-delay:0.18s">
           <h4 class="font-bold text-white text-lg mb-1">EICR Certificate</h4>
           <div class="grad-text text-2xl font-black mb-3">From £140</div>
-          <p class="text-xs text-slate-300 mb-3">Condition testing reports and safety stamps.</p>
-          <a href="eicr-certificates.html" class="text-xs font-bold text-sky-400 hover:underline">Landlord EICR guide &amp; pricing →</a>
+          <p class="text-xs text-slate-300">Condition testing reports and safety stamps.</p>
         </div>
         <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-2xl" style="transition-delay:0.24s">
           <h4 class="font-bold text-white text-lg mb-1">Accessory Fitting</h4>
           <div class="grad-text text-2xl font-black mb-3">From £60</div>
-          <p class="text-xs text-slate-300 mb-3">Replacing sockets, switches and light fittings.</p>
-          <a href="accessory-replacements.html" class="text-xs font-bold text-sky-400 hover:underline">Full guide &amp; pricing →</a>
+          <p class="text-xs text-slate-300">Replacing sockets, switches and light fittings.</p>
         </div>
         <div class="glow-card reveal bg-[#0b111e] border border-white/6 p-6 rounded-2xl" style="transition-delay:0.3s">
           <h4 class="font-bold text-white text-lg mb-1">Full House Rewire</h4>
           <div class="grad-text text-2xl font-black mb-3">From £3,500</div>
-          <p class="text-xs text-slate-300 mb-3">Complete rewiring for renovations and safety upgrades.</p>
-          <a href="house-rewiring.html" class="text-xs font-bold text-sky-400 hover:underline">Signs, process &amp; pricing →</a>
+          <p class="text-xs text-slate-300">Complete rewiring for renovations and safety upgrades.</p>
         </div>
       </div>
 
@@ -691,6 +704,12 @@
   <div id="backTop">↑</div>
 
   <!-- contact modal -->
+  <!-- image lightbox -->
+  <div id="lightbox">
+    <button id="lightboxClose" aria-label="Close image">&times;</button>
+    <img id="lightboxImg" src="" alt="" />
+  </div>
+
   <div id="contactModal" class="fixed inset-0 bg-black/60 backdrop-blur-md z-[70] flex items-center justify-center opacity-0 pointer-events-none">
     <div class="panel bg-slate-900/95 backdrop-blur rounded-3xl border border-slate-800 w-full max-w-[420px] mx-4 p-8 relative text-white">
       <button id="closeModal" class="absolute top-5 right-5 text-2xl text-slate-400 hover:text-white">&times;</button>
@@ -799,6 +818,30 @@
     stack.addEventListener("pointerleave", () => { if (dragging) onPointerUp(); });
 
     layout(false);
+  })();
+
+  // image lightbox
+  (function () {
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const closeBtn = document.getElementById("lightboxClose");
+
+    function openLightbox(src, alt) {
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || "";
+      lightbox.classList.add("open");
+    }
+    function closeLightbox() {
+      lightbox.classList.remove("open");
+    }
+
+    document.querySelectorAll(".work-card img[data-full]").forEach(img => {
+      img.addEventListener("click", () => openLightbox(img.dataset.full, img.alt));
+    });
+
+    closeBtn.addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLightbox(); });
   })();
 
   // landing URL capture for ad tracking
