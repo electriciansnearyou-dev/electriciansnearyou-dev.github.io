@@ -75,6 +75,12 @@
   </url>
 
   <url>
+    <loc>https://electriciansnearyou.uk/gallery.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
     <loc>https://electriciansnearyou.uk/electrician-poole.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -106,6 +112,37 @@
   </url>
 
   <url>
+    <loc>https://electriciansnearyou.uk/eicr-cost-breakdown.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://electriciansnearyou.uk/rewire-cost-guide.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://electriciansnearyou.uk/fuseboard-cost-guide.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://electriciansnearyou.uk/ev-charger-cost-guide.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://electriciansnearyou.uk/lighting-cost-guide.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+  <url>
+    <loc>https://electriciansnearyou.uk/accessory-cost-guide.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
+  </url>
+
+  <url>
     <loc>https://electriciansnearyou.uk/Calculators/EICR-Calculator.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -133,6 +170,26 @@
 
   <url>
     <loc>https://electriciansnearyou.uk/blog.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://electriciansnearyou.uk/Articles/eicr-failures-causes.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://electriciansnearyou.uk/Articles/consumer-unit-regulations.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://electriciansnearyou.uk/Articles/led-downlights-safety.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://electriciansnearyou.uk/Articles/smart-home-automation.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
