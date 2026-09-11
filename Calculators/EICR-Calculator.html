@@ -247,18 +247,18 @@
     <!-- Scripting Engines -->
     <script>
         const configurationMatrix = {
-            flat: { "1-2": { price: 60 }, "2-3": { price: 70 }, "4+": { price: 85 } },
-            bungalow: { "1-2": { price: 65 }, "2-3": { price: 75 }, "4+": { price: 90 } },
-            house: { "1-2": { price: 70 }, "2-3": { price: 85 }, "4+": { price: 105 } }
+            flat: { "1-2": { price: 80 }, "2-3": { price: 100 }, "4+": { price: 120 } },
+            bungalow: { "1-2": { price: 80 }, "2-3": { price: 100 }, "4+": { price: 120 } },
+            house: { "1-2": { price: 100 }, "2-3": { price: 120 }, "4+": { price: 140 } }
         };
 
-        const COST_PER_CIRCUIT = 15;
+        const COST_PER_CIRCUIT = 20;
 
         let currentShape = 'flat';
         let currentBeds = '1-2';
 
         let choices = {
-            propertyBase: { price: 60 },
+            propertyBase: { price: 80 },
             existingBoard: { price: 0, label: 'Modern-ish Plastic' },
             breakers: 6
         };
