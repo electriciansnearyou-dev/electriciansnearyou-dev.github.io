@@ -98,7 +98,7 @@
                 <div class="text-2xl font-black text-[#d4af37]" id="total-price">£530</div>
             </div>
             <div class="flex gap-2">
-                <button onclick="downloadPDF()" title="Download as PDF" class="bg-slate-700 text-white font-bold text-xs px-3 py-3 rounded-xl">⬇️</button>
+                <button onclick="downloadPDF()" title="Download Quote as PDF" class="bg-slate-700 text-white font-bold text-xs px-3 py-3 rounded-xl">⬇️ Download Quote</button>
                 <button onclick="toggleModal(true)" class="bg-blue-600 text-white font-bold text-xs px-4 py-3 rounded-xl">📬 Send Results</button>
                 <a href="tel:07711261478" class="bg-emerald-600 text-white font-bold text-xs px-4 py-3 rounded-xl text-center">Book Survey</a>
             </div>
@@ -181,6 +181,12 @@
         function toggleModal(open) { document.getElementById('leadsOverlay').classList.toggle('active', open); }
 
         function downloadPDF() {
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+                alert('The PDF tool didn\'t load — this is usually caused by an ad-blocker, privacy extension, or no internet connection. Please try again, or use "Send Results" instead.');
+                console.error('jsPDF library not available on window.jspdf');
+                return;
+            }
+            try {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const today = new Date().toLocaleDateString('en-GB');
@@ -251,6 +257,10 @@
             doc.text('Web: electriciansnearyou.uk', 14, y);
 
             doc.save('Fuseboard-Estimate.pdf');
+            } catch (err) {
+                console.error('PDF generation failed:', err);
+                alert('Something went wrong generating the PDF. Please try again or use "Send Results" instead.');
+            }
         }
 
         calculate();
