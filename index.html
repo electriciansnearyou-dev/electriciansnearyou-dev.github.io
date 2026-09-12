@@ -90,16 +90,13 @@
       url('Assets/ev-charger-driveway-install-01.jpg');
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center 18%; /* default: mobile portrait — shows door, charger, upper driveway */
+    background-position: center 18%; /* default: mobile portrait — box is nearly as tall as the photo, so little cropping happens either way */
   }
   @media (orientation: landscape) and (max-width: 899px) {
-    .hero-photo { background-position: center 30%; } /* landscape phone/small tablet */
+    .hero-photo { background-position: center 32%; } /* landscape phone/small tablet — moderately short box */
   }
   @media (min-width: 900px) {
-    .hero-photo { background-position: center 22%; } /* landscape desktop — wide, short box */
-  }
-  @media (min-width: 900px) and (min-height: 900px) {
-    .hero-photo { background-position: center 35%; } /* tall desktop window — more vertical room, show more of the car */
+    .hero-photo { background-position: center 42%; } /* wide desktop — very short box relative to the photo, so the visible window sits lower to keep the charger and the car both in frame instead of just the door */
   }
   html, body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
   html { scroll-behavior: smooth; }
