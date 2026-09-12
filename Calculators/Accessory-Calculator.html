@@ -9,6 +9,7 @@
     
     <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
@@ -311,6 +312,9 @@
                 <span class="metric-value text-2xl font-black text-[#d4af37]" id="total-price">£0</span>
             </div>
             <div class="flex items-center gap-2">
+                <button onclick="downloadPDF()" title="Download as PDF" class="bg-slate-700 hover:bg-slate-600 text-white font-bold text-xs px-3 py-3 rounded-xl transition shadow flex items-center gap-1">
+                    ⬇️
+                </button>
                 <button onclick="toggleModal(true)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs md:text-sm px-4 py-3 rounded-xl transition shadow flex items-center gap-1.5">
                     📬 <span>Send Results</span>
                 </button>
@@ -468,6 +472,98 @@
             } else {
                 modal.classList.remove('active');
             }
+        }
+
+        function downloadPDF() {
+            // ensure the breakdown string is up to date even if the modal was never opened
+            let compiledString = '';
+            for (const [key, quantity] of Object.entries(state.quantities)) {
+                if (quantity > 0) {
+                    compiledString += `${itemsRates[key].name}: [Count: ${quantity}], `;
+                }
+            }
+            if (compiledString === '') { compiledString = 'No accessories selected.'; }
+            document.getElementById('hiddenSelectedOptions').value = compiledString;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const today = new Date().toLocaleDateString('en-GB');
+
+            doc.setFillColor(6, 10, 20);
+            doc.rect(0, 0, 210, 32, 'F');
+            doc.setTextColor(212, 175, 55);
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(20);
+            doc.text('ElectriciansNearYou', 14, 16);
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            doc.text('Accessory Estimate — ' + today, 14, 25);
+
+            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(13);
+            doc.setFont(undefined, 'bold');
+            doc.text('Your Estimate Details', 14, 45);
+
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(100, 116, 139);
+            doc.text('Finish:', 14, 55);
+            doc.setTextColor(30, 41, 59);
+            doc.text(document.getElementById('hiddenFinishStyle').value, 80, 55);
+
+            doc.setTextColor(100, 116, 139);
+            doc.text('Work Type:', 14, 64);
+            doc.setTextColor(30, 41, 59);
+            doc.text(document.getElementById('hiddenWorkProfile').value, 80, 64);
+
+            let y = 77;
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(30, 41, 59);
+            doc.text('Selected Items', 14, y);
+            y += 8;
+
+            const breakdown = document.getElementById('hiddenSelectedOptions').value;
+            const items = breakdown.split(', ').filter(s => s.trim().length > 0);
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(30, 41, 59);
+            items.forEach(item => {
+                doc.text('• ' + item.replace(/\[Count: (\d+)\]/, '(x$1)'), 14, y);
+                y += 7;
+            });
+
+            y += 8;
+            doc.setDrawColor(212, 175, 55);
+            doc.line(14, y, 196, y);
+            y += 12;
+
+            doc.setFontSize(15);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(30, 41, 59);
+            doc.text('Estimated Total:', 14, y);
+            doc.setTextColor(180, 130, 20);
+            doc.text(document.getElementById('hiddenFinalPrice').value, 90, y);
+
+            y += 20;
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(100, 116, 139);
+            doc.text('This is a budget estimate only. Final pricing is confirmed after an on-site visit.', 14, y);
+            y += 14;
+            doc.setFontSize(11);
+            doc.setTextColor(30, 41, 59);
+            doc.setFont(undefined, 'bold');
+            doc.text('Get in touch', 14, y);
+            y += 8;
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(10);
+            doc.text('Phone / WhatsApp: 07711 261478', 14, y); y += 6;
+            doc.text('Email: electriciansnearyou@gmail.com', 14, y); y += 6;
+            doc.text('Web: electriciansnearyou.uk', 14, y);
+
+            doc.save('Accessory-Estimate.pdf');
         }
     </script>
 </body>

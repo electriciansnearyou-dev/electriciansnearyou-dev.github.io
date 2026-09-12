@@ -6,6 +6,7 @@
     <title>EV Charger Installation Cost Estimator | Instant Home Charging Quote</title>
     <meta name="description" content="Calculate your home electric vehicle charging point installation cost. Get a tailored budget price based on cable runs, routing, and board capacity.">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -96,6 +97,7 @@
                 <div class="text-2xl font-black text-[#d4af37]" id="total-price">£660</div>
             </div>
             <div class="flex gap-2">
+                <button onclick="downloadPDF()" title="Download as PDF" class="bg-slate-700 text-white font-bold text-xs px-3 py-3 rounded-xl">⬇️</button>
                 <button onclick="toggleModal(true)" class="bg-blue-600 text-white font-bold text-xs px-4 py-3 rounded-xl">📬 Send Results</button>
                 <a href="tel:07711261478" class="bg-emerald-600 text-white font-bold text-xs px-4 py-3 rounded-xl">Book Survey</a>
             </div>
@@ -145,6 +147,74 @@
 
         function toggleModal(open) {
             document.getElementById('leadsOverlay').classList.toggle('active', open);
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const today = new Date().toLocaleDateString('en-GB');
+            const setup = JSON.parse(document.getElementById('hiddenSetup').value);
+            const labelNames = { charger: 'Charger Style', distance: 'Cable Distance', routing: 'Routing', board: 'Consumer Unit' };
+
+            doc.setFillColor(6, 10, 20);
+            doc.rect(0, 0, 210, 32, 'F');
+            doc.setTextColor(212, 175, 55);
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(20);
+            doc.text('ElectriciansNearYou', 14, 16);
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            doc.text('EV Charger Estimate — ' + today, 14, 25);
+
+            doc.setTextColor(30, 41, 59);
+            doc.setFontSize(13);
+            doc.setFont(undefined, 'bold');
+            doc.text('Your Estimate Details', 14, 45);
+
+            let y = 55;
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            Object.entries(setup).forEach(([key, value]) => {
+                doc.setTextColor(100, 116, 139);
+                doc.text((labelNames[key] || key) + ':', 14, y);
+                doc.setTextColor(30, 41, 59);
+                doc.text(String(value), 80, y);
+                y += 9;
+            });
+
+            y += 5;
+            doc.setDrawColor(212, 175, 55);
+            doc.line(14, y, 196, y);
+            y += 12;
+
+            doc.setFontSize(15);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(30, 41, 59);
+            doc.text('Estimated Total:', 14, y);
+            doc.setTextColor(180, 130, 20);
+            doc.text(document.getElementById('hiddenPrice').value, 90, y);
+
+            y += 16;
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(100, 116, 139);
+            doc.text('This is a budget estimate only. Final pricing is confirmed after an on-site survey.', 14, y);
+            y += 8;
+            doc.text('An OZEV grant may reduce this cost — ask us for current eligibility.', 14, y);
+            y += 14;
+            doc.setFontSize(11);
+            doc.setTextColor(30, 41, 59);
+            doc.setFont(undefined, 'bold');
+            doc.text('Get in touch', 14, y);
+            y += 8;
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(10);
+            doc.text('Phone / WhatsApp: 07711 261478', 14, y); y += 6;
+            doc.text('Email: electriciansnearyou@gmail.com', 14, y); y += 6;
+            doc.text('Web: electriciansnearyou.uk', 14, y);
+
+            doc.save('EV-Charger-Estimate.pdf');
         }
         
         updateUI();
