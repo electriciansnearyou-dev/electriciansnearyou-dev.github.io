@@ -8,7 +8,20 @@
     <meta name="keywords" content="led downlight installation cost, cost to change light fixtures, new lighting circuit price uk, outdoor security light installation cost">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+    <script>
+      // load jsPDF with fallback across multiple CDNs, so one being blocked/down doesn't break the tool
+      (function loadJsPDF(urls) {
+        if (!urls.length) { window.__jspdfFailed = true; return; }
+        var s = document.createElement('script');
+        s.src = urls[0];
+        s.onerror = function () { loadJsPDF(urls.slice(1)); };
+        document.head.appendChild(s);
+      })([
+        'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js',
+        'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js',
+        'https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js'
+      ]);
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
@@ -343,8 +356,15 @@
 
         function downloadPDF() {
             if (!window.jspdf || !window.jspdf.jsPDF) {
-                alert('The PDF tool didn\'t load — this is usually caused by an ad-blocker, privacy extension, or no internet connection. Please try again, or use "Send Results" instead.');
-                console.error('jsPDF library not available on window.jspdf');
+                // give a slow-loading fallback CDN a moment before giving up
+                setTimeout(function () {
+                    if (window.jspdf && window.jspdf.jsPDF) {
+                        downloadPDF();
+                    } else {
+                        alert('The PDF tool couldn\'t load from any source. This usually means no internet connection right now, or a network/firewall is blocking script downloads. Please try again in a moment, or use "Send Results" instead.');
+                        console.error('jsPDF library not available on window.jspdf after retry');
+                    }
+                }, 1200);
                 return;
             }
             try {
