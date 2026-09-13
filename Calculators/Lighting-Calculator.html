@@ -7,7 +7,7 @@
     <meta name="description" content="Planning a lighting upgrade or installing new LED downlights? Use our instant interactive calculator to estimate costs for replacements and new circuit additions.">
     <meta name="keywords" content="led downlight installation cost, cost to change light fixtures, new lighting circuit price uk, outdoor security light installation cost">
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../tailwind.css">
     <script>
       // load jsPDF with fallback across multiple CDNs, so one being blocked/down doesn't break the tool
       (function loadJsPDF(urls) {
@@ -548,43 +548,35 @@
                 const originalLabel = submitBtn ? submitBtn.textContent : '';
                 if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending...'; }
 
-                ensureJsPDFReady(
-                    function () {
-                        try {
-                            const doc = buildEstimatePDF();
-                            const pdfBlob = doc.output('blob');
-                            const formData = new FormData(form);
-                            formData.append('quote_pdf', pdfBlob, 'Lighting-Estimate.pdf');
+                const formData = new FormData(form);
 
-                            fetch(form.action, {
-                                method: 'POST',
-                                body: formData,
-                                headers: { 'Accept': 'application/json' }
-                            }).then(function (response) {
-                                if (response.ok) {
-                                    alert('Thanks! Your estimate and details have been sent \u2014 we\'ll be in touch shortly.');
-                                    form.reset();
-                                    toggleModal(false);
-                                } else {
-                                    alert('Something went wrong sending your details. Please try again, or call us on 07711 261478.');
-                                }
-                            }).catch(function (err) {
-                                console.error('Form submission failed:', err);
-                                alert('Something went wrong sending your details. Please try again, or call us on 07711 261478.');
-                            }).finally(function () {
-                                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
-                            });
-                        } catch (err) {
-                            console.error('PDF generation failed during submit:', err);
-                            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
-                            alert('Something went wrong preparing your estimate. Please try again or call us on 07711 261478.');
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                }).then(function (response) {
+                    response.json().then(function (data) {
+                        if (response.ok) {
+                            alert('Thanks! Your details have been sent \u2014 we\'ll be in touch shortly.');
+                            form.reset();
+                            toggleModal(false);
+                        } else {
+                            const detail = (data && data.errors && data.errors.length)
+                                ? data.errors.map(e => e.message).join('; ')
+                                : (data && data.error) ? data.error : ('HTTP ' + response.status);
+                            console.error('Formspree rejected the submission:', data);
+                            alert('Formspree could not send your details:\n\n' + detail + '\n\nPlease try again, or call us on 07711 261478.');
                         }
-                    },
-                    function () {
-                        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
-                        alert('The PDF tool couldn\'t load, so we can\'t attach your estimate right now. Please try again in a moment, or call us on 07711 261478.');
-                    }
-                );
+                    }).catch(function () {
+                        console.error('Formspree returned a non-JSON error response, status:', response.status);
+                        alert('Something went wrong sending your details (HTTP ' + response.status + '). Please try again, or call us on 07711 261478.');
+                    });
+                }).catch(function (err) {
+                    console.error('Form submission failed (network error):', err);
+                    alert('Something went wrong sending your details \u2014 this looks like a network issue reaching Formspree. Please try again, or call us on 07711 261478.');
+                }).finally(function () {
+                    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
+                });
             });
         })();
 
