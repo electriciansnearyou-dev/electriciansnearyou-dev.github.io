@@ -861,13 +861,21 @@
     const closeBtn = document.getElementById("lightboxClose");
 
     function openLightbox(src, alt) {
-      lightboxImg.style.opacity = "0";
-      lightboxImg.alt = alt || "";
       lightbox.classList.add("open");
-      lightboxImg.onload = function () {
+      lightboxImg.style.opacity = "0";
+      const preloader = new Image();
+      preloader.onload = function () {
+        lightboxImg.src = src;
+        lightboxImg.alt = alt || "";
         lightboxImg.style.opacity = "1";
       };
-      lightboxImg.src = src;
+      preloader.onerror = function () {
+        // fall back so a broken image doesn't leave the lightbox stuck blank
+        lightboxImg.src = src;
+        lightboxImg.alt = alt || "";
+        lightboxImg.style.opacity = "1";
+      };
+      preloader.src = src;
     }
     function closeLightbox() {
       lightbox.classList.remove("open");

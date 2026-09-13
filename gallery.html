@@ -442,13 +442,20 @@
     const lightboxImg = document.getElementById("lightboxImg");
     const closeBtn = document.getElementById("lightboxClose");
     function openLightbox(src, alt) {
-      lightboxImg.style.opacity = "0";
-      lightboxImg.alt = alt || "";
       lightbox.classList.add("open");
-      lightboxImg.onload = function () {
+      lightboxImg.style.opacity = "0";
+      const preloader = new Image();
+      preloader.onload = function () {
+        lightboxImg.src = src;
+        lightboxImg.alt = alt || "";
         lightboxImg.style.opacity = "1";
       };
-      lightboxImg.src = src;
+      preloader.onerror = function () {
+        lightboxImg.src = src;
+        lightboxImg.alt = alt || "";
+        lightboxImg.style.opacity = "1";
+      };
+      preloader.src = src;
     }
     function closeLightbox() { lightbox.classList.remove("open"); }
     document.querySelectorAll(".gallery-card img[data-full]").forEach(img => {
