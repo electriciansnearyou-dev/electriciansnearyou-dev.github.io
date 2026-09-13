@@ -51,7 +51,7 @@
   "aggregateRating": {
     "@type": "AggregateRating",
     "ratingValue": "5.0",
-    "reviewCount": "21"
+    "reviewCount": "24"
   },
   "openingHoursSpecification": [
     {
@@ -215,7 +215,7 @@
   #lightbox.open { opacity: 1; pointer-events: auto; }
   #lightbox img {
     max-width: 100%; max-height: 88vh; border-radius: 12px;
-    transform: scale(0.94); transition: transform 0.25s ease;
+    transform: scale(0.94); transition: transform 0.25s ease, opacity 0.15s ease;
     box-shadow: 0 20px 60px rgba(0,0,0,0.6);
   }
   #lightbox.open img { transform: scale(1); }
@@ -302,7 +302,7 @@
         <div class="bg-sky-400/10 border border-sky-400/30 text-sky-300 px-4 py-2 rounded-full">✓ 24/7 Emergency Service</div>
       </div>
       <a href="https://g.page/r/CR0naPwKfXB_EBE" target="_blank" rel="noopener" class="inline-flex items-center gap-2 mt-5 text-amber-400 font-bold text-sm hover:underline">
-        <span>★★★★★</span><span class="text-slate-300">Rated 5 Stars on Google from 21 Reviews</span>
+        <span>★★★★★</span><span class="text-slate-300">Rated 5 Stars on Google from 24 Reviews</span>
       </a>
     </div>
   </section>
@@ -861,9 +861,13 @@
     const closeBtn = document.getElementById("lightboxClose");
 
     function openLightbox(src, alt) {
-      lightboxImg.src = src;
+      lightboxImg.style.opacity = "0";
       lightboxImg.alt = alt || "";
       lightbox.classList.add("open");
+      lightboxImg.onload = function () {
+        lightboxImg.style.opacity = "1";
+      };
+      lightboxImg.src = src;
     }
     function closeLightbox() {
       lightbox.classList.remove("open");
