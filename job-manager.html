@@ -985,6 +985,28 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div id="day-half-selector-context-frame" class="invisible opacity-0 transition-opacity space-y-4">
+                                        <div id="day-count-row" class="space-y-3">
+                                            <div class="flex items-center justify-between gap-3">
+                                                <label for="day-count-input" class="text-xs font-semibold text-[var(--eny-text-300)] uppercase tracking-wider">Number of Days</label>
+                                                <div class="flex items-center gap-2 shrink-0">
+                                                    <button type="button" onclick="adjustDayCount(-1)" class="w-7 h-7 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] text-[var(--eny-text-300)] font-bold cursor-pointer hover:bg-[var(--eny-bg-secondary)]">−</button>
+                                                    <input type="number" id="day-count-input" min="1" step="1" value="1" onchange="handleDayCountChange()" class="w-14 text-center bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-2 py-1.5 text-sm font-mono font-bold text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                                                    <button type="button" onclick="adjustDayCount(1)" class="w-7 h-7 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] text-[var(--eny-text-300)] font-bold cursor-pointer hover:bg-[var(--eny-bg-secondary)]">+</button>
+                                                </div>
+                                            </div>
+                                            <label class="flex items-center gap-2 text-xs font-semibold text-[var(--eny-text-300)] uppercase tracking-wider cursor-pointer select-none">
+                                                <input type="checkbox" id="day-plus-half-toggle" onchange="calculateComprehensiveMetrics()" class="rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] focus:ring-0">
+                                                + Half Day
+                                            </label>
+                                            <p id="day-duration-summary" class="text-[10px] text-[var(--eny-text-muted2)]"></p>
+                                        </div>
+                                        <label class="flex items-center gap-2 text-xs font-semibold text-[var(--eny-text-300)] uppercase tracking-wider cursor-pointer select-none pt-1 border-t border-[var(--eny-border-standard)]">
+                                            <input type="checkbox" id="day-half-op2-enable-toggle" onchange="calculateComprehensiveMetrics()" class="rounded bg-[var(--eny-bg-page)] border-[var(--eny-border-standard)] text-[var(--eny-accent-text)] focus:ring-0">
+                                            Add Second Engineer
+                                        </label>
+                                        <p class="text-[10px] text-[var(--eny-text-muted2)] pl-6">Doubles the labour cost for a second engineer working alongside the lead for the full duration.</p>
+                                    </div>
                                 </div>
                                 <div class="bg-[var(--eny-bg-page)]/60 border border-[var(--eny-border-standard)] rounded-xl p-4 flex items-center justify-between gap-4">
                                     <div class="flex items-start gap-3">
@@ -1639,6 +1661,15 @@
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
                         <div class="text-[10px] uppercase font-bold tracking-wider text-[var(--eny-text-muted)] mb-2">Return on Ad Spend</div>
                         <span id="ad-profit-percent-value" class="text-3xl font-black font-mono block">—</span>
+                    </div>
+                </div>
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] overflow-hidden">
+                    <button onclick="toggleCollapsibleForm('ad-profit-breakdown-wrapper', 'ad-profit-breakdown-chevron')" class="w-full flex items-center justify-between p-4 cursor-pointer">
+                        <span class="text-sm font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="list" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Job Breakdown</span>
+                        <i data-lucide="chevron-down" id="ad-profit-breakdown-chevron" class="w-4 h-4 text-[var(--eny-text-muted)] transition-transform"></i>
+                    </button>
+                    <div id="ad-profit-breakdown-wrapper" class="hidden border-t border-[var(--eny-border-standard)] p-4 space-y-2">
+                        <div id="ad-profit-breakdown-list" class="space-y-2"></div>
                     </div>
                 </div>
             </div>
@@ -2417,7 +2448,8 @@
                 <div class="pt-2 flex justify-between items-center"><span class="text-base font-bold text-[var(--eny-text-primary)] uppercase tracking-wide">Net Profit</span><span class="text-2xl font-black font-mono text-emerald-400" id="profit-net">£0.00</span></div>
                 <div class="flex justify-between items-center bg-[var(--eny-bg-page)] p-3 rounded-lg border border-[var(--eny-border-standard)]"><span class="text-xs font-semibold text-[var(--eny-text-muted)] uppercase">Gross Margin %</span><span class="text-lg font-bold font-mono text-[var(--eny-accent-text)]" id="profit-margin">0%</span></div>
             </div>
-            <div class="p-4 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex justify-center">
+            <div class="p-4 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex flex-col gap-2">
+                <button onclick="editActualCostsFromLedger()" class="w-full bg-[var(--eny-bg-page)] hover:bg-[var(--eny-bg-secondary)] border border-[var(--eny-border-standard)] text-[var(--eny-text-300)] px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="pencil" class="w-3.5 h-3.5"></i> Edit Actual Costs</button>
                 <button onclick="closeProfitModal()" class="w-full bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-primary)] px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer">Close Ledger</button>
             </div>
         </div>
@@ -8576,6 +8608,9 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         serviceLabel: metrics.flatJobCostEnabled ? metrics.worksDescription : null,
                         materials: activeAllocatedMaterials.map(m => ({ ...m })),
                         laborBookingFormat: activeLaborBookingFormat,
+                        laborDayCount: Math.max(1, parseInt(document.getElementById('day-count-input').value) || 1),
+                        laborPlusHalfDay: document.getElementById('day-plus-half-toggle').checked,
+                        laborSecondEngineer: document.getElementById('day-half-op2-enable-toggle').checked,
                         warrantyMonths: parseInt(document.getElementById('job-warranty-months').value) || null,
                         timestamp: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
                         fromAds: document.getElementById('quote-ads-toggle').checked,
@@ -8661,6 +8696,11 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('standard-save-actions-wrapper').classList.remove('hidden');
             document.getElementById('editing-save-actions-wrapper').classList.add('hidden');
             rebuildAllocatedMaterialsTable();
+            document.getElementById('op2-enable-toggle').checked = false;
+            toggleOp2Controls();
+            document.getElementById('day-half-op2-enable-toggle').checked = false;
+            document.getElementById('day-count-input').value = 1;
+            document.getElementById('day-plus-half-toggle').checked = false;
             setLaborBookingFormat('DAY');
         }
         function loadQuoteForActiveModification(quoteId) {
@@ -8690,6 +8730,11 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 document.getElementById('flat-job-cost-description').value = target.flatJobCostEnabled ? (target.serviceLabel || '') : '';
                 document.getElementById('flat-job-cost-amount').value = target.flatJobCostEnabled ? (target.financials.grossTotal || '') : '';
                 handleFlatJobCostToggle();
+                // Populate these before setLaborBookingFormat, since that
+                // call triggers the recalculation that reads them.
+                document.getElementById('day-count-input').value = target.laborDayCount || 1;
+                document.getElementById('day-plus-half-toggle').checked = !!target.laborPlusHalfDay;
+                document.getElementById('day-half-op2-enable-toggle').checked = !!target.laborSecondEngineer;
                 setLaborBookingFormat(target.laborBookingFormat || 'DAY');
                 rebuildAllocatedMaterialsTable();
                 document.getElementById('quote-ads-toggle-wrapper').classList.toggle('hidden', !isDrsAuthorized());
@@ -9101,7 +9146,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const operative = document.getElementById('recon-operative-select').value;
             try {
                 const existing = currentQuotes.find(q => q.id === id);
-                const updatePayload = { status: 'Invoiced', invoicingOperative: operative, actualCosts: { materials: actualMaterials, labor: actualLabor } };
+                // Only actually advance the status to Invoiced if it isn't
+                // already Paid — re-opening this to correct a materials
+                // figure after a wholesaler return, say, shouldn't regress
+                // an already-paid quote back a pipeline stage.
+                const updatePayload = { invoicingOperative: operative, actualCosts: { materials: actualMaterials, labor: actualLabor } };
+                if (!existing || existing.status !== 'Paid') updatePayload.status = 'Invoiced';
 
                 // Only assign a fresh sequential number the first time this
                 // quote becomes an invoice — re-confirming later (e.g. to
@@ -9112,15 +9162,23 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
 
                 await db.collection('quotes').doc(id).update(updatePayload);
                 if (existing) await syncQuoteAdTracking({ ...existing, ...updatePayload });
+                // Reconciling actual materials cost directly changes the
+                // rolling Ad Job Profit total for whichever job this quote
+                // is linked to — refresh it now rather than leaving it stale
+                // until someone happens to revisit the Ad Profit tab.
+                const linkedAdJob = currentJobs.find(j => j.linkedQuoteId === id && j.fromAds && j.status === 'Completed');
+                if (linkedAdJob) await updateAdProfitSheet();
                 closeInvoiceModal();
             } catch (err) {
                 console.error('Failed to convert to invoice:', err);
                 showToast('Could not convert this to an invoice. Error:\n\n' + (err && err.message ? err.message : String(err)) + '\n\nPlease screenshot this and send it over.', 'error');
             }
         }
+        let activeProfitModalQuoteId = null;
         function openProfitModal(id) {
             const target = currentQuotes.find(q => q.id === id);
             if (!target || !target.actualCosts) { showToast('No actual-cost reconciliation recorded for this record yet.', 'info'); return; }
+            activeProfitModalQuoteId = id;
             const revenue = target.financials.grossTotal;
             const materials = target.actualCosts.materials, labor = target.actualCosts.labor, testing = target.financials.testingCosts;
             const netProfit = revenue - materials - labor - testing;
@@ -9133,7 +9191,13 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('profit-margin').innerText = `${margin.toFixed(1)}%`;
             document.getElementById('profit-view-modal').classList.remove('hidden');
         }
-        function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); }
+        function closeProfitModal() { document.getElementById('profit-view-modal').classList.add('hidden'); activeProfitModalQuoteId = null; }
+        function editActualCostsFromLedger() {
+            if (!activeProfitModalQuoteId) return;
+            const id = activeProfitModalQuoteId;
+            closeProfitModal();
+            openInvoiceReconciliation(id);
+        }
 
         // ---- PDF generation (direct html2canvas + jsPDF; operative picked per-invoice) ----
         function generateDocumentPDF(id) {
@@ -9917,9 +9981,17 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const calculatedMarkedMaterials = netMaterialsIncVat * (1 + (markup / 100));
             let laborCosts = 0;
             const { rateDay, rateHalf, rateHourFirst, rateHourNext } = currentPricing;
-            if (activeLaborBookingFormat === 'DAY') laborCosts = rateDay;
-            else if (activeLaborBookingFormat === 'HALF') laborCosts = rateHalf;
-            else if (activeLaborBookingFormat === 'HOUR') {
+            if (activeLaborBookingFormat === 'DAY' || activeLaborBookingFormat === 'HALF') {
+                // A trailing half day bills at the real half-day rate rather
+                // than half the day rate — the two aren't the same figure,
+                // and using the genuine half-day rate keeps its pricing
+                // (which carries its own fixed overhead) intact.
+                const { wholeDays, hasHalfDay } = getSelectedDayDuration();
+                laborCosts = (wholeDays * rateDay) + (hasHalfDay ? rateHalf : 0);
+                // A second engineer works the whole duration alongside the
+                // lead, so the entire figure doubles.
+                if (document.getElementById('day-half-op2-enable-toggle')?.checked) laborCosts *= 2;
+            } else if (activeLaborBookingFormat === 'HOUR') {
                 const nextHoursCount1 = parseInt(document.getElementById('labor-hour-slider').value) || 0;
                 laborCosts += rateHourFirst + (nextHoursCount1 * rateHourNext);
                 if (document.getElementById('op2-enable-toggle')?.checked) {
@@ -9984,6 +10056,12 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('summary-materials-vat').innerText = `£${materialsVat.toFixed(2)}`;
             document.getElementById('summary-marked-materials').innerText = `£${markedMaterials.toFixed(2)}`;
             document.getElementById('summary-labor-costs').innerText = `£${laborCosts.toFixed(2)}`;
+            const durationSummaryEl = document.getElementById('day-duration-summary');
+            if (durationSummaryEl && activeLaborBookingFormat === 'DAY') {
+                const { wholeDays, hasHalfDay } = getSelectedDayDuration();
+                const dayLabel = `${wholeDays} full day${wholeDays === 1 ? '' : 's'}`;
+                durationSummaryEl.innerText = hasHalfDay ? `Quoting for ${dayLabel} + a half day.` : `Quoting for ${dayLabel}.`;
+            }
             document.getElementById('summary-testing-costs').innerText = `£${computedTestingCharge.toFixed(2)}`;
             const sundriesRow = document.getElementById('summary-sundries-row');
             if (sundriesRow) sundriesRow.classList.toggle('hidden', !isSundriesEnabled || isCustomCostEnabled);
@@ -10093,8 +10171,40 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const targetBtn = document.getElementById(`lbl-btn-${formatMode.toLowerCase()}`);
             if (targetBtn) targetBtn.className = 'py-2 text-xs font-bold rounded-lg transition-all bg-amber-500 text-slate-950 shadow-md';
             const frame = document.getElementById('hourly-selector-context-frame');
-            if (formatMode === 'HOUR') { frame.classList.remove('invisible', 'opacity-0'); frame.classList.add('opacity-100'); } else { frame.classList.add('invisible', 'opacity-0'); frame.classList.remove('opacity-100'); }
+            const dayHalfFrame = document.getElementById('day-half-selector-context-frame');
+            if (formatMode === 'HOUR') {
+                frame.classList.remove('invisible', 'opacity-0'); frame.classList.add('opacity-100');
+                dayHalfFrame.classList.add('invisible', 'opacity-0'); dayHalfFrame.classList.remove('opacity-100');
+            } else {
+                frame.classList.add('invisible', 'opacity-0'); frame.classList.remove('opacity-100');
+                dayHalfFrame.classList.remove('invisible', 'opacity-0'); dayHalfFrame.classList.add('opacity-100');
+            }
+            // The days counter only applies to the Full Day format — "Half
+            // Day" is inherently a single half day, so multiplying it would
+            // just be a confusing second way to express the same thing.
+            document.getElementById('day-count-row').classList.toggle('hidden', formatMode !== 'DAY');
             calculateComprehensiveMetrics();
+        }
+        function adjustDayCount(delta) {
+            const field = document.getElementById('day-count-input');
+            const next = Math.max(1, (parseInt(field.value) || 1) + delta);
+            field.value = next;
+            calculateComprehensiveMetrics();
+        }
+        function handleDayCountChange() {
+            const field = document.getElementById('day-count-input');
+            const parsed = parseInt(field.value);
+            field.value = (!parsed || parsed < 1) ? 1 : parsed;
+            calculateComprehensiveMetrics();
+        }
+        // Returns how many whole days and whether a trailing half day is
+        // included, for the Full Day format. Half Day format is always
+        // exactly one half day and no whole days.
+        function getSelectedDayDuration() {
+            if (activeLaborBookingFormat === 'HALF') return { wholeDays: 0, hasHalfDay: true };
+            const wholeDays = Math.max(1, parseInt(document.getElementById('day-count-input')?.value) || 1);
+            const hasHalfDay = !!document.getElementById('day-plus-half-toggle')?.checked;
+            return { wholeDays, hasHalfDay };
         }
         function toggleOp2Controls() {
             const isEnabled = document.getElementById('op2-enable-toggle').checked;
@@ -10624,6 +10734,18 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const msUntilRefresh = Math.max(30000, googleAccessTokenExpiry - Date.now() - (2 * 60 * 1000));
             googleSilentRefreshTimer = setTimeout(() => { ensureFreshGoogleToken(); }, msUntilRefresh);
         }
+        // The scheduled timer above is a best-effort proactive renewal, but
+        // browsers throttle (or fully suspend) setTimeout in a backgrounded
+        // tab — on mobile especially, returning to the app after any real
+        // time away can mean that timer never actually fired. Checking again
+        // right when the tab becomes visible catches that gap immediately,
+        // rather than waiting for the next calendar action to discover the
+        // token's stale and only refreshing (or failing) at that point.
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && gisTokenClient) {
+                ensureFreshGoogleToken();
+            }
+        });
 
         window.addEventListener('load', () => {
             if (window.google && google.accounts && google.accounts.oauth2) {
@@ -10941,18 +11063,29 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (job.linkedQuoteId) {
                 const q = currentQuotes.find(x => x.id === job.linkedQuoteId);
                 if (!q) return null;
-                return Math.round((q.financials.grossTotal - (q.financials.netMaterialsExVat + q.financials.materialsVat)) * 100) / 100;
+                // Actual, reconciled materials cost (set when converting to
+                // invoice) is the real figure once it exists — the quote's
+                // original estimated materials is only a fallback for a job
+                // that hasn't been invoiced yet, since actual usage often
+                // differs from what was originally quoted for. Labor is
+                // deliberately never subtracted — it's the owner's own time,
+                // so it counts as profit to them, not a cost.
+                const materialsCost = (q.actualCosts && typeof q.actualCosts.materials === 'number')
+                    ? q.actualCosts.materials
+                    : (q.financials.netMaterialsExVat + q.financials.materialsVat);
+                return Math.round((q.financials.grossTotal - materialsCost) * 100) / 100;
             }
             if (typeof job.adProfit === 'number') return job.adProfit;
             return null;
         }
-        // Only the app's own job data gets date-filtered to a rolling
-        // window — the ad spend side already comes pre-rolled from the sheet
-        // itself, per how this was scoped.
-        function computeRollingAdJobProfit() {
+        // Source of truth for which ad jobs count toward the rolling total,
+        // and how much each contributes — computeRollingAdJobProfit sums
+        // this list rather than duplicating the filter logic, so the total
+        // and the breakdown list shown in the UI can never drift apart.
+        function getAdJobProfitBreakdown() {
             const cutoff = new Date();
             cutoff.setDate(cutoff.getDate() - 365);
-            let total = 0;
+            const items = [];
             currentJobs.forEach(job => {
                 if (!job.fromAds || job.status !== 'Completed') return;
                 // Older jobs completed before completedAt was tracked at all
@@ -10962,8 +11095,14 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 const referenceDate = job.completedAt ? new Date(job.completedAt) : (job.date ? new Date(job.date + 'T00:00:00') : null);
                 if (!referenceDate || referenceDate < cutoff) return;
                 const profit = computeJobAdProfit(job);
-                if (profit !== null) total += profit;
+                if (profit === null) return;
+                items.push({ job, profit, referenceDate });
             });
+            items.sort((a, b) => b.referenceDate - a.referenceDate); // most recent first
+            return items;
+        }
+        function computeRollingAdJobProfit() {
+            const total = getAdJobProfitBreakdown().reduce((sum, item) => sum + item.profit, 0);
             return Math.round(total * 100) / 100;
         }
         // Writes all three figures fresh each time, rather than incrementally
@@ -10996,6 +11135,18 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('ad-profit-cost-value').innerText = '…';
             document.getElementById('ad-profit-net-value').innerText = '…';
             document.getElementById('ad-profit-percent-value').innerText = '…';
+            const breakdown = getAdJobProfitBreakdown();
+            const listEl = document.getElementById('ad-profit-breakdown-list');
+            listEl.innerHTML = breakdown.length === 0
+                ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-2">No ad jobs completed in the last 365 days.</p>`
+                : breakdown.map(item => `
+                    <div class="flex items-center justify-between gap-2 text-xs py-1.5 border-b border-[var(--eny-border-standard)] last:border-b-0">
+                        <div class="min-w-0">
+                            <p class="font-semibold text-[var(--eny-text-200)] truncate">${item.job.title || 'Untitled job'}</p>
+                            <p class="text-[10px] text-[var(--eny-text-muted2)]">${item.referenceDate.toLocaleDateString('en-GB')}</p>
+                        </div>
+                        <span class="font-mono font-bold shrink-0 ${item.profit >= 0 ? 'text-emerald-500' : 'text-red-500'}">£${item.profit.toFixed(2)}</span>
+                    </div>`).join('');
             const jobProfit = computeRollingAdJobProfit();
             const adSpend = await getAdSpendFromSheet();
             if (adSpend === null) {
