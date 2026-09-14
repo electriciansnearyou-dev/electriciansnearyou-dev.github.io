@@ -4088,6 +4088,7 @@
             },
             'bonding-verification': {
                 label: 'Bonding Verification', icon: 'link', defaultPrice: 70,
+                engineerBriefing: 'To test bonding go between the MET and entry point of pipework or any metal work and complete both continuity and IR tests to verify the result is 25K &lt; X &lt; 0.05.',
                 fields: [
                     { id: 'mainEarthingConductor', type: 'yesno', label: 'Main earthing conductor present and correctly sized?',
                         conditional: { showWhen: ['No'], type: 'textarea', label: 'Details of issue found' } },
@@ -4290,6 +4291,9 @@
                 } else {
                     html += `<label class="block text-[10px] font-semibold text-[var(--eny-text-muted)] uppercase mb-1">${b.label}</label><textarea rows="2" oninput="setGenericSurveyBranchText('${fieldId}', '${b.key}', this.value)" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 resize-none">${v || ''}</textarea>`;
                 }
+                if (b.hint) {
+                    html += `<div class="mt-2 flex items-start gap-1.5 text-[10px] text-[var(--eny-text-muted)] bg-[var(--eny-bg-page)] border border-dashed border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2"><i data-lucide="info" class="w-3 h-3 shrink-0 mt-px"></i><span>${b.hint}</span></div>`;
+                }
                 if (b.conditionals) html += renderSurveyBranches(fieldId, b.conditionals, v, branchValues);
                 html += `</div>`;
             });
@@ -4301,7 +4305,15 @@
             const state = ensureSmokeTestState();
             const survey = SURVEY_TYPES[state.serviceType];
             if (!survey || !survey.fields) { container.innerHTML = ''; return; }
-            container.innerHTML = survey.fields.map(field => {
+            // Survey-wide engineer briefing, shown above the questions and
+            // likewise never included in the generated certificate.
+            const briefingHtml = survey.engineerBriefing
+                ? `<div class="flex items-start gap-2 text-[11px] text-[var(--eny-text-300)] bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2.5">
+                       <i data-lucide="clipboard-list" class="w-3.5 h-3.5 shrink-0 mt-px text-amber-600"></i>
+                       <div><span class="font-bold uppercase tracking-wider text-[9px] text-amber-700 block mb-0.5">Engineer Notes — not shown on certificate</span>${survey.engineerBriefing}</div>
+                   </div>`
+                : '';
+            container.innerHTML = briefingHtml + survey.fields.map(field => {
                 const stored = state.genericFields[field.id] || {};
                 const value = stored.value;
                 const isButtonType = field.type === 'yesno' || field.type === 'select2' || field.type === 'select3' || field.type === 'select4';
@@ -4339,7 +4351,13 @@
                 if (field.conditionals) {
                     conditionalHtml += renderSurveyBranches(field.id, field.conditionals, value, stored.branches || {});
                 }
-                return `<div class="border border-[var(--eny-border-standard)] rounded-xl p-3">${fieldHtml}${conditionalHtml}</div>`;
+                // Engineer-only guidance. Deliberately rendered here and
+                // nowhere in the PDF builder, so it never reaches the
+                // certificate the client receives.
+                const hintHtml = field.hint
+                    ? `<div class="mt-2.5 flex items-start gap-1.5 text-[10px] text-[var(--eny-text-muted)] bg-[var(--eny-bg-page)] border border-dashed border-[var(--eny-border-standard)] rounded-lg px-2.5 py-2"><i data-lucide="info" class="w-3 h-3 shrink-0 mt-px"></i><span>${field.hint}</span></div>`
+                    : '';
+                return `<div class="border border-[var(--eny-border-standard)] rounded-xl p-3">${fieldHtml}${conditionalHtml}${hintHtml}</div>`;
             }).join('');
             lucide.createIcons();
         }
