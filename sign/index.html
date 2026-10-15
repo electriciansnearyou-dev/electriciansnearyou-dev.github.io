@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="robots" content="noindex, nofollow">
+<title>ENY Electrical — Sign Document</title>
+<link rel="icon" href="../Logo.png">
+<!-- Deliberately standalone: a client's phone loads only what signing needs,
+     not the whole business app. No app logic, no owner emails, no pricing
+     rules ever reach a client device. -->
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    margin: 0; background: #f1f5f9; color: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 16px; }
+  .brandbar { display: flex; align-items: center; gap: 12px; padding: 16px 4px 20px; }
+  .brandbar img { height: 46px; width: 46px; border-radius: 50%; }
+  .brand-name { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; }
+  .brand-sub { font-size: 11px; font-weight: 600; color: #d97706; letter-spacing: 0.08em; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 14px; }
+  .card-pad { padding: 18px; }
+  .lbl { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .val { font-size: 14px; color: #0f172a; font-weight: 600; }
+  .field { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px 13px;
+           font-size: 16px; color: #0f172a; outline: none; font-family: inherit; background: #fff; }
+  .field:focus { border-color: #d97706; }
+  .field.bad { border-color: #dc2626; background: #fef2f2; }
+  textarea.field { resize: none; }
+  .hint { font-size: 11px; color: #94a3b8; }
+  .err { font-size: 11px; color: #dc2626; margin-top: 4px; display: none; }
+  .err.show { display: block; }
+  button { font-family: inherit; }
+  .btn-primary { width: 100%; background: #0f172a; color: #fff; border: none; border-radius: 14px;
+                 padding: 17px; font-size: 16px; font-weight: 800; cursor: pointer; }
+  .btn-primary:disabled { opacity: 0.6; cursor: default; }
+  .state { display: none; }
+  .state.on { display: block; }
+  #sig-canvas { width: 100%; height: 180px; display: block; touch-action: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brandbar">
+    <img src="../Logo.png" alt="ENY Electrical" onerror="this.style.display='none'">
+    <div>
+      <div class="brand-name">ENY ELECTRICAL</div>
+      <div class="brand-sub">ELECTRICIANS NEAR YOU</div>
+    </div>
+  </div>
+
+  <div id="s-loading" class="state on card card-pad" style="text-align:center;color:#64748b;font-size:14px;padding:40px 20px;">
+    Loading document…
+  </div>
+
+  <div id="s-error" class="state card card-pad" style="text-align:center;border-color:#fecaca;">
+    <div style="font-size:15px;font-weight:700;color:#b91c1c;margin-bottom:6px;">This link isn't valid</div>
+    <p id="s-error-text" style="font-size:13px;color:#64748b;line-height:1.5;margin:0;"></p>
+  </div>
+
+  <div id="s-done" class="state card card-pad" style="text-align:center;border-color:#bbf7d0;">
+    <div style="font-size:40px;line-height:1;margin-bottom:10px;">✅</div>
+    <div style="font-size:16px;font-weight:800;color:#15803d;margin-bottom:6px;">Signed — thank you</div>
+    <p id="s-done-text" style="font-size:13px;color:#64748b;line-height:1.5;margin:0 0 4px;"></p>
+    <p id="s-done-email" style="font-size:12px;color:#94a3b8;line-height:1.5;margin:0;"></p>
+  </div>
+
+  <div id="s-form" class="state">
+    <div class="card">
+      <div style="padding:16px 18px;border-bottom:1px solid #e2e8f0;background:#f8fafc;border-radius:16px 16px 0 0;">
+        <div id="d-title" style="font-size:16px;font-weight:800;"></div>
+        <div id="d-ref" style="font-size:11px;color:#94a3b8;font-family:ui-monospace,monospace;margin-top:3px;"></div>
+      </div>
+      <div class="card-pad">
+        <div style="margin-bottom:14px;">
+          <div class="lbl">Property</div>
+          <div id="d-address" class="val"></div>
+        </div>
+        <div id="d-client-wrap" style="margin-bottom:14px;">
+          <div class="lbl">Client</div>
+          <div id="d-client" class="val"></div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <div class="lbl">Works</div>
+          <div id="d-works" style="font-size:14px;color:#334155;line-height:1.6;white-space:pre-wrap;"></div>
+        </div>
+        <div id="d-price-wrap" style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px;">
+          <div class="lbl" style="color:#b45309;">Agreed price</div>
+          <div id="d-price" style="font-size:24px;font-weight:800;color:#92400e;font-family:ui-monospace,monospace;"></div>
+          <div id="d-price-note" style="font-size:11px;color:#b45309;margin-top:4px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-pad">
+      <div class="lbl" style="margin-bottom:8px;">Terms</div>
+      <div id="d-terms" style="font-size:12px;color:#475569;line-height:1.65;"></div>
+    </div>
+
+    <div class="card card-pad">
+      <label class="lbl" for="f-name">Your full name</label>
+      <input type="text" id="f-name" class="field" autocomplete="name" placeholder="Type your full name">
+      <div id="e-name" class="err">Please type your full name.</div>
+
+      <label class="lbl" for="f-email" style="display:block;margin-top:16px;">Your email address</label>
+      <input type="email" id="f-email" class="field" autocomplete="email" inputmode="email" placeholder="you@example.com">
+      <p class="hint" style="margin:5px 0 0;">A signed copy is emailed to you for your records.</p>
+      <div id="e-email" class="err">Please enter a valid email address.</div>
+
+      <div id="f-comments-wrap" style="display:none;">
+        <label class="lbl" for="f-comments" style="display:block;margin-top:16px;">Comments or snags (optional)</label>
+        <textarea id="f-comments" rows="3" class="field" placeholder="Anything you'd like noted"></textarea>
+      </div>
+
+      <div class="lbl" style="margin-top:16px;">Signature</div>
+      <div style="border:1px dashed #cbd5e1;border-radius:10px;background:#fcfcfd;overflow:hidden;">
+        <canvas id="sig-canvas"></canvas>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:7px;">
+        <span id="sig-counter" class="hint">Sign above with your finger</span>
+        <button type="button" onclick="clearSig()" style="font-size:11px;font-weight:700;color:#dc2626;background:none;border:none;cursor:pointer;padding:4px;">Clear</button>
+      </div>
+      <div id="e-sig" class="err">Please sign in the box above.</div>
+
+      <label style="display:flex;gap:9px;align-items:flex-start;margin-top:16px;cursor:pointer;">
+        <input type="checkbox" id="f-confirm" style="margin-top:2px;width:18px;height:18px;flex-shrink:0;">
+        <span id="d-confirm-text" style="font-size:12px;color:#475569;line-height:1.5;"></span>
+      </label>
+      <div id="e-confirm" class="err">Please tick the box to confirm.</div>
+    </div>
+
+    <button type="button" id="f-submit" class="btn-primary" onclick="submitSignature()">Sign &amp; Submit</button>
+    <p class="hint" style="text-align:center;margin:10px 0 28px;">By signing you agree to the terms shown above.</p>
+  </div>
+</div>
+
+<!-- Off-screen container used only to render the PDF before emailing it. -->
+<div id="pdf-stage" style="position:absolute;left:-10000px;top:0;width:210mm;background:#fff;"></div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyApAyy8zY2NHknUmVLtls4ZEOFbx_lLALc",
+  authDomain: "job-manager-85655.firebaseapp.com",
+  projectId: "job-manager-85655",
+  storageBucket: "job-manager-85655.firebasestorage.app",
+  messagingSenderId: "862567904137",
+  appId: "1:862567904137:web:59a7292a52da1b5c6fa758"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Mirrors CONTRACT_TYPES in the main app. If the terms are reworded there,
+// reword them here too — the client signs against THIS copy.
+const CONTRACT_TYPES = {
+  authorisation: {
+    title: 'Authorisation to Proceed',
+    priceNote: 'Payable on completion of the works described above.',
+    confirmText: 'I confirm I am the owner of, or am authorised to act for, this property, and I agree to the terms above.',
+    terms: [
+      'I authorise ENY Electrical to carry out the works described above at the property stated.',
+      'I agree to pay the agreed price shown above on completion of those works.',
+      'The agreed price covers only the works described. Any additional work found to be necessary will be discussed with me and separately agreed in writing before it is carried out.',
+      'Where unforeseen issues arise that affect the price or scope, work will pause and I will be consulted before anything further is done.',
+      'Payment is due within 14 days of the invoice date unless otherwise agreed in writing.',
+      'All electrical work is carried out in accordance with BS 7671 and relevant building regulations.',
+    ],
+    doneText: "Your authorisation has been recorded. We'll be in touch to confirm the booking.",
+  },
+  completion: {
+    title: 'Confirmation of Completed Works',
+    priceNote: 'Balance now due in accordance with the agreed terms.',
+    confirmText: 'I confirm the works described have been completed to my satisfaction, and I agree the balance shown is now due.',
+    terms: [
+      'I confirm that the works described above have been carried out at the property stated.',
+      'I am satisfied with the work completed, subject to any comments I have noted below.',
+      'I understand that any defect in workmanship should be reported to ENY Electrical promptly so it can be put right.',
+      'I agree that the balance shown is now due for payment in line with the agreed terms.',
+      'Signing this does not affect my statutory rights.',
+    ],
+    doneText: 'Your sign-off has been recorded. Thank you for choosing ENY Electrical.',
+  },
+};
+
+const token = new URLSearchParams(window.location.search).get('c')
+           || new URLSearchParams(window.location.search).get('sign');
+let contract = null;
+let strokes = [];
+let activeStroke = null;
+let ctx = null;
+let submitting = false;
+
+function show(which) {
+  ['loading','error','done','form'].forEach(k => {
+    document.getElementById('s-' + k).classList.toggle('on', k === which);
+  });
+}
+function fail(msg) {
+  document.getElementById('s-error-text').textContent = msg;
+  show('error');
+}
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+async function boot() {
+  if (!token) { fail('This link is incomplete. Please contact ENY Electrical for a new one.'); return; }
+  let snap;
+  try {
+    snap = await db.collection('contracts').doc(token).get();
+  } catch (err) {
+    console.error('Load failed:', err);
+    fail("We couldn't load this document. Please check your connection and try again, or contact us for a new link.");
+    return;
+  }
+  if (!snap.exists) {
+    fail('This link may have expired or been mistyped. Please contact ENY Electrical for a new one.');
+    return;
+  }
+  contract = snap.data();
+  if (contract.status === 'signed') {
+    document.getElementById('s-done-text').textContent =
+      `This was already signed by ${contract.signedName || 'the client'} on ${contract.signedAt ? new Date(contract.signedAt).toLocaleDateString('en-GB') : 'a previous date'}. Nothing further is needed.`;
+    show('done');
+    return;
+  }
+  const def = CONTRACT_TYPES[contract.type] || CONTRACT_TYPES.authorisation;
+  document.getElementById('d-title').textContent = def.title;
+  document.getElementById('d-ref').textContent = contract.reference || '';
+  document.getElementById('d-address').textContent = contract.propertyAddress || '—';
+  if (contract.clientName) {
+    document.getElementById('d-client').textContent = contract.clientName;
+  } else {
+    document.getElementById('d-client-wrap').style.display = 'none';
+  }
+  document.getElementById('d-works').textContent = contract.worksDescription || '—';
+  if (typeof contract.agreedAmount === 'number') {
+    document.getElementById('d-price').textContent = '£' + contract.agreedAmount.toFixed(2);
+    document.getElementById('d-price-note').textContent = def.priceNote;
+  } else {
+    document.getElementById('d-price-wrap').style.display = 'none';
+  }
+  document.getElementById('d-terms').innerHTML = def.terms
+    .map(t => `<div style="display:flex;gap:7px;margin-bottom:7px;"><span style="color:#d97706;font-weight:700;flex-shrink:0;">•</span><span>${esc(t)}</span></div>`)
+    .join('');
+  document.getElementById('d-confirm-text').textContent = def.confirmText;
+  // Set both ways rather than relying on the inline style, so the
+  // state is correct even if boot() ever runs more than once.
+  document.getElementById('f-comments-wrap').style.display = contract.type === 'completion' ? 'block' : 'none';
+  if (contract.clientName) document.getElementById('f-name').value = contract.clientName;
+  if (contract.clientEmail) document.getElementById('f-email').value = contract.clientEmail;
+  show('form');
+  initCanvas();
+}
+
+function initCanvas() {
+  const canvas = document.getElementById('sig-canvas');
+  // Match the backing pixel grid to the displayed size, accounting for
+  // device pixel ratio, so strokes land under the finger and stay crisp.
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = canvas.clientWidth * ratio;
+  canvas.height = canvas.clientHeight * ratio;
+  ctx = canvas.getContext('2d');
+  ctx.scale(ratio, ratio);
+  ctx.strokeStyle = '#1e293b';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  canvas.onpointerdown = (e) => {
+    e.preventDefault();
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* older browsers cope without it */ }
+    const r = canvas.getBoundingClientRect();
+    activeStroke = [{ x: e.clientX - r.left, y: e.clientY - r.top }];
+    ctx.beginPath();
+    ctx.moveTo(activeStroke[0].x, activeStroke[0].y);
+  };
+  canvas.onpointermove = (e) => {
+    if (!activeStroke) return;
+    e.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    const last = activeStroke[activeStroke.length - 1];
+    if (last && Math.abs(x - last.x) < 1.5 && Math.abs(y - last.y) < 1.5) return;
+    activeStroke.push({ x, y });
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+  const end = () => {
+    if (activeStroke && activeStroke.length > 1) strokes.push(activeStroke);
+    activeStroke = null;
+    updateCounter();
+  };
+  canvas.onpointerup = end;
+  canvas.onpointercancel = end;
+  updateCounter();
+}
+function updateCounter() {
+  document.getElementById('sig-counter').textContent =
+    strokes.length > 0 ? strokes.length + ' stroke(s) drawn' : 'Sign above with your finger';
+}
+function clearSig() {
+  strokes = [];
+  activeStroke = null;
+  const canvas = document.getElementById('sig-canvas');
+  if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  updateCounter();
+}
+
+function setErr(id, on) {
+  document.getElementById('e-' + id).classList.toggle('show', on);
+  const f = document.getElementById('f-' + id);
+  if (f) f.classList.toggle('bad', on);
+}
+function validEmail(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+}
+
+// Renders the signature at a fixed size, fitting its own bounding box so
+// handwriting keeps its proportions whatever canvas size the phone gave us.
+function signatureDataUrl(strokeList, w, h) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  g.fillStyle = '#ffffff';
+  g.fillRect(0, 0, w, h);
+  const pts = strokeList.flat();
+  if (!pts.length) return c.toDataURL('image/png');
+  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const pad = 10;
+  const bw = Math.max(1, maxX - minX), bh = Math.max(1, maxY - minY);
+  const scale = Math.min((w - pad*2)/bw, (h - pad*2)/bh);
+  const ox = (w - bw*scale)/2 - minX*scale;
+  const oy = (h - bh*scale)/2 - minY*scale;
+  g.strokeStyle = '#1e293b'; g.lineWidth = 2.5; g.lineCap = 'round'; g.lineJoin = 'round';
+  strokeList.forEach(s => {
+    if (s.length < 2) return;
+    g.beginPath();
+    g.moveTo(s[0].x*scale+ox, s[0].y*scale+oy);
+    s.slice(1).forEach(p => g.lineTo(p.x*scale+ox, p.y*scale+oy));
+    g.stroke();
+  });
+  return c.toDataURL('image/png');
+}
+
+function buildPdfHtml(data) {
+  const def = CONTRACT_TYPES[data.type] || CONTRACT_TYPES.authorisation;
+  const sig = signatureDataUrl(strokes, 600, 200);
+  return `
+    <div style="font-family:Helvetica,Arial,sans-serif;padding:16mm;color:#0f172a;width:210mm;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0A5FB9;padding-bottom:10px;margin-bottom:18px;">
+        <div>
+          <div style="font-size:19px;font-weight:800;">ENY ELECTRICAL</div>
+          <div style="font-size:9px;color:#d97706;font-weight:700;letter-spacing:0.09em;">ELECTRICIANS NEAR YOU</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:14px;font-weight:700;">${esc(def.title)}</div>
+          <div style="font-size:9px;color:#64748b;font-family:monospace;">${esc(data.reference)}</div>
+        </div>
+      </div>
+      <table style="width:100%;font-size:10px;margin-bottom:16px;">
+        <tr>
+          <td style="width:50%;vertical-align:top;padding-right:10px;">
+            <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;">Property</div>
+            <div style="font-weight:600;margin-top:2px;">${esc(data.propertyAddress)}</div>
+          </td>
+          <td style="width:50%;vertical-align:top;">
+            <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;">Client</div>
+            <div style="font-weight:600;margin-top:2px;">${esc(data.clientName || data.signedName)}</div>
+          </td>
+        </tr>
+      </table>
+      <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-bottom:4px;">Description of works</div>
+      <div style="font-size:10.5px;line-height:1.6;white-space:pre-wrap;border:1px solid #e2e8f0;border-radius:6px;padding:10px;margin-bottom:14px;">${esc(data.worksDescription)}</div>
+      <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:10px;margin-bottom:16px;">
+        <span style="font-size:8px;color:#b45309;font-weight:700;text-transform:uppercase;">Agreed price</span>
+        <div style="font-size:20px;font-weight:800;color:#92400e;font-family:monospace;">£${(data.agreedAmount||0).toFixed(2)}</div>
+      </div>
+      <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-bottom:4px;">Terms agreed</div>
+      <div style="font-size:9px;line-height:1.6;color:#475569;margin-bottom:16px;">
+        ${def.terms.map(t => `<div style="margin-bottom:4px;">• ${esc(t)}</div>`).join('')}
+      </div>
+      ${data.clientComments ? `<div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-bottom:4px;">Client comments</div><div style="font-size:10px;font-style:italic;color:#475569;border-left:3px solid #e2e8f0;padding-left:8px;margin-bottom:16px;">${esc(data.clientComments)}</div>` : ''}
+      <div style="border-top:1px solid #e2e8f0;padding-top:14px;">
+        <div style="font-size:9px;color:#475569;line-height:1.5;margin-bottom:8px;">${esc(def.confirmText)}</div>
+        <img src="${sig}" style="width:70mm;height:23mm;object-fit:contain;border-bottom:1px solid #94a3b8;display:block;">
+        <div style="font-size:10px;font-weight:700;margin-top:5px;">${esc(data.signedName)}</div>
+        <div style="font-size:9px;color:#64748b;">Signed electronically on ${new Date(data.signedAt).toLocaleString('en-GB')}</div>
+        <div style="font-size:9px;color:#64748b;">${esc(data.clientEmail)}</div>
+      </div>
+      <div style="margin-top:20px;font-size:7.5px;color:#94a3b8;border-top:1px solid #f1f5f9;padding-top:7px;">
+        Electronically signed via a unique single-use link issued by ENY Electrical. Reference ${esc(data.reference)}.
+        ${data.signedIp ? 'Recorded IP ' + esc(data.signedIp) + '.' : ''}
+      </div>
+    </div>`;
+}
+
+async function renderPdfBase64(data) {
+  const stage = document.getElementById('pdf-stage');
+  stage.innerHTML = buildPdfHtml(data);
+  try {
+    const canvas = await html2canvas(stage.firstElementChild, { scale: 2, useCORS: true });
+    if (!canvas.width || !canvas.height) throw new Error('empty canvas');
+    const img = canvas.toDataURL('image/jpeg', 0.92);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = (canvas.height * pw) / canvas.width;
+    pdf.addImage(img, 'JPEG', 0, 0, pw, ph);
+    return pdf.output('datauristring').split(',')[1];
+  } finally {
+    stage.innerHTML = '';
+  }
+}
+
+// Best-effort only — a client's IP adds corroboration, but the lookup must
+// never block or delay signing if the service is slow or blocked.
+async function lookupIp() {
+  try {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 2500);
+    const res = await fetch('https://api.ipify.org?format=json', { signal: ctl.signal });
+    clearTimeout(t);
+    if (!res.ok) return null;
+    const j = await res.json();
+    return j.ip || null;
+  } catch (err) {
+    return null;
+  }
+}
+
+async function submitSignature() {
+  if (submitting) return;
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const confirmed = document.getElementById('f-confirm').checked;
+  setErr('name', !name);
+  setErr('email', !validEmail(email));
+  setErr('sig', strokes.length === 0);
+  setErr('confirm', !confirmed);
+  if (!name || !validEmail(email) || strokes.length === 0 || !confirmed) {
+    document.querySelector('.err.show').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  submitting = true;
+  const btn = document.getElementById('f-submit');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  const ip = await lookupIp();
+  const payload = {
+    status: 'signed',
+    signedName: name,
+    clientEmail: email,
+    signedAt: new Date().toISOString(),
+    clientComments: document.getElementById('f-comments').value.trim() || null,
+    // Firestore rejects an array directly inside another array, so each
+    // stroke is wrapped in an object.
+    signature: { strokes: strokes.map(s => ({ points: s })) },
+    signedIp: ip,
+    signedDevice: (navigator.userAgent || '').slice(0, 300),
+    seenByOwner: false,
+    emailSent: false,
+  };
+
+  // The signature is saved FIRST and on its own. If the email step then
+  // fails — bad signal, relay down — the signature still stands and the
+  // office can send the copy manually. A dropped email must never cost a
+  // signature.
+  try {
+    await db.collection('contracts').doc(token).update(payload);
+  } catch (err) {
+    console.error('Save failed:', err);
+    submitting = false;
+    btn.disabled = false;
+    btn.textContent = 'Sign & Submit';
+    alert("Sorry — that didn't save. Please check your connection and try again.");
+    return;
+  }
+
+  const def = CONTRACT_TYPES[contract.type] || CONTRACT_TYPES.authorisation;
+  document.getElementById('s-done-text').textContent = def.doneText;
+  document.getElementById('s-done-email').textContent = 'Sending your copy to ' + email + '…';
+  show('done');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  const full = Object.assign({}, contract, payload);
+  try {
+    if (!contract.relayUrl) throw new Error('No relay configured');
+    const pdfB64 = await renderPdfBase64(full);
+    // text/plain dodges the CORS preflight that Apps Script handles poorly.
+    await fetch(contract.relayUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        token,
+        to: email,
+        clientName: name,
+        reference: full.reference,
+        docTitle: def.title,
+        propertyAddress: full.propertyAddress,
+        amount: (full.agreedAmount || 0).toFixed(2),
+        pdfBase64: pdfB64,
+      }),
+    });
+    await db.collection('contracts').doc(token).update({ emailSent: true });
+    document.getElementById('s-done-email').textContent = 'A signed copy has been emailed to ' + email + '.';
+  } catch (err) {
+    console.error('Email step failed:', err);
+    document.getElementById('s-done-email').textContent =
+      "Your signature is saved. We couldn't email your copy automatically — we'll send it over shortly.";
+  }
+}
+
+boot();
+</script>
+</body>
+</html>
