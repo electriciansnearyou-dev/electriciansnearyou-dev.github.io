@@ -45,6 +45,8 @@
     <!-- PDF generation (direct html2canvas + jsPDF, not html2pdf.js — see quote PDF fix history) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js"></script>
+    <!-- QR generation for client signing links (renders to canvas, offline once loaded) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -111,6 +113,7 @@
            scoped override since editing each icon tag individually across 7+
            nav buttons would be more error-prone than one targeted rule. */
         .nav-btn > svg:first-child { width: 18px !important; height: 18px !important; }
+        .nav-menu-item > svg:first-child { width: 16px !important; height: 16px !important; flex-shrink: 0; }
         .hazard-stripe {
             background-color: #FFDF27;
         }
@@ -196,6 +199,99 @@
         </div>
     </div>
 
+    <!-- ================= PUBLIC CLIENT SIGNING PAGE =================
+         Shown when the URL carries ?sign=<token>. Deliberately styled with
+         explicit colours rather than the app's theme variables: the client
+         is a stranger on their own phone, and this must look identical and
+         professional regardless of whatever theme the engineer last used. -->
+    <div id="public-sign-page" class="hidden fixed inset-0 z-[200] overflow-y-auto" style="background:#f1f5f9;">
+        <div style="max-width:640px;margin:0 auto;padding:16px;">
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 4px 20px;">
+                <img src="Logo.png" alt="ENY Electrical" style="height:46px;width:46px;border-radius:50%;">
+                <div>
+                    <div style="font-size:17px;font-weight:800;color:#0f172a;letter-spacing:-0.01em;">ENY ELECTRICAL</div>
+                    <div style="font-size:11px;font-weight:600;color:#d97706;letter-spacing:0.08em;">ELECTRICIANS NEAR YOU</div>
+                </div>
+            </div>
+
+            <div id="public-sign-loading" style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:40px 20px;text-align:center;color:#64748b;font-size:14px;">
+                Loading document…
+            </div>
+
+            <div id="public-sign-error" class="hidden" style="background:#fff;border:1px solid #fecaca;border-radius:16px;padding:32px 20px;text-align:center;">
+                <div style="font-size:15px;font-weight:700;color:#b91c1c;margin-bottom:6px;">This link isn't valid</div>
+                <p id="public-sign-error-text" style="font-size:13px;color:#64748b;line-height:1.5;margin:0;"></p>
+            </div>
+
+            <div id="public-sign-done" class="hidden" style="background:#fff;border:1px solid #bbf7d0;border-radius:16px;padding:32px 20px;text-align:center;">
+                <div style="font-size:40px;line-height:1;margin-bottom:10px;">✅</div>
+                <div style="font-size:16px;font-weight:800;color:#15803d;margin-bottom:6px;">Signed — thank you</div>
+                <p id="public-sign-done-text" style="font-size:13px;color:#64748b;line-height:1.5;margin:0;"></p>
+            </div>
+
+            <div id="public-sign-content" class="hidden">
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;margin-bottom:14px;">
+                    <div id="public-sign-doc-header" style="padding:16px 18px;border-bottom:1px solid #e2e8f0;background:#f8fafc;">
+                        <div id="public-sign-doc-title" style="font-size:16px;font-weight:800;color:#0f172a;"></div>
+                        <div id="public-sign-doc-ref" style="font-size:11px;color:#94a3b8;font-family:ui-monospace,monospace;margin-top:3px;"></div>
+                    </div>
+                    <div style="padding:18px;">
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Property</div>
+                            <div id="public-sign-address" style="font-size:14px;color:#0f172a;font-weight:600;"></div>
+                        </div>
+                        <div id="public-sign-client-wrapper" style="margin-bottom:14px;">
+                            <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Client</div>
+                            <div id="public-sign-client" style="font-size:14px;color:#0f172a;font-weight:600;"></div>
+                        </div>
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Works</div>
+                            <div id="public-sign-works" style="font-size:14px;color:#334155;line-height:1.6;white-space:pre-wrap;"></div>
+                        </div>
+                        <div id="public-sign-price-wrapper" style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px;">
+                            <div style="font-size:10px;font-weight:700;color:#b45309;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">Agreed price</div>
+                            <div id="public-sign-price" style="font-size:24px;font-weight:800;color:#92400e;font-family:ui-monospace,monospace;"></div>
+                            <div id="public-sign-price-note" style="font-size:11px;color:#b45309;margin-top:4px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:14px;">
+                    <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Terms</div>
+                    <div id="public-sign-terms" style="font-size:12px;color:#475569;line-height:1.65;"></div>
+                </div>
+
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:18px;margin-bottom:14px;">
+                    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Your full name</label>
+                    <input type="text" id="public-sign-name" autocomplete="name" placeholder="Type your full name" style="width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:10px;padding:11px 13px;font-size:15px;color:#0f172a;outline:none;">
+
+                    <div id="public-sign-comments-wrapper" class="hidden">
+                        <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin:16px 0 6px;">Comments or snags (optional)</label>
+                        <textarea id="public-sign-comments" rows="3" placeholder="Anything you'd like noted" style="width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:10px;padding:11px 13px;font-size:14px;color:#0f172a;outline:none;resize:none;font-family:inherit;"></textarea>
+                    </div>
+
+                    <label style="display:block;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin:16px 0 6px;">Signature</label>
+                    <div style="border:1px dashed #cbd5e1;border-radius:10px;background:#fcfcfd;overflow:hidden;">
+                        <canvas id="public-signature-canvas" style="width:100%;height:170px;display:block;touch-action:none;"></canvas>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:7px;">
+                        <span id="public-signature-counter" style="font-size:11px;color:#94a3b8;">Sign above with your finger</span>
+                        <button type="button" onclick="clearPublicSignature()" style="font-size:11px;font-weight:700;color:#dc2626;background:none;border:none;cursor:pointer;padding:4px;">Clear</button>
+                    </div>
+
+                    <label style="display:flex;gap:9px;align-items:flex-start;margin-top:16px;cursor:pointer;">
+                        <input type="checkbox" id="public-sign-confirm" style="margin-top:2px;width:17px;height:17px;flex-shrink:0;">
+                        <span id="public-sign-confirm-text" style="font-size:12px;color:#475569;line-height:1.5;"></span>
+                    </label>
+                </div>
+
+                <button type="button" id="public-sign-submit" onclick="submitPublicSignature()" style="width:100%;background:#0f172a;color:#fff;border:none;border-radius:14px;padding:16px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:28px;">
+                    Sign &amp; Submit
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ================= MAIN APP ================= -->
     <div id="initial-load-overlay" class="hidden fixed inset-0 bg-[var(--eny-bg-recessed)] z-[90] flex items-center justify-center">
         <div class="text-center space-y-3">
@@ -243,66 +339,83 @@
                     <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
                         <i data-lucide="moon" class="w-[18px] h-[18px]"></i>
                     </button>
+                    <button onclick="toggleNavMenu()" id="nav-menu-trigger" class="relative text-[var(--eny-text-primary)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] hover:border-amber-500 transition-colors cursor-pointer" title="Menu" aria-label="Open menu">
+                        <i data-lucide="menu" class="w-[18px] h-[18px]"></i>
+                        <span id="nav-menu-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center leading-none">0</span>
+                    </button>
                 </div>
 
-                <nav id="main-nav-bar" class="flex flex-wrap items-center justify-center gap-1 bg-[var(--eny-bg-page)]/80 p-[5px] rounded-xl border border-[var(--eny-border-subtle)]">
-                    <button onclick="switchTab('today-tab')" id="btn-today-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/10 cursor-pointer">
-                        <i data-lucide="sun" class="w-4 h-4"></i> Today
-                    </button>
-                    <button onclick="switchTab('dashboard-tab')" id="btn-dashboard-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
-                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
-                    </button>
-                    <div class="relative">
-                        <button onclick="toggleClientDataMenu()" id="btn-client-data-menu" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer relative">
-                            <i data-lucide="folder-open" class="w-4 h-4"></i> Client Data <i data-lucide="chevron-down" class="w-3 h-3"></i>
-                            <span id="client-data-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center leading-none">0</span>
+                <!-- Navigation now lives entirely behind the hamburger in the
+                     header. Every destination keeps its original button id, so
+                     switchTab's highlighting and applyOwnerVisibility's
+                     permission classes continue to work untouched. -->
+                <div id="nav-menu-backdrop" onclick="closeNavMenu()" class="hidden fixed inset-0 bg-black/50 backdrop-blur-[2px] z-[150]"></div>
+                <div id="nav-menu-panel" class="hidden fixed top-0 right-0 bottom-0 w-[270px] max-w-[85vw] bg-[var(--eny-bg-card)] border-l border-[var(--eny-border-medium)] shadow-2xl z-[151] flex flex-col">
+                    <div class="flex items-center justify-between px-4 py-3.5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 shrink-0">
+                        <span class="text-sm font-bold text-[var(--eny-text-primary)]">Menu</span>
+                        <button onclick="closeNavMenu()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] p-1.5 rounded-lg cursor-pointer" aria-label="Close menu">
+                            <i data-lucide="x" class="w-4 h-4"></i>
                         </button>
-                        <div id="client-data-dropdown" class="hidden absolute top-full left-0 mt-2 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-xl shadow-2xl ring-1 ring-white/[0.06] py-1.5 min-w-[170px] z-50 modal-pop-in">
-                            <button onclick="switchTab('jobs-tab'); closeClientDataMenu();" id="btn-jobs-tab" class="w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
-                                <i data-lucide="clipboard-list" class="w-4 h-4"></i> Jobs
-                            </button>
-                            <button onclick="switchTab('lookup-tab'); closeClientDataMenu();" id="btn-lookup-tab" class="w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
-                                <i data-lucide="map-pin" class="w-4 h-4"></i> Property Lookup
-                            </button>
-                            <button onclick="switchTab('crm-tab'); closeClientDataMenu();" id="btn-crm-tab" class="owner-only-nav w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
-                                <i data-lucide="users" class="w-4 h-4"></i> CRM
-                            </button>
-                        </div>
                     </div>
-                    <button onclick="switchTab('smoketest-tab')" id="btn-smoketest-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
-                        <i data-lucide="clipboard-check" class="w-4 h-4"></i> Servicing
-                    </button>
-                    <button onclick="switchTab('map-tab')" id="btn-map-tab" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
-                        <i data-lucide="map" class="w-4 h-4"></i> Map
-                    </button>
-                    <button onclick="switchTab('quote-tab')" id="btn-quote-tab" class="owner-only-nav nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">
-                        <i data-lucide="file-text" class="w-4 h-4"></i> Quote Builder
-                    </button>
-                    <div class="relative">
-                        <button onclick="toggleMoreMenu()" id="btn-more-menu" class="nav-btn px-[14px] py-[9px] text-[14px] font-medium rounded-lg flex items-center gap-[7px] transition-all text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer relative">
-                            <i data-lucide="more-horizontal" class="w-4 h-4"></i> More
-                            <span id="more-menu-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center leading-none">0</span>
+                    <div class="flex-1 overflow-y-auto py-2 custom-scrollbar">
+                        <p class="px-4 pt-2 pb-1 text-[9px] font-bold uppercase tracking-wider text-[var(--eny-text-muted2)]">Main</p>
+                        <button onclick="switchTab('today-tab'); closeNavMenu();" id="btn-today-tab" class="nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="sun" class="w-4 h-4 shrink-0"></i> Today
                         </button>
-                        <div id="more-menu-dropdown" class="hidden absolute top-full right-0 mt-2 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-xl shadow-2xl ring-1 ring-white/[0.06] py-1.5 min-w-[160px] z-50 modal-pop-in">
-                            <button onclick="switchTab('settings-tab'); closeMoreMenu();" id="btn-settings-tab" class="owner-only-nav w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
-                                <i data-lucide="sliders" class="w-4 h-4"></i> Settings
-                            </button>
-                            <button onclick="switchTab('engineer-stats-tab'); closeMoreMenu();" id="btn-engineer-stats-tab" class="primary-owner-only hidden w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
-                                <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Engineer Stats
-                            </button>
-                            <button onclick="switchTab('ad-profit-tab'); closeMoreMenu(); renderAdProfitTab();" id="btn-ad-profit-tab" class="drs-authorized-only hidden w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
-                                <i data-lucide="line-chart" class="w-4 h-4"></i> Ad Profit
-                            </button>
-                            <button onclick="switchTab('trash-tab'); closeMoreMenu();" id="btn-trash-tab" class="w-full text-left px-4 py-2.5 text-xs font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 hover:text-[var(--eny-text-primary)] flex items-center gap-2 transition-colors cursor-pointer">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i> Trash
-                            </button>
-                            <div class="border-t border-[var(--eny-border-subtle)] my-1"></div>
-                            <button onclick="handleSignOut(); closeMoreMenu();" class="w-full text-left px-4 py-2.5 text-xs font-medium text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors cursor-pointer">
-                                <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
-                            </button>
-                        </div>
+                        <button onclick="switchTab('dashboard-tab'); closeNavMenu();" id="btn-dashboard-tab" class="nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4 shrink-0"></i> Dashboard
+                        </button>
+
+                        <p class="px-4 pt-3 pb-1 text-[9px] font-bold uppercase tracking-wider text-[var(--eny-text-muted2)]">Client Data</p>
+                        <button onclick="switchTab('jobs-tab'); closeNavMenu();" id="btn-jobs-tab" class="nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="clipboard-list" class="w-4 h-4 shrink-0"></i> Jobs
+                            <span id="client-data-badge" class="hidden ml-auto bg-red-500 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 min-w-[16px] text-center">0</span>
+                        </button>
+                        <button onclick="switchTab('lookup-tab'); closeNavMenu();" id="btn-lookup-tab" class="nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="map-pin" class="w-4 h-4 shrink-0"></i> Property Lookup
+                        </button>
+                        <button onclick="switchTab('crm-tab'); closeNavMenu();" id="btn-crm-tab" class="owner-only-nav nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="users" class="w-4 h-4 shrink-0"></i> CRM
+                        </button>
+
+                        <p class="px-4 pt-3 pb-1 text-[9px] font-bold uppercase tracking-wider text-[var(--eny-text-muted2)]">Work</p>
+                        <button onclick="switchTab('smoketest-tab'); closeNavMenu();" id="btn-smoketest-tab" class="nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="clipboard-check" class="w-4 h-4 shrink-0"></i> Servicing
+                        </button>
+                        <button onclick="switchTab('map-tab'); closeNavMenu();" id="btn-map-tab" class="nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="map" class="w-4 h-4 shrink-0"></i> Map
+                        </button>
+                        <button onclick="switchTab('quote-tab'); closeNavMenu();" id="btn-quote-tab" class="owner-only-nav nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="file-text" class="w-4 h-4 shrink-0"></i> Quote Builder
+                            <span id="more-menu-badge" class="hidden ml-auto bg-red-500 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 min-w-[16px] text-center">0</span>
+                        </button>
+
+                        <p class="px-4 pt-3 pb-1 text-[9px] font-bold uppercase tracking-wider text-[var(--eny-text-muted2)]">Business</p>
+                        <button onclick="switchTab('contracts-tab'); closeNavMenu(); renderContractsTab();" id="btn-contracts-tab" class="drs-authorized-only hidden nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="file-signature" class="w-4 h-4 shrink-0"></i> Client Forms
+                            <span id="contracts-unseen-badge" class="hidden ml-auto bg-red-500 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 min-w-[16px] text-center">0</span>
+                        </button>
+                        <button onclick="switchTab('ad-profit-tab'); closeNavMenu(); renderAdProfitTab();" id="btn-ad-profit-tab" class="drs-authorized-only hidden nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="line-chart" class="w-4 h-4 shrink-0"></i> Ad Profit
+                        </button>
+                        <button onclick="switchTab('engineer-stats-tab'); closeNavMenu();" id="btn-engineer-stats-tab" class="primary-owner-only hidden nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="bar-chart-3" class="w-4 h-4 shrink-0"></i> Engineer Stats
+                        </button>
+
+                        <p class="px-4 pt-3 pb-1 text-[9px] font-bold uppercase tracking-wider text-[var(--eny-text-muted2)]">System</p>
+                        <button onclick="switchTab('settings-tab'); closeNavMenu();" id="btn-settings-tab" class="owner-only-nav nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="sliders" class="w-4 h-4 shrink-0"></i> Settings
+                        </button>
+                        <button onclick="switchTab('trash-tab'); closeNavMenu();" id="btn-trash-tab" class="nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="trash-2" class="w-4 h-4 shrink-0"></i> Trash
+                        </button>
                     </div>
-                </nav>
+                    <div class="border-t border-[var(--eny-border-standard)] p-2 shrink-0 bg-[var(--eny-bg-page)]/50">
+                        <button onclick="handleSignOut(); closeNavMenu();" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-red-500 hover:bg-red-500/10 rounded-lg flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="log-out" class="w-4 h-4 shrink-0"></i> Sign Out
+                        </button>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -1710,6 +1823,28 @@
                 </div>
             </div>
 
+            <div id="contracts-tab" class="tab-content drs-authorized-only-tab space-y-4">
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-5 shadow-lg ring-1 ring-white/[0.06]">
+                    <h2 class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2 mb-1"><i data-lucide="file-signature" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Client Forms</h2>
+                    <p class="text-[11px] text-[var(--eny-text-muted)] mb-4">Create a form, then show the client the QR code or send them the link. They sign on their own phone.</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="openContractBuilder('authorisation')" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="file-check" class="w-3.5 h-3.5"></i> Agree to Pay</button>
+                        <button onclick="openContractBuilder('completion')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Work Complete</button>
+                    </div>
+                </div>
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-4 shadow-lg ring-1 ring-white/[0.06]">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-bold text-[var(--eny-text-primary)]">Sent Forms</h3>
+                        <select id="contracts-filter" onchange="renderContractsTab()" class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-2 py-1.5 text-[11px] text-[var(--eny-text-100)] focus:outline-none">
+                            <option value="all">All</option>
+                            <option value="pending">Awaiting signature</option>
+                            <option value="signed">Signed</option>
+                        </select>
+                    </div>
+                    <div id="contracts-list" class="space-y-2"></div>
+                </div>
+            </div>
+
             <div id="trash-tab" class="tab-content space-y-6">
                 <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-800 flex items-center justify-between gap-3 flex-wrap">
                     <span>Deleted items sit here for 30 days before being permanently removed, in case something was removed by mistake.</span>
@@ -2288,6 +2423,72 @@
         </div>
     </div>
 
+    <div id="contract-builder-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 sticky top-0">
+                <h3 id="contract-builder-title" class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"></h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Link to job (optional)</label>
+                    <input type="text" id="contract-job-search" oninput="renderContractJobOptions()" placeholder="Search jobs by title or address..." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-100)] focus:outline-none focus:border-amber-500 mb-1.5">
+                    <input type="hidden" id="contract-job-id">
+                    <div id="contract-job-selected" class="hidden items-center justify-between gap-2 bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 mb-1.5">
+                        <span id="contract-job-selected-name" class="text-xs text-[var(--eny-text-200)] truncate"></span>
+                        <button type="button" onclick="clearContractJob()" class="text-[10px] font-bold text-red-400 hover:text-red-300 cursor-pointer shrink-0">Unlink</button>
+                    </div>
+                    <div id="contract-job-options" class="max-h-32 overflow-y-auto space-y-1 custom-scrollbar"></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Client name</label>
+                    <input type="text" id="contract-client-name" placeholder="e.g. Mr J Smith" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Property address *</label>
+                    <input type="text" id="contract-address" placeholder="e.g. 5 Willow Park, Poole" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Description of works *</label>
+                    <textarea id="contract-works" rows="5" placeholder="Describe exactly what is being agreed — this is what the client signs against." class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500 resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-1.5">Agreed price (£) *</label>
+                    <input type="number" id="contract-amount" min="0" step="0.01" placeholder="0.00" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                    <p class="text-[10px] text-[var(--eny-text-muted2)] mt-1">Shown prominently on the form the client signs.</p>
+                </div>
+            </div>
+            <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex gap-2 sticky bottom-0">
+                <button onclick="closeContractBuilder()" class="flex-1 bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-200)] font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancel</button>
+                <button onclick="createContract()" id="contract-create-btn" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Create &amp; Get QR</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="contract-share-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
+                <h3 class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="qr-code" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Show the client</h3>
+                <p id="contract-share-subtitle" class="text-[11px] text-[var(--eny-text-muted)] mt-1"></p>
+            </div>
+            <div class="p-5 space-y-3">
+                <div class="bg-white rounded-xl p-4 flex items-center justify-center">
+                    <div id="contract-qr-target"></div>
+                </div>
+                <p class="text-[11px] text-[var(--eny-text-muted)] text-center">Have them point their camera at this code.</p>
+                <div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-3 py-2.5">
+                    <p id="contract-share-link" class="text-[10px] font-mono text-[var(--eny-text-300)] break-all"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="copyContractLink()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-200)] font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="copy" class="w-3.5 h-3.5"></i> Copy link</button>
+                    <button onclick="shareContractLink()" class="bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-200)] font-semibold py-2.5 rounded-xl text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="share-2" class="w-3.5 h-3.5"></i> Send</button>
+                </div>
+            </div>
+            <div class="p-5 border-t border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
+                <button onclick="closeContractShare()" class="w-full bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-primary)] font-semibold py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Done</button>
+            </div>
+        </div>
+    </div>
+
     <div id="mark-lost-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
@@ -2523,6 +2724,191 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // ============================================================
+        // PUBLIC CLIENT SIGNING MODE
+        // ============================================================
+        // A client arriving via ?sign=<token> is a stranger with no login.
+        // This runs before the auth gate and, when active, takes over the
+        // page entirely — the auth listener below checks this flag and
+        // leaves the UI alone, so the login screen never flashes up at them.
+        const CONTRACT_TYPES = {
+            authorisation: {
+                title: 'Authorisation to Proceed',
+                showPrice: true,
+                priceNote: 'Payable on completion of the works described above.',
+                confirmText: 'I confirm I am the owner of, or am authorised to act for, this property, and I agree to the terms above.',
+                terms: [
+                    'I authorise ENY Electrical to carry out the works described above at the property stated.',
+                    'I agree to pay the agreed price shown above on completion of those works.',
+                    'The agreed price covers only the works described. Any additional work found to be necessary will be discussed with me and separately agreed in writing before it is carried out.',
+                    'Where unforeseen issues arise that affect the price or scope, work will pause and I will be consulted before anything further is done.',
+                    'Payment is due within 14 days of the invoice date unless otherwise agreed in writing.',
+                    'All electrical work is carried out in accordance with BS 7671 and relevant building regulations.',
+                ],
+                doneText: 'Your authorisation has been recorded. We\'ll be in touch to confirm the booking.',
+            },
+            completion: {
+                title: 'Confirmation of Completed Works',
+                showPrice: true,
+                priceNote: 'Balance now due in accordance with the agreed terms.',
+                confirmText: 'I confirm the works described have been completed to my satisfaction, and I agree the balance shown is now due.',
+                terms: [
+                    'I confirm that the works described above have been carried out at the property stated.',
+                    'I am satisfied with the work completed, subject to any comments I have noted below.',
+                    'I understand that any defect in workmanship should be reported to ENY Electrical promptly so it can be put right.',
+                    'I agree that the balance shown is now due for payment in line with the agreed terms.',
+                    'Signing this does not affect my statutory rights.',
+                ],
+                doneText: 'Your sign-off has been recorded. Thank you for choosing ENY Electrical.',
+            },
+        };
+        const publicSignToken = new URLSearchParams(window.location.search).get('sign');
+        const isPublicSigningMode = !!publicSignToken;
+        let publicContractData = null;
+        let publicSignatureStrokes = [];
+        let publicSignatureCtx = null;
+        let activePublicStroke = null;
+
+        function showPublicSignState(which) {
+            ['loading', 'error', 'done', 'content'].forEach(k => {
+                const el = document.getElementById(`public-sign-${k}`);
+                if (el) el.classList.toggle('hidden', k !== which);
+            });
+        }
+        function publicSignError(message) {
+            document.getElementById('public-sign-error-text').innerText = message;
+            showPublicSignState('error');
+        }
+        async function bootPublicSigningPage() {
+            document.getElementById('login-gate').classList.add('hidden');
+            document.getElementById('public-sign-page').classList.remove('hidden');
+            showPublicSignState('loading');
+            let doc;
+            try {
+                doc = await db.collection('contracts').doc(publicSignToken).get();
+            } catch (err) {
+                console.error('Contract load failed:', err);
+                publicSignError('We couldn\'t load this document. Please check your connection and try again, or contact us for a new link.');
+                return;
+            }
+            if (!doc.exists) {
+                publicSignError('This link may have expired or been mistyped. Please contact ENY Electrical for a new one.');
+                return;
+            }
+            const c = doc.data();
+            publicContractData = c;
+            if (c.status === 'signed') {
+                document.getElementById('public-sign-done-text').innerText = `This was already signed by ${c.signedName || 'the client'} on ${new Date(c.signedAt).toLocaleDateString('en-GB')}. Nothing further is needed.`;
+                showPublicSignState('done');
+                return;
+            }
+            const def = CONTRACT_TYPES[c.type] || CONTRACT_TYPES.authorisation;
+            document.getElementById('public-sign-doc-title').innerText = def.title;
+            document.getElementById('public-sign-doc-ref').innerText = c.reference || '';
+            document.getElementById('public-sign-address').innerText = c.propertyAddress || '—';
+            const clientWrap = document.getElementById('public-sign-client-wrapper');
+            if (c.clientName) { document.getElementById('public-sign-client').innerText = c.clientName; clientWrap.classList.remove('hidden'); }
+            else { clientWrap.classList.add('hidden'); }
+            document.getElementById('public-sign-works').innerText = c.worksDescription || '—';
+            const priceWrap = document.getElementById('public-sign-price-wrapper');
+            if (def.showPrice && typeof c.agreedAmount === 'number') {
+                document.getElementById('public-sign-price').innerText = `£${c.agreedAmount.toFixed(2)}`;
+                document.getElementById('public-sign-price-note').innerText = c.priceNote || def.priceNote;
+                priceWrap.classList.remove('hidden');
+            } else {
+                priceWrap.classList.add('hidden');
+            }
+            document.getElementById('public-sign-terms').innerHTML = def.terms.map(t => `<div style="display:flex;gap:7px;margin-bottom:7px;"><span style="color:#d97706;font-weight:700;flex-shrink:0;">•</span><span>${t}</span></div>`).join('');
+            document.getElementById('public-sign-confirm-text').innerText = def.confirmText;
+            document.getElementById('public-sign-comments-wrapper').classList.toggle('hidden', c.type !== 'completion');
+            if (c.clientName) document.getElementById('public-sign-name').value = c.clientName;
+            showPublicSignState('content');
+            initPublicSignatureCanvas();
+        }
+        function initPublicSignatureCanvas() {
+            const canvas = document.getElementById('public-signature-canvas');
+            if (!canvas) return;
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            publicSignatureCtx = canvas.getContext('2d');
+            publicSignatureCtx.strokeStyle = '#1e293b';
+            publicSignatureCtx.lineWidth = 2.5;
+            publicSignatureCtx.lineCap = 'round';
+            publicSignatureCtx.lineJoin = 'round';
+            canvas.onpointerdown = (e) => {
+                e.preventDefault();
+                try { canvas.setPointerCapture(e.pointerId); } catch (err) { console.warn('setPointerCapture failed (continuing without it):', err); }
+                const rect = canvas.getBoundingClientRect();
+                activePublicStroke = [{ x: e.clientX - rect.left, y: e.clientY - rect.top }];
+                publicSignatureCtx.beginPath();
+                publicSignatureCtx.moveTo(activePublicStroke[0].x, activePublicStroke[0].y);
+            };
+            canvas.onpointermove = (e) => {
+                if (!activePublicStroke) return;
+                e.preventDefault();
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left, y = e.clientY - rect.top;
+                const last = activePublicStroke[activePublicStroke.length - 1];
+                if (last && Math.abs(x - last.x) < 1.5 && Math.abs(y - last.y) < 1.5) return;
+                activePublicStroke.push({ x, y });
+                publicSignatureCtx.lineTo(x, y);
+                publicSignatureCtx.stroke();
+            };
+            const endStroke = () => {
+                if (activePublicStroke && activePublicStroke.length > 1) publicSignatureStrokes.push(activePublicStroke);
+                activePublicStroke = null;
+                updatePublicSignatureCounter();
+            };
+            canvas.onpointerup = endStroke;
+            canvas.onpointercancel = endStroke;
+            updatePublicSignatureCounter();
+        }
+        function updatePublicSignatureCounter() {
+            const el = document.getElementById('public-signature-counter');
+            if (el) el.innerText = publicSignatureStrokes.length > 0 ? `${publicSignatureStrokes.length} stroke(s) drawn` : 'Sign above with your finger';
+        }
+        function clearPublicSignature() {
+            publicSignatureStrokes = [];
+            activePublicStroke = null;
+            const canvas = document.getElementById('public-signature-canvas');
+            if (publicSignatureCtx) publicSignatureCtx.clearRect(0, 0, canvas.width, canvas.height);
+            updatePublicSignatureCounter();
+        }
+        async function submitPublicSignature() {
+            const name = document.getElementById('public-sign-name').value.trim();
+            if (!name) { alert('Please type your full name.'); return; }
+            if (publicSignatureStrokes.length === 0) { alert('Please sign in the box before submitting.'); return; }
+            if (!document.getElementById('public-sign-confirm').checked) { alert('Please tick the confirmation box to continue.'); return; }
+            const btn = document.getElementById('public-sign-submit');
+            btn.disabled = true;
+            btn.innerText = 'Submitting…';
+            // Firestore rejects an array directly inside another array, so each
+            // stroke is wrapped — same shape the in-app signature already uses,
+            // which lets both render through identical code.
+            const payload = {
+                status: 'signed',
+                signedName: name,
+                signedAt: new Date().toISOString(),
+                clientComments: document.getElementById('public-sign-comments').value.trim() || null,
+                signature: { strokes: publicSignatureStrokes.map(s => ({ points: s })) },
+                seenByOwner: false,
+            };
+            try {
+                await db.collection('contracts').doc(publicSignToken).update(payload);
+            } catch (err) {
+                console.error('Signature submission failed:', err);
+                btn.disabled = false;
+                btn.innerText = 'Sign & Submit';
+                alert('Sorry — that didn\'t save. Please check your connection and try again.');
+                return;
+            }
+            const def = CONTRACT_TYPES[publicContractData.type] || CONTRACT_TYPES.authorisation;
+            document.getElementById('public-sign-done-text').innerText = def.doneText;
+            showPublicSignState('done');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        if (isPublicSigningMode) bootPublicSigningPage();
+
         function isOwnerLoggedIn() {
             const email = (auth.currentUser && auth.currentUser.email || '').toLowerCase();
             return OWNER_EMAILS.some(e => e.toLowerCase() === email);
@@ -2551,6 +2937,9 @@
         let firestoreListenersStarted = false;
 
         auth.onAuthStateChanged((user) => {
+            // A client signing a document owns the whole page — never show
+            // them the login gate or boot the app behind them.
+            if (isPublicSigningMode) return;
             if (user) {
                 document.getElementById('login-gate').classList.add('hidden');
                 document.getElementById('app-root').classList.remove('hidden');
@@ -2786,76 +3175,45 @@
             }
 
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
-                btn.classList.add('text-[var(--eny-text-muted)]', 'hover:text-[var(--eny-text-primary)]');
-            });
-            // Dropdown items (inside Client Data / More) use a different
-            // default style than top-level nav buttons and don't carry the
-            // .nav-btn class, so the sweep above never reaches them — without
-            // this, a highlighted dropdown item stayed highlighted forever
-            // after switching away from it.
-            ['btn-jobs-tab', 'btn-lookup-tab', 'btn-crm-tab', 'btn-settings-tab', 'btn-trash-tab', 'btn-engineer-stats-tab', 'btn-ad-profit-tab'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
-                    el.classList.add('text-[var(--eny-text-300)]');
-                }
+            // Every destination now lives in the one hamburger panel and
+            // carries .nav-menu-item, so a single sweep clears the lot — the
+            // old per-group highlight juggling (Client Data / More trigger
+            // buttons) is gone along with those dropdowns.
+            document.querySelectorAll('.nav-menu-item').forEach(btn => {
+                btn.classList.remove('bg-amber-500', 'text-slate-950', 'font-semibold');
+                btn.classList.add('text-[var(--eny-text-300)]');
             });
             document.getElementById(targetTabId).classList.add('active');
             const targetButton = document.getElementById(`btn-${targetTabId}`);
             if (targetButton) {
-                targetButton.classList.remove('text-[var(--eny-text-muted)]', 'hover:text-[var(--eny-text-primary)]');
-                targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
-            }
-            // Settings and Trash live inside the More dropdown now — highlight
-            // that trigger button too, so it's clear which section is active
-            // even once the dropdown itself has closed.
-            if (targetTabId === 'settings-tab' || targetTabId === 'trash-tab' || targetTabId === 'engineer-stats-tab' || targetTabId === 'ad-profit-tab') {
-                const moreBtn = document.getElementById('btn-more-menu');
-                if (moreBtn) {
-                    moreBtn.classList.remove('text-[var(--eny-text-muted)]', 'hover:text-[var(--eny-text-primary)]');
-                    moreBtn.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
-                }
-            }
-            // Same idea for Jobs/Property Lookup/CRM, now grouped under
-            // Client Data.
-            if (targetTabId === 'jobs-tab' || targetTabId === 'lookup-tab' || targetTabId === 'crm-tab') {
-                const clientDataBtn = document.getElementById('btn-client-data-menu');
-                if (clientDataBtn) {
-                    clientDataBtn.classList.remove('text-[var(--eny-text-muted)]', 'hover:text-[var(--eny-text-primary)]');
-                    clientDataBtn.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold', 'shadow-md', 'shadow-amber-500/10');
-                }
+                targetButton.classList.remove('text-[var(--eny-text-300)]');
+                targetButton.classList.add('bg-amber-500', 'text-slate-950', 'font-semibold');
             }
             onTabSwitched(targetTabId);
         }
-        function toggleMoreMenu() {
-            document.getElementById('more-menu-dropdown').classList.toggle('hidden');
-            closeClientDataMenu();
+        function toggleNavMenu() {
+            const panel = document.getElementById('nav-menu-panel');
+            if (panel.classList.contains('hidden')) openNavMenu(); else closeNavMenu();
         }
-        function closeMoreMenu() {
-            document.getElementById('more-menu-dropdown').classList.add('hidden');
+        function openNavMenu() {
+            document.getElementById('nav-menu-panel').classList.remove('hidden');
+            document.getElementById('nav-menu-backdrop').classList.remove('hidden');
+            // Stop the page behind scrolling under the open panel on mobile.
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
         }
-        function toggleClientDataMenu() {
-            document.getElementById('client-data-dropdown').classList.toggle('hidden');
-            closeMoreMenu();
+        function closeNavMenu() {
+            document.getElementById('nav-menu-panel').classList.add('hidden');
+            document.getElementById('nav-menu-backdrop').classList.add('hidden');
+            document.body.style.overflow = '';
         }
-        function closeClientDataMenu() {
-            document.getElementById('client-data-dropdown').classList.add('hidden');
-        }
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('more-menu-dropdown');
-            const trigger = document.getElementById('btn-more-menu');
-            if (dropdown && !dropdown.classList.contains('hidden') && !dropdown.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
-                dropdown.classList.add('hidden');
-            }
-            const clientDropdown = document.getElementById('client-data-dropdown');
-            const clientTrigger = document.getElementById('btn-client-data-menu');
-            if (clientDropdown && !clientDropdown.classList.contains('hidden') && !clientDropdown.contains(e.target) && e.target !== clientTrigger && !clientTrigger.contains(e.target)) {
-                clientDropdown.classList.add('hidden');
-            }
-        });
-
+        // The old Client Data / More dropdowns are gone, but these are kept as
+        // no-ops: other parts of the app still call them when closing menus
+        // after an action, and a missing function there would throw.
+        function toggleMoreMenu() { toggleNavMenu(); }
+        function closeMoreMenu() { closeNavMenu(); }
+        function toggleClientDataMenu() { toggleNavMenu(); }
+        function closeClientDataMenu() { closeNavMenu(); }
         // ============================================================
         // STATE
         // ============================================================
@@ -3035,6 +3393,27 @@
         }
 
         function startFirestoreListeners() {
+            // Client forms live under the owner-ish gate (same list as DRS):
+            // they carry prices and client details, so they aren't for every
+            // engineer account to browse.
+            if (isDrsAuthorized()) {
+                db.collection('contracts').onSnapshot((snapshot) => {
+                    const previouslyUnseen = countUnseenSignedContracts();
+                    currentContracts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    const nowUnseen = countUnseenSignedContracts();
+                    // Live arrival while the app is open — worth interrupting
+                    // for, since a signature usually means money is now due.
+                    if (nowUnseen > previouslyUnseen && previouslyUnseen >= 0 && contractsListenerPrimed) {
+                        const justSigned = currentContracts
+                            .filter(c => c.status === 'signed' && !c.seenByOwner)
+                            .sort((a, b) => (b.signedAt || '').localeCompare(a.signedAt || ''))[0];
+                        if (justSigned) showToast(`${justSigned.signedName || 'A client'} has signed "${CONTRACT_TYPES[justSigned.type] ? CONTRACT_TYPES[justSigned.type].title : 'a form'}".`, 'success');
+                    }
+                    contractsListenerPrimed = true;
+                    renderContractsTab();
+                    renderDashboard();
+                }, (err) => console.error('Contracts listener error:', err));
+            }
             // --- Shared collections (everyone) ---
             db.collection('properties').onSnapshot((snapshot) => {
                 const allDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -3755,10 +4134,26 @@
         // applied — doesn't need to wait for login, the button just isn't
         // visible until then.
         applyColorTheme(document.documentElement.getAttribute('data-theme') || 'light');
+        // Counts are recorded as they're set so the hamburger can show a
+        // single combined total — with the nav collapsed behind one button,
+        // anything needing attention has to surface there or it's invisible.
+        const navBadgeCounts = {};
         function updateNavBadge(elementId, count) {
+            navBadgeCounts[elementId] = count || 0;
             const badge = document.getElementById(elementId);
+            if (badge) {
+                if (count > 0) { badge.innerText = count > 99 ? '99+' : count; badge.classList.remove('hidden'); }
+                else { badge.classList.add('hidden'); }
+            }
+            if (elementId !== 'nav-menu-badge') refreshNavMenuTotalBadge();
+        }
+        function refreshNavMenuTotalBadge() {
+            const total = Object.keys(navBadgeCounts)
+                .filter(k => k !== 'nav-menu-badge')
+                .reduce((sum, k) => sum + (navBadgeCounts[k] || 0), 0);
+            const badge = document.getElementById('nav-menu-badge');
             if (!badge) return;
-            if (count > 0) { badge.innerText = count > 99 ? '99+' : count; badge.classList.remove('hidden'); }
+            if (total > 0) { badge.innerText = total > 99 ? '99+' : total; badge.classList.remove('hidden'); }
             else { badge.classList.add('hidden'); }
         }
         function renderDashboard() {
@@ -3994,9 +4389,9 @@
 
                 const followUpSection = document.getElementById('dashboard-owner-followup-section');
                 if (followUpSection) followUpSection.classList.remove('hidden');
-                updateNavBadge('more-menu-badge', quotesWithOnSiteAdditions.length);
+                updateNavBadge('more-menu-badge', quotesWithOnSiteAdditions.length + countUnseenSignedContracts());
             } else {
-                updateNavBadge('more-menu-badge', 0);
+                updateNavBadge('more-menu-badge', countUnseenSignedContracts());
             }
             lucide.createIcons();
         }
@@ -6446,7 +6841,8 @@
             const generateInvoiceBtn = (j.status === 'Completed' && !j.linkedQuoteId && isDrsAuthorized()) ? `<button onclick="manuallyGenerateEmergencyInvoice('${j.id}')" title="Generate invoice from time on site" class="text-[var(--eny-text-muted)] hover:text-emerald-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="receipt" class="w-3.5 h-3.5"></i></button>` : '';
             const recordAdProfitBtn = (j.status === 'Completed' && j.fromAds && !j.linkedQuoteId && typeof j.adProfit !== 'number' && isDrsAuthorized()) ? `<button onclick="retryAdJobCompletion('${j.id}')" title="Record ad job profit" class="text-[var(--eny-text-muted)] hover:text-amber-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="line-chart" class="w-3.5 h-3.5"></i></button>` : '';
             const markJobLostBtn = (['Floating', 'Scheduled', 'Accepted'].includes(j.status) && isDrsAuthorized()) ? `<button onclick="markJobLost('${j.id}')" title="Mark job lost" class="text-[var(--eny-text-muted)] hover:text-red-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="thumbs-down" class="w-3.5 h-3.5"></i></button>` : '';
-            return `${quickActions}${assignEngineerBtn}${rescheduleBtn}${unbookBtn}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}${generateInvoiceBtn}${recordAdProfitBtn}${markJobLostBtn}
+            const clientFormBtn = isDrsAuthorized() ? `<button onclick="closeJobInfoModal(); openContractBuilder('${j.status === 'Completed' ? 'completion' : 'authorisation'}', '${j.id}')" title="Create a client form for this job" class="text-[var(--eny-text-muted)] hover:text-amber-500 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="file-signature" class="w-3.5 h-3.5"></i></button>` : '';
+            return `${quickActions}${assignEngineerBtn}${rescheduleBtn}${unbookBtn}${onMyWayBtn}${reminderBtn}${reviewBtn}${signatureBtn}${handoffBtns}${generateInvoiceBtn}${recordAdProfitBtn}${markJobLostBtn}${clientFormBtn}
                 <button onclick="loadJobForModification('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 <button onclick="deleteJob('${j.id}')" class="text-[var(--eny-text-muted)] hover:text-red-400 p-1.5 rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>`;
         }
@@ -8892,6 +9288,316 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (newStatus === 'Lost') { markQuoteLost(id); return; }
             updateQuoteStatus(id, newStatus);
             closeQuoteInfoModal();
+        }
+        // ============================================================
+        // CLIENT FORMS (signable contracts)
+        // ============================================================
+        let currentContracts = [];
+        let contractsListenerPrimed = false;
+        let activeContractBuilderType = null;
+        let activeShareContractUrl = '';
+
+        function countUnseenSignedContracts() {
+            return currentContracts.filter(c => c.status === 'signed' && !c.seenByOwner).length;
+        }
+        // The token is the document ID and the only thing guarding the link,
+        // so it comes from crypto, never Math.random() — 128 bits of real
+        // entropy, not something that can be guessed or walked.
+        function generateContractToken() {
+            const bytes = new Uint8Array(16);
+            crypto.getRandomValues(bytes);
+            return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        function buildContractUrl(token) {
+            return `${window.location.origin}${window.location.pathname}?sign=${token}`;
+        }
+        function openContractBuilder(type, prefillJobId) {
+            activeContractBuilderType = type;
+            const def = CONTRACT_TYPES[type];
+            document.getElementById('contract-builder-title').innerHTML = `<i data-lucide="${type === 'completion' ? 'check-circle' : 'file-check'}" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> ${def.title}`;
+            document.getElementById('contract-client-name').value = '';
+            document.getElementById('contract-address').value = '';
+            document.getElementById('contract-works').value = '';
+            document.getElementById('contract-amount').value = '';
+            document.getElementById('contract-job-search').value = '';
+            clearContractJob();
+            if (prefillJobId) selectContractJob(prefillJobId);
+            document.getElementById('contract-builder-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeContractBuilder() {
+            document.getElementById('contract-builder-modal').classList.add('hidden');
+            activeContractBuilderType = null;
+        }
+        function renderContractJobOptions() {
+            const filter = (document.getElementById('contract-job-search').value || '').toLowerCase().trim();
+            const el = document.getElementById('contract-job-options');
+            if (!filter) { el.innerHTML = ''; return; }
+            const matches = currentJobs
+                .filter(j => (j.title || '').toLowerCase().includes(filter) || (j.propertyAddress || '').toLowerCase().includes(filter))
+                .slice(0, 8);
+            el.innerHTML = matches.length === 0
+                ? `<p class="text-[11px] text-[var(--eny-text-muted2)] text-center py-2">No matching jobs.</p>`
+                : matches.map(j => `<button type="button" onclick="selectContractJob('${j.id}')" class="w-full text-left bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] hover:border-amber-500 rounded-lg p-2 text-[11px] text-[var(--eny-text-300)] cursor-pointer">${j.title || 'Untitled'} <span class="text-[var(--eny-text-muted2)]">${j.propertyAddress || ''}</span></button>`).join('');
+        }
+        // Linking a job only pre-fills the address and client — the works
+        // description is deliberately left for the user to write themselves,
+        // since what a client signs against needs to be worded precisely.
+        function selectContractJob(jobId) {
+            const j = currentJobs.find(x => x.id === jobId);
+            if (!j) return;
+            document.getElementById('contract-job-id').value = jobId;
+            document.getElementById('contract-job-selected-name').innerText = `${j.title || 'Untitled'}${j.propertyAddress ? ' — ' + j.propertyAddress : ''}`;
+            const sel = document.getElementById('contract-job-selected');
+            sel.classList.remove('hidden'); sel.classList.add('flex');
+            document.getElementById('contract-job-options').innerHTML = '';
+            document.getElementById('contract-job-search').value = '';
+            if (j.propertyAddress) document.getElementById('contract-address').value = j.propertyAddress;
+            const client = findClientForJob(j);
+            if (client && client.name) document.getElementById('contract-client-name').value = client.name;
+        }
+        function clearContractJob() {
+            document.getElementById('contract-job-id').value = '';
+            const sel = document.getElementById('contract-job-selected');
+            sel.classList.add('hidden'); sel.classList.remove('flex');
+            document.getElementById('contract-job-options').innerHTML = '';
+        }
+        async function createContract() {
+            const type = activeContractBuilderType;
+            const address = document.getElementById('contract-address').value.trim();
+            const works = document.getElementById('contract-works').value.trim();
+            const amountRaw = document.getElementById('contract-amount').value;
+            const amount = parseFloat(amountRaw);
+            if (!address) { showToast('Add the property address — it appears on the signed document.', 'warning'); return; }
+            if (!works) { showToast('Add a description of works — this is what the client is agreeing to.', 'warning'); return; }
+            if (!amountRaw || isNaN(amount) || amount < 0) { showToast('Add the agreed price.', 'warning'); return; }
+            const btn = document.getElementById('contract-create-btn');
+            btn.disabled = true; btn.innerText = 'Creating…';
+            const token = generateContractToken();
+            const seq = currentContracts.filter(c => c.type === type).length + 1;
+            const payload = {
+                type,
+                reference: `${type === 'completion' ? 'COMP' : 'AUTH'}-${String(seq).padStart(4, '0')}`,
+                jobId: document.getElementById('contract-job-id').value || null,
+                clientName: document.getElementById('contract-client-name').value.trim() || null,
+                propertyAddress: address,
+                worksDescription: works,
+                agreedAmount: Math.round(amount * 100) / 100,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+                seenByOwner: true,
+            };
+            try {
+                await db.collection('contracts').doc(token).set(payload);
+            } catch (err) {
+                console.error('Contract creation failed:', err);
+                btn.disabled = false; btn.innerText = 'Create & Get QR';
+                showToast('Could not create the form: ' + (err && err.message ? err.message : String(err)), 'error');
+                return;
+            }
+            btn.disabled = false; btn.innerText = 'Create & Get QR';
+            closeContractBuilder();
+            openContractShare(token);
+        }
+        function openContractShare(token) {
+            const c = currentContracts.find(x => x.id === token);
+            const url = buildContractUrl(token);
+            activeShareContractUrl = url;
+            document.getElementById('contract-share-subtitle').innerText = c ? `${CONTRACT_TYPES[c.type].title} · ${c.reference}` : 'Client signing link';
+            document.getElementById('contract-share-link').innerText = url;
+            const target = document.getElementById('contract-qr-target');
+            target.innerHTML = '';
+            if (typeof QRious === 'undefined') {
+                target.innerHTML = `<p class="text-[11px] text-slate-500 text-center px-4">QR library didn't load — use the link below instead.</p>`;
+            } else {
+                const canvas = document.createElement('canvas');
+                target.appendChild(canvas);
+                new QRious({ element: canvas, value: url, size: 220, level: 'M', background: '#ffffff', foreground: '#0f172a' });
+            }
+            document.getElementById('contract-share-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeContractShare() { document.getElementById('contract-share-modal').classList.add('hidden'); }
+        function copyContractLink() {
+            navigator.clipboard.writeText(activeShareContractUrl)
+                .then(() => showToast('Link copied.', 'success'))
+                .catch(() => showToast('Could not copy automatically — long-press the link to copy it.', 'warning'));
+        }
+        function shareContractLink() {
+            if (navigator.share) {
+                navigator.share({ title: 'ENY Electrical — please sign', text: 'Please review and sign:', url: activeShareContractUrl })
+                    .catch(err => { if (err && err.name !== 'AbortError') console.warn('Share cancelled/failed:', err); });
+            } else {
+                copyContractLink();
+            }
+        }
+        function renderContractsTab() {
+            const list = document.getElementById('contracts-list');
+            if (!list) return;
+            const filter = (document.getElementById('contracts-filter') || {}).value || 'all';
+            const items = currentContracts
+                .filter(c => filter === 'all' || c.status === filter)
+                .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+            const unseen = countUnseenSignedContracts();
+            updateNavBadge('contracts-unseen-badge', unseen);
+            list.innerHTML = items.length === 0
+                ? `<p class="text-xs text-[var(--eny-text-muted2)] text-center py-6">No forms yet.</p>`
+                : items.map(c => {
+                    const signed = c.status === 'signed';
+                    const isNew = signed && !c.seenByOwner;
+                    return `<div class="bg-[var(--eny-bg-page)] border ${isNew ? 'border-emerald-500/50' : 'border-[var(--eny-border-standard)]'} rounded-xl p-3">
+                        <div class="flex items-start justify-between gap-2 mb-1.5">
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold text-[var(--eny-text-200)] truncate">${CONTRACT_TYPES[c.type] ? CONTRACT_TYPES[c.type].title : c.type}</p>
+                                <p class="text-[10px] font-mono text-[var(--eny-text-muted2)]">${c.reference || ''}</p>
+                            </div>
+                            <span class="text-[9px] font-bold px-2 py-1 rounded-lg shrink-0 ${signed ? 'bg-emerald-500/15 text-emerald-500' : 'bg-amber-500/15 text-amber-600'}">${signed ? (isNew ? 'NEW · SIGNED' : 'SIGNED') : 'AWAITING'}</span>
+                        </div>
+                        <p class="text-[11px] text-[var(--eny-text-300)] truncate">${c.propertyAddress || ''}</p>
+                        <p class="text-[11px] text-[var(--eny-text-muted)] truncate">${c.clientName || 'No client name'} · <span class="font-mono font-bold">£${(c.agreedAmount || 0).toFixed(2)}</span></p>
+                        ${signed ? `<p class="text-[10px] text-emerald-600 mt-1">Signed by ${c.signedName} · ${new Date(c.signedAt).toLocaleDateString('en-GB')}</p>` : ''}
+                        ${c.clientComments ? `<p class="text-[10px] text-[var(--eny-text-muted)] mt-1 italic">"${c.clientComments}"</p>` : ''}
+                        <div class="flex gap-1.5 mt-2.5 flex-wrap">
+                            ${!signed ? `<button onclick="openContractShare('${c.id}')" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-accent-text)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Show QR</button>` : ''}
+                            ${signed ? `<button onclick="generateContractPdf('${c.id}')" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-200)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">PDF</button>` : ''}
+                            ${isNew ? `<button onclick="markContractSeen('${c.id}')" class="text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-lg cursor-pointer">Mark seen</button>` : ''}
+                            <button onclick="deleteContract('${c.id}')" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-red-600 hover:text-white text-red-400 px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Delete</button>
+                        </div>
+                    </div>`;
+                }).join('');
+            lucide.createIcons();
+        }
+        // Strokes were captured in whatever canvas size the client's phone
+        // gave us, which varies by device — so rather than assuming fixed
+        // dimensions, fit the drawing's own bounding box into the target
+        // box at uniform scale. Handwriting keeps its proportions on any
+        // device, and a stray dot in a corner can't squash the signature.
+        function renderSignatureToDataUrl(strokes, targetW, targetH) {
+            const canvas = document.createElement('canvas');
+            canvas.width = targetW;
+            canvas.height = targetH;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, targetW, targetH);
+            const pts = strokes.flatMap(s => (s.points || s));
+            if (pts.length === 0) return canvas.toDataURL('image/png');
+            const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+            const minX = Math.min(...xs), maxX = Math.max(...xs);
+            const minY = Math.min(...ys), maxY = Math.max(...ys);
+            const pad = 10;
+            const w = Math.max(1, maxX - minX), h = Math.max(1, maxY - minY);
+            const scale = Math.min((targetW - pad * 2) / w, (targetH - pad * 2) / h);
+            const offX = (targetW - w * scale) / 2 - minX * scale;
+            const offY = (targetH - h * scale) / 2 - minY * scale;
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            strokes.forEach(s => {
+                const stroke = s.points || s;
+                if (stroke.length < 2) return;
+                ctx.beginPath();
+                ctx.moveTo(stroke[0].x * scale + offX, stroke[0].y * scale + offY);
+                stroke.slice(1).forEach(p => ctx.lineTo(p.x * scale + offX, p.y * scale + offY));
+                ctx.stroke();
+            });
+            return canvas.toDataURL('image/png');
+        }
+        function generateContractPdf(id) {
+            const c = currentContracts.find(x => x.id === id);
+            if (!c) { showToast('That form could not be found.', 'error'); return; }
+            if (c.status !== 'signed') { showToast('This form has not been signed yet.', 'warning'); return; }
+            const def = CONTRACT_TYPES[c.type] || CONTRACT_TYPES.authorisation;
+            const sigImg = (c.signature && c.signature.strokes) ? renderSignatureToDataUrl(c.signature.strokes, 600, 200) : '';
+            const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const pdfHtml = `
+                <div style="font-family:Helvetica,Arial,sans-serif;padding:16mm;color:#0f172a;box-sizing:border-box;width:210mm;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0A5FB9;padding-bottom:10px;margin-bottom:18px;">
+                        <div>
+                            <div style="font-size:19px;font-weight:800;letter-spacing:-0.02em;">ENY ELECTRICAL</div>
+                            <div style="font-size:9px;color:#d97706;font-weight:700;letter-spacing:0.09em;">ELECTRICIANS NEAR YOU</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:14px;font-weight:700;">${esc(def.title)}</div>
+                            <div style="font-size:9px;color:#64748b;font-family:monospace;">${esc(c.reference)}</div>
+                        </div>
+                    </div>
+                    <table style="width:100%;font-size:10px;margin-bottom:16px;border-collapse:collapse;">
+                        <tr>
+                            <td style="width:50%;vertical-align:top;padding-right:10px;">
+                                <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Property</div>
+                                <div style="font-weight:600;margin-top:2px;">${esc(c.propertyAddress)}</div>
+                            </td>
+                            <td style="width:50%;vertical-align:top;">
+                                <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Client</div>
+                                <div style="font-weight:600;margin-top:2px;">${esc(c.clientName || c.signedName || '—')}</div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Description of works</div>
+                    <div style="font-size:10.5px;line-height:1.6;white-space:pre-wrap;border:1px solid #e2e8f0;border-radius:6px;padding:10px;margin-bottom:14px;">${esc(c.worksDescription)}</div>
+                    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:10px;margin-bottom:16px;">
+                        <span style="font-size:8px;color:#b45309;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Agreed price</span>
+                        <div style="font-size:20px;font-weight:800;color:#92400e;font-family:monospace;">£${(c.agreedAmount || 0).toFixed(2)}</div>
+                    </div>
+                    <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Terms agreed</div>
+                    <div style="font-size:9px;line-height:1.6;color:#475569;margin-bottom:16px;">
+                        ${def.terms.map(t => `<div style="margin-bottom:4px;">• ${esc(t)}</div>`).join('')}
+                    </div>
+                    ${c.clientComments ? `<div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Client comments</div><div style="font-size:10px;font-style:italic;color:#475569;border-left:3px solid #e2e8f0;padding-left:8px;margin-bottom:16px;">${esc(c.clientComments)}</div>` : ''}
+                    <div style="border-top:1px solid #e2e8f0;padding-top:14px;margin-top:8px;">
+                        <div style="font-size:9px;color:#475569;line-height:1.5;margin-bottom:8px;">${esc(def.confirmText)}</div>
+                        ${sigImg ? `<img src="${sigImg}" style="width:70mm;height:23mm;object-fit:contain;border-bottom:1px solid #94a3b8;display:block;">` : ''}
+                        <div style="font-size:10px;font-weight:700;margin-top:5px;">${esc(c.signedName)}</div>
+                        <div style="font-size:9px;color:#64748b;">Signed electronically on ${c.signedAt ? new Date(c.signedAt).toLocaleString('en-GB') : '—'}</div>
+                    </div>
+                    <div style="margin-top:20px;font-size:7.5px;color:#94a3b8;border-top:1px solid #f1f5f9;padding-top:7px;">
+                        Electronically signed via a unique single-use link issued by ENY Electrical. Reference ${esc(c.reference)}.
+                    </div>
+                </div>`;
+            const renderOverlay = document.createElement('div');
+            renderOverlay.style.cssText = 'position:fixed; inset:0; background:#EFF5FB; z-index:99999; display:flex; align-items:center; justify-content:center; color:#0A5FB9; font-family:sans-serif; font-size:14px; font-weight:600;';
+            renderOverlay.innerText = 'Generating PDF...';
+            document.body.appendChild(renderOverlay);
+            const pdfContainer = document.createElement('div');
+            pdfContainer.style.cssText = 'position:absolute; top:0; left:0; width:210mm; background:#ffffff; z-index:1;';
+            pdfContainer.innerHTML = pdfHtml;
+            document.body.appendChild(pdfContainer);
+            const cleanUp = () => { document.body.removeChild(pdfContainer); document.body.removeChild(renderOverlay); };
+            html2canvas(pdfContainer, { scale: 2, useCORS: true }).then((canvas) => {
+                if (!canvas.width || !canvas.height) throw new Error(`html2canvas produced an empty canvas (${canvas.width}x${canvas.height})`);
+                const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = (canvas.height * pageWidth) / canvas.width;
+                pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+                pdf.save(`${c.reference || 'signed-form'}.pdf`);
+                cleanUp();
+            }).catch((err) => {
+                console.error('Contract PDF generation failed:', err);
+                cleanUp();
+                showToast('PDF generation failed with this error:\n\n' + (err && err.message ? err.message : String(err)), 'error');
+            });
+        }
+        function markContractSeen(id) {
+            db.collection('contracts').doc(id).update({ seenByOwner: true })
+                .catch(err => { console.error('Could not mark contract seen:', err); showToast('Could not update that form.', 'error'); });
+        }
+        async function deleteContract(id) {
+            const c = currentContracts.find(x => x.id === id);
+            if (!c) return;
+            const warning = c.status === 'signed'
+                ? 'Delete this SIGNED form? The signed record and its signature are permanently removed, and the client\'s link stops working. This cannot be undone.'
+                : 'Delete this form? The link and QR code will stop working immediately.';
+            if (!(await showConfirm(warning, { confirmText: 'Delete', danger: true }))) return;
+            try {
+                await db.collection('contracts').doc(id).delete();
+                showToast('Form deleted.', 'success');
+            } catch (err) {
+                console.error('Contract delete failed:', err);
+                showToast('Could not delete that form.', 'error');
+            }
         }
         function isoDateToUk(isoDate) {
             const [y, m, d] = isoDate.split('-');
