@@ -1165,6 +1165,7 @@
                     <button onclick="switchSettingsSubtab('settings-sub-pricing')" id="btn-settings-sub-pricing" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg bg-amber-500 text-slate-950 cursor-pointer">Pricing</button>
                     <button onclick="switchSettingsSubtab('settings-sub-jobnumbers')" id="btn-settings-sub-jobnumbers" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Job Numbers</button>
                     <button onclick="switchSettingsSubtab('settings-sub-adtracking')" id="btn-settings-sub-adtracking" class="settings-subtab-btn primary-owner-only hidden px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Ad Tracking</button>
+                    <button onclick="switchSettingsSubtab('settings-sub-emails')" id="btn-settings-sub-emails" class="settings-subtab-btn primary-owner-only hidden px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Emails</button>
                     <button onclick="switchSettingsSubtab('settings-sub-banking')" id="btn-settings-sub-banking" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Bank Details</button>
                     <button onclick="switchSettingsSubtab('settings-sub-stock')" id="btn-settings-sub-stock" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Stock Directory</button>
                     <button onclick="switchSettingsSubtab('settings-sub-templates')" id="btn-settings-sub-templates" class="settings-subtab-btn px-3 py-2 text-xs font-bold rounded-lg text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] cursor-pointer">Templates</button>
@@ -1238,6 +1239,11 @@
                             <input type="text" id="setting-sign-url" oninput="saveContractSettings()" placeholder="https://electriciansnearyou.uk/sign/" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
                             <p class="text-[10px] text-[var(--eny-text-muted2)] mt-1">Where sign.html is hosted. This is what the QR code points at.</p>
                         </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mb-2">Relay key</label>
+                            <input type="password" id="setting-relay-key" oninput="saveContractSettings()" placeholder="The ADMIN_KEY from your Apps Script properties" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            <p class="text-[10px] text-[var(--eny-text-muted2)] mt-1">The relay has to accept anonymous requests so clients can sign without a Google account. Everything except signing refuses without this key.</p>
+                        </div>
                         <div id="contract-settings-status" class="text-[11px]"></div>
                     </div>
                     <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-lg space-y-4">
@@ -1280,6 +1286,23 @@
                     </div>
                 </div>
 
+
+                <!-- EMAILS — every automated email, rendered by the relay with
+                     sample data so the wording shown here is the wording that
+                     actually goes out. Nothing is written twice. -->
+                <div id="settings-sub-emails" class="settings-subtab-content">
+                    <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl p-6 shadow-lg ring-1 ring-white/[0.06] max-w-3xl space-y-3 mb-5">
+                        <div class="flex items-start justify-between gap-4">
+                            <div>
+                                <h2 class="text-lg font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="mail" class="text-[var(--eny-accent-text)]"></i> Automated emails</h2>
+                                <p class="text-xs text-[var(--eny-text-muted)] mt-1.5">Every email the business sends on its own, shown with sample data. This is the real wording, not a copy of it — edit here and the next one that goes out says what you wrote.</p>
+                            </div>
+                            <button onclick="loadEmailTemplates(true)" class="shrink-0 text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-accent-text)] px-3 py-2 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1.5"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Reload</button>
+                        </div>
+                        <div id="email-templates-status" class="text-[11px]"></div>
+                    </div>
+                    <div id="email-templates-list" class="space-y-4 max-w-3xl"></div>
+                </div>
 
                 <!-- BANK DETAILS (per-operative, chosen per-invoice rather than a global toggle) -->
                 <div id="settings-sub-banking" class="settings-subtab-content">
@@ -3110,7 +3133,7 @@
             // engineer account to browse.
             if (isDrsAuthorized()) {
                 db.collection('settings').doc('clientForms').onSnapshot((doc) => {
-                    if (doc.exists) currentContractSettings = Object.assign({ relayUrl: '', signUrl: '' }, doc.data());
+                    if (doc.exists) currentContractSettings = Object.assign({ relayUrl: '', signUrl: '', relayKey: '' }, doc.data());
                     // No auto-create on a missing doc — same reasoning as the
                     // other settings listeners: a transient false negative
                     // must never overwrite real settings with blanks.
@@ -3118,6 +3141,8 @@
                     if (r && document.activeElement !== r) r.value = currentContractSettings.relayUrl || '';
                     const s = document.getElementById('setting-sign-url');
                     if (s && document.activeElement !== s) s.value = currentContractSettings.signUrl || '';
+                    const k = document.getElementById('setting-relay-key');
+                    if (k && document.activeElement !== k) k.value = currentContractSettings.relayKey || '';
                 }, (err) => console.error('Client form settings listener error:', err));
 
                 db.collection('contracts').onSnapshot((snapshot) => {
@@ -9020,7 +9045,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
         let activeContractBuilderType = null;
         let activeShareContractUrl = '';
 
-        let currentContractSettings = { relayUrl: '', signUrl: '' };
+        let currentContractSettings = { relayUrl: '', signUrl: '', relayKey: '' };
         let contractSettingsSaveTimer = null;
         function saveContractSettings() {
             // Debounced: this fires on every keystroke in the settings fields.
@@ -9031,6 +9056,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 const payload = {
                     relayUrl: document.getElementById('setting-relay-url').value.trim(),
                     signUrl: document.getElementById('setting-sign-url').value.trim(),
+                    relayKey: document.getElementById('setting-relay-key').value.trim(),
                 };
                 db.collection('settings').doc('clientForms').set(payload, { merge: true })
                     .then(() => { if (status) { status.innerText = 'Saved.'; status.className = 'text-[11px] text-emerald-500'; } })
@@ -9040,6 +9066,211 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                     });
             }, 700);
         }
+        // === Relay client ===================================================
+        // Apps Script can't set CORS headers, so a normal fetch() can post to
+        // the relay but can never read what comes back. Reads therefore go out
+        // as JSONP — a <script> tag whose src is the relay URL, answered with
+        // a call to a one-off global function. Writes stay on fire-and-forget
+        // POST, which is all the signing page ever needed.
+        let relayCallbackSeq = 0;
+        function relayGet(action, params, timeoutMs) {
+            return new Promise((resolve, reject) => {
+                const base = (currentContractSettings.relayUrl || '').trim();
+                if (!base) return reject(new Error('No relay URL set in Settings.'));
+                if (!(currentContractSettings.relayKey || '').trim()) {
+                    return reject(new Error('No relay key set in Settings.'));
+                }
+                const cbName = '__relayCb' + (++relayCallbackSeq) + '_' + Date.now();
+                const qs = Object.assign({
+                    action: action,
+                    key: currentContractSettings.relayKey,
+                    callback: cbName
+                }, params || {});
+                const url = base + (base.indexOf('?') > -1 ? '&' : '?') +
+                    Object.keys(qs).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(qs[k] == null ? '' : qs[k])).join('&');
+
+                const script = document.createElement('script');
+                let settled = false;
+                const cleanup = () => {
+                    delete window[cbName];
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                    clearTimeout(timer);
+                };
+                // Apps Script can sit for a while on a cold start, and a
+                // <script> tag that never answers would otherwise hang the
+                // screen with a spinner and no explanation.
+                const timer = setTimeout(() => {
+                    if (settled) return;
+                    settled = true; cleanup();
+                    reject(new Error('The relay did not answer. Check the URL is the /exec one and that the latest version is deployed.'));
+                }, timeoutMs || 25000);
+
+                window[cbName] = (data) => {
+                    if (settled) return;
+                    settled = true; cleanup();
+                    if (data && data.ok === false) reject(new Error(data.error || 'The relay refused that.'));
+                    else resolve(data);
+                };
+                script.onerror = () => {
+                    if (settled) return;
+                    settled = true; cleanup();
+                    reject(new Error('Could not reach the relay.'));
+                };
+                script.src = url;
+                document.head.appendChild(script);
+            });
+        }
+        // text/plain keeps this a "simple" request, so the browser sends it
+        // without a preflight the relay could never answer.
+        function relayPost(payload) {
+            const base = (currentContractSettings.relayUrl || '').trim();
+            if (!base) return Promise.reject(new Error('No relay URL set in Settings.'));
+            return fetch(base, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(Object.assign({ key: currentContractSettings.relayKey || '' }, payload))
+            });
+        }
+
+        // === Email preview screen ===========================================
+        let emailTemplates = [];
+        let emailTemplatesLoaded = false;
+        let expandedEmailKeys = new Set();
+
+        function setEmailStatus(text, tone) {
+            const el = document.getElementById('email-templates-status');
+            if (!el) return;
+            const colour = tone === 'error' ? 'text-red-500'
+                : tone === 'good' ? 'text-emerald-500'
+                : 'text-[var(--eny-text-muted)]';
+            el.innerText = text || '';
+            el.className = 'text-[11px] ' + colour;
+        }
+
+        async function loadEmailTemplates(force) {
+            if (emailTemplatesLoaded && !force) return;
+            setEmailStatus('Asking the relay for the current wording…');
+            const list = document.getElementById('email-templates-list');
+            try {
+                const res = await relayGet('templates', {});
+                emailTemplates = (res && res.templates) || [];
+                emailTemplatesLoaded = true;
+                setEmailStatus(emailTemplates.length + ' emails. Anything you edit here is saved on the relay, not in this app.', 'good');
+                renderEmailTemplates();
+            } catch (err) {
+                console.error('Template load failed:', err);
+                setEmailStatus(err.message, 'error');
+                if (list) list.innerHTML = '';
+            }
+        }
+
+        function renderEmailTemplates() {
+            const list = document.getElementById('email-templates-list');
+            if (!list) return;
+            if (!emailTemplates.length) {
+                list.innerHTML = '<div class="text-xs text-[var(--eny-text-muted)] py-6 text-center">Nothing to show yet.</div>';
+                return;
+            }
+            list.innerHTML = emailTemplates.map(t => {
+                const open = expandedEmailKeys.has(t.key);
+                return `
+                <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl shadow-lg ring-1 ring-white/[0.06] overflow-hidden">
+                    <button onclick="toggleEmailTemplate('${t.key}')" class="w-full text-left px-5 py-4 flex items-start justify-between gap-4 hover:bg-[var(--eny-bg-tertiary)]/30 cursor-pointer">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-sm font-bold text-[var(--eny-text-primary)]">${escapeEmailHtml(t.name)}</span>
+                                ${t.isCustom ? '<span class="text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-[var(--eny-accent-text)] border border-amber-500/30 px-1.5 py-0.5 rounded">Edited</span>' : ''}
+                            </div>
+                            <div class="text-[11px] text-[var(--eny-text-muted)] mt-1">${escapeEmailHtml(t.when)}</div>
+                            <div class="text-[11px] text-[var(--eny-text-300)] mt-1.5 truncate"><span class="text-[var(--eny-text-muted2)]">Subject:</span> ${escapeEmailHtml(t.subject)}</div>
+                        </div>
+                        <i data-lucide="${open ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4 text-[var(--eny-text-muted)] shrink-0 mt-1"></i>
+                    </button>
+                    ${open ? `
+                    <div class="px-5 pb-5 space-y-4 border-t border-[var(--eny-border-standard)] pt-4">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--eny-text-muted2)] mb-2">As the client sees it</div>
+                            <div class="bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-xl p-4">
+                                <div class="text-xs font-bold text-[var(--eny-text-primary)] pb-2 mb-2 border-b border-[var(--eny-border-standard)]">${escapeEmailHtml(t.subject)}</div>
+                                <div class="text-xs text-[var(--eny-text-200)] whitespace-pre-wrap leading-relaxed">${escapeEmailHtml(t.body)}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-[var(--eny-text-muted2)] mb-2">Edit the wording</div>
+                            <input type="text" id="tpl-subject-${t.key}" value="${escapeEmailHtml(t.rawSubject)}" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500 mb-2">
+                            <textarea id="tpl-body-${t.key}" rows="12" class="w-full bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2 text-xs text-[var(--eny-text-primary)] font-mono leading-relaxed focus:outline-none focus:border-amber-500">${escapeEmailHtml(t.rawBody)}</textarea>
+                            <div class="text-[10px] text-[var(--eny-text-muted2)] mt-1.5">Available here: ${t.fields.map(f => '{{' + f + '}}').join(' ')}. A placeholder with nothing to fill it takes its whole line with it, so a blank never shows.</div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="saveEmailTemplate('${t.key}')" class="text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-2 rounded-lg cursor-pointer">Save wording</button>
+                            <button onclick="sendTestEmail('${t.key}')" class="text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-[var(--eny-bg-tertiary)] text-[var(--eny-text-200)] px-3 py-2 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Send one to me</button>
+                            ${t.isCustom ? `<button onclick="resetEmailTemplate('${t.key}')" class="text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-red-500 hover:text-white text-[var(--eny-text-muted)] px-3 py-2 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">Reset to original</button>` : ''}
+                        </div>
+                    </div>` : ''}
+                </div>`;
+            }).join('');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function escapeEmailHtml(str) {
+            return String(str == null ? '' : str)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function toggleEmailTemplate(key) {
+            if (expandedEmailKeys.has(key)) expandedEmailKeys.delete(key);
+            else expandedEmailKeys.add(key);
+            renderEmailTemplates();
+        }
+
+        async function saveEmailTemplate(key) {
+            const subject = document.getElementById('tpl-subject-' + key).value;
+            const body = document.getElementById('tpl-body-' + key).value;
+            if (!subject.trim() || !body.trim()) {
+                showToast('A subject and a body are both needed.', 'error');
+                return;
+            }
+            setEmailStatus('Saving…');
+            try {
+                await relayPost({ action: 'saveTemplate', template: key, subject: subject, body: body });
+                // The POST response can't be read cross-origin, so the save is
+                // confirmed by reading the wording back rather than assumed.
+                await loadEmailTemplates(true);
+                const saved = emailTemplates.find(t => t.key === key);
+                if (saved && saved.rawBody === body && saved.rawSubject === subject) {
+                    showToast('Saved. That is what goes out now.', 'success');
+                } else {
+                    setEmailStatus('The relay did not come back with what was sent — check the key and that the latest version is deployed.', 'error');
+                }
+            } catch (err) {
+                console.error('Template save failed:', err);
+                setEmailStatus(err.message, 'error');
+            }
+        }
+
+        async function resetEmailTemplate(key) {
+            if (!confirm('Put the original wording back? Anything you have written here will be lost.')) return;
+            try {
+                await relayPost({ action: 'resetTemplate', template: key });
+                await loadEmailTemplates(true);
+                showToast('Original wording restored.', 'success');
+            } catch (err) {
+                console.error('Template reset failed:', err);
+                setEmailStatus(err.message, 'error');
+            }
+        }
+
+        async function sendTestEmail(key) {
+            try {
+                await relayPost({ action: 'sendTest', template: key });
+                showToast('Sent to the office address — give it a minute.', 'success');
+            } catch (err) {
+                console.error('Test send failed:', err);
+                setEmailStatus(err.message, 'error');
+            }
+        }
+
         function countUnseenSignedContracts() {
             return currentContracts.filter(c => c.status === 'signed' && !c.seenByOwner).length;
         }
@@ -9345,82 +9576,181 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             });
             return canvas.toDataURL('image/png');
         }
+        // Builds the signed document with jsPDF's native text rather than
+        // rasterising HTML. html2canvas measures text in one font and paints it in
+        // another, and on a phone with no Helvetica the fallback drifts far enough
+        // to jam words together. Native text can't mis-space, stays selectable and
+        // searchable in the finished PDF, and keeps the file a fraction of the size.
+        function buildContractPdfDoc(data, sigDataUrl, CT) {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+          const def = CT[data.type] || CT.authorisation;
+
+          const M = 16;                 // page margin
+          const W = 210;                // A4 width
+          const CW = W - M * 2;         // usable width
+          const BOTTOM = 281;           // start a new page past this
+          let y = M;
+
+          const mm = (pt) => pt * 0.3528;
+          const setBody = () => { doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(51, 65, 85); };
+          const label = (text) => {
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(148, 163, 184);
+            doc.text(String(text).toUpperCase(), M, y);
+            y += 4;
+          };
+          const need = (h) => {
+            if (y + h > BOTTOM) { doc.addPage(); y = M; return true; }
+            return false;
+          };
+          // Wraps to the given width and draws line by line, so a long works
+          // description flows onto a second page instead of running off the first.
+          const para = (text, width, lineGap) => {
+            const lines = doc.splitTextToSize(String(text == null ? '' : text), width || CW);
+            const lh = mm(doc.getFontSize()) * (lineGap || 1.35);
+            lines.forEach(line => { need(lh + 2); doc.text(line, M, y); y += lh; });
+            return lines.length;
+          };
+
+          // ---- Header -------------------------------------------------------
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(15, 23, 42);
+          doc.text('ENY ELECTRICAL', M, y + 5);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); doc.setTextColor(217, 119, 6);
+          doc.text('ELECTRICIANS NEAR YOU', M, y + 9);
+
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(15, 23, 42);
+          doc.text(def.title, W - M, y + 4, { align: 'right' });
+          doc.setFont('courier', 'normal'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);
+          doc.text(String(data.reference || ''), W - M, y + 9, { align: 'right' });
+
+          y += 13;
+          doc.setDrawColor(10, 95, 185); doc.setLineWidth(0.8);
+          doc.line(M, y, W - M, y);
+          y += 7;
+
+          // ---- Property / Client (two columns) -------------------------------
+          const colW = CW / 2 - 4;
+          const startY = y;
+          label('Property');
+          setBody(); doc.setFont('helvetica', 'bold'); doc.setTextColor(15, 23, 42);
+          const addrLines = doc.splitTextToSize(String(data.propertyAddress || '-'), colW);
+          addrLines.forEach((l, i) => doc.text(l, M, y + i * mm(9.5) * 1.3));
+          const leftEnd = y + addrLines.length * mm(9.5) * 1.3;
+
+          y = startY;
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(148, 163, 184);
+          doc.text('CLIENT', M + CW / 2 + 4, y);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(15, 23, 42);
+          const cliLines = doc.splitTextToSize(String(data.clientName || data.signedName || '-'), colW);
+          cliLines.forEach((l, i) => doc.text(l, M + CW / 2 + 4, y + 4 + i * mm(9.5) * 1.3));
+          const rightEnd = y + 4 + cliLines.length * mm(9.5) * 1.3;
+
+          y = Math.max(leftEnd, rightEnd) + 5;
+
+          // ---- Works ---------------------------------------------------------
+          label('Description of works');
+          setBody();
+          para(data.worksDescription || '-');
+          y += 4;
+
+          // ---- Price ---------------------------------------------------------
+          need(18);
+          doc.setFillColor(255, 251, 235); doc.setDrawColor(253, 230, 138); doc.setLineWidth(0.3);
+          doc.roundedRect(M, y, CW, 15, 2, 2, 'FD');
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(180, 83, 9);
+          doc.text('AGREED PRICE', M + 4, y + 5);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(146, 64, 14);
+          doc.text('\u00A3' + Number(data.agreedAmount || 0).toFixed(2), M + 4, y + 12);
+          y += 21;
+
+          // ---- Terms ---------------------------------------------------------
+          label('Terms agreed');
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(71, 85, 105);
+          def.terms.forEach(t => {
+            const lines = doc.splitTextToSize(String(t), CW - 5);
+            const lh = mm(8.5) * 1.35;
+            lines.forEach((line, i) => {
+              need(lh + 2);
+              if (i === 0) {
+                doc.setTextColor(217, 119, 6); doc.text('-', M, y);
+                doc.setTextColor(71, 85, 105);
+              }
+              doc.text(line, M + 5, y);
+              y += lh;
+            });
+            y += 1.5;
+          });
+          y += 3;
+
+          // ---- Client comments ------------------------------------------------
+          if (data.clientComments) {
+            need(14);
+            label('Client comments');
+            doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(71, 85, 105);
+            para(data.clientComments);
+            y += 4;
+          }
+
+          // ---- Signature block -------------------------------------------------
+          // Kept together: a signature separated from the statement it belongs to
+          // across a page break would read badly on a document like this.
+          need(52);
+          doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.3);
+          doc.line(M, y, W - M, y);
+          y += 6;
+
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(71, 85, 105);
+          para(def.confirmText, CW, 1.3);
+          y += 3;
+
+          if (sigDataUrl) {
+            try {
+              doc.addImage(sigDataUrl, 'PNG', M, y, 60, 20);
+            } catch (err) {
+              console.error('Signature image failed:', err);
+            }
+            y += 21;
+            doc.setDrawColor(148, 163, 184); doc.setLineWidth(0.3);
+            doc.line(M, y, M + 60, y);
+            y += 5;
+          }
+
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(15, 23, 42);
+          doc.text(String(data.signedName || ''), M, y);
+          y += 4.5;
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(100, 116, 139);
+          doc.text('Signed electronically on ' + (data.signedAt ? new Date(data.signedAt).toLocaleString('en-GB') : '-'), M, y);
+          y += 4.5;
+          if (data.clientEmail) { doc.text(String(data.clientEmail), M, y); y += 4.5; }
+
+          // ---- Footer ----------------------------------------------------------
+          y += 4;
+          need(12);
+          doc.setDrawColor(241, 245, 249); doc.setLineWidth(0.3);
+          doc.line(M, y, W - M, y);
+          y += 4;
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.setTextColor(148, 163, 184);
+          let foot = 'Electronically signed via a unique single-use link issued by ENY Electrical. Reference ' + (data.reference || '') + '.';
+          if (data.signedIp) foot += ' Recorded IP ' + data.signedIp + '.';
+          doc.splitTextToSize(foot, CW).forEach(line => { doc.text(line, M, y); y += mm(6.5) * 1.35; });
+
+          return doc;
+        }
+
         function generateContractPdf(id) {
             const c = currentContracts.find(x => x.id === id);
             if (!c) { showToast('That form could not be found.', 'error'); return; }
             if (c.status !== 'signed') { showToast('This form has not been signed yet.', 'warning'); return; }
-            const def = CONTRACT_TYPES[c.type] || CONTRACT_TYPES.authorisation;
-            const sigImg = (c.signature && c.signature.strokes) ? renderSignatureToDataUrl(c.signature.strokes, 600, 200) : '';
-            const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const pdfHtml = `
-                <div style="font-family:Helvetica,Arial,sans-serif;padding:16mm;color:#0f172a;box-sizing:border-box;width:210mm;">
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0A5FB9;padding-bottom:10px;margin-bottom:18px;">
-                        <div>
-                            <div style="font-size:19px;font-weight:800;letter-spacing:-0.02em;">ENY ELECTRICAL</div>
-                            <div style="font-size:9px;color:#d97706;font-weight:700;letter-spacing:0.09em;">ELECTRICIANS NEAR YOU</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:14px;font-weight:700;">${esc(def.title)}</div>
-                            <div style="font-size:9px;color:#64748b;font-family:monospace;">${esc(c.reference)}</div>
-                        </div>
-                    </div>
-                    <table style="width:100%;font-size:10px;margin-bottom:16px;border-collapse:collapse;">
-                        <tr>
-                            <td style="width:50%;vertical-align:top;padding-right:10px;">
-                                <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Property</div>
-                                <div style="font-weight:600;margin-top:2px;">${esc(c.propertyAddress)}</div>
-                            </td>
-                            <td style="width:50%;vertical-align:top;">
-                                <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Client</div>
-                                <div style="font-weight:600;margin-top:2px;">${esc(c.clientName || c.signedName || '—')}</div>
-                            </td>
-                        </tr>
-                    </table>
-                    <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Description of works</div>
-                    <div style="font-size:10.5px;line-height:1.6;white-space:pre-wrap;border:1px solid #e2e8f0;border-radius:6px;padding:10px;margin-bottom:14px;">${esc(c.worksDescription)}</div>
-                    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:10px;margin-bottom:16px;">
-                        <span style="font-size:8px;color:#b45309;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">Agreed price</span>
-                        <div style="font-size:20px;font-weight:800;color:#92400e;font-family:monospace;">£${(c.agreedAmount || 0).toFixed(2)}</div>
-                    </div>
-                    <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Terms agreed</div>
-                    <div style="font-size:9px;line-height:1.6;color:#475569;margin-bottom:16px;">
-                        ${def.terms.map(t => `<div style="margin-bottom:4px;">• ${esc(t)}</div>`).join('')}
-                    </div>
-                    ${c.clientComments ? `<div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Client comments</div><div style="font-size:10px;font-style:italic;color:#475569;border-left:3px solid #e2e8f0;padding-left:8px;margin-bottom:16px;">${esc(c.clientComments)}</div>` : ''}
-                    <div style="border-top:1px solid #e2e8f0;padding-top:14px;margin-top:8px;">
-                        <div style="font-size:9px;color:#475569;line-height:1.5;margin-bottom:8px;">${esc(def.confirmText)}</div>
-                        ${sigImg ? `<img src="${sigImg}" style="width:70mm;height:23mm;object-fit:contain;border-bottom:1px solid #94a3b8;display:block;">` : ''}
-                        <div style="font-size:10px;font-weight:700;margin-top:5px;">${esc(c.signedName)}</div>
-                        <div style="font-size:9px;color:#64748b;">Signed electronically on ${c.signedAt ? new Date(c.signedAt).toLocaleString('en-GB') : '—'}</div>
-                    </div>
-                    <div style="margin-top:20px;font-size:7.5px;color:#94a3b8;border-top:1px solid #f1f5f9;padding-top:7px;">
-                        Electronically signed via a unique single-use link issued by ENY Electrical. Reference ${esc(c.reference)}.
-                    </div>
-                </div>`;
-            const renderOverlay = document.createElement('div');
-            renderOverlay.style.cssText = 'position:fixed; inset:0; background:#EFF5FB; z-index:99999; display:flex; align-items:center; justify-content:center; color:#0A5FB9; font-family:sans-serif; font-size:14px; font-weight:600;';
-            renderOverlay.innerText = 'Generating PDF...';
-            document.body.appendChild(renderOverlay);
-            const pdfContainer = document.createElement('div');
-            pdfContainer.style.cssText = 'position:absolute; top:0; left:0; width:210mm; background:#ffffff; z-index:1;';
-            pdfContainer.innerHTML = pdfHtml;
-            document.body.appendChild(pdfContainer);
-            const cleanUp = () => { document.body.removeChild(pdfContainer); document.body.removeChild(renderOverlay); };
-            html2canvas(pdfContainer, { scale: 2, useCORS: true }).then((canvas) => {
-                if (!canvas.width || !canvas.height) throw new Error(`html2canvas produced an empty canvas (${canvas.width}x${canvas.height})`);
-                const imgData = canvas.toDataURL('image/jpeg', 0.98);
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const pageHeight = (canvas.height * pageWidth) / canvas.width;
-                pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
-                pdf.save(`${c.reference || 'signed-form'}.pdf`);
-                cleanUp();
-            }).catch((err) => {
+            try {
+                const sig = (c.signature && c.signature.strokes)
+                    ? renderSignatureToDataUrl(c.signature.strokes, 600, 200)
+                    : null;
+                const doc = buildContractPdfDoc(c, sig, CONTRACT_TYPES);
+                doc.save(`${c.reference || 'signed-form'}.pdf`);
+            } catch (err) {
                 console.error('Contract PDF generation failed:', err);
-                cleanUp();
                 showToast('PDF generation failed with this error:\n\n' + (err && err.message ? err.message : String(err)), 'error');
-            });
+            }
         }
         function markContractSeen(id) {
             db.collection('contracts').doc(id).update({ seenByOwner: true })
@@ -9466,16 +9796,29 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             if (quote.status === 'Invoiced' || quote.status === 'Paid') return 'Won';
             return 'Quoted'; // Draft, Sent, Approved
         }
+        // The email address is what lets a lead be followed up from the Sheet
+        // alone — the rest of the row is address and phone, which can't carry
+        // an automated email. Jobs don't hold an email of their own, so this
+        // falls back to one the client gave when signing a form, which is the
+        // one place an address is always captured and verified.
+        function getAdTrackingEmailForJob(job, client) {
+            if (client && client.email) return client.email;
+            if (!job.clientId || typeof currentContracts === 'undefined' || !Array.isArray(currentContracts)) return '';
+            const signed = currentContracts
+                .filter(c => c.clientId === job.clientId && c.clientEmail)
+                .sort((a, b) => String(b.signedAt || '').localeCompare(String(a.signedAt || '')));
+            return (signed[0] && signed[0].clientEmail) || '';
+        }
         async function findNextAdTrackingRow() {
             if (!currentAdTrackingSettings.sheetId || !currentAdTrackingSettings.outputTab) return null;
-            // Reads the whole F:N span, not a single column — Sheets only
+            // Reads the whole F:O span, not a single column — Sheets only
             // trims a row from the response if every requested column in it
             // is blank. Anchoring on one column (address, or even the newer
             // State column) risks undercounting: an old pre-this-feature row
             // with no State, or a job with no known address, would each look
             // "empty" on their own and get silently overwritten by the next
             // job claiming what looks like the same free row.
-            const existingValues = await readGoogleSheetColumnRange(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F:N');
+            const existingValues = await readGoogleSheetColumnRange(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, 'F:O');
             if (existingValues === null) return null;
             return existingValues.length + 1; // row 1 is the header
         }
@@ -9492,7 +9835,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             await db.collection(collectionName).doc(recordId).update({ adTrackingRow: row });
             return row;
         }
-        // F:N is one contiguous range, so the whole row goes in a single
+        // F:O is one contiguous range, so the whole row goes in a single
         // write. The reason column intentionally always reflects
         // record.lostReason as last set — it's not cleared just because the
         // record later moves off Lost, since it's useful history either way.
@@ -9519,8 +9862,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 dateStr = d.toLocaleDateString('en-GB');
                 timeStr = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
             }
-            await writeGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, `F${row}:N${row}`,
-                [address, phone, job.title || '', quotesCost, job.lostReason || '', timeStr, dateStr, getAdTrackingLabel(job), computeJobTrackingStatus(job)]);
+            await writeGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, `F${row}:O${row}`,
+                [address, phone, job.title || '', quotesCost, job.lostReason || '', timeStr, dateStr, getAdTrackingLabel(job), computeJobTrackingStatus(job), getAdTrackingEmailForJob(job, client)]);
         }
         async function syncQuoteAdTracking(quote) {
             if (!quote.fromAds && !quote.organic) return;
@@ -9538,8 +9881,8 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 dateStr = parts[0] || '';
                 timeStr = parts[1] || '';
             }
-            await writeGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, `F${row}:N${row}`,
-                [address, phone, quote.jobName || '', (quote.financials && quote.financials.grossTotal) || '', quote.lostReason || '', timeStr, dateStr, getAdTrackingLabel(quote), computeQuoteTrackingStatus(quote)]);
+            await writeGoogleSheetRow(currentAdTrackingSettings.sheetId, currentAdTrackingSettings.outputTab, `F${row}:O${row}`,
+                [address, phone, quote.jobName || '', (quote.financials && quote.financials.grossTotal) || '', quote.lostReason || '', timeStr, dateStr, getAdTrackingLabel(quote), computeQuoteTrackingStatus(quote), quote.clientDetailsPayload.email || '']);
         }
         let markLostContext = null;
         function markJobLost(jobId) { openMarkLostModal('job', jobId); }
@@ -10451,6 +10794,10 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById(id).classList.add('active');
             document.getElementById(`btn-${id}`).classList.remove('text-[var(--eny-text-muted)]');
             document.getElementById(`btn-${id}`).classList.add('bg-amber-500', 'text-slate-950');
+            // Fetched when the panel is first opened rather than on load —
+            // every one of these is a round trip to Apps Script, which is
+            // slow to wake up and pointless on a tab nobody opened.
+            if (id === 'settings-sub-emails') loadEmailTemplates(false);
         }
         function switchCrmSubtab(id) {
             document.querySelectorAll('#crm-tab .crm-subtab-content').forEach(el => el.classList.remove('active'));
