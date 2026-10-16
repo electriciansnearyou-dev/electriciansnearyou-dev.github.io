@@ -11,7 +11,6 @@
      rules ever reach a client device. -->
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; }
@@ -140,9 +139,6 @@
     <p class="hint" style="text-align:center;margin:10px 0 28px;">By signing you agree to the terms shown above.</p>
   </div>
 </div>
-
-<!-- Off-screen container used only to render the PDF before emailing it. -->
-<div id="pdf-stage" style="position:absolute;left:-10000px;top:0;width:210mm;background:#fff;"></div>
 
 <script>
 const firebaseConfig = {
@@ -352,74 +348,171 @@ function signatureDataUrl(strokeList, w, h) {
   return c.toDataURL('image/png');
 }
 
-function buildPdfHtml(data) {
-  const def = CONTRACT_TYPES[data.type] || CONTRACT_TYPES.authorisation;
-  const sig = signatureDataUrl(strokes, 600, 200);
-  return `
-    <div style="font-family:Helvetica,Arial,sans-serif;padding:16mm;color:#0f172a;width:210mm;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0A5FB9;padding-bottom:10px;margin-bottom:18px;">
-        <div>
-          <div style="font-size:19px;font-weight:800;">ENY ELECTRICAL</div>
-          <div style="font-size:9px;color:#d97706;font-weight:700;letter-spacing:0.09em;">ELECTRICIANS NEAR YOU</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:14px;font-weight:700;">${esc(def.title)}</div>
-          <div style="font-size:9px;color:#64748b;font-family:monospace;">${esc(data.reference)}</div>
-        </div>
-      </div>
-      <table style="width:100%;font-size:10px;margin-bottom:16px;">
-        <tr>
-          <td style="width:50%;vertical-align:top;padding-right:10px;">
-            <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;">Property</div>
-            <div style="font-weight:600;margin-top:2px;">${esc(data.propertyAddress)}</div>
-          </td>
-          <td style="width:50%;vertical-align:top;">
-            <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;">Client</div>
-            <div style="font-weight:600;margin-top:2px;">${esc(data.clientName || data.signedName)}</div>
-          </td>
-        </tr>
-      </table>
-      <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-bottom:4px;">Description of works</div>
-      <div style="font-size:10.5px;line-height:1.6;white-space:pre-wrap;border:1px solid #e2e8f0;border-radius:6px;padding:10px;margin-bottom:14px;">${esc(data.worksDescription)}</div>
-      <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:10px;margin-bottom:16px;">
-        <span style="font-size:8px;color:#b45309;font-weight:700;text-transform:uppercase;">Agreed price</span>
-        <div style="font-size:20px;font-weight:800;color:#92400e;font-family:monospace;">£${(data.agreedAmount||0).toFixed(2)}</div>
-      </div>
-      <div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-bottom:4px;">Terms agreed</div>
-      <div style="font-size:9px;line-height:1.6;color:#475569;margin-bottom:16px;">
-        ${def.terms.map(t => `<div style="margin-bottom:4px;">• ${esc(t)}</div>`).join('')}
-      </div>
-      ${data.clientComments ? `<div style="font-size:8px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-bottom:4px;">Client comments</div><div style="font-size:10px;font-style:italic;color:#475569;border-left:3px solid #e2e8f0;padding-left:8px;margin-bottom:16px;">${esc(data.clientComments)}</div>` : ''}
-      <div style="border-top:1px solid #e2e8f0;padding-top:14px;">
-        <div style="font-size:9px;color:#475569;line-height:1.5;margin-bottom:8px;">${esc(def.confirmText)}</div>
-        <img src="${sig}" style="width:70mm;height:23mm;object-fit:contain;border-bottom:1px solid #94a3b8;display:block;">
-        <div style="font-size:10px;font-weight:700;margin-top:5px;">${esc(data.signedName)}</div>
-        <div style="font-size:9px;color:#64748b;">Signed electronically on ${new Date(data.signedAt).toLocaleString('en-GB')}</div>
-        <div style="font-size:9px;color:#64748b;">${esc(data.clientEmail)}</div>
-      </div>
-      <div style="margin-top:20px;font-size:7.5px;color:#94a3b8;border-top:1px solid #f1f5f9;padding-top:7px;">
-        Electronically signed via a unique single-use link issued by ENY Electrical. Reference ${esc(data.reference)}.
-        ${data.signedIp ? 'Recorded IP ' + esc(data.signedIp) + '.' : ''}
-      </div>
-    </div>`;
+// Builds the signed document with jsPDF's native text rather than
+// rasterising HTML. html2canvas measures text in one font and paints it in
+// another, and on a phone with no Helvetica the fallback drifts far enough
+// to jam words together. Native text can't mis-space, stays selectable and
+// searchable in the finished PDF, and keeps the file a fraction of the size.
+function buildContractPdfDoc(data, sigDataUrl, CT) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  const def = CT[data.type] || CT.authorisation;
+
+  const M = 16;                 // page margin
+  const W = 210;                // A4 width
+  const CW = W - M * 2;         // usable width
+  const BOTTOM = 281;           // start a new page past this
+  let y = M;
+
+  const mm = (pt) => pt * 0.3528;
+  const setBody = () => { doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(51, 65, 85); };
+  const label = (text) => {
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(148, 163, 184);
+    doc.text(String(text).toUpperCase(), M, y);
+    y += 4;
+  };
+  const need = (h) => {
+    if (y + h > BOTTOM) { doc.addPage(); y = M; return true; }
+    return false;
+  };
+  // Wraps to the given width and draws line by line, so a long works
+  // description flows onto a second page instead of running off the first.
+  const para = (text, width, lineGap) => {
+    const lines = doc.splitTextToSize(String(text == null ? '' : text), width || CW);
+    const lh = mm(doc.getFontSize()) * (lineGap || 1.35);
+    lines.forEach(line => { need(lh + 2); doc.text(line, M, y); y += lh; });
+    return lines.length;
+  };
+
+  // ---- Header -------------------------------------------------------
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(15, 23, 42);
+  doc.text('ENY ELECTRICAL', M, y + 5);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); doc.setTextColor(217, 119, 6);
+  doc.text('ELECTRICIANS NEAR YOU', M, y + 9);
+
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(15, 23, 42);
+  doc.text(def.title, W - M, y + 4, { align: 'right' });
+  doc.setFont('courier', 'normal'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);
+  doc.text(String(data.reference || ''), W - M, y + 9, { align: 'right' });
+
+  y += 13;
+  doc.setDrawColor(10, 95, 185); doc.setLineWidth(0.8);
+  doc.line(M, y, W - M, y);
+  y += 7;
+
+  // ---- Property / Client (two columns) -------------------------------
+  const colW = CW / 2 - 4;
+  const startY = y;
+  label('Property');
+  setBody(); doc.setFont('helvetica', 'bold'); doc.setTextColor(15, 23, 42);
+  const addrLines = doc.splitTextToSize(String(data.propertyAddress || '-'), colW);
+  addrLines.forEach((l, i) => doc.text(l, M, y + i * mm(9.5) * 1.3));
+  const leftEnd = y + addrLines.length * mm(9.5) * 1.3;
+
+  y = startY;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(148, 163, 184);
+  doc.text('CLIENT', M + CW / 2 + 4, y);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(15, 23, 42);
+  const cliLines = doc.splitTextToSize(String(data.clientName || data.signedName || '-'), colW);
+  cliLines.forEach((l, i) => doc.text(l, M + CW / 2 + 4, y + 4 + i * mm(9.5) * 1.3));
+  const rightEnd = y + 4 + cliLines.length * mm(9.5) * 1.3;
+
+  y = Math.max(leftEnd, rightEnd) + 5;
+
+  // ---- Works ---------------------------------------------------------
+  label('Description of works');
+  setBody();
+  para(data.worksDescription || '-');
+  y += 4;
+
+  // ---- Price ---------------------------------------------------------
+  need(18);
+  doc.setFillColor(255, 251, 235); doc.setDrawColor(253, 230, 138); doc.setLineWidth(0.3);
+  doc.roundedRect(M, y, CW, 15, 2, 2, 'FD');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(180, 83, 9);
+  doc.text('AGREED PRICE', M + 4, y + 5);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(146, 64, 14);
+  doc.text('\u00A3' + Number(data.agreedAmount || 0).toFixed(2), M + 4, y + 12);
+  y += 21;
+
+  // ---- Terms ---------------------------------------------------------
+  label('Terms agreed');
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(71, 85, 105);
+  def.terms.forEach(t => {
+    const lines = doc.splitTextToSize(String(t), CW - 5);
+    const lh = mm(8.5) * 1.35;
+    lines.forEach((line, i) => {
+      need(lh + 2);
+      if (i === 0) {
+        doc.setTextColor(217, 119, 6); doc.text('-', M, y);
+        doc.setTextColor(71, 85, 105);
+      }
+      doc.text(line, M + 5, y);
+      y += lh;
+    });
+    y += 1.5;
+  });
+  y += 3;
+
+  // ---- Client comments ------------------------------------------------
+  if (data.clientComments) {
+    need(14);
+    label('Client comments');
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(9); doc.setTextColor(71, 85, 105);
+    para(data.clientComments);
+    y += 4;
+  }
+
+  // ---- Signature block -------------------------------------------------
+  // Kept together: a signature separated from the statement it belongs to
+  // across a page break would read badly on a document like this.
+  need(52);
+  doc.setDrawColor(226, 232, 240); doc.setLineWidth(0.3);
+  doc.line(M, y, W - M, y);
+  y += 6;
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(71, 85, 105);
+  para(def.confirmText, CW, 1.3);
+  y += 3;
+
+  if (sigDataUrl) {
+    try {
+      doc.addImage(sigDataUrl, 'PNG', M, y, 60, 20);
+    } catch (err) {
+      console.error('Signature image failed:', err);
+    }
+    y += 21;
+    doc.setDrawColor(148, 163, 184); doc.setLineWidth(0.3);
+    doc.line(M, y, M + 60, y);
+    y += 5;
+  }
+
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(15, 23, 42);
+  doc.text(String(data.signedName || ''), M, y);
+  y += 4.5;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(100, 116, 139);
+  doc.text('Signed electronically on ' + (data.signedAt ? new Date(data.signedAt).toLocaleString('en-GB') : '-'), M, y);
+  y += 4.5;
+  if (data.clientEmail) { doc.text(String(data.clientEmail), M, y); y += 4.5; }
+
+  // ---- Footer ----------------------------------------------------------
+  y += 4;
+  need(12);
+  doc.setDrawColor(241, 245, 249); doc.setLineWidth(0.3);
+  doc.line(M, y, W - M, y);
+  y += 4;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.setTextColor(148, 163, 184);
+  let foot = 'Electronically signed via a unique single-use link issued by ENY Electrical. Reference ' + (data.reference || '') + '.';
+  if (data.signedIp) foot += ' Recorded IP ' + data.signedIp + '.';
+  doc.splitTextToSize(foot, CW).forEach(line => { doc.text(line, M, y); y += mm(6.5) * 1.35; });
+
+  return doc;
 }
 
 async function renderPdfBase64(data) {
-  const stage = document.getElementById('pdf-stage');
-  stage.innerHTML = buildPdfHtml(data);
-  try {
-    const canvas = await html2canvas(stage.firstElementChild, { scale: 2, useCORS: true });
-    if (!canvas.width || !canvas.height) throw new Error('empty canvas');
-    const img = canvas.toDataURL('image/jpeg', 0.92);
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-    const pw = pdf.internal.pageSize.getWidth();
-    const ph = (canvas.height * pw) / canvas.width;
-    pdf.addImage(img, 'JPEG', 0, 0, pw, ph);
-    return pdf.output('datauristring').split(',')[1];
-  } finally {
-    stage.innerHTML = '';
-  }
+  const sig = signatureDataUrl(strokes, 600, 200);
+  const doc = buildContractPdfDoc(data, sig, CONTRACT_TYPES);
+  return doc.output('datauristring').split(',')[1];
 }
 
 // Best-effort only — a client's IP adds corroboration, but the lookup must
