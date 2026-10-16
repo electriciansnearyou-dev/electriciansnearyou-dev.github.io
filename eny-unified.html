@@ -226,26 +226,14 @@
         <header class="border-b border-[var(--eny-border-subtle)] bg-[var(--eny-bg-recessed)]/50 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-[18px]">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
+                    <!-- Logo, title, menu. Everything else moved into the
+                         nav panel: five icon buttons across the top of a
+                         phone left the header wider than the screen. -->
                     <img src="Logo.png" alt="ENY Electrical" class="h-[55px] w-[55px] rounded-full shadow-lg shadow-amber-500/20">
-                    <button onclick="refreshApp(this)" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Refresh">
-                        <i data-lucide="refresh-cw" class="w-[18px] h-[18px]"></i>
-                    </button>
                     <div>
                         <h1 class="font-bold text-[23px] tracking-tight bg-gradient-to-r from-[var(--eny-text-primary)] via-[var(--eny-text-300)] to-[var(--eny-text-muted)] bg-clip-text text-transparent">ENY ELECTRICAL</h1>
                         <p class="text-[14px] font-semibold text-[var(--eny-accent-text)] tracking-wider uppercase">Business Manager</p>
                     </div>
-                    <button onclick="openUniversalSearch()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer ml-1" title="Search everything">
-                        <i data-lucide="search" class="w-[18px] h-[18px]"></i>
-                    </button>
-                    <button onclick="openQuickReachModal()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Quick reach — call or text the team">
-                        <i data-lucide="users-round" class="w-[18px] h-[18px]"></i>
-                    </button>
-                    <button onclick="toggleDrsView()" id="drs-toggle-btn" class="drs-authorized-only hidden text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch to DRS (Dynamic Resource Manager)">
-                        <i data-lucide="calendar-cog" class="w-[18px] h-[18px]"></i>
-                    </button>
-                    <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-accent-text)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] transition-colors cursor-pointer" title="Switch light/dark theme">
-                        <i data-lucide="moon" class="w-[18px] h-[18px]"></i>
-                    </button>
                     <button onclick="toggleNavMenu()" id="nav-menu-trigger" class="relative text-[var(--eny-text-primary)] p-[9px] rounded-lg bg-[var(--eny-bg-page)] border border-[var(--eny-border-subtle)] hover:border-amber-500 transition-colors cursor-pointer" title="Menu" aria-label="Open menu">
                         <i data-lucide="menu" class="w-[18px] h-[18px]"></i>
                         <span id="nav-menu-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center leading-none">0</span>
@@ -2976,6 +2964,10 @@
             document.getElementById('nav-menu-backdrop').classList.remove('hidden');
             // Stop the page behind scrolling under the open panel on mobile.
             document.body.style.overflow = 'hidden';
+            // DRS can also be left by other routes — a search result, the
+            // back button — so the label is refreshed on open rather than
+            // only when the toggle itself is pressed.
+            updateDrsToggleLabel();
             lucide.createIcons();
         }
         function closeNavMenu() {
@@ -3892,8 +3884,22 @@
         // future switches in sync with it.
         function applyColorTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
-            const btn = document.getElementById('theme-toggle-btn');
-            if (btn) btn.innerHTML = theme === 'dark' ? '<i data-lucide="sun" class="w-4 h-4"></i>' : '<i data-lucide="moon" class="w-4 h-4"></i>';
+            // The theme control is a labelled row in the nav now, so the
+            // icon and the label are updated in place rather than the
+            // button's whole contents being replaced — that would throw
+            // the label away. The label names what pressing it DOES, not
+            // what the theme currently is: "Dark mode" next to a moon is
+            // ambiguous about which way it goes.
+            // The icon lives inside a wrapper span and is rewritten whole:
+            // createIcons replaces the <i> with an <svg>, so setting
+            // data-lucide on it a second time would do nothing.
+            const icon = document.getElementById('theme-toggle-icon');
+            const label = document.getElementById('theme-toggle-label');
+            if (icon) {
+                icon.innerHTML = '<i data-lucide="' +
+                    (theme === 'dark' ? 'sun' : 'moon') + '" class="w-4 h-4"></i>';
+            }
+            if (label) label.innerText = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
         // A plain reload() can quietly serve a cached copy of the page in
@@ -7107,12 +7113,23 @@
         const DRS_MAX_PIXELS_PER_MINUTE = 3.2;
         let DRS_PIXELS_PER_MINUTE = DRS_MIN_PIXELS_PER_MINUTE;
         let drsPreviousTabId = 'today-tab';
+        // Says what pressing it does, not where you are. With the control
+        // hidden behind the hamburger you can no longer see at a glance
+        // whether you are in DRS, so the label has to carry that.
+        function updateDrsToggleLabel() {
+            const label = document.getElementById('drs-toggle-label');
+            if (!label) return;
+            const drsTab = document.getElementById('drs-tab');
+            const inDrs = drsTab && drsTab.classList.contains('active');
+            label.innerText = inDrs ? 'Exit DRS' : 'Open DRS';
+        }
         function toggleDrsView() {
             const drsTab = document.getElementById('drs-tab');
             const isCurrentlyInDrs = drsTab && drsTab.classList.contains('active');
             if (isCurrentlyInDrs) {
                 document.getElementById('main-nav-bar').classList.remove('hidden');
                 switchTab(drsPreviousTabId);
+                updateDrsToggleLabel();
                 return;
             }
             const activeTab = document.querySelector('.tab-content.active');
@@ -7124,6 +7141,7 @@
             drsSyncCalendarUnavailability();
             showDrsSidebarPanel('booked');
             initDrsPinchZoom();
+            updateDrsToggleLabel();
         }
         // Pulls fresh Google Calendar events for the currently-viewed month
         // and lets the existing syncAutoUnavailabilityFromEvents logic (already
@@ -12600,6 +12618,32 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                         </button>
                         <button onclick="switchTab('trash-tab'); closeNavMenu();" id="btn-trash-tab" class="nav-menu-item w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
                             <i data-lucide="trash-2" class="w-4 h-4 shrink-0"></i> Trash
+                        </button>
+
+                        <!-- Tools: what used to be the header's icon row.
+                             These are actions rather than destinations, so
+                             they are not .nav-menu-item — switchTab's
+                             highlighting would otherwise mark one of them
+                             as the current tab. Refresh and theme leave the
+                             panel open, because both are things you do and
+                             immediately judge, and closing the menu to show
+                             you the result then making you reopen it is a
+                             step for nothing. -->
+                        <p class="px-4 pt-3 pb-1 text-[9px] font-bold uppercase tracking-wider text-[var(--eny-text-muted2)]">Tools</p>
+                        <button onclick="openUniversalSearch(); closeNavMenu();" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="search" class="w-4 h-4 shrink-0"></i> Search everything
+                        </button>
+                        <button onclick="openQuickReachModal(); closeNavMenu();" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="users-round" class="w-4 h-4 shrink-0"></i> Quick reach
+                        </button>
+                        <button onclick="toggleDrsView(); closeNavMenu();" id="drs-toggle-btn" class="drs-authorized-only hidden w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="calendar-cog" class="w-4 h-4 shrink-0"></i> <span id="drs-toggle-label">Open DRS</span>
+                        </button>
+                        <button onclick="toggleColorTheme()" id="theme-toggle-btn" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <span id="theme-toggle-icon" class="shrink-0 flex"><i data-lucide="moon" class="w-4 h-4"></i></span> <span id="theme-toggle-label">Switch to dark mode</span>
+                        </button>
+                        <button onclick="refreshApp(this)" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="refresh-cw" class="w-4 h-4 shrink-0"></i> Refresh
                         </button>
                     </div>
                     <div class="border-t border-[var(--eny-border-standard)] p-2 shrink-0 bg-[var(--eny-bg-page)]/50">
