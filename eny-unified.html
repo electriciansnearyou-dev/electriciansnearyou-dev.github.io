@@ -267,6 +267,15 @@
                 <div id="today-empty-state" class="hidden text-center py-16 text-[var(--eny-text-muted2)] text-sm bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl">
                     <i data-lucide="coffee" class="w-12 h-12 mx-auto mb-3 text-[var(--eny-text-subtle)]"></i> Nothing on today.
                 </div>
+                <!-- Drive times are worked out on demand, not on load: each
+                     leg is a round trip to the relay, and most mornings you
+                     only want them once. -->
+                <div id="today-drive-bar" class="hidden flex items-center justify-between gap-3 bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl px-4 py-3">
+                    <div class="min-w-0">
+                        <button onclick="loadTodayDriveTimes()" id="today-drive-btn" class="text-xs font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-accent-text)] px-3 py-2 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer flex items-center gap-1.5"><i data-lucide="route" class="w-3.5 h-3.5"></i> Drive times from here</button>
+                    </div>
+                    <div id="today-drive-summary" class="text-[11px] text-[var(--eny-text-muted)] text-right shrink-0"></div>
+                </div>
                 <div id="today-jobs-list" class="space-y-3"></div>
             </div>
 
@@ -5822,6 +5831,110 @@
             return `${h}:${m}:${s}`;
         }
 
+        // Drive legs for today, keyed by job id, so a re-render keeps them.
+        // Cleared whenever the day's jobs change underneath them.
+        let todayDriveLegs = {};
+        let todayDriveSignature = '';
+
+        /**
+         * Real drive times for the day, chained: where you are now to the
+         * first job, then job to job.
+         *
+         * On demand rather than on load. Each leg is a round trip to Apps
+         * Script, and the Today tab is the screen opened most often — doing
+         * this automatically would mean a dozen slow calls a day for an
+         * answer usually wanted once, first thing.
+         */
+        async function loadTodayDriveTimes() {
+            const btn = document.getElementById('today-drive-btn');
+            const summary = document.getElementById('today-drive-summary');
+            const setSummary = (t, bad) => {
+                if (!summary) return;
+                summary.innerText = t;
+                summary.className = 'text-[11px] text-right shrink-0 ' +
+                    (bad ? 'text-red-500' : 'text-[var(--eny-text-muted)]');
+            };
+
+            if (!(currentContractSettings.relayUrl || '').trim() ||
+                !(currentContractSettings.relayKey || '').trim()) {
+                setSummary('Set the relay URL and key in Settings first.', true);
+                return;
+            }
+
+            const myName = getCurrentUserEngineerName();
+            const today = todayISO();
+            const jobs = currentJobs
+                .filter(j => j.date === today && j.status !== 'Cancelled' &&
+                    j.status !== 'Lost' && getJobEngineers(j).includes(myName))
+                .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+            if (!jobs.length) return;
+
+            if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
+            setSummary('Finding you…');
+
+            let position;
+            try {
+                position = await new Promise((resolve, reject) => {
+                    if (!navigator.geolocation) return reject(new Error('no geolocation'));
+                    navigator.geolocation.getCurrentPosition(resolve, reject,
+                        { timeout: 10000, enableHighAccuracy: true });
+                });
+            } catch (err) {
+                console.warn('Location unavailable for drive times:', err);
+                setSummary('Could not get your location — allow location access and try again.', true);
+                if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+                return;
+            }
+
+            let from = position.coords.latitude + ',' + position.coords.longitude;
+            let totalMinutes = 0;
+            let failures = 0;
+            todayDriveLegs = {};
+
+            for (let i = 0; i < jobs.length; i++) {
+                const j = jobs[i];
+                const to = (j.propertyAddress || '').replace(/\n+/g, ', ').trim();
+                if (!to) { failures++; continue; }
+                setSummary('Leg ' + (i + 1) + ' of ' + jobs.length + '…');
+                try {
+                    const r = await relayGet('route', { from: from, to: to }, 15000);
+                    if (r && r.ok && r.minutes > 0) {
+                        todayDriveLegs[j.id] = (i === 0 ? 'From here: ' : 'From last job: ') +
+                            r.text + ', ' + r.miles + ' miles';
+                        totalMinutes += r.minutes;
+                        from = to;
+                    } else {
+                        failures++;
+                    }
+                } catch (err) {
+                    console.warn('Leg failed:', err);
+                    failures++;
+                    // One failure is a bad address; a run of them is the
+                    // relay being down, and there is no point hammering it.
+                    if (failures >= 2) break;
+                }
+            }
+
+            todayDriveSignature = jobs.map(j => j.id).join(',');
+            renderTodayTab();
+
+            if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+            const got = Object.keys(todayDriveLegs).length;
+            if (!got) {
+                setSummary('No routes came back — check the relay in Settings.', true);
+            } else {
+                setSummary(humanDriveTotal(totalMinutes) + ' driving across ' +
+                    got + (got === 1 ? ' leg' : ' legs') +
+                    (failures ? ' · ' + failures + ' could not be routed' : ''));
+            }
+        }
+
+        function humanDriveTotal(mins) {
+            if (mins < 60) return mins + 'm';
+            const h = Math.floor(mins / 60), m = mins % 60;
+            return m ? h + 'h ' + m + 'm' : h + 'h';
+        }
+
         function renderTodayTab() {
             const dateLabel = document.getElementById('today-date-label');
             if (dateLabel) dateLabel.innerText = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -5851,8 +5964,26 @@
             const todaysJobs = currentJobs.filter(j => j.date === today && j.status !== 'Cancelled' && j.status !== 'Lost' && getJobEngineers(j).includes(myName))
                 .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
 
-            if (todaysJobs.length === 0) { emptyEl.classList.remove('hidden'); listEl.innerHTML = ''; return; }
+            // A leg is "from the job before", so if the day's jobs change —
+            // one gets booked in, or moved — every leg after it is wrong.
+            // Drop them all rather than show a stale number.
+            const signature = todaysJobs.map(j => j.id).join(',');
+            if (signature !== todayDriveSignature) {
+                todayDriveLegs = {};
+                todayDriveSignature = '';
+                const staleSummary = document.getElementById('today-drive-summary');
+                if (staleSummary) staleSummary.innerText = '';
+            }
+
+            const driveBar = document.getElementById('today-drive-bar');
+            if (todaysJobs.length === 0) {
+                emptyEl.classList.remove('hidden');
+                listEl.innerHTML = '';
+                if (driveBar) driveBar.classList.add('hidden');
+                return;
+            }
             emptyEl.classList.add('hidden');
+            if (driveBar) driveBar.classList.remove('hidden');
 
             listEl.innerHTML = todaysJobs.map(j => {
                 const colors = getJobStatusColorClasses(j.status);
@@ -5863,6 +5994,7 @@
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-2 mb-1 flex-wrap"><span class="text-sm font-bold text-[var(--eny-text-primary)]">${j.title}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded border ${colors.badge}">${j.status}</span></div>
                         <div class="text-[11px] text-[var(--eny-text-muted)]">${j.time} ${j.propertyAddress ? '• ' + j.propertyAddress.split('\\n')[0] : ''}</div>
+                        ${todayDriveLegs[j.id] ? `<div class="text-[11px] text-[var(--eny-accent-text)] font-semibold mt-0.5 flex items-center gap-1"><i data-lucide="car" class="w-3 h-3"></i> ${todayDriveLegs[j.id]}</div>` : ''}
                         <div class="flex flex-wrap gap-1 mt-1">${engineerBadges}</div>
                         ${buildHazardBadgesHtml(property)}
                     </div>
@@ -7722,6 +7854,31 @@
             const address = rawAddress.split('\n').map(line => line.trim()).filter(Boolean).join(', ');
             const statusEl = document.getElementById('property-location-status');
             statusEl.innerText = 'Looking up address...';
+
+            // The relay goes to Google first and only keeps the answer when
+            // it has found the actual building, falling back to the postcode
+            // centroid otherwise. Nominatim, below, is what used to put pins
+            // in the wrong road — it stays as the last resort for when the
+            // relay isn't set up or isn't answering.
+            if ((currentContractSettings.relayUrl || '').trim() && (currentContractSettings.relayKey || '').trim()) {
+                try {
+                    const r = await relayGet('geocode', { address: address }, 15000);
+                    if (r && r.ok) {
+                        capturedPropertyLat = r.lat;
+                        capturedPropertyLng = r.lng;
+                        statusEl.innerText = r.precision === 'ROOFTOP' || r.precision === 'RANGE_INTERPOLATED'
+                            ? `Exact building found (${r.matched}) — will be saved with this property.`
+                            : r.source === 'postcodes.io'
+                                ? `Postcode located (${r.matched}) — right road, within about 100m. Worth re-capturing on site if the ETA matters.`
+                                : `Approximate location found (${r.matched}) — worth re-capturing on site.`;
+                        return;
+                    }
+                    statusEl.innerText = `No match found for "${address}" — trying another source...`;
+                } catch (err) {
+                    console.warn('Relay geocode unavailable, falling back to Nominatim:', err);
+                }
+            }
+
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1&addressdetails=1`);
                 if (!res.ok) { statusEl.innerText = `Lookup failed (server responded ${res.status}) — try again in a moment.`; return; }
@@ -8310,6 +8467,51 @@
         const ASSUMED_AVERAGE_MPH = 20;       // local/stop-start driving, not open-road speed
         const ROAD_DISTANCE_FACTOR = 1.3;     // roads curve — straight-line distance underestimates real route distance by roughly this much
         const FIXED_TRIP_OVERHEAD_MINUTES = 5; // leaving, first junction, parking/walking to the door — a flat cost pure distance÷speed misses, especially on short trips
+        // The old estimate above is kept, but only as a fallback. Poole to
+        // Bournemouth is four miles as the crow flies and anything up to
+        // forty by road depending on the bridge, so a straight line times a
+        // fudge factor was never going to be right here. Google's own
+        // routing knows about the bridge, the chain ferry and the traffic.
+        function estimateEtaMinutes(fromLat, fromLng, toLat, toLng) {
+            const straightLineMiles = haversineDistanceMiles(fromLat, fromLng, toLat, toLng);
+            const roadMiles = straightLineMiles * ROAD_DISTANCE_FACTOR;
+            return Math.max(2, Math.round((roadMiles / ASSUMED_AVERAGE_MPH) * 60) + FIXED_TRIP_OVERHEAD_MINUTES);
+        }
+        /**
+         * Real drive time where the relay can give one, the old estimate
+         * where it can't. Always resolves — a client waiting on an "on my
+         * way" text should never be held up by Apps Script having a slow
+         * morning, so the timeout is short and the fallback is silent.
+         */
+        async function getDriveEta(fromLat, fromLng, property) {
+            const fallback = () => ({
+                minutes: estimateEtaMinutes(fromLat, fromLng, property.lat, property.lng),
+                routed: false
+            });
+            if (!(currentContractSettings.relayUrl || '').trim()) return fallback();
+            if (!(currentContractSettings.relayKey || '').trim()) return fallback();
+
+            const origin = fromLat + ',' + fromLng;
+            // The address routes to the real road; coordinates are a dropped
+            // pin that may have come from the old geocoding. Try the address
+            // first and keep the pin as the second attempt.
+            const targets = [];
+            if (property.address) targets.push(String(property.address).replace(/\n+/g, ', '));
+            if (property.lat != null && property.lng != null) targets.push(property.lat + ',' + property.lng);
+
+            for (const to of targets) {
+                try {
+                    const res = await relayGet('route', { from: origin, to: to }, 12000);
+                    if (res && res.ok && res.minutes > 0) {
+                        return { minutes: res.minutes, miles: res.miles, text: res.text, via: res.summary, routed: true };
+                    }
+                } catch (err) {
+                    console.warn('Routed ETA unavailable, falling back to the estimate:', err);
+                    break; // a timeout or a bad key will fail the same way twice
+                }
+            }
+            return fallback();
+        }
         async function sendOnMyWayMessage(jobId, prefetchedLocation = null) {
             const job = currentJobs.find(j => j.id === jobId);
             if (!job) return;
@@ -8329,10 +8531,9 @@
                         ? await prefetchedLocation
                         : (navigator.geolocation ? await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000 })) : null);
                     if (position) {
-                        const straightLineMiles = haversineDistanceMiles(position.coords.latitude, position.coords.longitude, property.lat, property.lng);
-                        const roadMiles = straightLineMiles * ROAD_DISTANCE_FACTOR;
-                        const estimatedMinutes = Math.max(2, Math.round((roadMiles / ASSUMED_AVERAGE_MPH) * 60) + FIXED_TRIP_OVERHEAD_MINUTES);
-                        etaText = ` I'm about ${estimatedMinutes} minutes away.`;
+                        const eta = await getDriveEta(position.coords.latitude, position.coords.longitude, property);
+                        etaText = ` I'm about ${eta.minutes} minutes away.`;
+                        if (eta.routed) console.log(`Routed ETA: ${eta.text}, ${eta.miles} miles via ${eta.via}`);
                     } else {
                         // The prefetched-location path resolves null on
                         // failure rather than throwing (see where it's
@@ -9114,7 +9315,16 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 script.onerror = () => {
                     if (settled) return;
                     settled = true; cleanup();
-                    reject(new Error('Could not reach the relay.'));
+                    // Naming the URL is the whole diagnosis nine times out
+                    // of ten: a googleusercontent.com address copied out of
+                    // the browser after a redirect, or a URL that doesn't
+                    // end in /exec, both fail exactly like this.
+                    const looksWrong = base.indexOf('script.google.com/macros/') === -1 ||
+                        base.slice(-5) !== '/exec';
+                    reject(new Error('Could not reach the relay at ' + base +
+                        (looksWrong
+                            ? ' — that does not look like the right address. It should start https://script.google.com/macros/s/ and end /exec. Copy it from Deploy > Manage deployments, not from the browser bar after opening it.'
+                            : ' — the address looks right, so check the deployment is set to "Anyone" and that a new version has been deployed.')));
                 };
                 script.src = url;
                 document.head.appendChild(script);
