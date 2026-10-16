@@ -7126,15 +7126,19 @@
         function toggleDrsView() {
             const drsTab = document.getElementById('drs-tab');
             const isCurrentlyInDrs = drsTab && drsTab.classList.contains('active');
+            // No main-nav-bar any more: that was the visible tab row, and
+            // it went when navigation moved behind the hamburger. The two
+            // calls that hid and restored it were left behind, and since
+            // getElementById returns null for it, .classList threw and
+            // killed this function before it ever reached switchTab —
+            // which is why the DRS button silently did nothing.
             if (isCurrentlyInDrs) {
-                document.getElementById('main-nav-bar').classList.remove('hidden');
                 switchTab(drsPreviousTabId);
                 updateDrsToggleLabel();
                 return;
             }
             const activeTab = document.querySelector('.tab-content.active');
             drsPreviousTabId = activeTab ? activeTab.id : 'today-tab';
-            document.getElementById('main-nav-bar').classList.add('hidden');
             switchTab('drs-tab');
             drsCurrentDate = todayISO();
             renderDrsGrid();
