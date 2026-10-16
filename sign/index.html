@@ -603,6 +603,10 @@ async function submitSignature() {
         docTitle: def.title,
         propertyAddress: full.propertyAddress,
         amount: (full.agreedAmount || 0).toFixed(2),
+        // Passed through so the relay can follow the signed copy with a
+        // deposit request. The relay reads the bank details itself —
+        // they are not on this page and not on the contract document.
+        depositAmount: full.depositAmount ? Number(full.depositAmount).toFixed(2) : '',
         pdfBase64: pdfB64,
       }),
     });
