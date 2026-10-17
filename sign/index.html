@@ -607,6 +607,7 @@ async function submitSignature() {
         // deposit request. The relay reads the bank details itself —
         // they are not on this page and not on the contract document.
         depositAmount: full.depositAmount ? Number(full.depositAmount).toFixed(2) : '',
+        invoicingOperative: full.invoicingOperative || '',
         pdfBase64: pdfB64,
       }),
     });
