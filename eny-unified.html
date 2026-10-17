@@ -2385,6 +2385,23 @@
         </div>
     </div>
 
+    <!-- Needs attention: everything here is computed from data the app
+         has already loaded, so it costs nothing and needs no backend. -->
+    <div id="needs-attention-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
+        <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-lg max-h-[85vh] overflow-hidden shadow-2xl ring-1 ring-white/[0.06] flex flex-col">
+            <div class="p-5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50 flex items-start justify-between gap-3">
+                <div>
+                    <h3 class="text-base font-bold text-[var(--eny-text-primary)] flex items-center gap-2"><i data-lucide="triangle-alert" class="w-4 h-4 text-[var(--eny-accent-text)]"></i> Needs attention</h3>
+                    <p id="needs-attention-subtitle" class="text-[11px] text-[var(--eny-text-muted)] mt-1"></p>
+                </div>
+                <button onclick="closeNeedsAttention()" class="text-[var(--eny-text-muted)] hover:text-[var(--eny-text-primary)] p-1.5 rounded-lg cursor-pointer shrink-0" aria-label="Close">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div id="needs-attention-body" class="p-5 space-y-4 overflow-y-auto custom-scrollbar"></div>
+        </div>
+    </div>
+
     <div id="contract-share-modal" class="fixed inset-0 bg-[var(--eny-bg-recessed)]/80 backdrop-blur-sm z-[1150] hidden flex items-center justify-center p-4">
         <div class="bg-[var(--eny-bg-card)] border border-[var(--eny-border-medium)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl ring-1 ring-white/[0.06]">
             <div class="p-5 border-b border-[var(--eny-border-standard)] bg-[var(--eny-bg-page)]/50">
@@ -5640,6 +5657,7 @@
                 const payload = {
                     ...basePayload,
                     status: 'Floating', date: null, time: null, assignedEngineers: [],
+                    dateChangedAt: new Date().toISOString(),
                     isEmergency: false, linkedQuoteId,
                     jobNumber, jobNumberSuffix: 1,
                     floatingSince: new Date().toISOString(),
@@ -6347,6 +6365,7 @@
                 });
                 const updates = {
                     status: 'Accepted', date: newDateRaw, engineerState: resetEngineerState,
+                    dateChangedAt: new Date().toISOString(),
                     operativeComments: comments, completionOutcome: outcome,
                 };
                 await db.collection('jobs').doc(jobId).update(updates);
@@ -6960,6 +6979,7 @@
             if (j.calendarEventId) await deleteCalendarEvent(j.calendarEventId);
             const updates = {
                 status: 'Floating', date: null, time: null, assignedEngineers: [],
+                    dateChangedAt: new Date().toISOString(),
                 calendarEventId: null, floatingSince: new Date().toISOString(),
             };
             await db.collection('jobs').doc(jobId).update(updates);
@@ -7004,7 +7024,8 @@
                 if (!(await showConfirm(`${conflicts.join(', ')} already ${conflicts.length === 1 ? 'has' : 'have'} a job around this time on ${formatUkDate(newDate)}. Reschedule anyway?`))) return;
             }
 
-            await db.collection('jobs').doc(job.id).update({ date: newDate, time: newTime });
+            await db.collection('jobs').doc(job.id).update({
+                date: newDate, time: newTime, dateChangedAt: new Date().toISOString() });
             if (isGoogleCalendarConnected()) {
                 try {
                     const eventId = await pushJobToCalendar({ title: job.title, propertyAddress: job.propertyAddress, date: newDate, time: newTime, assignedEngineers: engineers, notes: job.notes || '' }, job.calendarEventId || null);
@@ -7579,6 +7600,7 @@
                 const jobRef = await db.collection('jobs').add({
                     title: source.title, propertyId: source.propertyId, propertyAddress: source.propertyAddress,
                     assignedEngineers: [engineerName], date, time, status: 'Scheduled',
+                    dateChangedAt: new Date().toISOString(),
                     notes: '', isEmergency: true, linkedQuoteId: null,
                     jobNumber, jobNumberSuffix: 1,
                 });
@@ -7608,7 +7630,7 @@
                 const j = currentJobs.find(x => x.id === source.id);
                 if (!j) { showToast('That job could not be found — it may have been removed.', 'warning'); closeDrsPlaceJobModal(); return; }
                 const finalTitle = editedTitle || j.title;
-                const updates = { title: finalTitle, assignedEngineers: [engineerName], date, time, status: 'Scheduled' };
+                const updates = { title: finalTitle, assignedEngineers: [engineerName], date, time, status: 'Scheduled', dateChangedAt: new Date().toISOString() };
                 await db.collection('jobs').doc(j.id).update(updates);
                 pushDrsBookingToCalendar(j.id, { title: finalTitle, propertyAddress: j.propertyAddress, date, time, assignedEngineers: [engineerName], notes: j.notes || '' });
                 closeDrsPlaceJobModal();
@@ -7639,6 +7661,7 @@
             const newJobPayload = {
                 title: finalQuoteTitle, propertyId, propertyAddress: address,
                 assignedEngineers: [engineerName], date, time, status: 'Scheduled',
+                dateChangedAt: new Date().toISOString(),
                 notes: '', isEmergency: false, linkedQuoteId: source.id,
                 jobNumber, jobNumberSuffix: 1,
                 fromAds: !!q.fromAds, adRequestDate: q.adRequestDate || null, adRequestTime: q.adRequestTime || null,
@@ -9543,6 +9566,144 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             }
         }
 
+        // === Needs attention =================================================
+        // Things that will quietly not work rather than visibly break: a job
+        // that can never be confirmed because nobody recorded an email, a
+        // form sent a fortnight ago that nobody signed. None of it is an
+        // error, so none of it surfaces anywhere on its own.
+        function collectAttentionItems() {
+            const groups = [];
+            const today = todayISO();
+            const daysAgo = (iso) => iso
+                ? Math.floor((Date.now() - new Date(iso).getTime()) / 86400000)
+                : null;
+            const short = (a) => String(a || '').split(/[,\n]/)[0].trim();
+
+            const live = currentJobs.filter(j =>
+                !j.deleted && j.status !== 'Cancelled' && j.status !== 'Lost');
+
+            const bookedNoEmail = live.filter(j => {
+                if (!j.date || j.date < today) return false;
+                const c = findClientForJob(j);
+                return !c || !c.email;
+            });
+            if (bookedNoEmail.length) groups.push({
+                title: 'Booked jobs with no client email',
+                note: 'No confirmation and no reminder can be sent for these.',
+                items: bookedNoEmail.map(j =>
+                    `${formatUkDate(j.date)} · ${short(j.propertyAddress) || 'no address'} — ${j.title || 'job'}`),
+            });
+
+            const quotesNoEmail = currentQuotes.filter(q =>
+                !q.archived && ['Draft', 'Sent'].includes(q.status) &&
+                !(q.clientDetailsPayload && q.clientDetailsPayload.email));
+            if (quotesNoEmail.length) groups.push({
+                title: 'Open quotes with no email',
+                note: 'These cannot be followed up or won back automatically.',
+                items: quotesNoEmail.map(q =>
+                    `${q.jobName || 'quote'} — ${short(q.clientDetailsPayload && q.clientDetailsPayload.address) || 'no address'}`),
+            });
+
+            const stale = currentContracts.filter(c =>
+                c.status === 'pending' && daysAgo(c.createdAt) >= 7);
+            if (stale.length) groups.push({
+                title: 'Forms sent but never signed',
+                note: 'Waiting more than a week.',
+                items: stale.map(c =>
+                    `${c.reference || 'form'} · ${short(c.propertyAddress)} — ${daysAgo(c.createdAt)} days`),
+            });
+
+            const failed = currentContracts.filter(c =>
+                c.status === 'signed' && c.emailSent === false);
+            if (failed.length) groups.push({
+                title: 'Signed forms the client never received',
+                note: 'The copy failed to send — worth forwarding by hand.',
+                items: failed.map(c =>
+                    `${c.reference || 'form'} · ${short(c.propertyAddress)}`),
+            });
+
+            const overdue = [];
+            currentProperties.forEach(p => {
+                const elec = computeReminderStatus(p.lastElectricalInspection,
+                    p.electricalCycleYears || 5, ELECTRICAL_DUE_SOON_DAYS);
+                if (elec.status === 'overdue') {
+                    overdue.push(`EICR · ${short(p.address)} — due ${formatUkDate(elec.dueDate)}`);
+                }
+                const smoke = computeReminderStatus(p.lastSmokeAlarmTest,
+                    SMOKE_ALARM_CYCLE_YEARS, SMOKE_ALARM_DUE_SOON_DAYS);
+                if (smoke.status === 'overdue') {
+                    overdue.push(`Smoke alarms · ${short(p.address)} — due ${formatUkDate(smoke.dueDate)}`);
+                }
+            });
+            if (overdue.length) groups.push({
+                title: 'Certificates already overdue',
+                note: 'Past due, not just coming up.',
+                items: overdue,
+            });
+
+            // Completed work nobody has billed. The quote behind it is still
+            // sitting on Draft, Sent or Approved rather than Invoiced.
+            const unbilled = currentJobs.filter(j => {
+                if (j.deleted || j.status !== 'Completed') return false;
+                if (!j.linkedQuoteId) return false;
+                const q = currentQuotes.find(x => x.id === j.linkedQuoteId);
+                return q && ['Draft', 'Sent', 'Approved'].includes(q.status);
+            });
+            if (unbilled.length) groups.push({
+                title: 'Completed but not invoiced',
+                note: 'Work is done and the quote has never been invoiced.',
+                items: unbilled.map(j =>
+                    `${short(j.propertyAddress)} — ${j.title || 'job'}`),
+            });
+
+            return groups;
+        }
+
+        function countAttentionItems() {
+            try {
+                return collectAttentionItems()
+                    .reduce((n, g) => n + g.items.length, 0);
+            } catch (err) {
+                console.error('Could not count attention items:', err);
+                return 0;
+            }
+        }
+
+        function refreshAttentionBadge() {
+            updateNavBadge('needs-attention-badge', countAttentionItems());
+        }
+
+        function openNeedsAttention() {
+            const body = document.getElementById('needs-attention-body');
+            const subtitle = document.getElementById('needs-attention-subtitle');
+            const groups = collectAttentionItems();
+            const total = groups.reduce((n, g) => n + g.items.length, 0);
+
+            subtitle.innerText = total
+                ? total + (total === 1 ? ' thing' : ' things') + ' worth a look'
+                : 'Nothing outstanding.';
+
+            body.innerHTML = groups.length ? groups.map(g => `
+                <div>
+                    <div class="flex items-baseline justify-between gap-2 mb-1.5">
+                        <span class="text-xs font-bold text-[var(--eny-text-200)]">${escapeEmailHtml(g.title)}</span>
+                        <span class="text-[10px] font-bold text-[var(--eny-accent-text)] shrink-0">${g.items.length}</span>
+                    </div>
+                    <p class="text-[10px] text-[var(--eny-text-muted2)] mb-2">${escapeEmailHtml(g.note)}</p>
+                    <div class="space-y-1">
+                        ${g.items.map(i => `<div class="text-[11px] text-[var(--eny-text-300)] bg-[var(--eny-bg-page)] border border-[var(--eny-border-standard)] rounded-lg px-3 py-2">${escapeEmailHtml(i)}</div>`).join('')}
+                    </div>
+                </div>`).join('')
+                : '<div class="text-center py-10 text-[var(--eny-text-muted2)] text-sm"><i data-lucide="check-circle" class="w-10 h-10 mx-auto mb-3 text-emerald-500"></i> Nothing needs attention.</div>';
+
+            document.getElementById('needs-attention-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeNeedsAttention() {
+            document.getElementById('needs-attention-modal').classList.add('hidden');
+        }
+
         function countUnseenSignedContracts() {
             return currentContracts.filter(c => c.status === 'signed' && !c.seenByOwner).length;
         }
@@ -9834,6 +9995,7 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             const filter = (document.getElementById('contracts-filter') || {}).value || 'all';
             const search = ((document.getElementById('contracts-search') || {}).value || '').toLowerCase().trim();
             updateNavBadge('contracts-unseen-badge', countUnseenSignedContracts());
+            refreshAttentionBadge();
 
             const clientNameFor = (c) => {
                 if (c.clientId) {
@@ -12650,6 +12812,11 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                              immediately judge, and closing the menu to show
                              you the result then making you reopen it is a
                              step for nothing. -->
+                        <button onclick="openNeedsAttention(); closeNavMenu();" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
+                            <i data-lucide="triangle-alert" class="w-4 h-4 shrink-0"></i> Needs attention
+                            <span id="needs-attention-badge" class="hidden ml-auto bg-red-500 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 min-w-[16px] text-center">0</span>
+                        </button>
+
                         <p class="px-4 pt-3 pb-1 text-[9px] font-bold uppercase tracking-wider text-[var(--eny-text-muted2)]">Tools</p>
                         <button onclick="openUniversalSearch(); closeNavMenu();" class="w-full text-left px-4 py-2.5 text-[13px] font-medium text-[var(--eny-text-300)] hover:bg-[var(--eny-bg-tertiary)]/50 flex items-center gap-2.5 transition-colors cursor-pointer">
                             <i data-lucide="search" class="w-4 h-4 shrink-0"></i> Search everything
