@@ -2369,6 +2369,12 @@
                             <button type="button" onclick="setDepositFraction(0.5)" class="text-[10px] font-bold bg-[var(--eny-bg-secondary)] hover:bg-amber-500 hover:text-slate-950 text-[var(--eny-accent-text)] px-2.5 py-1.5 rounded-lg border border-[var(--eny-border-standard)] cursor-pointer">50%</button>
                         </div>
                         <p id="contract-deposit-hint" class="text-[10px] text-[var(--eny-text-muted2)] mt-2"></p>
+                        <label class="block text-xs font-semibold text-[var(--eny-text-muted)] uppercase tracking-wider mt-3 mb-1.5">Pay into</label>
+                        <select id="contract-deposit-operative" class="w-full bg-[var(--eny-bg-recessed)] border border-[var(--eny-border-standard)] rounded-xl px-4 py-2.5 text-sm text-[var(--eny-text-primary)] focus:outline-none focus:border-amber-500">
+                            <option value="HUGHES">Hughes</option>
+                            <option value="MABBLEY">Mabbley</option>
+                        </select>
+                        <p class="text-[10px] text-[var(--eny-text-muted2)] mt-1">Which bank details go on the deposit request. Same choice as an invoice.</p>
                     </div>
                 </div>
             </div>
@@ -9575,6 +9581,14 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
             document.getElementById('contract-deposit-amount').value = '';
             document.getElementById('contract-deposit-hint').innerText = '';
             document.getElementById('contract-deposit-wrapper').classList.add('hidden');
+            // Defaults to Hughes like an invoice does, but pre-picks
+            // Mabbley when he is the one logged in — the money should
+            // land in the account of whoever raised the form, and the
+            // wrong account is an awkward thing to notice late.
+            const who = (typeof getCurrentUserEngineerName === 'function'
+                ? getCurrentUserEngineerName() : '') || '';
+            document.getElementById('contract-deposit-operative').value =
+                /mabbley/i.test(who) ? 'MABBLEY' : 'HUGHES';
             // Only an authorisation can carry a deposit — there is nothing
             // to pay up front on a form confirming the work is finished.
             document.getElementById('contract-deposit-card').classList.toggle('hidden', type !== 'authorisation');
@@ -9728,6 +9742,9 @@ Bank details: ${summary.bankingImported} operative(s) imported`;
                 worksDescription: works,
                 agreedAmount: Math.round(amount * 100) / 100,
                 depositAmount: wantsDeposit ? Math.round(depositAmount * 100) / 100 : 0,
+                invoicingOperative: wantsDeposit
+                    ? document.getElementById('contract-deposit-operative').value
+                    : null,
                 status: 'pending',
                 createdAt: new Date().toISOString(),
                 seenByOwner: true,
